@@ -1,22 +1,9 @@
 #ifndef NAPA_RUNTIME_C_H
 #define NAPA_RUNTIME_C_H
 
+#include "napa/common_c.h"
 #include "napa/exports.h"
 
-#ifdef __cplusplus
-namespace napa
-{
-namespace runtime_c
-{
-#endif // __cplusplus
-
-/// <summary>
-///     Indicates whether the API call was successful.
-///     TODO: list error values or provide reference to them.
-///     TODO: create a static mapping between the error code and the error message
-///           and proivde a method for conversion.
-/// </summary>
-typedef uint8_t NAPA_RESULT;
 
 /// <summary>Simple static cstring and length</summary>
 typedef struct {
@@ -103,7 +90,8 @@ EXTERN_C NAPA_API NAPA_RESULT Initialize(int argc, StringValue argv[]);
 /// <summary>Invokes napa shutdown steps. All non destoryed/released containers will be destroyed</summary>
 EXTERN_C NAPA_API NAPA_RESULT Shutdown();
 
-
+// TODO: Currently the logging and metric provider setters will only work for c++ compiled clients
+//       Need to find a solution for pure c users (i.e. Java binding)
 #ifdef __cplusplus
 #include "napa/logging.h"
 #include "napa/metric.h"
@@ -114,15 +102,7 @@ EXTERN_C NAPA_API NAPA_RESULT SetLoggingProvider(napa::runtime::LoggingProvider*
 /// <summary>Allows the user to set a custom metric provider</summary>
 EXTERN_C NAPA_API NAPA_RESULT SetMetricProvider(napa::runtime::MetricProvider* provider);
 
-#else
-
-// TODO (if needed): Declare API that accepts function pointers for logging and metric providers
-
 #endif // __cplusplus
 
-#ifdef __cplusplus
-} // namespace runtime_c
-} // napaspace napa
-#endif // __cplusplus
 
 #endif // NAPA_RUNTIME_C_H
