@@ -6,18 +6,16 @@
 
 typedef NapaResponseCode napa_response_code;
 
-/// <summary>
-///     Represents napa response.
-///     If response code is success then the output has a JSON format, otherwise the 
-///     output is the error message
-/// </summary>
+/// <summary>Represents napa response. </summary>
 typedef struct {
     napa_response_code code;
-    napa_string_ref output;
+    napa_string_ref error;
+    napa_string_ref return_value;
 } napa_container_response;
 
-/// <summary>Callback signature</summary>
-typedef void(*napa_container_callback)(napa_container_response response, void* state);
+/// <summary>Callback signatures</summary>
+typedef void(*napa_container_run_callback)(napa_container_response response, void* context);
+typedef void(*napa_container_load_callback)(napa_response_code code, void* context);
 
 /// <summary>
 ///     Container handle type.
@@ -54,17 +52,39 @@ EXTERN_C NAPA_API napa_response_code napa_container_set_global_value(
     napa_string_ref key,
     void* value);
 
-/// <summary>Loads the content of the provided file into the container</summary>
+/// <summary>Loads the content of the provided file into the container asynchronously</summary>
 /// <param name="handle">The container handle</param>
 /// <param name="file">The path to the JavaScript file</param>
-EXTERN_C NAPA_API napa_response_code napa_container_load_file(
+/// <param name="callback">A callback that is triggered when loading is done</param>
+/// <param name="context">An opaque pointer that is passed back in the callback</param>
+EXTERN_C NAPA_API void napa_container_load_file(
+    napa_container_handle handle,
+    napa_string_ref file,
+    napa_container_load_callback callback,
+    void* context);
+
+/// <summary>Loads the content of the provided file into the container synchronously</summary>
+/// <param name="handle">The container handle</param>
+/// <param name="file">The path to the JavaScript file</param>
+EXTERN_C NAPA_API napa_response_code napa_container_load_file_sync(
     napa_container_handle handle,
     napa_string_ref file);
 
-/// <summary>Loads the provided source code into the container</summary>
+/// <summary>Loads the provided source code into the container asynchronously</summary>
 /// <param name="handle">The container handle</param>
 /// <param name="source">The JavaScript source code</param>
-EXTERN_C NAPA_API napa_response_code napa_container_load(
+/// <param name="callback">A callback that is triggered when loading is done</param>
+/// <param name="context">An opaque pointer that is passed back in the callback</param>
+EXTERN_C NAPA_API void napa_container_load(
+    napa_container_handle handle,
+    napa_string_ref source,
+    napa_container_load_callback callback,
+    void* context);
+
+/// <summary>Loads the provided source code into the container synchronously</summary>
+/// <param name="handle">The container handle</param>
+/// <param name="source">The JavaScript source code</param>
+EXTERN_C NAPA_API napa_response_code napa_container_load_sync(
     napa_container_handle handle,
     napa_string_ref source);
 
@@ -74,14 +94,14 @@ EXTERN_C NAPA_API napa_response_code napa_container_load(
 /// <param name="argc">The number of arguments that are to be passed to the function</param>
 /// <param name="argv">The arguments</param>
 /// <param name="callback">A callback that is triggered when execution is done</param>
-/// <param name="context">An opaque pointer that is returned with the callback</param>
+/// <param name="context">An opaque pointer that is passed back in the callback</param>
 /// <param name="timeout">Timeout in milliseconds - Use 0 for inifinite</param>
-EXTERN_C NAPA_API napa_response_code napa_container_run(
+EXTERN_C NAPA_API void napa_container_run(
     napa_container_handle handle,
     napa_string_ref func,
     size_t argc,
     napa_string_ref argv[],
-    napa_container_callback callback,
+    napa_container_run_callback callback,
     void* context,
     uint32_t timeout);
 

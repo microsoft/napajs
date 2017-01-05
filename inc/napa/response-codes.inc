@@ -16,4 +16,5 @@
 #error NAPA_RESPONSE_CODE_DEF must be defined before including response_code.inc
 #endif
 
-NAPA_RESPONSE_CODE_DEF( SUCCESS,            "Success")
+NAPA_RESPONSE_CODE_DEF( SUCCESS,            "Success"),
+NAPA_RESPONSE_CODE_DEF( UNDEFINED,          "Undefined")

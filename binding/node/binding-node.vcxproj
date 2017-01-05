@@ -1,9 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(EnvironmentConfig)" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.Default.props" />
-
+  <PropertyGroup>
+    <TargetName>napa_wrap</TargetName>
+  </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -14,7 +15,9 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{AAB1C309-643B-45EC-A93A-902AD402E31D}</ProjectGuid>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -23,27 +26,27 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
-  
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.props" />
-
   <ItemDefinitionGroup>
     <ClCompile>
       <DisableSpecificWarnings>4100</DisableSpecificWarnings>
-      <PreprocessorDefinitions>NAPA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>V8_IMMINENT_DEPRECATION_WARNINGS;BUILDING_NODE_EXTENSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NapaRoot)\vanilla\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
-
   <ItemGroup>
-    <ClCompile Include="container.cpp" />
-    <ClCompile Include="runtime.cpp" />
+    <ProjectReference Include="$(NapaRoot)\vanilla\src\napa\napa.vcxproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <ClCompile Include="addon.cpp" />
+    <ClCompile Include="container-wrap.cpp" />
+  </ItemGroup>
   <ItemGroup>
     <Binplace Include="$(OutputPath)\$(TargetFileName)">
       <DestinationFolder>$(NapaVanillaBinplacePath)</DestinationFolder>
+      <DestinationFileName>$(TargetName).node</DestinationFileName>
     </Binplace>
   </ItemGroup>
-  
+  <Import Project="$(PACKAGESROOT)\NodeJs.Library\exports.props" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
