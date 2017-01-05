@@ -1,2 +1,8 @@
-// This is the C style header file for Napa app engine.
-// We are going to build binding on top of it. (Asi)
+#ifndef NAPA_APP_C_H
+#define NAPA_APP_C_H
+
+#include "napa-runtime-c.h"
+
+
+
+#endif

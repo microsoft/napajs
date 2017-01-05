@@ -3,6 +3,7 @@
 
 #include "stddef.h"
 #include "stdint.h"
+#include "string.h"
 
 /// <summary>Simple non ownning string. Should only be used for binding.</summary>
 typedef struct {
@@ -10,9 +11,11 @@ typedef struct {
     size_t size;
 } napa_string_ref;
 
+#define CREATE_NAPA_STRING_REF2(data, size) (napa_string_ref { (data), (size) })
+#define CREATE_NAPA_STRING_REF(data) CREATE_NAPA_STRING_REF2(data, strlen(data))
+
 #ifdef __cplusplus
 
-#define CREATE_NAPA_STRING_REF(data, size) (napa_string_ref { (data), (size) })
 #define STD_STRING_TO_NAPA_STRING_REF(str) (napa_string_ref { (str).data(), (str).size() })
 #define NAPA_STRING_REF_TO_STD_STRING(str) (std::string((str).data, (str).size))
 
