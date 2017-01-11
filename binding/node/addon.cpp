@@ -70,7 +70,6 @@ void InitAll(v8::Local<v8::Object> exports)
     NODE_SET_METHOD(exports, "initialize", Initialize);
     NODE_SET_METHOD(exports, "shutdown", Shutdown);
     NODE_SET_METHOD(exports, "createContainer", CreateContainer);
-
 }
 
 NODE_MODULE(napa_wrap, InitAll)

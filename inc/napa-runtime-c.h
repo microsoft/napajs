@@ -9,7 +9,7 @@ typedef NapaResponseCode napa_response_code;
 /// <summary>Represents napa response. </summary>
 typedef struct {
     napa_response_code code;
-    napa_string_ref error;
+    napa_string_ref error_message;
     napa_string_ref return_value;
 } napa_container_response;
 
@@ -100,7 +100,7 @@ EXTERN_C NAPA_API void napa_container_run(
     napa_container_handle handle,
     napa_string_ref func,
     size_t argc,
-    napa_string_ref argv[],
+    const napa_string_ref argv[],
     napa_container_run_callback callback,
     void* context,
     uint32_t timeout);
@@ -115,7 +115,7 @@ EXTERN_C NAPA_API napa_container_response napa_container_run_sync(
     napa_container_handle handle,
     napa_string_ref func,
     size_t argc,
-    napa_string_ref argv[],
+    const napa_string_ref argv[],
     uint32_t timeout);
 
 /// <summary>Cleanup container resources and free its memory</summary>

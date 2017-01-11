@@ -94,7 +94,7 @@ void napa_container_run(
     napa_container_handle handle,
     napa_string_ref func,
     size_t argc,
-    napa_string_ref argv[],
+    const napa_string_ref argv[],
     napa_container_run_callback callback,
     void* context,
     uint32_t timeout)
@@ -116,7 +116,7 @@ void napa_container_run(
         napa_container_response response;
 
         response.code = NAPA_RESPONSE_SUCCESS;
-        response.error = CREATE_NAPA_STRING_REF("");
+        response.error_message = CREATE_NAPA_STRING_REF("");
         response.return_value = CREATE_NAPA_STRING_REF("{\"score\":2412}");
 
         callback(response, context);
@@ -127,7 +127,7 @@ napa_container_response napa_container_run_sync(
     napa_container_handle handle,
     napa_string_ref func,
     size_t argc,
-    napa_string_ref argv[],
+    const napa_string_ref argv[],
     uint32_t timeout)
 {
     std::cout << "napa_container_run_sync()" << std::endl;
@@ -141,7 +141,7 @@ napa_container_response napa_container_run_sync(
 
     return napa_container_response {
         NAPA_RESPONSE_SUCCESS,
-        CREATE_NAPA_STRING_REF("test"),
+        CREATE_NAPA_STRING_REF(""),
         CREATE_NAPA_STRING_REF("{\"score\":2412}")
     };
 }

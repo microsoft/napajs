@@ -9,12 +9,16 @@
 #include "napa/v8-helpers.h"
 #include "node-async-handler.h"
 
-
 #include <sstream>
 #include <vector>
 
 using namespace napa::binding;
 
+
+// Forward declaration.
+static std::vector<v8::Local<v8::Value>> CreateResponseValues(
+    v8::Isolate* isolate,
+    const napa::runtime::Response& response);
 
 v8::Persistent<v8::Function> ContainerWrap::_constructor;
 
@@ -107,7 +111,7 @@ void ContainerWrap::Load(const v8::FunctionCallbackInfo<v8::Value>& args)
     auto handler = NodeAsyncHandler<NapaResponseCode>::New(
         isolate,
         callback,
-        [isolate](const NapaResponseCode& responseCode) {
+        [isolate](const auto& responseCode) {
             std::vector<v8::Local<v8::Value>> res;
             res.push_back(v8::Uint32::NewFromUnsigned(isolate, responseCode));
             return res;
@@ -145,7 +149,7 @@ void ContainerWrap::LoadFile(const v8::FunctionCallbackInfo<v8::Value>& args)
     auto handler = NodeAsyncHandler<NapaResponseCode>::New(
         isolate,
         callback,
-        [isolate](const NapaResponseCode& responseCode) {
+        [isolate](const auto& responseCode) {
             std::vector<v8::Local<v8::Value>> res;
             res.push_back(v8::Uint32::NewFromUnsigned(isolate, responseCode));
             return res;
@@ -185,25 +189,24 @@ void ContainerWrap::Run(const v8::FunctionCallbackInfo<v8::Value>& args)
     }
 
     v8::String::Utf8Value func(args[0]->ToString());
-    auto runArgs = napa::v8_helpers::V8ArrayToVector<std::string>(isolate, v8::Local<v8::Array>::Cast(args[1]));
+
+    auto runArgValues = napa::v8_helpers::V8ArrayToVector<napa::v8_helpers::Utf8String>(
+        isolate,
+        v8::Local<v8::Array>::Cast(args[1]));
+
+    std::vector<NapaStringRef> runArgs;
+    runArgs.reserve(runArgValues.size());
+    for (const auto& val : runArgValues)
+    {
+        runArgs.emplace_back(CREATE_NAPA_STRING_REF_WITH_SIZE(val.Data(), val.Length()));
+    }
+
     auto callback = v8::Local<v8::Function>::Cast(args[2]);
 
     auto handler = NodeAsyncHandler<napa::runtime::Response>::New(
         isolate,
         callback,
-        [isolate](const napa::runtime::Response& response) {
-            return std::vector<v8::Local<v8::Value>>({
-                v8::Uint32::NewFromUnsigned(isolate, response.code),
-                v8::String::NewFromUtf8(
-                    isolate,
-                    response.error.c_str(),
-                    v8::NewStringType::kNormal).ToLocalChecked(),
-                v8::String::NewFromUtf8(
-                    isolate,
-                    response.returnValue.c_str(),
-                    v8::NewStringType::kNormal).ToLocalChecked()
-            });
-        }
+        [isolate](const auto& response) { return CreateResponseValues(isolate, response); }
     );
 
     auto wrap = ObjectWrap::Unwrap<ContainerWrap>(args.Holder());
@@ -240,7 +243,16 @@ void ContainerWrap::RunSync(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     v8::String::Utf8Value func(args[0]->ToString());
     
-    auto runArgs = napa::v8_helpers::V8ArrayToVector<std::string>(isolate, v8::Local<v8::Array>::Cast(args[1]));
+    auto runArgValues = napa::v8_helpers::V8ArrayToVector<napa::v8_helpers::Utf8String>(
+        isolate,
+        v8::Local<v8::Array>::Cast(args[1]));
+
+    std::vector<NapaStringRef> runArgs;
+    runArgs.reserve(runArgValues.size());
+    for (const auto& val : runArgValues)
+    {
+        runArgs.emplace_back(CREATE_NAPA_STRING_REF_WITH_SIZE(val.Data(), val.Length()));
+    }
 
     auto wrap = ObjectWrap::Unwrap<ContainerWrap>(args.Holder());
 
@@ -255,22 +267,45 @@ void ContainerWrap::RunSync(const v8::FunctionCallbackInfo<v8::Value>& args)
         response = wrap->_container->RunSync(*func, runArgs);
     }
 
+    auto responseValues = CreateResponseValues(isolate, response);
+
     auto returnObj = v8::Object::New(isolate);
 
     returnObj->CreateDataProperty(
         context,
         v8::String::NewFromUtf8(isolate, "code", v8::NewStringType::kNormal).ToLocalChecked(),
-        v8::Uint32::NewFromUnsigned(isolate, response.code));
+        responseValues[0]);
 
     returnObj->CreateDataProperty(
         context,
-        v8::String::NewFromUtf8(isolate, "error", v8::NewStringType::kNormal).ToLocalChecked(),
-        v8::String::NewFromUtf8(isolate, response.error.c_str(), v8::NewStringType::kNormal).ToLocalChecked());
+        v8::String::NewFromUtf8(isolate, "errorMessage", v8::NewStringType::kNormal).ToLocalChecked(),
+        responseValues[1]);
     
     returnObj->CreateDataProperty(
         context,
         v8::String::NewFromUtf8(isolate, "returnValue", v8::NewStringType::kNormal).ToLocalChecked(),
-        v8::String::NewFromUtf8(isolate, response.returnValue.c_str(), v8::NewStringType::kNormal).ToLocalChecked());
+        responseValues[2]);
 
     args.GetReturnValue().Set(returnObj);
+}
+
+static std::vector<v8::Local<v8::Value>> CreateResponseValues(
+    v8::Isolate* isolate,
+    const napa::runtime::Response& response)
+{
+    auto code = v8::Uint32::NewFromUnsigned(isolate, response.code);
+
+    auto errorMessage = v8::String::NewFromUtf8(
+        isolate,
+        response.errorMessage.c_str(),
+        v8::NewStringType::kNormal).ToLocalChecked();
+
+    auto returnValueString = v8::String::NewFromUtf8(
+        isolate,
+        response.returnValue.c_str(),
+        v8::NewStringType::kNormal).ToLocalChecked();
+
+    auto returnValue = v8::JSON::Parse(isolate, returnValueString).ToLocalChecked();
+
+    return { code, errorMessage, returnValue };
 }
