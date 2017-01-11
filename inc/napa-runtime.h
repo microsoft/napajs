@@ -22,7 +22,7 @@ namespace runtime
 
         Response(napa_container_response response) :
             code(response.code),
-            error(NAPA_STRING_REF_TO_STD_STRING(response.error)),
+            errorMessage(NAPA_STRING_REF_TO_STD_STRING(response.error_message)),
             returnValue(NAPA_STRING_REF_TO_STD_STRING(response.return_value))
         {
         }
@@ -31,7 +31,7 @@ namespace runtime
         NapaResponseCode code;
 
         /// <summary>Error message. Empty when response code is success. </summary>
-        std::string error;
+        std::string errorMessage;
 
         /// <summary>Napa return value </summary>
         std::string returnValue;
@@ -45,6 +45,9 @@ namespace runtime
     class Container
     {
     public:
+        
+        /// <summary> Creates a container instance. </summary>
+        Container();
 
         /// <summary> Creates a container instance </summary>
         /// <param name="settings"> A settings string to set conainer specific settings </param>
@@ -82,8 +85,8 @@ namespace runtime
         /// <param name="callback">A callback that is triggered when execution is done</param>
         /// <param name="timeout">Timeout in milliseconds - default is inifinite</param>
         void Run(
-            const std::string& func,
-            const std::vector<std::string>& args,
+            const char* func,
+            const std::vector<NapaStringRef>& args,
             RunCallback callback,
             uint32_t timeout = 0);
 
@@ -92,8 +95,8 @@ namespace runtime
         /// <param name="args">The arguments to the function</param>
         /// <param name="timeout">Timeout in milliseconds - default is inifinite</param>
         Response RunSync(
-            const std::string& func,
-            const std::vector<std::string>& args,
+            const char* func,
+            const std::vector<NapaStringRef>& args,
             uint32_t timeout = 0);
 
     private:
@@ -151,18 +154,10 @@ namespace runtime
 
             completionContext->callback(response);
         }
+    }
 
-        inline std::vector<napa_string_ref> ConvertToNapaRuntimeArgs(const std::vector<std::string>& args)
-        {
-            std::vector<napa_string_ref> res;
-            res.reserve(args.size());
-            for (const auto& arg : args)
-            {
-                res.emplace_back(STD_STRING_TO_NAPA_STRING_REF(arg));
-            }
-
-            return res;
-        }
+    inline Container::Container() : Container("")
+    {
     }
 
     inline Container::Container(const std::string& settings)
@@ -215,37 +210,33 @@ namespace runtime
     }
 
     inline void Container::Run(
-        const std::string& func,
-        const std::vector<std::string>& args,
+        const char* func,
+        const std::vector<NapaStringRef>& args,
         RunCallback callback,
         uint32_t timeout)
     {
-        auto argv = internal::ConvertToNapaRuntimeArgs(args);
-
         auto context = new internal::AsyncCompletionContext<RunCallback>(std::move(callback));
 
         napa_container_run(
             _handle,
-            STD_STRING_TO_NAPA_STRING_REF(func),
-            argv.size(),
-            argv.data(),
+            CREATE_NAPA_STRING_REF(func),
+            args.size(),
+            args.data(),
             internal::CompletionHandler<RunCallback, napa_container_response>,
             context,
             timeout);
     }
 
     inline Response Container::RunSync(
-        const std::string& func,
-        const std::vector<std::string>& args,
+        const char* func,
+        const std::vector<NapaStringRef>& args,
         uint32_t timeout)
     {
-        auto argv = internal::ConvertToNapaRuntimeArgs(args);
-
         napa_container_response response = napa_container_run_sync(
             _handle,
-            STD_STRING_TO_NAPA_STRING_REF(func),
-            argv.size(),
-            argv.data(),
+            CREATE_NAPA_STRING_REF(func),
+            args.size(),
+            args.data(),
             timeout);
 
         return Response(response);
