@@ -8,147 +8,123 @@
 #include <string>
 #include <vector>
 
+namespace napa {
+namespace runtime {
 
-namespace napa
-{
-namespace runtime
-{
-    /// <summary>Response</summary>
-    struct Response
-    {
-        Response() : code(NAPA_RESPONSE_UNDEFINED)
-        {
-        }
+    /// <summary> Response class. </summary>
+    struct Response {
+        Response() : code(NAPA_RESPONSE_UNDEFINED) {}
 
         Response(napa_container_response response) :
             code(response.code),
             errorMessage(NAPA_STRING_REF_TO_STD_STRING(response.error_message)),
-            returnValue(NAPA_STRING_REF_TO_STD_STRING(response.return_value))
-        {
-        }
+            returnValue(NAPA_STRING_REF_TO_STD_STRING(response.return_value)) {}
 
-        /// <summary>Response code </summary>
+        /// <summary> Response code. </summary>
         NapaResponseCode code;
 
-        /// <summary>Error message. Empty when response code is success. </summary>
+        /// <summary> Error message. Empty when response code is success. </summary>
         std::string errorMessage;
 
-        /// <summary>Napa return value </summary>
+        /// <summary> Napa return value. </summary>
         std::string returnValue;
     };
 
-    /// <summary>Response callback signature</summary>
+    /// <summary> Response callback signature. </summary>
     typedef std::function<void(Response)> RunCallback;
     typedef std::function<void(NapaResponseCode)> LoadCallback;
 
-    /// <summary> C++ class wrapper around napa runtime C APIs </summary>
-    class Container
-    {
+    /// <summary> C++ class wrapper around napa runtime C APIs. </summary>
+    class Container {
     public:
         
         /// <summary> Creates a container instance. </summary>
         Container();
 
-        /// <summary> Creates a container instance </summary>
-        /// <param name="settings"> A settings string to set conainer specific settings </param>
+        /// <summary> Creates a container instance. </summary>
+        /// <param name="settings"> A settings string to set conainer specific settings. </param>
         Container(const std::string& settings);
 
-        /// <summary> Deletes the underlying container handle, hence cleaning all container resources </summary>
+        /// <summary> Deletes the underlying container handle, hence cleaning all container resources. </summary>
         ~Container();
 
-        /// <summary> Sets a value in container scope </summary>
-        /// <param name="key"> A unique identifier for the value </param>
-        /// <param name="value"> The value </param>
+        /// <summary> Sets a value in container scope. </summary>
+        /// <param name="key"> A unique identifier for the value. </param>
+        /// <param name="value"> The value. </param>
         NapaResponseCode SetGlobalValue(const std::string& key, void* value);
 
-        /// <summary> Loads a JS file into the container asynchronously </summary>
-        /// <param name="file"> The JS file </param>
-        /// <param name="callback">A callback that is triggered when loading is done</param>
+        /// <summary> Loads a JS file into the container asynchronously. </summary>
+        /// <param name="file"> The JS file. </param>
+        /// <param name="callback"> A callback that is triggered when loading is done. </param>
         void LoadFile(const std::string& file, LoadCallback callback);
 
-        /// <summary> Loads a JS file into the container synchronously </summary>
-        /// <param name="file"> The JS file </param>
+        /// <summary> Loads a JS file into the container synchronously. </summary>
+        /// <param name="file"> The JS file. </param>
         NapaResponseCode LoadFileSync(const std::string& file);
 
-        /// <summary> Loads a JS source into the container asynchronously </summary>
-        /// <param name="source"> The JS source </param>
-        /// <param name="callback">A callback that is triggered when loading is done</param>
+        /// <summary> Loads a JS source into the container asynchronously. </summary>
+        /// <param name="source"> The JS source. </param>
+        /// <param name="callback"> A callback that is triggered when loading is done. </param>
         void Load(const std::string& source, LoadCallback callback);
 
-        /// <summary> Loads a JS source into the container synchronously </summary>
-        /// <param name="source"> The JS source </param>
+        /// <summary> Loads a JS source into the container synchronously. </summary>
+        /// <param name="source"> The JS source. </param>
         NapaResponseCode LoadSync(const std::string& source);
 
-        /// <summary> Runs a pre-loaded JS function asynchronously </summary>
-        /// <param name="func">The name of the function to run</param>
-        /// <param name="args">The arguments to the function</param>
-        /// <param name="callback">A callback that is triggered when execution is done</param>
-        /// <param name="timeout">Timeout in milliseconds - default is inifinite</param>
-        void Run(
-            const char* func,
-            const std::vector<NapaStringRef>& args,
-            RunCallback callback,
-            uint32_t timeout = 0);
+        /// <summary> Runs a pre-loaded JS function asynchronously. </summary>
+        /// <param name="func"> The name of the function to run. </param>
+        /// <param name="args"> The arguments to the function. </param>
+        /// <param name="callback"> A callback that is triggered when execution is done. </param>
+        /// <param name="timeout"> Timeout in milliseconds - default is inifinite. </param>
+        void Run(const char* func, const std::vector<NapaStringRef>& args, RunCallback callback, uint32_t timeout = 0);
 
-        /// <summary> Runs a pre-loaded JS function synchronously </summary>
-        /// <param name="func">The name of the function to run</param>
-        /// <param name="args">The arguments to the function</param>
-        /// <param name="timeout">Timeout in milliseconds - default is inifinite</param>
-        Response RunSync(
-            const char* func,
-            const std::vector<NapaStringRef>& args,
-            uint32_t timeout = 0);
+        /// <summary> Runs a pre-loaded JS function synchronously. </summary>
+        /// <param name="func"> The name of the function to run. </param>
+        /// <param name="args"> The arguments to the function. </param>
+        /// <param name="timeout"> Timeout in milliseconds - default is inifinite. </param>
+        Response RunSync(const char* func, const std::vector<NapaStringRef>& args, uint32_t timeout = 0);
 
     private:
         napa_container_handle _handle;
     };
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// Implementation starts here
+    /// Implementation starts here.
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /// <summary> Initialize napa runtime with global scope settings </summary>
-    inline NapaResponseCode Initialize(const std::string& settings)
-    {
+    /// <summary> Initialize napa runtime with global scope settings. </summary>
+    inline NapaResponseCode Initialize(const std::string& settings) {
         return napa_initialize(STD_STRING_TO_NAPA_STRING_REF(settings));
     }
 
-    /// <summary> Initialize napa runtime using console provided arguments </summary>
-    inline NapaResponseCode InitializeFromConsole(int argc, char* argv[])
-    {
+    /// <summary> Initialize napa runtime using console provided arguments. </summary>
+    inline NapaResponseCode InitializeFromConsole(int argc, char* argv[]) {
         return napa_initialize_from_console(argc, argv);
     }
 
-    /// <summary> Shut down napa runtime </summary>
-    inline NapaResponseCode Shutdown()
-    {
+    /// <summary> Shut down napa runtime. </summary>
+    inline NapaResponseCode Shutdown() {
         return napa_shutdown();
     }
 
-    /// <summary>Helper classes and functions in internal namespace</summary>
-    namespace internal
-    {
+    /// <summary> Helper classes and functions in internal namespace. </summary>
+    namespace internal {
         template <typename CallbackType>
-        struct AsyncCompletionContext
-        {
-            AsyncCompletionContext(CallbackType&& callback)
-                : callback(std::forward<CallbackType>(callback))
-            {
-            }
+        struct AsyncCompletionContext {
+            AsyncCompletionContext(CallbackType&& callback) : callback(std::forward<CallbackType>(callback)) {}
 
-            /// <summary>Non copyable and non movable.</summary>
+            /// <summary> Non copyable and non movable. </summary>
             AsyncCompletionContext(const AsyncCompletionContext&) = delete;
             AsyncCompletionContext& operator=(const AsyncCompletionContext&) = delete;
             AsyncCompletionContext(AsyncCompletionContext&&) = delete;
             AsyncCompletionContext& operator=(AsyncCompletionContext&&) = delete;
 
-            /// <summary>User callback.</summary>
+            /// <summary> User callback. </summary>
             CallbackType callback;
         };
 
         template <typename CallbackType, typename ResponseType>
-        inline void CompletionHandler(ResponseType response, void* context)
-        {
+        inline void CompletionHandler(ResponseType response, void* context) {
             std::unique_ptr<AsyncCompletionContext<CallbackType>> completionContext(
                 reinterpret_cast<AsyncCompletionContext<CallbackType>*>(context));
 
@@ -156,29 +132,23 @@ namespace runtime
         }
     }
 
-    inline Container::Container() : Container("")
-    {
-    }
+    inline Container::Container() : Container("") {}
 
-    inline Container::Container(const std::string& settings)
-    {
+    inline Container::Container(const std::string& settings) {
         _handle = napa_container_create();
 
         napa_container_init(_handle, STD_STRING_TO_NAPA_STRING_REF(settings));
     }
 
-    inline Container::~Container()
-    {
+    inline Container::~Container() {
         napa_container_release(_handle);
     }
 
-    inline NapaResponseCode Container::SetGlobalValue(const std::string& key, void* value)
-    {
+    inline NapaResponseCode Container::SetGlobalValue(const std::string& key, void* value) {
         return napa_container_set_global_value(_handle, STD_STRING_TO_NAPA_STRING_REF(key), value);
     }
 
-    inline void Container::LoadFile(const std::string& file, LoadCallback callback)
-    {
+    inline void Container::LoadFile(const std::string& file, LoadCallback callback) {
         auto context = new internal::AsyncCompletionContext<LoadCallback>(std::move(callback));
 
         napa_container_load_file(
@@ -188,13 +158,11 @@ namespace runtime
             context);
     }
 
-    inline NapaResponseCode Container::LoadFileSync(const std::string& file)
-    {
+    inline NapaResponseCode Container::LoadFileSync(const std::string& file) {
         return napa_container_load_file_sync(_handle, STD_STRING_TO_NAPA_STRING_REF(file));
     }
 
-    inline void Container::Load(const std::string& source, LoadCallback callback)
-    {
+    inline void Container::Load(const std::string& source, LoadCallback callback) {
         auto context = new internal::AsyncCompletionContext<LoadCallback>(std::move(callback));
 
         napa_container_load(
@@ -204,17 +172,14 @@ namespace runtime
             context);
     }
 
-    inline NapaResponseCode Container::LoadSync(const std::string& source)
-    {
+    inline NapaResponseCode Container::LoadSync(const std::string& source) {
         return napa_container_load_sync(_handle, STD_STRING_TO_NAPA_STRING_REF(source));
     }
 
-    inline void Container::Run(
-        const char* func,
-        const std::vector<NapaStringRef>& args,
-        RunCallback callback,
-        uint32_t timeout)
-    {
+    inline void Container::Run(const char* func,
+                               const std::vector<NapaStringRef>& args,
+                               RunCallback callback,
+                               uint32_t timeout) {
         auto context = new internal::AsyncCompletionContext<RunCallback>(std::move(callback));
 
         napa_container_run(
@@ -227,11 +192,9 @@ namespace runtime
             timeout);
     }
 
-    inline Response Container::RunSync(
-        const char* func,
-        const std::vector<NapaStringRef>& args,
-        uint32_t timeout)
-    {
+    inline Response Container::RunSync(const char* func,
+                                       const std::vector<NapaStringRef>& args,
+                                       uint32_t timeout) {
         napa_container_response response = napa_container_run_sync(
             _handle,
             CREATE_NAPA_STRING_REF(func),
@@ -241,7 +204,6 @@ namespace runtime
 
         return Response(response);
     }
-
 }
 }
 

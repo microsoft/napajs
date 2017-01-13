@@ -5,7 +5,7 @@
 #include "stdint.h"
 #include "string.h"
 
-/// <summary>Simple non ownning string. Should only be used for binding.</summary>
+/// <summary> Simple non ownning string. Should only be used for binding. </summary>
 typedef struct {
     const char* data;
     size_t size;
@@ -30,8 +30,10 @@ typedef enum {
 
 #include "napa/response-codes.inc"
 
-} NapaResponseCode;
+} napa_response_code;
 
 #undef NAPA_RESPONSE_CODE_DEF
+
+typedef napa_response_code NapaResponseCode;
 
 #endif // NAPA_COMMON_C_H

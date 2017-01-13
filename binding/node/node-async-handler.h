@@ -8,10 +8,9 @@
 #include <utility>
 
 
-namespace napa
-{
-namespace binding
-{
+namespace napa {
+namespace binding {
+
     /// <summary>
     ///     Helper class to facilitate dispatcing async calls fron node addons.
     ///     The handler stores the provided V8 callback function persistently which enables calling
@@ -19,13 +18,12 @@ namespace binding
     ///     The dispatcing of the V8 callback happend on the node main thread.
     /// </summary>
     template <typename ResponseType>
-    class NodeAsyncHandler
-    {
+    class NodeAsyncHandler {
     public:
 
         typedef std::function<std::vector<v8::Local<v8::Value>>(const ResponseType&)> CallbackArgsGeneratorFunction;
 
-        /// <summary>Non copyable and non movable. </summary>
+        /// <summary> Non copyable and non movable. </summary>
         NodeAsyncHandler(const NodeAsyncHandler&) = delete;
         NodeAsyncHandler& operator=(const NodeAsyncHandler&) = delete;
         NodeAsyncHandler(NodeAsyncHandler&&) = delete;
@@ -42,17 +40,17 @@ namespace binding
             const v8::Local<v8::Function>& callback,
             CallbackArgsGeneratorFunction argsGeneratorFunc);
 
-        /// <summary>Releasing handler resources </summary>
+        /// <summary> Releasing handler resources. </summary>
         static void Release(NodeAsyncHandler<ResponseType>* handler);
 
-        /// <summary>Invoking the stored V8 callback on node main thread. </summary>
+        /// <summary> Invoking the stored V8 callback on node main thread. </summary>
         void DispatchCallback(ResponseType&& response);
 
     private:
 
         NodeAsyncHandler() {}
 
-        // Prevent users from deleting the handler.
+        /// <summary> Prevent users from deleting the handler. </summary>
         ~NodeAsyncHandler() {}
 
         static void AsyncCompletionCallback(uv_async_t* asyncHandle);
@@ -60,17 +58,14 @@ namespace binding
         v8::Isolate* _isolate;
         v8::Persistent<v8::Function> _callback;
         CallbackArgsGeneratorFunction _argsGeneratorFunc;
-        
         uv_async_t _asyncHandle;
         ResponseType _response;
     };
 
     template <typename ResponseType>
-    NodeAsyncHandler<ResponseType>* NodeAsyncHandler<ResponseType>::New(
-        v8::Isolate* isolate,
-        const v8::Local<v8::Function>& callback,
-        CallbackArgsGeneratorFunction argsGeneratorFunc)
-    {
+    NodeAsyncHandler<ResponseType>* NodeAsyncHandler<ResponseType>::New(v8::Isolate* isolate,
+            const v8::Local<v8::Function>& callback,
+            CallbackArgsGeneratorFunction argsGeneratorFunc) {
         auto handler = new NodeAsyncHandler<ResponseType>();
 
         handler->_isolate = isolate;
@@ -92,8 +87,7 @@ namespace binding
     }
 
     template <typename ResponseType>
-    void NodeAsyncHandler<ResponseType>::Release(NodeAsyncHandler<ResponseType>* handler)
-    {
+    void NodeAsyncHandler<ResponseType>::Release(NodeAsyncHandler<ResponseType>* handler) {
         // Free the persistent function callback.
         handler->_callback.Reset();
 
@@ -102,8 +96,7 @@ namespace binding
     }
 
     template <typename ResponseType>
-    void NodeAsyncHandler<ResponseType>::DispatchCallback(ResponseType&& response)
-    {
+    void NodeAsyncHandler<ResponseType>::DispatchCallback(ResponseType&& response) {
         _response = std::forward<ResponseType>(response);
 
         // Defer JS callback to the node main thread.
@@ -111,8 +104,7 @@ namespace binding
     }
 
     template <typename ResponseType>
-    void NodeAsyncHandler<ResponseType>::AsyncCompletionCallback(uv_async_t* asyncHandle)
-    {
+    void NodeAsyncHandler<ResponseType>::AsyncCompletionCallback(uv_async_t* asyncHandle) {
         auto handler = reinterpret_cast<NodeAsyncHandler<ResponseType>*>(asyncHandle->data);
 
         auto isolate = handler->_isolate;
@@ -126,14 +118,13 @@ namespace binding
         // Call the user provided Javascript callback.
         callback->Call(context, context->Global(), static_cast<int>(args.size()), args.data());
 
-        // Cleanup
+        // Cleanup.
         uv_close(reinterpret_cast<uv_handle_t*>(asyncHandle), [](uv_handle_t* asyncHandle) {
             auto handler = reinterpret_cast<NodeAsyncHandler<ResponseType>*>(asyncHandle->data);
 
             Release(handler);
         });
     }
-
 }
 }
 
