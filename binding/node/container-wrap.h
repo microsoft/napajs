@@ -6,21 +6,17 @@
 #include <node_object_wrap.h>
 
 // Forward declare container.
-namespace napa
-{
-    namespace runtime
-    {
-        class Container;
-    }
+namespace napa {
+namespace runtime {
+    class Container;
+}
 }
 
-namespace napa
-{
-namespace binding
-{
-    /// <summary>A node object wrap to expose container APIs to node. </summary>
-    class ContainerWrap : public node::ObjectWrap
-    {
+namespace napa {
+namespace binding {
+
+    /// <summary> A node object wrap to expose container APIs to node. </summary>
+    class ContainerWrap : public node::ObjectWrap {
     public:
         static void Init(v8::Isolate* isolate);
         static void NewInstance(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -40,7 +36,6 @@ namespace binding
         static void Run(const v8::FunctionCallbackInfo<v8::Value>& args);
         static void RunSync(const v8::FunctionCallbackInfo<v8::Value>& args);
     };
-
 }
 }
 

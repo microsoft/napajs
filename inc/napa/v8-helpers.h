@@ -7,8 +7,7 @@
 
 
 #define CHECK_ARG_COMMON(isolate, expression, message, result, function, line)                                \
-if (!(expression))                                                                                            \
-{                                                                                                             \
+if (!(expression)) {                                                                                          \
     std::stringstream temp;                                                                                   \
     temp << function << ":" << line << " -- " << message;                                                     \
     isolate->ThrowException(v8::Exception::TypeError(                                                         \
@@ -22,18 +21,17 @@ if (!(expression))                                                              
 #define CHECK_ARG_WITH_RETURN(isolate, expression, message, result)                     \
     CHECK_ARG_COMMON(isolate, expression, message, result, __FUNCTION__, __LINE__)
 
-namespace napa
-{
-namespace v8_helpers
-{
+namespace napa {
+namespace v8_helpers {
+
     /// <summary> Converts a V8 string object to a movable Utf8String which supports an allocator. </summary>
     template <typename Alloc>
     class Utf8StringWithAllocator {
     public:
         Utf8StringWithAllocator(const v8::Local<v8::Value>& val, const Alloc& alloc = Alloc()) :
-            _alloc(alloc),
-            _data(nullptr),
-            _length(0) {
+                                _alloc(alloc),
+                                _data(nullptr),
+                                _length(0) {
             if (val.IsEmpty()) {
                 return;
             }
@@ -51,8 +49,7 @@ namespace v8_helpers
         }
 
         ~Utf8StringWithAllocator() {
-            if (_data != nullptr)
-            {
+            if (_data != nullptr) {
                 _alloc.deallocate(_data, _length);
             }
         }
@@ -71,9 +68,9 @@ namespace v8_helpers
 
         /// <summary> Move constructor. </summary>
         Utf8StringWithAllocator(Utf8StringWithAllocator&& rhs) :
-            _data(rhs._data),
-            _length(rhs._length),
-            _alloc(std::move(rhs._alloc)) {
+                                _data(rhs._data),
+                                _length(rhs._length),
+                                _alloc(std::move(rhs._alloc)) {
             rhs._data = nullptr;
             rhs._length = 0;
         }
@@ -99,41 +96,34 @@ namespace v8_helpers
     typedef Utf8StringWithAllocator<std::allocator<char>> Utf8String;
 
     template <typename T>
-    inline T V8ValueTo(const v8::Local<v8::Value>& value)
-    {
+    inline T V8ValueTo(const v8::Local<v8::Value>& value) {
         static_assert(sizeof(T) == -1, "No specilization exists for this type");
     }
 
     template <>
-    inline std::string V8ValueTo(const v8::Local<v8::Value>& value)
-    {
+    inline std::string V8ValueTo(const v8::Local<v8::Value>& value) {
         v8::String::Utf8Value utf8Value(value);
         return *utf8Value;
     }
 
     template <>
-    inline Utf8String V8ValueTo(const v8::Local<v8::Value>& value)
-    {
+    inline Utf8String V8ValueTo(const v8::Local<v8::Value>& value) {
         return Utf8String(value);
     }
 
     template <typename ValueType>
-    inline std::unordered_map<std::string, ValueType> V8ObjectToMap(
-        v8::Isolate* isolate,
-        const v8::Local<v8::Object>& obj)
-    {
+    inline std::unordered_map<std::string, ValueType> V8ObjectToMap(v8::Isolate* isolate,
+                                                                    const v8::Local<v8::Object>& obj) {
         auto context = isolate->GetCurrentContext();
 
         std::unordered_map<std::string, ValueType> res;
 
         auto maybeProps = obj->GetOwnPropertyNames(context);
-        if (!maybeProps.IsEmpty())
-        {
+        if (!maybeProps.IsEmpty()) {
             auto props = maybeProps.ToLocalChecked();
             res.reserve(props->Length());
 
-            for (uint32_t i = 0; i < props->Length(); i++)
-            {
+            for (uint32_t i = 0; i < props->Length(); i++) {
                 auto key = props->Get(context, i).ToLocalChecked();
                 auto value = obj->Get(context, key).ToLocalChecked();
 
@@ -147,26 +137,21 @@ namespace v8_helpers
     }
 
     template <typename ValueType>
-    inline std::vector<ValueType> V8ArrayToVector(
-        v8::Isolate* isolate,
-        const v8::Local<v8::Array>& array)
-    {
+    inline std::vector<ValueType> V8ArrayToVector(v8::Isolate* isolate, const v8::Local<v8::Array>& array) {
         auto context = isolate->GetCurrentContext();
 
         std::vector<ValueType> res;
         res.reserve(array->Length());
 
-        for (uint32_t i = 0; i < array->Length(); i++)
-        {
+        for (uint32_t i = 0; i < array->Length(); i++) {
             res.emplace_back(V8ValueTo<ValueType>(array->Get(context, i).ToLocalChecked()));
         }
 
         return res;
     }
 
-    // TODO: Use v8::JSON::Stringify when available
-    inline v8::Local<v8::Value> Stringify(v8::Isolate* isolate, const v8::Local<v8::Object>& obj)
-    {
+    // TODO @asib: Use v8::JSON::Stringify when available
+    inline v8::Local<v8::Value> Stringify(v8::Isolate* isolate, const v8::Local<v8::Object>& obj) {
         auto context = isolate->GetCurrentContext();
         v8::EscapableHandleScope scope(isolate);
 
@@ -185,6 +170,5 @@ namespace v8_helpers
     }
 }
 }
-
 
 #endif

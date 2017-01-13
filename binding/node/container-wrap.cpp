@@ -1,4 +1,4 @@
-// Node uses deprecated V8 APIs
+// Node uses deprecated V8 APIs.
 #pragma warning(push)
 #pragma warning(disable: 4996)
 #include <node.h>
@@ -23,20 +23,17 @@ static std::vector<v8::Local<v8::Value>> CreateResponseValues(
 v8::Persistent<v8::Function> ContainerWrap::_constructor;
 
 
-ContainerWrap::ContainerWrap(std::unique_ptr<napa::runtime::Container> container) :
-    _container(std::move(container))
-{
-}
+ContainerWrap::ContainerWrap(std::unique_ptr<napa::runtime::Container> container) : 
+    _container(std::move(container)) {}
 
-void ContainerWrap::Init(v8::Isolate* isolate)
-{
-    // Prepare constructor template
+void ContainerWrap::Init(v8::Isolate* isolate) {
+    // Prepare constructor template.
     v8::Local<v8::FunctionTemplate> functionTemplate = v8::FunctionTemplate::New(isolate, NewCallback);
     functionTemplate->SetClassName(
         v8::String::NewFromUtf8(isolate, "ContainerWrap", v8::NewStringType::kNormal).ToLocalChecked());
     functionTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 
-    // Prototype
+    // Prototypes.
     NODE_SET_PROTOTYPE_METHOD(functionTemplate, "load", Load);
     NODE_SET_PROTOTYPE_METHOD(functionTemplate, "loadSync", LoadSync);
     NODE_SET_PROTOTYPE_METHOD(functionTemplate, "loadFile", LoadFile);
@@ -44,19 +41,17 @@ void ContainerWrap::Init(v8::Isolate* isolate)
     NODE_SET_PROTOTYPE_METHOD(functionTemplate, "run", Run);
     NODE_SET_PROTOTYPE_METHOD(functionTemplate, "runSync", RunSync);
 
-    // Set constructor method
+    // Set constructor method.
     _constructor.Reset(isolate, functionTemplate->GetFunction(isolate->GetCurrentContext()).ToLocalChecked());
 }
 
-void ContainerWrap::NewInstance(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
+void ContainerWrap::NewInstance(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = args.GetIsolate();
 
     int argc = args.Length();
     std::vector<v8::Local<v8::Value>> argv;
     argv.reserve(argc);
-    for (int i = 0; i < argc; ++i)
-    {
+    for (int i = 0; i < argc; ++i) {
         argv.emplace_back(args[i]);
     }
 
@@ -66,28 +61,24 @@ void ContainerWrap::NewInstance(const v8::FunctionCallbackInfo<v8::Value>& args)
         argc,
         argv.data());
 
-    if (!instance.IsEmpty())
-    {
+    if (!instance.IsEmpty()) {
         args.GetReturnValue().Set(instance.ToLocalChecked());
     }
 }
 
-void ContainerWrap::NewCallback(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
+void ContainerWrap::NewCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = args.GetIsolate();
     auto context = isolate->GetCurrentContext();
 
     std::stringstream ss;
-    if (args.Length() > 0)
-    {
+    if (args.Length() > 0) {
         CHECK_ARG(isolate, args[0]->IsObject(), "first argument to createContainer must be an object");
 
         v8::Local<v8::Object> settingsObj = args[0]->ToObject(context).ToLocalChecked();
 
         auto settingsMap = napa::v8_helpers::V8ObjectToMap<std::string>(isolate, settingsObj);
 
-        for (const auto& kv : settingsMap)
-        {
+        for (const auto& kv : settingsMap) {
             ss << " --" << kv.first << " " << kv.second;
         }
     }
@@ -98,8 +89,7 @@ void ContainerWrap::NewCallback(const v8::FunctionCallbackInfo<v8::Value>& args)
     args.GetReturnValue().Set(args.This());
 }
 
-void ContainerWrap::Load(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
+void ContainerWrap::Load(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = args.GetIsolate();
 
     CHECK_ARG(isolate, args[0]->IsString(), "first parameter to container.load must be the javascript source");
@@ -124,8 +114,7 @@ void ContainerWrap::Load(const v8::FunctionCallbackInfo<v8::Value>& args)
     });
 }
 
-void ContainerWrap::LoadSync(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
+void ContainerWrap::LoadSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = args.GetIsolate();
 
     CHECK_ARG(isolate, args[0]->IsString(), "first parameter to container.loadSync must be the javascript source");
@@ -136,8 +125,7 @@ void ContainerWrap::LoadSync(const v8::FunctionCallbackInfo<v8::Value>& args)
     wrap->_container->LoadSync(*source);
 }
 
-void ContainerWrap::LoadFile(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
+void ContainerWrap::LoadFile(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = args.GetIsolate();
 
     CHECK_ARG(isolate, args[0]->IsString(), "first parameter to container.loadFile must be the javascript file");
@@ -162,8 +150,7 @@ void ContainerWrap::LoadFile(const v8::FunctionCallbackInfo<v8::Value>& args)
     });
 }
 
-void ContainerWrap::LoadFileSync(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
+void ContainerWrap::LoadFileSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = args.GetIsolate();
 
     CHECK_ARG(isolate, args[0]->IsString(), "first parameter to container.loadFileSync must be the javascript file");
@@ -174,8 +161,7 @@ void ContainerWrap::LoadFileSync(const v8::FunctionCallbackInfo<v8::Value>& args
     wrap->_container->LoadFileSync(*file);
 }
 
-void ContainerWrap::Run(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
+void ContainerWrap::Run(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = args.GetIsolate();
     auto context = isolate->GetCurrentContext();
 
@@ -183,8 +169,7 @@ void ContainerWrap::Run(const v8::FunctionCallbackInfo<v8::Value>& args)
     CHECK_ARG(isolate, args[1]->IsArray(), "second parameter to container.run must be the arguments array");
     CHECK_ARG(isolate, args[2]->IsFunction(), "third parameter to container.run must be the callback");
 
-    if (args.Length() > 3)
-    {
+    if (args.Length() > 3) {
         CHECK_ARG(isolate, args[3]->IsUint32(), "forth parameter to container.run must be the timeout");
     }
 
@@ -196,8 +181,7 @@ void ContainerWrap::Run(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     std::vector<NapaStringRef> runArgs;
     runArgs.reserve(runArgValues.size());
-    for (const auto& val : runArgValues)
-    {
+    for (const auto& val : runArgValues) {
         runArgs.emplace_back(CREATE_NAPA_STRING_REF_WITH_SIZE(val.Data(), val.Length()));
     }
 
@@ -211,16 +195,13 @@ void ContainerWrap::Run(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     auto wrap = ObjectWrap::Unwrap<ContainerWrap>(args.Holder());
 
-    if (args.Length() > 3)
-    {
+    if (args.Length() > 3) {
         wrap->_container->Run(
             *func,
             runArgs,
             [handler](napa::runtime::Response response) { handler->DispatchCallback(std::move(response)); },
             args[3]->Uint32Value(context).FromJust()); // timeout
-    }
-    else
-    {
+    } else {
         wrap->_container->Run(
             *func,
             runArgs,
@@ -228,16 +209,14 @@ void ContainerWrap::Run(const v8::FunctionCallbackInfo<v8::Value>& args)
     }
 }
 
-void ContainerWrap::RunSync(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
+void ContainerWrap::RunSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = args.GetIsolate();
     auto context = isolate->GetCurrentContext();
 
     CHECK_ARG(isolate, args[0]->IsString(), "first parameter to container.runSync must be the function name");
     CHECK_ARG(isolate, args[1]->IsArray(), "second parameter to container.runSync must be the arguments array");
 
-    if (args.Length() > 2)
-    {
+    if (args.Length() > 2) {
         CHECK_ARG(isolate, args[2]->IsUint32(), "third parameter to container.runSync must be the timeout");
     }
 
@@ -249,21 +228,17 @@ void ContainerWrap::RunSync(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     std::vector<NapaStringRef> runArgs;
     runArgs.reserve(runArgValues.size());
-    for (const auto& val : runArgValues)
-    {
+    for (const auto& val : runArgValues) {
         runArgs.emplace_back(CREATE_NAPA_STRING_REF_WITH_SIZE(val.Data(), val.Length()));
     }
 
     auto wrap = ObjectWrap::Unwrap<ContainerWrap>(args.Holder());
 
     napa::runtime::Response response;
-    if (args.Length() > 2)
-    {
-        // Call with provided timeout
+    if (args.Length() > 2) {
+        // Call with provided timeout.
         response = wrap->_container->RunSync(*func, runArgs, args[2]->Uint32Value(context).FromJust());
-    }
-    else
-    {
+    } else {
         response = wrap->_container->RunSync(*func, runArgs);
     }
 
@@ -289,10 +264,8 @@ void ContainerWrap::RunSync(const v8::FunctionCallbackInfo<v8::Value>& args)
     args.GetReturnValue().Set(returnObj);
 }
 
-static std::vector<v8::Local<v8::Value>> CreateResponseValues(
-    v8::Isolate* isolate,
-    const napa::runtime::Response& response)
-{
+static std::vector<v8::Local<v8::Value>> CreateResponseValues(v8::Isolate* isolate,
+                                                               const napa::runtime::Response& response) {
     auto code = v8::Uint32::NewFromUnsigned(isolate, response.code);
 
     auto errorMessage = v8::String::NewFromUtf8(
