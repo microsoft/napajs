@@ -1,0 +1,131 @@
+#include "catch.hpp"
+
+#include "scheduler/scheduler.h"
+
+#include <atomic>
+#include <future>
+
+using namespace napa::runtime::internal;
+
+
+class TestTask : public Task {
+public:
+    TestTask(std::function<void()> callback = []() {}) : 
+        numberOfExecutions(0),
+        lastExecutedCoreId(99),
+        _callback(std::move(callback)) {}
+
+    void SetCurrentCoreId(CoreId id) {
+        lastExecutedCoreId = id;
+    }
+
+    virtual void Execute() override
+    {
+        numberOfExecutions++;
+        _callback();
+    }
+
+    std::atomic<uint32_t> numberOfExecutions;
+    std::atomic<CoreId> lastExecutedCoreId;
+
+private:
+    std::function<void()> _callback;
+};
+
+
+template <uint32_t I>
+class TestCore {
+public:
+
+    TestCore(CoreId id, const Settings &settings) : _id(id) {
+        numberOfCores++;
+    }
+
+    void Schedule(std::shared_ptr<Task> task) {
+        auto testTask = std::dynamic_pointer_cast<TestTask>(task);
+        testTask->SetCurrentCoreId(_id);
+
+        _futures.emplace_back(std::async(std::launch::async, [task]() {
+            task->Execute();
+        }));
+    }
+
+    void SubscribeForIdleNotifications(std::function<void(CoreId)> callback) {}
+
+    static uint32_t numberOfCores;
+
+private:
+    CoreId _id;
+    std::vector<std::future<void>> _futures;
+};
+
+template <uint32_t I>
+uint32_t TestCore<I>::numberOfCores = 0;
+
+
+TEST_CASE("scheduler creates correct number of cores", "[scheduler]") {
+    auto settings = Settings();
+    settings.Parse("-numberOfCores 3");
+
+    auto scehduler = SchedulerImpl<TestCore<1>>(settings);
+
+    REQUIRE(TestCore<1>::numberOfCores == 3);
+}
+
+TEST_CASE("scheduler assigns tasks correctly", "[scheduler]") {
+    auto settings = Settings();
+    settings.Parse("-numberOfCores 3");
+
+    auto scehduler = std::make_unique<SchedulerImpl<TestCore<2>>>(settings);
+    auto task = std::make_shared<TestTask>();
+
+    SECTION("schedules on exactly one core") {
+        scehduler->Schedule(task);
+        scehduler = nullptr; // force draining all scheduled tasks
+
+        REQUIRE(task->numberOfExecutions == 1);
+    }
+
+    SECTION("schedule on a specific core") {
+        scehduler->ScheduleOnCore(2, task);
+        scehduler = nullptr; // force draining all scheduled tasks
+
+        REQUIRE(task->numberOfExecutions == 1);
+        REQUIRE(task->lastExecutedCoreId == 2);
+    }
+
+    SECTION("schedule on all cores") {
+        scehduler->ScheduleOnAllCores(task);
+        scehduler = nullptr; // force draining all scheduled tasks
+
+        REQUIRE(task->numberOfExecutions == 3);
+    }
+}
+
+TEST_CASE("scheduler distributes and schedules all tasks", "[scheduler]") {
+    auto settings = Settings();
+    settings.Parse("-numberOfCores 4");
+
+    auto scehduler = std::make_unique<SchedulerImpl<TestCore<3>>>(settings);
+
+    std::vector<std::shared_ptr<TestTask>> tasks;
+    for (size_t i = 0; i < 1000; i++) {
+        auto task = std::make_shared<TestTask>();
+        tasks.push_back(task);
+        scehduler->Schedule(task);
+    }
+
+    scehduler = nullptr; // force draining all scheduled tasks
+
+    std::vector<bool> scheduledCoresFlags = { false, false, false, false };
+    for (size_t i = 0; i < 1000; i++) {
+        // Make sure that each task was executed once
+        REQUIRE(tasks[i]->numberOfExecutions == 1);
+        scheduledCoresFlags[tasks[i]->lastExecutedCoreId] = true;
+    }
+
+    // Make sure that all cores were participating
+    for (auto flag: scheduledCoresFlags) {
+        REQUIRE(flag);
+    }
+}
