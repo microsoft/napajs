@@ -26,16 +26,16 @@ namespace internal {
 
         /// <summary> Schedules the task on a single core. </summary>
         /// <param name="task"> Task to schedule. </param>
-        void Schedule(std::unique_ptr<Task> task);
+        void Schedule(std::shared_ptr<Task> task);
 
         /// <summary> Schedules the task on a specific core. </summary>
         /// <param name="coreId"> The id of the core. </param>
         /// <param name="task"> Task to schedule. </param>
-        void ScheduleOnCore(CoreId coreId, std::unique_ptr<Task> task);
+        void ScheduleOnCore(CoreId coreId, std::shared_ptr<Task> task);
 
         /// <summary> Schedules the task on all cores. </summary>
         /// <param name="task"> Task to schedule. </param>
-        void ScheduleOnAllCores(std::unique_ptr<Task> task);
+        void ScheduleOnAllCores(std::shared_ptr<Task> task);
 
     private:
 
@@ -43,7 +43,7 @@ namespace internal {
         std::vector<CoreType> _cores;
 
         /// <summary> New tasks that weren't assigned to a specific core. </summary>
-        std::queue<std::unique_ptr<Task>> _nonScheduledTasks;
+        std::queue<std::shared_ptr<Task>> _nonScheduledTasks;
 
         /// <summary> List of idle cores, used when assigning non scheduled tasks. </summary>
         std::list<CoreId> _idleCores;
@@ -63,17 +63,17 @@ namespace internal {
     }
 
     template <typename CoreType>
-    void SchedulerImpl<CoreType>::Schedule(std::unique_ptr<Task> task) {
+    void SchedulerImpl<CoreType>::Schedule(std::shared_ptr<Task> task) {
         // TODO @asib: add implementation
     }
 
     template <typename CoreType>
-    void SchedulerImpl<CoreType>::ScheduleOnCore(CoreId coreId, std::unique_ptr<Task> task) {
+    void SchedulerImpl<CoreType>::ScheduleOnCore(CoreId coreId, std::shared_ptr<Task> task) {
         // TODO @asib: add implementation
     }
 
     template <typename CoreType>
-    void SchedulerImpl<CoreType>::ScheduleOnAllCores(std::unique_ptr<Task> task) {
+    void SchedulerImpl<CoreType>::ScheduleOnAllCores(std::shared_ptr<Task> task) {
         // TODO @asib: add implementation
     }
 

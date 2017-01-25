@@ -13,36 +13,25 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.props" />
   <ItemDefinitionGroup>
     <ClCompile>
       <DisableSpecificWarnings>4100</DisableSpecificWarnings>
-      <PreprocessorDefinitions>NAPA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories>.\scheduler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories>..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories>..\third-party;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\third-party\catch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="container.cpp" />
-    <ClCompile Include="runtime.cpp" />
-    <ClCompile Include="settings.cpp" />
-    <ClCompile Include="scheduler\core.cpp" />
-    <ClCompile Include="scheduler\task-decorators.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <Binplace Include="$(OutputPath)\$(TargetFileName)">
-      <DestinationFolder>$(NapaVanillaBinplacePath)</DestinationFolder>
-    </Binplace>
-  </ItemGroup>
-  <Import Project="$(PACKAGESROOT)\V8.Library\exports.props" />
+  <Import Project="test-list.proj" />
+  <Import Project="tdd-list.proj" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
