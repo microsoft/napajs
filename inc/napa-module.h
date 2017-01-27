@@ -53,7 +53,7 @@
 #define NAPA_DECLARE_PERSISTENT_CONSTRUCTOR
 #else
 #define NAPA_DECLARE_PERSISTENT_CONSTRUCTOR \
-    static v8::Persistent<v8::Function> s_constructor;
+    static v8::Persistent<v8::Function> _constructor;
 #endif
 
 /// <summary> It defines the persistent constructor. <summary>
@@ -62,7 +62,7 @@
 #define NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(Class)
 #else
 #define NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(Class) \
-    v8::Persistent<v8::Function> Class::s_constructor;
+    v8::Persistent<v8::Function> Class::_constructor;
 #endif
 
 /// <summary> It defines the template class's persistent constructor. <summary>
@@ -72,7 +72,7 @@
 #else
 #define NAPA_DEFINE_TEMPLATE_PERSISTENT_CONSTRUCTOR(Class) \
     template <typename T> \
-    v8::Persistent<v8::Function> Class<T>::s_constructor;
+    v8::Persistent<v8::Function> Class<T>::_constructor;
 #endif
 
 /// <summary> It sets the persistent constructor at the current V8 isolate. </summary>
@@ -81,7 +81,7 @@
     napa::module::SetPersistentConstructor(name, function);
 #else
 #define NAPA_SET_PERSISTENT_CONSTRUCTOR(name, function) \
-    s_constructor.Reset(v8::Isolate::GetCurrent(), function);
+    _constructor.Reset(v8::Isolate::GetCurrent(), function);
 #endif
 
 /// <summary> It gets the given persistent constructor from the current V8 isolate. </summary>
@@ -91,7 +91,7 @@
     napa::module::GetPersistentConstructor(name);
 #else
 #define NAPA_GET_PERSISTENT_CONSTRUCTOR(name) \
-    v8::Local<v8::Function>::New(v8::Isolate::GetCurrent(), s_constructor);
+    v8::Local<v8::Function>::New(v8::Isolate::GetCurrent(), _constructor);
 #endif
 
 #endif // NAPA_MODULE_H
