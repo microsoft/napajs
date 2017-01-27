@@ -32,12 +32,26 @@ NAPA_MODULE(addon, Init)
 * *NAPA_SET_METHOD* is equivalent to *NODE_SET_METHOD*. This module will have *hello()* function.
 * *NAPA_MODULE* is equivalent to *NODE_MODULE*, which exports an initialization function.
 
-## Build
+## Typescript
+It's recommended that typescript or typescript definition is provided to let the user know the APIs without
+ the source codes and develop Typescript project easily.
+### hello-world.ts
+```ts
+var addon = require('../bin/addon');
+
+export function hello(): string {
+    return addon.hello();
+}
+```
+### hello-world.d.ts
+```d.ts
+export declare function hello(): string;
+```
 
 ## Mocha test
 ```js
 var assert = require('assert');
-var helloWorld = require('./hello-world');
+var helloWorld = require('hello-world');
 
 describe('Test suite for hello-word', function() {
     it('prints the string "world"', function() {
