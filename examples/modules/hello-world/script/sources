@@ -1,0 +1,23 @@
+!INCLUDE $(INETROOT)\build\paths.all
+!INCLUDE $(INETROOT)\build\sources.all
+
+TARGETNAME=none
+TARGETTYPE=NOTARGET
+
+SOURCES=
+
+NTTARGETFILE2 = \
+    BuildScripts \
+    CreateNpmPackage \
+
+QCUSTOMPROJECTREFERENCE = \
+    $(QCUSTOMPROJECTREFERENCE) \
+    $(INETROOT)\private\napa\vanilla\examples\modules\hello-world\napa\addon.vcxproj \
+    $(INETROOT)\private\napa\vanilla\examples\modules\hello-world\node\addon.vcxproj \
+
+CUSTOMINPUT = $(CUSTOMINPUT) \
+    src\hello-world.ts \
+    tsconfig.json \
+    $(INETROOT)\private\napa\build\codegen\** \
+    $(INETROOT)\private\napa\build\@types\** \
+    $(INETROOT)\private\napa\build\typescript\** \
