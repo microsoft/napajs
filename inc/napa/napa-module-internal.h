@@ -9,7 +9,9 @@
 #include "napa-module-export.h"
 
 #include <array>
+#include <tuple>
 #include <unordered_map>
+#include <utility>
 #include <v8.h>
 
 namespace napa {
@@ -21,7 +23,7 @@ namespace module {
     /// <summary> Variable name to export for module registration. </summary>
     static const char* MODULE_INFO_EXPORT = "_moduleInfo";
 
-    /// <summary> Function pointer to initialize a module. It's called after addon dll is loaded. </summary>
+    /// <summary> Function pointer to initialize a module. It's called after a module is loaded. </summary>
     typedef void(*ModuleInitializer)(v8::Handle<v8::Object> exports,
                                      v8::Handle<v8::Value> module);
 
@@ -125,9 +127,9 @@ namespace module {
 
         auto functionName = v8::String::NewFromUtf8(isolate, name);
         function->SetName(functionName);
-	}
+    }
 
-	#define NAPA_REGISTER_MODULE(name, function) \
+    #define NAPA_REGISTER_MODULE(name, function) \
         extern "C" { \
             _declspec(dllexport) napa::module::ModuleInfo _moduleInfo = { \
                 napa::module::MODULE_VERSION, \
@@ -137,6 +139,8 @@ namespace module {
         }
 
     /// <summary> It sets the persistent constructor at the current V8 isolate. </summary>
+    /// <param name="name"> Unique constructor name. It's recommended to use the same name as module. </param>
+    /// <param name="constructor"> V8 persistent function to constructor V8 object. </param>
     inline void SetPersistentConstructor(const char* name,
                                          v8::Local<v8::Function> constructor) {
         auto isolate = v8::Isolate::GetCurrent();
@@ -149,28 +153,30 @@ namespace module {
             IsolateData::Set(IsolateDataId::CONSTRUCTOR, constructorInfo);
         }
 
-        PersistentConstructor persistentConstructor(isolate, constructor);
-        constructorInfo->constructorMap.emplace(name, persistentConstructor);
+        constructorInfo->constructorMap.emplace(std::piecewise_construct,
+                                                std::forward_as_tuple(name),
+                                                std::forward_as_tuple(isolate, constructor));
     }
 
     /// <summary> It gets the given persistent constructor from the current V8 isolate. </summary>
+    /// <param name="name"> Unique constructor name given at SetPersistentConstructor() call. </param>
     /// <returns> V8 local function object. </returns>
     inline v8::Local<v8::Function> GetPersistentConstructor(const char* name) {
         auto isolate = v8::Isolate::GetCurrent();
         v8::EscapableHandleScope scope(isolate);
 
-        ConstructorInfo* constructorInfo =
+        auto constructorInfo =
             reinterpret_cast<ConstructorInfo*>(IsolateData::Get(IsolateDataId::CONSTRUCTOR));
         if (constructorInfo == nullptr) {
             return scope.Escape(v8::Local<v8::Function>());
+        }
+
+        auto iter = constructorInfo->constructorMap.find(name);
+        if (iter != constructorInfo->constructorMap.end()) {
+            auto constructor = v8::Local<v8::Function>::New(isolate, iter->second);
+            return scope.Escape(constructor);
         } else {
-            auto iter = constructorInfo->constructorMap.find(name);
-            if (iter != constructorInfo->constructorMap.end()) {
-                auto constructor = v8::Local<v8::Function>::New(isolate, iter->second);
-                return scope.Escape(constructor);
-            } else {
-                return scope.Escape(v8::Local<v8::Function>());
-            }
+            return scope.Escape(v8::Local<v8::Function>());
         }
     }
 
