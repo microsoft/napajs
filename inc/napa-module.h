@@ -1,17 +1,22 @@
 #ifndef NAPA_MODULE_H
 #define NAPA_MODULE_H
 
+// Suppress 4100 warings.
+#pragma warning(push)
+#pragma warning(disable: 4100)
+
 #ifdef NAPA_MODULE_EXTENSION
 #include "napa/napa-module-internal.h"
 #include "napa/napa-module-node-compat.h"
 #include "napa/object-wrap.h"
-#include <v8.h>
 #else
 #include <node.h>
 #include <node_object_wrap.h>
 #endif
 
 #include "napa/v8-helpers.h"
+
+#pragma warning(pop)
 
 /// <summary> It binds the method name with V8 function object. </summary>
 #ifdef NAPA_MODULE_EXTENSION
