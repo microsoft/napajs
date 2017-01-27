@@ -2,7 +2,7 @@
 #define NAPA_CORE_H
 
 #include "task.h"
-#include "settings.h"
+#include "settings/settings.h"
 
 #include <functional>
 #include <memory>

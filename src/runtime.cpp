@@ -1,20 +1,33 @@
 #include "napa-runtime-c.h"
 
 #include "container.h"
+#include "settings/settings-parser.h"
 
 #include <thread>
 
 #include <iostream>
 
+using namespace napa::runtime;
+
+static internal::Settings _globalSettings;
+
 napa_container_handle napa_container_create() {
     std::cout << "napa_container_create()" << std::endl;
 
-    return reinterpret_cast<napa_container_handle>(new napa::runtime::internal::Container());
+    return reinterpret_cast<napa_container_handle>(new internal::Container());
 }
 
 napa_response_code napa_container_init(napa_container_handle handle, napa_string_ref settings) {
-    std::cout << "napa_container_init()" << std::endl;
-    std::cout << "\tsettings: " << settings.data << std::endl;
+    // Container settings are based on global settings.
+    auto containerSettings = std::make_unique<internal::Settings>(_globalSettings);
+
+    if (internal::settings_parser::ParseFromString(NAPA_STRING_REF_TO_STD_STRING(settings), *containerSettings)) {
+        return NAPA_RESPONSE_SETTINGS_PARSER_ERROR;
+    }
+
+    auto container = reinterpret_cast<internal::Container*>(handle);
+
+    container->Initialize(std::move(containerSettings));
 
     return NAPA_RESPONSE_SUCCESS;
 }
@@ -129,6 +142,10 @@ napa_response_code napa_initialize(napa_string_ref settings) {
     std::cout << "napa_initialize()" << std::endl;
     std::cout << "\tsettings: " << settings.data << std::endl;
 
+    if (internal::settings_parser::ParseFromString(NAPA_STRING_REF_TO_STD_STRING(settings), _globalSettings)) {
+        return NAPA_RESPONSE_SETTINGS_PARSER_ERROR;
+    }
+
     return NAPA_RESPONSE_SUCCESS;
 }
 
@@ -136,8 +153,8 @@ napa_response_code napa_initialize_from_console(int argc, char* argv[]) {
     std::cout << "napa_initialize_from_console()" << std::endl;
     std::cout << "\targc: " << argc << std::endl;
 
-    for (int i = 0; i < argc; i++) {
-        std::cout << "\t\t[" << i << "] " << argv[i] << std::endl;
+    if (internal::settings_parser::ParseFromConsole(argc, argv, _globalSettings)) {
+        return NAPA_RESPONSE_SETTINGS_PARSER_ERROR;
     }
 
     return NAPA_RESPONSE_SUCCESS;

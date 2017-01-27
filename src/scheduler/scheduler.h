@@ -2,7 +2,7 @@
 #define NAPA_SCHEDULER_H
 
 #include "core.h"
-#include "settings.h"
+#include "settings/settings.h"
 #include "task.h"
 #include "simple-thread-pool.h"
 
