@@ -1,6 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <DisableSpecificWarnings>4100;4996;4459</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\third-party\catch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
+  <!-- Product code that is tested and needs to compile -->
+  <ItemGroup>
+    <ClCompile Include="$(NapaVanillaRoot)\src\settings\settings-parser.cpp" />
+  </ItemGroup>
+
+  <!-- Test code -->
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)\example\example.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\settings\parser-tests.cpp" />
   </ItemGroup>
+  
+  <!-- TODO @asib: Need a solution for dependencies that do not rely on pacman -->
+  <Import Project="$(PACKAGESROOT)\Boost.Library\exports_program_options.props" />
 </Project>

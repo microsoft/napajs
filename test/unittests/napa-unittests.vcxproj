@@ -21,17 +21,11 @@
     <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.props" />
-  <ItemDefinitionGroup>
-    <ClCompile>
-      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\third-party\catch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
-  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="test-list.proj" />
   <Import Project="tdd-list.proj" />
+  
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

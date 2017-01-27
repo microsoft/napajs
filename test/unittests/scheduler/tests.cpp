@@ -64,17 +64,17 @@ uint32_t TestCore<I>::numberOfCores = 0;
 
 
 TEST_CASE("scheduler creates correct number of cores", "[scheduler]") {
-    auto settings = Settings();
-    settings.Parse("-numberOfCores 3");
+    Settings settings;
+    settings.cores = 3;
 
     auto scehduler = SchedulerImpl<TestCore<1>>(settings);
 
-    REQUIRE(TestCore<1>::numberOfCores == 3);
+    REQUIRE(TestCore<1>::numberOfCores == settings.cores);
 }
 
 TEST_CASE("scheduler assigns tasks correctly", "[scheduler]") {
-    auto settings = Settings();
-    settings.Parse("-numberOfCores 3");
+    Settings settings;
+    settings.cores = 3;
 
     auto scehduler = std::make_unique<SchedulerImpl<TestCore<2>>>(settings);
     auto task = std::make_shared<TestTask>();
@@ -98,13 +98,13 @@ TEST_CASE("scheduler assigns tasks correctly", "[scheduler]") {
         scehduler->ScheduleOnAllCores(task);
         scehduler = nullptr; // force draining all scheduled tasks
 
-        REQUIRE(task->numberOfExecutions == 3);
+        REQUIRE(task->numberOfExecutions == settings.cores);
     }
 }
 
 TEST_CASE("scheduler distributes and schedules all tasks", "[scheduler]") {
-    auto settings = Settings();
-    settings.Parse("-numberOfCores 4");
+    Settings settings;
+    settings.cores = 4;
 
     auto scehduler = std::make_unique<SchedulerImpl<TestCore<3>>>(settings);
 

@@ -23,10 +23,9 @@
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.props" />
   <ItemDefinitionGroup>
     <ClCompile>
-      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100;4459;4996</DisableSpecificWarnings>
       <PreprocessorDefinitions>NAPA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories>.\scheduler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>..\third-party;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -34,15 +33,16 @@
   <ItemGroup>
     <ClCompile Include="container.cpp" />
     <ClCompile Include="runtime.cpp" />
-    <ClCompile Include="settings.cpp" />
     <ClCompile Include="scheduler\core.cpp" />
     <ClCompile Include="scheduler\task-decorators.cpp" />
+    <ClCompile Include="settings\settings-parser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Binplace Include="$(OutputPath)\$(TargetFileName)">
       <DestinationFolder>$(NapaVanillaBinplacePath)</DestinationFolder>
     </Binplace>
   </ItemGroup>
+  <Import Project="$(PACKAGESROOT)\Boost.Library\exports_program_options.props" />
   <Import Project="$(PACKAGESROOT)\V8.Library\exports.props" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
