@@ -4,7 +4,7 @@
   <ItemGroup>
     <ProjectFile Include="napa\addon.vcxproj" />
     <ProjectFile Include="node\addon.vcxproj" />
-    <ProjectFile Include="script\sources" />
+    <ProjectFile Include="script\script.proj" />
     <ProjectFile Include="test\hello-world-test.njsproj" />
   </ItemGroup>
 

@@ -1,8 +1,8 @@
 #ifndef NAPA_MODULE_OBJECT_WRAP_H
 #define NAPA_MODULE_OBJECT_WRAP_H
 
-#include <v8.h>
 #include <cassert>
+#include <v8.h>
 
 namespace napa
 {

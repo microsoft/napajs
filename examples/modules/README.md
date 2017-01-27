@@ -39,7 +39,7 @@ This is the simple NPM package structure, which has module binaries directly. On
     |   +-- addon.node
     +-- lib
     |   +-- example.js
-    +-- typings
+    +-- types
     |   +-- example.d.ts
     +-- package.json
     +-- tsconfig.json

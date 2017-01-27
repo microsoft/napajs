@@ -24,8 +24,8 @@ namespace module {
     static const char* MODULE_INFO_EXPORT = "_moduleInfo";
 
     /// <summary> Function pointer to initialize a module. It's called after a module is loaded. </summary>
-    typedef void(*ModuleInitializer)(v8::Handle<v8::Object> exports,
-                                     v8::Handle<v8::Value> module);
+    typedef void(*ModuleInitializer)(v8::Local<v8::Object> exports,
+                                     v8::Local<v8::Value> module);
 
     /// <summary> Module information. </summary>
     struct ModuleInfo {
@@ -33,18 +33,15 @@ namespace module {
         int32_t version;
 
         /// <summary> Module name. </summary>
-        std::string moduleName;
+        const char* moduleName;
 
         /// <summary> Function pointer to initialize a module. </summary>
         ModuleInitializer initializer;
     };
 
     /// <summary>
-    /// Map from addon's class name to persistent constructor object.
-    /// Because addon object wrapper class can't have the static member of persistent constructor object
-    /// due to multiple isolates, each isolate must have its own persistent constructor.
-    /// Either global javascript object or isolate's custom data can be a solution,
-    /// but here, the latter is used to avoid global object management in javascript land.
+    /// Map from module's class name to persistent constructor object.
+    /// To suppport multiple isolates, let each isolate has its own persistent constructor at thread local storage.
     /// </summary>
     typedef v8::Persistent<v8::Function, v8::CopyablePersistentTraits<v8::Function>> PersistentConstructor;
     struct ConstructorInfo {
