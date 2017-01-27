@@ -146,7 +146,7 @@ namespace module {
         auto isolate = v8::Isolate::GetCurrent();
         v8::HandleScope scope(isolate);
 
-        ConstructorInfo* constructorInfo =
+        auto constructorInfo =
             reinterpret_cast<ConstructorInfo*>(IsolateData::Get(IsolateDataId::CONSTRUCTOR));
         if (constructorInfo == nullptr) {
             constructorInfo = new ConstructorInfo();
