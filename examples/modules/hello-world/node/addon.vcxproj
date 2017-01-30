@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(EnvironmentConfig)" />
+  <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup>
+    <NapaConfigurationType>DynamicLibrary</NapaConfigurationType>
+    <AddonName>addon</AddonName>
+    <TargetName Condition=" '$(AddonType)' != 'Napa' ">$(AddonName)</TargetName>
+    <TargetName Condition=" '$(AddonType)' == 'Napa' ">$(AddonName)_napa</TargetName>
+  </PropertyGroup>
+  <Import Project="$(NapaRoot)\Napa.Default.props" />
+  <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.props" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions Condition=" '$(AddonType)' != 'Napa' ">BUILDING_NODE_EXTENSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition=" '$(AddonType)' == 'Napa' ">NAPA_MODULE_EXTENSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)\addon.cpp" />
+  </ItemGroup>
+  <Target Name="ChangeExtention" AfterTargets="Build">
+    <Move SourceFiles="$(OutputPath)\$(TargetFileName)" DestinationFiles="$(OutputPath)\$(AddonName).node" Condition=" '$(AddonType)' != 'Napa' " />
+    <Move SourceFiles="$(OutputPath)\$(TargetFileName)" DestinationFiles="$(OutputPath)\$(AddonName).napa" Condition=" '$(AddonType)' == 'Napa' " />
+  </Target>
+  <Import Project="$(PACKAGESROOT)\NodeJs.Library\exports.props" Condition=" '$(AddonType)' != 'Napa' " />
+  <Import Project="$(PACKAGESROOT)\V8.Library\exports.props" Condition=" '$(AddonType)' == 'Napa' " />
+  <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

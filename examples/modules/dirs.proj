@@ -1,0 +1,9 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(EnvironmentConfig)" />
+
+  <ItemGroup>
+    <ProjectFile Include="hello-world\dirs.proj" />
+  </ItemGroup>
+
+  <Import Project="$(ExtendedTargetsPath)\Traversal.targets" />
+</Project>

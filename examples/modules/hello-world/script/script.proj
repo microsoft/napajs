@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(EnvironmentConfig)" />
+  
+  <ItemGroup>
+    <QCustomProjectReference Include="$(NapaVanillaRoot)\examples\modules\hello-world\napa\addon.vcxproj" />
+    <QCustomProjectReference Include="$(NapaVanillaRoot)\examples\modules\hello-world\node\addon.vcxproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <QcustomInput Include="tsconfig.json" />
+    <QcustomInput Include="src\hello-world.ts" />
+    <QcustomInput Include="$(INETROOT)\private\napa\build\codegen\**" />
+    <QcustomInput Include="$(INETROOT)\private\napa\build\@types\**" />
+    <QcustomInput Include="$(INETROOT)\private\napa\build\typescript\**" />
+  </ItemGroup>
+  
+  <Target Name="BuildScripts" AfterTargets="AfterBuild">
+    <Message Text="Compile scripts." />
+    <Exec Command="$(NapaBuildRoot)\node\node.exe $(NapaBuildRoot)\codegen\tsconfig_gen.js -t $(NapaBuildRoot)\codegen\tsconfig.firstparty.json -v NAPABUILD_TYPES $(NapaBuildRoot)\@types" />
+    <Exec Command="$(NapaBuildRoot)\node\node.exe $(NapaBuildRoot)\typescript\lib\tsc.js --outDir $(O)" />
+  </Target>
+  
+  <Target Name="CreateNpmPackage" DependsOnTargets="BuildScripts" AfterTargets="AfterBuild">
+    <Message Text="Create NPM package." />
+    <MakeDir Directories="$(O)\dist\bin" ContinueOnError="false" Condition="!Exists('$(O)\dist\bin')" />
+    <MakeDir Directories="$(O)\dist\lib" ContinueOnError="false" Condition="!Exists('$(O)\dist\lib')" />
+    <MakeDir Directories="$(O)\dist\types" ContinueOnError="false" Condition="!Exists('$(O)\dist\types')" />
+    <Copy SourceFiles="..\node\$(O)\addon.node" DestinationFolder="$(O)\dist\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="..\napa\$(O)\addon.napa" DestinationFolder="$(O)\dist\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(O)\hello-world.js" DestinationFolder="$(O)\dist\lib" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(O)\hello-world.d.ts" DestinationFolder="$(O)\dist\types" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="tsconfig.json" DestinationFolder="$(O)\dist" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="package.json" DestinationFolder="$(O)\dist" ContinueOnError="false" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Import Project="$(ExtendedTargetsPath)\NoTarget.targets" />
+</Project>
