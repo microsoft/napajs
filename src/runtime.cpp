@@ -1,6 +1,7 @@
 #include "napa-runtime-c.h"
 
 #include "container.h"
+#include "providers/providers.h"
 #include "settings/settings-parser.h"
 
 #include <thread>
@@ -139,29 +140,31 @@ napa_response_code napa_container_release(napa_container_handle handle) {
 }
 
 napa_response_code napa_initialize(napa_string_ref settings) {
-    std::cout << "napa_initialize()" << std::endl;
-    std::cout << "\tsettings: " << settings.data << std::endl;
-
-    if (internal::settings_parser::ParseFromString(NAPA_STRING_REF_TO_STD_STRING(settings), _globalSettings)) {
+    if (!internal::settings_parser::ParseFromString(NAPA_STRING_REF_TO_STD_STRING(settings), _globalSettings)) {
         return NAPA_RESPONSE_SETTINGS_PARSER_ERROR;
+    }
+
+    if (!napa::providers::Initialize(_globalSettings)) {
+        return NAPA_RESPONSE_PROVIDERS_INIT_ERROR;
     }
 
     return NAPA_RESPONSE_SUCCESS;
 }
 
 napa_response_code napa_initialize_from_console(int argc, char* argv[]) {
-    std::cout << "napa_initialize_from_console()" << std::endl;
-    std::cout << "\targc: " << argc << std::endl;
-
-    if (internal::settings_parser::ParseFromConsole(argc, argv, _globalSettings)) {
+    if (!internal::settings_parser::ParseFromConsole(argc, argv, _globalSettings)) {
         return NAPA_RESPONSE_SETTINGS_PARSER_ERROR;
+    }
+
+    if (!napa::providers::Initialize(_globalSettings)) {
+        return NAPA_RESPONSE_PROVIDERS_INIT_ERROR;
     }
 
     return NAPA_RESPONSE_SUCCESS;
 }
 
 napa_response_code napa_shutdown() {
-    std::cout << "napa_shutdown()" << std::endl;
+    napa::providers::Shutdown();
 
     return NAPA_RESPONSE_SUCCESS;
 }

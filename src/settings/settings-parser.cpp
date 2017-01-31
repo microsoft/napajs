@@ -14,7 +14,8 @@ static bool Parse(const std::vector<std::string>& args, Settings& settings) {
     desc.add_options()
         ("cores", value(&settings.cores), "number of cores")
         ("v8Flags", value(&settings.v8Flags)->multitoken(), "v8 flags")
-        ("loggingProvider", value(&settings.loggingProvider), "logging provider");
+        ("loggingProvider", value(&settings.loggingProvider), "logging provider")
+        ("metricProvider", value(&settings.metricProvider), "metric provider");
 
     try {
         variables_map vm;

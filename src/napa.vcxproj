@@ -32,6 +32,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="container.cpp" />
+    <ClCompile Include="providers\providers.cpp" />
     <ClCompile Include="runtime.cpp" />
     <ClCompile Include="scheduler\core.cpp" />
     <ClCompile Include="scheduler\task-decorators.cpp" />

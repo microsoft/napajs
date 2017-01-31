@@ -20,6 +20,9 @@ namespace internal {
         /// <summary> The logging provider (cross-container). </summary>
         std::string loggingProvider = "console";
 
+        /// <summary> The metric provider (cross-container). </summary>
+        std::string metricProvider;
+
         /// <summary> V8 flags (cross-container). </summary>
         std::vector<std::string> v8Flags;
     };
