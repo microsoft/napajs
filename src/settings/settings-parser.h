@@ -1,5 +1,4 @@
-#ifndef NAPA_SETTINGS_PARSER_H
-#define NAPA_SETTINGS_PARSER_H
+#pragma once
 
 #include "settings.h"
 
@@ -33,5 +32,3 @@ namespace settings_parser {
 }
 }
 }
-
-#endif // NAPA_SETTINGS_PARSER_H

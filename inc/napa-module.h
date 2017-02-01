@@ -1,13 +1,12 @@
-#ifndef NAPA_MODULE_H
-#define NAPA_MODULE_H
+#pragma once
 
 // Suppress 4100 warings.
 #pragma warning(push)
 #pragma warning(disable: 4100)
 
 #ifdef NAPA_MODULE_EXTENSION
-#include "napa/napa-module-internal.h"
-#include "napa/napa-module-node-compat.h"
+#include "napa/module-internal.h"
+#include "napa/module-node-compat.h"
 #include "napa/object-wrap.h"
 #else
 #include <node.h>
@@ -98,5 +97,3 @@
 #define NAPA_GET_PERSISTENT_CONSTRUCTOR(name) \
     v8::Local<v8::Function>::New(v8::Isolate::GetCurrent(), _constructor);
 #endif
-
-#endif // NAPA_MODULE_H

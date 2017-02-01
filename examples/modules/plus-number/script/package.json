@@ -1,0 +1,8 @@
+{
+    "name": "plus-number",
+    "version": "0.0.1",
+    "author": "napav",
+    "description": "Example of a napa module wrapping a class.",
+    "main": "./lib/plus-number.js",
+    "types": "./types/plus-number.d.ts"
+}

@@ -1,5 +1,4 @@
-#ifndef NAPA_V8_HELPERS_H
-#define NAPA_V8_HELPERS_H
+#pragma once
 
 #include <memory>
 #include <sstream>
@@ -170,5 +169,3 @@ namespace v8_helpers {
     }
 }
 }
-
-#endif

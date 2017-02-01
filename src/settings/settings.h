@@ -1,5 +1,4 @@
-#ifndef NAPA_SETTINGS_H
-#define NAPA_SETTINGS_H
+#pragma once
 
 #include <algorithm>
 #include <string>
@@ -30,5 +29,3 @@ namespace internal {
 }
 }
 }
-
-#endif //NAPA_SETTINGS_H

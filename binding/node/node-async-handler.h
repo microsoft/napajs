@@ -1,5 +1,4 @@
-#ifndef NAPA_BINDING_NODE_ASYNC_HANDLER_H
-#define NAPA_BINDING_NODE_ASYNC_HANDLER_H
+#pragma once
 
 #include <uv.h>
 
@@ -127,5 +126,3 @@ namespace binding {
     }
 }
 }
-
-#endif // NAPA_BINDING_NODE_ASYNC_HANDLER_H

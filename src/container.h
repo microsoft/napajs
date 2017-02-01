@@ -1,5 +1,4 @@
-#ifndef NAPA_CONTAINER_H
-#define NAPA_CONTAINER_H
+#pragma once
 
 #include "settings/settings.h"
 #include "scheduler/scheduler.h"
@@ -23,5 +22,3 @@ namespace internal {
 }
 }
 }
-
-#endif //NAPA_CONTAINER_H

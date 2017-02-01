@@ -1,5 +1,4 @@
-#ifndef NAPA_RUNTIME_H
-#define NAPA_RUNTIME_H
+#pragma once
 
 #include "napa-runtime-c.h"
 
@@ -206,5 +205,3 @@ namespace runtime {
     }
 }
 }
-
-#endif // NAPA_RUNTIME_H

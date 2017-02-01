@@ -3,7 +3,7 @@ var helloWorld = require('hello-world');
 
 describe('Test suite for hello-word', function() {
     it('prints the string "world"', function() {
-        var result = helloWorld.hello();
+        var result: string = helloWorld.hello();
         assert.equal(result, 'world');
     });
 })

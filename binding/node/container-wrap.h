@@ -1,5 +1,4 @@
-#ifndef NAPA_BINDING_CONTAINER_WRAP_H
-#define NAPA_BINDING_CONTAINER_WRAP_H
+#pragma once
 
 #include <memory>
 
@@ -38,5 +37,3 @@ namespace binding {
     };
 }
 }
-
-#endif

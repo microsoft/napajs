@@ -1,12 +1,11 @@
-#ifndef NAPA_MODULE_INTERNAL_H
-#define NAPA_MODULE_INTERNAL_H
+#pragma once
 
 #ifdef NAPA_MODULE_EXTENSION
 #undef BUILDING_V8_SHARED
 #define USING_V8_SHARED 1
 #endif
 
-#include "napa-module-export.h"
+#include "module-exports.h"
 
 #include <array>
 #include <tuple>
@@ -144,7 +143,7 @@ namespace module {
         v8::HandleScope scope(isolate);
 
         auto constructorInfo =
-            reinterpret_cast<ConstructorInfo*>(IsolateData::Get(IsolateDataId::CONSTRUCTOR));
+            static_cast<ConstructorInfo*>(IsolateData::Get(IsolateDataId::CONSTRUCTOR));
         if (constructorInfo == nullptr) {
             constructorInfo = new ConstructorInfo();
             IsolateData::Set(IsolateDataId::CONSTRUCTOR, constructorInfo);
@@ -163,7 +162,7 @@ namespace module {
         v8::EscapableHandleScope scope(isolate);
 
         auto constructorInfo =
-            reinterpret_cast<ConstructorInfo*>(IsolateData::Get(IsolateDataId::CONSTRUCTOR));
+            static_cast<ConstructorInfo*>(IsolateData::Get(IsolateDataId::CONSTRUCTOR));
         if (constructorInfo == nullptr) {
             return scope.Escape(v8::Local<v8::Function>());
         }
@@ -179,5 +178,3 @@ namespace module {
 
 }   // End of namespace module.
 }   // End of namespace napa.
-
-#endif  // NAPA_MODULE_INTERNAL_H
