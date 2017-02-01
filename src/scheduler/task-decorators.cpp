@@ -1,6 +1,6 @@
 #include "task-decorators.h"
 
-using namespace napa::runtime::internal;
+using namespace napa::scheduler;
 
 TaskDecorator::TaskDecorator(std::unique_ptr<Task> innerTask) : _innerTask(std::move(innerTask)) {}
 

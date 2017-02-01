@@ -5,7 +5,8 @@
 #include <atomic>
 #include <future>
 
-using namespace napa::runtime::internal;
+using namespace napa;
+using namespace napa::scheduler;
 
 
 class TestTask : public Task {
@@ -41,22 +42,32 @@ public:
         numberOfCores++;
     }
 
+    ~TestCore() {
+        for (auto& fut : _futures) {
+            fut.get();
+        }
+    }
+
     void Schedule(std::shared_ptr<Task> task) {
         auto testTask = std::dynamic_pointer_cast<TestTask>(task);
         testTask->SetCurrentCoreId(_id);
 
-        _futures.emplace_back(std::async(std::launch::async, [task]() {
+        _futures.emplace_back(std::async(std::launch::async, [this, task]() {
             task->Execute();
+            _idleNotificationCallback(_id);
         }));
     }
 
-    void SubscribeForIdleNotifications(std::function<void(CoreId)> callback) {}
+    void SubscribeForIdleNotifications(std::function<void(CoreId)> callback) {
+        _idleNotificationCallback = std::move(callback);
+    }
 
     static uint32_t numberOfCores;
 
 private:
     CoreId _id;
-    std::vector<std::future<void>> _futures;
+    std::vector<std::shared_future<void>> _futures;
+    std::function<void(CoreId)> _idleNotificationCallback;
 };
 
 template <uint32_t I>
@@ -67,7 +78,7 @@ TEST_CASE("scheduler creates correct number of cores", "[scheduler]") {
     Settings settings;
     settings.cores = 3;
 
-    auto scehduler = SchedulerImpl<TestCore<1>>(settings);
+    auto scehduler = std::make_unique<SchedulerImpl<TestCore<1>>>(settings);
 
     REQUIRE(TestCore<1>::numberOfCores == settings.cores);
 }

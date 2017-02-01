@@ -2,8 +2,7 @@
 
 
 namespace napa {
-namespace runtime {
-namespace internal {
+namespace scheduler {
 
     /// <summary> Represents an execution logic that can be scheduled using the Napa scheduler. </summary>
     class Task {
@@ -16,6 +15,5 @@ namespace internal {
         virtual ~Task() = default;
     };
 
-}
 }
 }

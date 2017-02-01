@@ -7,8 +7,6 @@
 
 
 namespace napa {
-namespace runtime {
-namespace internal {
 
     /// <summary> The settings a user may set to customize napa. Initialized with defaults. </summary>
     struct Settings {
@@ -26,6 +24,4 @@ namespace internal {
         std::vector<std::string> v8Flags;
     };
 
-}
-}
 }

@@ -10,7 +10,8 @@
 
 #include <thread>
 
-using namespace napa::runtime::internal;
+using namespace napa;
+using namespace napa::scheduler;
 
 
 struct Core::Impl {

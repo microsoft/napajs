@@ -5,8 +5,6 @@
 #include <string>
 
 namespace napa {
-namespace runtime {
-namespace internal {
 namespace settings_parser {
 
     /// <summary> Parses napa settings from string. </summary>
@@ -26,9 +24,6 @@ namespace settings_parser {
     ///     Settings that do not appear in the settings string will not be changed.
     /// </param>
     /// <returns> True if parsing succeeded, false otherwise. </returns>
-    bool ParseFromConsole(int argc, char* argv[], Settings& settings);
- 
-}
-}
+    bool ParseFromConsole(int argc, char* argv[], Settings& settings); 
 }
 }

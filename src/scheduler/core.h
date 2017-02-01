@@ -8,8 +8,7 @@
 
 
 namespace napa {
-namespace runtime {
-namespace internal {
+namespace scheduler {
 
     // Represent the core id type.
     using CoreId = uint32_t;
@@ -42,6 +41,5 @@ namespace internal {
         std::unique_ptr<Impl> _impl;
     };
 
-}
 }
 }

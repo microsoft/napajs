@@ -37,6 +37,7 @@
     <ClCompile Include="providers\providers.cpp" />
     <ClCompile Include="runtime.cpp" />
     <ClCompile Include="scheduler\core.cpp" />
+    <ClCompile Include="scheduler\simple-thread-pool.cpp" />
     <ClCompile Include="scheduler\task-decorators.cpp" />
     <ClCompile Include="settings\settings-parser.cpp" />
   </ItemGroup>

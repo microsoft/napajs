@@ -2,17 +2,19 @@
 
 #include "core.h"
 #include "settings/settings.h"
-#include "task.h"
 #include "simple-thread-pool.h"
+#include "task.h"
 
+#include <assert.h>
+#include <atomic>
 #include <list>
 #include <memory>
-#include <vector>
 #include <queue>
+#include <thread>
+#include <vector>
 
 namespace napa {
-namespace runtime {
-namespace internal {
+namespace scheduler {
 
     /// <summary> The scheduler is responsible for assigning tasks to cores. </summary>
     template <typename CoreType>
@@ -22,6 +24,9 @@ namespace internal {
         /// <summary> Constructor. </summary>
         /// <param name="settings"> A settings object. </param>
         SchedulerImpl(const Settings& settings);
+
+        /// <summary> Destructor. Waits for all tasks to finish. </summary>
+        ~SchedulerImpl();
 
         /// <summary> Schedules the task on a single core. </summary>
         /// <param name="task"> Task to schedule. </param>
@@ -38,6 +43,8 @@ namespace internal {
 
     private:
 
+        void IdleCoreNotificationCallback(CoreId coreId);
+
         /// <summary> The cores that are used for running the tasks. </summary>
         std::vector<CoreType> _cores;
 
@@ -51,31 +58,129 @@ namespace internal {
         std::vector<std::list<CoreId>::iterator> _idleCoresFlags;
 
         /// <summary> Uses a single thread to synchronize task queuing and posting. </summary>
-        SimpleThreadPool _synchronizer;
+        std::unique_ptr<SimpleThreadPool> _synchronizer;
+
+        /// <summary> A flag to signal that scheduler is stopping. </summary>
+        std::atomic<bool> _shouldStop;
     };
 
     typedef SchedulerImpl<Core> Scheduler;
 
     template <typename CoreType>
-    SchedulerImpl<CoreType>::SchedulerImpl(const Settings& settings) {
-        // TODO @asib: add implementation
+    SchedulerImpl<CoreType>::SchedulerImpl(const Settings& settings) :
+            _idleCoresFlags(settings.cores),
+            _synchronizer(std::make_unique<SimpleThreadPool>(1)),
+            _shouldStop(false) {
+        _cores.reserve(settings.cores);
+
+        for (CoreId i = 0; i < settings.cores; i++) {
+            _cores.emplace_back(i, settings);
+
+            // Register to recieve idle notifications from cores
+            _cores[i].SubscribeForIdleNotifications([this](CoreId coreId) {
+                IdleCoreNotificationCallback(coreId);
+            });
+
+            // All cores are idle initially.
+            auto iter = _idleCores.emplace(_idleCores.end(), i);
+            _idleCoresFlags[i] = iter;
+        }
+    }
+
+    template <typename CoreType>
+    SchedulerImpl<CoreType>::~SchedulerImpl() {
+        // Wait for all tasks to be scheduled.
+        while (_nonScheduledTasks.size() > 0) {
+            std::this_thread::yield();
+        }
+
+        // Signal scheduler callbacks to not process anymore tasks.
+        _shouldStop = true;
+
+        // Wait for synchornizer to finish his book-keeping.
+        _synchronizer = nullptr;
+
+        // Wait for all cores to finish processing remaining tasks.
+        _cores.clear();
     }
 
     template <typename CoreType>
     void SchedulerImpl<CoreType>::Schedule(std::shared_ptr<Task> task) {
-        // TODO @asib: add implementation
+        assert(task != nullptr);
+        
+        _synchronizer->Execute([this, task]() {
+            if (_idleCores.empty()) {
+                // If there is no idle core, put the task into the non-scheduled queue.
+                _nonScheduledTasks.emplace(std::move(task));
+            } else {
+                // Pop the core id from the idle cores list.
+                auto coreId = _idleCores.front();
+                _idleCores.pop_front();
+                _idleCoresFlags[coreId] = _idleCores.end();
+
+                // Schedule task on core
+                _cores[coreId].Schedule(std::move(task));
+            }
+        });
     }
 
     template <typename CoreType>
     void SchedulerImpl<CoreType>::ScheduleOnCore(CoreId coreId, std::shared_ptr<Task> task) {
-        // TODO @asib: add implementation
+        assert(coreId < _cores.size());
+
+        _synchronizer->Execute([coreId, this, task]() {
+            // If the core is idle, change it's status.
+            if (_idleCoresFlags[coreId] != _idleCores.end()) {
+                _idleCores.erase(_idleCoresFlags[coreId]);
+                _idleCoresFlags[coreId] = _idleCores.end();
+            }
+
+            // Schedule task on core
+            _cores[coreId].Schedule(std::move(task));
+        });
     }
 
     template <typename CoreType>
     void SchedulerImpl<CoreType>::ScheduleOnAllCores(std::shared_ptr<Task> task) {
-        // TODO @asib: add implementation
+        assert(task != nullptr);
+
+        _synchronizer->Execute([this, task]() {
+            // Clear all idle cores.
+            _idleCores.clear();
+            for (auto& flag : _idleCoresFlags) {
+                flag = _idleCores.end();
+            }
+
+            // Schedule the task on all cores.
+            for (auto& core : _cores) {
+                core.Schedule(task);
+            }
+        });
     }
 
-}
+    template <typename CoreType>
+    void SchedulerImpl<CoreType>::IdleCoreNotificationCallback(CoreId coreId) {
+        assert(coreId < _cores.size());
+        
+        if (_shouldStop) {
+            return;
+        }
+
+        _synchronizer->Execute([this, coreId]() {
+            if (!_nonScheduledTasks.empty()) {
+                // If there is a non scheduled task, schedule it on the idle core.
+                auto task = _nonScheduledTasks.front();
+                _nonScheduledTasks.pop();
+
+                _cores[coreId].Schedule(std::move(task));
+            } else {
+                // Put core in idle list.
+                if (_idleCoresFlags[coreId] == _idleCores.end()) {
+                    auto iter = _idleCores.emplace(_idleCores.end(), coreId);
+                    _idleCoresFlags[coreId] = iter;
+                }
+            }
+        });
+    }
 }
 }
