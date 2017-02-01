@@ -43,6 +43,7 @@ namespace scheduler {
 
     private:
 
+        /// <summary> The logic invoked when a core is idle. </summary>
         void IdleCoreNotificationCallback(CoreId coreId);
 
         /// <summary> The cores that are used for running the tasks. </summary>
