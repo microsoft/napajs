@@ -4,7 +4,7 @@
 
 #include <string>
 
-using namespace napa::runtime::internal;
+using namespace napa;
 
 TEST_CASE("Parsing nothing doesn't fail", "[settings-parser]") {
     Settings settings;

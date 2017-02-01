@@ -11,12 +11,14 @@
 
   <!-- Product code that is tested and needs to compile -->
   <ItemGroup>
+    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\simple-thread-pool.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\settings\settings-parser.cpp" />
   </ItemGroup>
 
   <!-- Test code -->
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)\example\example.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\scheduler\scheduler-tests.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\settings\parser-tests.cpp" />
   </ItemGroup>
   

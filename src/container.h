@@ -6,8 +6,6 @@
 #include <memory>
 
 namespace napa {
-namespace runtime {
-namespace internal {
 
     class Container {
     public:
@@ -17,8 +15,6 @@ namespace internal {
 
     private:
         std::unique_ptr<Settings> _settings;
-        std::unique_ptr<Scheduler> _scheduler;
+        std::unique_ptr<scheduler::Scheduler> _scheduler;
     };
-}
-}
 }

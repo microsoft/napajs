@@ -9,7 +9,6 @@
 #include <string>
 
 
-using namespace napa::runtime::internal;
 using namespace napa::providers;
 
 // Forward declarations.
@@ -21,7 +20,7 @@ static LoggingProvider* _loggingProvider;
 static MetricProvider* _metricProvider;
 
 
-bool napa::providers::Initialize(const Settings& settings) {
+bool napa::providers::Initialize(const napa::Settings& settings) {
     try {
         _loggingProvider = LoadLoggingProvider(settings.loggingProvider);
         _metricProvider = LoadMetricProvider(settings.metricProvider);

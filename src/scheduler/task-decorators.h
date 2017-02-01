@@ -6,8 +6,7 @@
 #include <memory>
 
 namespace napa {
-namespace runtime {
-namespace internal {
+namespace scheduler {
 
     /// <summary> Base class for task decorators. </summary>
     class TaskDecorator : public Task {
@@ -28,6 +27,5 @@ namespace internal {
     private:
         std::chrono::microseconds _timeout;
     };
-}
 }
 }

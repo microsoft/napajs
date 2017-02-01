@@ -8,25 +8,24 @@
 
 #include <iostream>
 
-using namespace napa::runtime;
 
-static internal::Settings _globalSettings;
+static napa::Settings _globalSettings;
 
 napa_container_handle napa_container_create() {
     std::cout << "napa_container_create()" << std::endl;
 
-    return reinterpret_cast<napa_container_handle>(new internal::Container());
+    return reinterpret_cast<napa_container_handle>(new napa::Container());
 }
 
 napa_response_code napa_container_init(napa_container_handle handle, napa_string_ref settings) {
     // Container settings are based on global settings.
-    auto containerSettings = std::make_unique<internal::Settings>(_globalSettings);
+    auto containerSettings = std::make_unique<napa::Settings>(_globalSettings);
 
-    if (internal::settings_parser::ParseFromString(NAPA_STRING_REF_TO_STD_STRING(settings), *containerSettings)) {
+    if (napa::settings_parser::ParseFromString(NAPA_STRING_REF_TO_STD_STRING(settings), *containerSettings)) {
         return NAPA_RESPONSE_SETTINGS_PARSER_ERROR;
     }
 
-    auto container = reinterpret_cast<internal::Container*>(handle);
+    auto container = reinterpret_cast<napa::Container*>(handle);
 
     container->Initialize(std::move(containerSettings));
 
@@ -140,7 +139,7 @@ napa_response_code napa_container_release(napa_container_handle handle) {
 }
 
 napa_response_code napa_initialize(napa_string_ref settings) {
-    if (!internal::settings_parser::ParseFromString(NAPA_STRING_REF_TO_STD_STRING(settings), _globalSettings)) {
+    if (!napa::settings_parser::ParseFromString(NAPA_STRING_REF_TO_STD_STRING(settings), _globalSettings)) {
         return NAPA_RESPONSE_SETTINGS_PARSER_ERROR;
     }
 
@@ -152,7 +151,7 @@ napa_response_code napa_initialize(napa_string_ref settings) {
 }
 
 napa_response_code napa_initialize_from_console(int argc, char* argv[]) {
-    if (!internal::settings_parser::ParseFromConsole(argc, argv, _globalSettings)) {
+    if (!napa::settings_parser::ParseFromConsole(argc, argv, _globalSettings)) {
         return NAPA_RESPONSE_SETTINGS_PARSER_ERROR;
     }
 

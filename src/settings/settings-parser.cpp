@@ -6,7 +6,7 @@
 #include <iostream>
 
 using namespace boost::program_options;
-using namespace napa::runtime::internal;
+using namespace napa;
 
 static bool Parse(const std::vector<std::string>& args, Settings& settings) {
     // All parsing options should be added here.
@@ -25,6 +25,8 @@ static bool Parse(const std::vector<std::string>& args, Settings& settings) {
         std::cerr << "Failed to parse settings. Error: " << ex.what() << std::endl;
         return false;
     }
+
+    // TODO @asib: here is where we need to verify settings values are valid, i.e. cores is greater then 0.
 
     return true;
 }
