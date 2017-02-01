@@ -18,7 +18,7 @@ namespace scheduler {
 
         /// <summary> Constructor. </summary>
         /// <param name="numberOfWorkers"> Number of workers. </param>
-        SimpleThreadPool(uint32_t numberOfWorkers);
+        explicit SimpleThreadPool(uint32_t numberOfWorkers);
 
         /// <summary> Destructor. </summary>
         virtual ~SimpleThreadPool();
