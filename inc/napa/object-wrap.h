@@ -1,5 +1,4 @@
-#ifndef NAPA_MODULE_OBJECT_WRAP_H
-#define NAPA_MODULE_OBJECT_WRAP_H
+#pragma once
 
 #include <cassert>
 #include <v8.h>
@@ -114,6 +113,3 @@ namespace module
     };
 }   // End of namespace module.
 }   // End of namespace napa.
-
-
-#endif  // NAPA_MODULE_OBJECT_WRAP_H

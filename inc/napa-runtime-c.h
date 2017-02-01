@@ -1,5 +1,4 @@
-#ifndef NAPA_RUNTIME_C_H
-#define NAPA_RUNTIME_C_H
+#pragma once
 
 #include "napa/exports.h"
 #include "napa/common-c.h"
@@ -146,5 +145,3 @@ EXTERN_C NAPA_API napa_response_code napa_shutdown();
 /// <summary> Convert the napa response code to its string representation. </summary>
 /// <param name="code"> The response code. </param>
 EXTERN_C NAPA_API const char* napa_response_code_to_string(napa_response_code code);
-
-#endif // NAPA_RUNTIME_C_H

@@ -1,5 +1,4 @@
-#ifndef NAPA_COMMON_C_H
-#define NAPA_COMMON_C_H
+#pragma once
 
 #include "stddef.h"
 #include "stdint.h"
@@ -35,5 +34,3 @@ typedef enum {
 #undef NAPA_RESPONSE_CODE_DEF
 
 typedef napa_response_code NapaResponseCode;
-
-#endif // NAPA_COMMON_C_H

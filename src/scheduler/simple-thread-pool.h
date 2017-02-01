@@ -1,5 +1,4 @@
-#ifndef NAPA_SIMPLE_THREAD_POOL_H
-#define NAPA_SIMPLE_THREAD_POOL_H
+#pragma once
 
 namespace napa {
 namespace runtime {
@@ -11,5 +10,3 @@ namespace internal {
 }
 }
 }
-
-#endif // NAPA_SIMPLE_THREAD_POOL_H

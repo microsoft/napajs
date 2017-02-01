@@ -32,6 +32,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="container.cpp" />
+    <ClCompile Include="module\module-internal.cpp" />
+    <ClCompile Include="platform\win\thread-local-storage.cpp" />
     <ClCompile Include="providers\providers.cpp" />
     <ClCompile Include="runtime.cpp" />
     <ClCompile Include="scheduler\core.cpp" />

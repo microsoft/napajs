@@ -1,5 +1,4 @@
-#ifndef NAPA_CORE_H
-#define NAPA_CORE_H
+#pragma once
 
 #include "task.h"
 #include "settings/settings.h"
@@ -46,5 +45,3 @@ namespace internal {
 }
 }
 }
-
-#endif // NAPA_CORE_H

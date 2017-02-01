@@ -1,5 +1,4 @@
-#ifndef NAPA_SCHEDULER_H
-#define NAPA_SCHEDULER_H
+#pragma once
 
 #include "core.h"
 #include "settings/settings.h"
@@ -80,5 +79,3 @@ namespace internal {
 }
 }
 }
-
-#endif // NAPA_SCHEDULER_H

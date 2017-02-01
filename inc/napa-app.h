@@ -1,5 +1,4 @@
-#ifndef NAPA_APP_H
-#define NAPA_APP_H
+#pragma once
 
 #include "napa-runtime.h"
 
@@ -85,5 +84,3 @@ namespace app {
     }
 }
 }
-
-#endif // NAPA_APP_H

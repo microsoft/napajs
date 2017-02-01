@@ -1,5 +1,4 @@
-#ifndef NAPA_TASK_DECORATORS_H
-#define NAPA_TASK_DECORATORS_H
+#pragma once
 
 #include "task.h"
 
@@ -32,5 +31,3 @@ namespace internal {
 }
 }
 }
-
-#endif // NAPA_TASK_DECORATORS_H

@@ -1,5 +1,4 @@
-#ifndef NAPA_TASK_H
-#define NAPA_TASK_H
+#pragma once
 
 
 namespace napa {
@@ -20,5 +19,3 @@ namespace internal {
 }
 }
 }
-
-#endif // NAPA_TASK_H

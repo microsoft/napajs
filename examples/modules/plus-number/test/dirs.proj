@@ -2,8 +2,8 @@
   <Import Project="$(EnvironmentConfig)" />
 
   <ItemGroup>
-    <ProjectFile Include="hello-world\dirs.proj" />
-    <ProjectFile Include="plus-number\dirs.proj" />
+    <ProjectFile Include="library-test\library-test.vcxproj" />
+    <ProjectFile Include="module-test\plus-one-test.njsproj" />
   </ItemGroup>
 
   <Import Project="$(ExtendedTargetsPath)\Traversal.targets" />

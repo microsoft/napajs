@@ -1,5 +1,4 @@
-#ifndef NAPA_EXPORTS_H
-#define NAPA_EXPORTS_H
+#pragma once
 
 #ifdef NAPA_EXPORTS
 #define NAPA_API __declspec(dllexport)
@@ -12,5 +11,3 @@
 #else
 #define EXTERN_C
 #endif // __cplusplus
-
-#endif // NAPA_EXPORTS_H
