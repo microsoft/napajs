@@ -46,7 +46,10 @@
       <DestinationFolder>$(NapaVanillaBinplacePath)</DestinationFolder>
     </Binplace>
   </ItemGroup>
-  <Import Project="$(PACKAGESROOT)\Boost.Library\exports_program_options.props" />
   <Import Project="$(PACKAGESROOT)\V8.Library\exports.props" />
+  <Import Project="$(Pkgboost)\build\native\boost.targets" />
+  <Import Project="$(Pkgboost_filesystem_vc140)\build\native\boost_filesystem-vc140.targets" />
+  <Import Project="$(Pkgboost_program_options_vc140)\build\native\boost_program_options-vc140.targets" />
+  <Import Project="$(Pkgboost_system_vc140)\build\native\boost_system-vc140.targets" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

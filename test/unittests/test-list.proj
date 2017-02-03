@@ -21,7 +21,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)\scheduler\scheduler-tests.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\settings\parser-tests.cpp" />
   </ItemGroup>
-  
-  <!-- TODO @asib: Need a solution for dependencies that do not rely on pacman -->
-  <Import Project="$(PACKAGESROOT)\Boost.Library\exports_program_options.props" />
+
+  <!-- Package dependencies -->
+  <Import Project="$(Pkgboost)\build\native\boost.targets" />
+  <Import Project="$(Pkgboost_program_options_vc140)\build\native\boost_program_options-vc140.targets" />
 </Project>

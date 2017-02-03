@@ -4,6 +4,8 @@
 #include "nop-logging-provider.h"
 #include "nop-metric-provider.h"
 
+#include <boost/dll.hpp>
+
 #include <assert.h>
 #include <iostream>
 #include <string>
@@ -52,6 +54,15 @@ MetricProvider& napa::providers::GetMetricProvider() {
     return *_metricProvider;
 }
 
+template <typename ProviderType>
+static ProviderType* LoadProvider(const std::string& providerName, const std::string& functionName) {
+    // TODO @asib: resolve path to shared library given the provider name, need to use module loader APIs.
+    auto providerPath = providerName;
+
+    auto createProviderFunc = boost::dll::import<ProviderType*()>(providerPath, functionName);
+    return createProviderFunc();
+}
+
 static LoggingProvider* LoadLoggingProvider(const std::string& providerName) {
     if (providerName.empty()) {
         return new NopLoggingProvider();
@@ -61,16 +72,13 @@ static LoggingProvider* LoadLoggingProvider(const std::string& providerName) {
         return new ConsoleLoggingProvider();
     }
 
-    // TODO @asib: add cross platform loading implementation (BOOST.Dll?)
-
-    return nullptr;
+    return LoadProvider<LoggingProvider>(providerName, "CreateLoggingProvider");
 }
 
 static MetricProvider* LoadMetricProvider(const std::string& providerName) {
     if (providerName.empty()) {
         return new NopMetricProvider();
     }
-    // TODO @asib: add cross platform loading implementation (BOOST.Dll?)
 
-    return nullptr;
+    return LoadProvider<MetricProvider>(providerName, "CreateMetricProvider");;
 }
