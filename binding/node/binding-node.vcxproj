@@ -31,11 +31,11 @@
     <ClCompile>
       <DisableSpecificWarnings>4100</DisableSpecificWarnings>
       <PreprocessorDefinitions>V8_IMMINENT_DEPRECATION_WARNINGS;BUILDING_NODE_EXTENSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(NapaRoot)\vanilla\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="$(NapaRoot)\vanilla\src\napa\napa.vcxproj" />
+    <ProjectReference Include="$(NapaVanillaRoot)\src\napa.vcxproj" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="addon.cpp" />
