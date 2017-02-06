@@ -14,7 +14,6 @@ namespace providers {
         virtual void Log(const char* section,
                          Verboseness level,
                          const char* traceId,
-                         const char* title,
                          const char* format, ...) override {
             va_list vl;
             va_start(vl, format);
@@ -22,7 +21,7 @@ namespace providers {
             va_end(vl);
         }
 
-        virtual bool IsLogEnabled(const char* section, Verboseness level, const char* title) override {
+        virtual bool IsLogEnabled(const char* section, Verboseness level) override {
             return true;
         }
 

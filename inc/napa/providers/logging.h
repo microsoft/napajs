@@ -1,5 +1,7 @@
 #pragma once
 
+#include <napa/exports.h>
+
 namespace napa {
 namespace providers {
 
@@ -25,21 +27,18 @@ namespace providers {
         /// <param name="section"> Logging section. </param>
         /// <param name="level"> Logging verboseness level. </param>
         /// <param name="traceId"> Trace ID. </param>
-        /// <param name="title"> Title. </param>
         /// <param name="format"> Formatted string with variadic arguments. </param>
         virtual void Log(
             const char* section,
             Verboseness level,
             const char* traceId,
-            const char* title,
             const char* format, ...) = 0;
 
         /// <summary> Returns if logging is enabled for section/level/title. </summary>
         /// <param name="section"> Logging section. </param>
         /// <param name="level"> Logging verboseness level. </param>
-        /// <param name="title"> Logging title. </param>
-        /// <returns> True if logging will occur for section/level/title, false otherwise. </returns>
-        virtual bool IsLogEnabled(const char* section, Verboseness level, const char* title) = 0;
+        /// <returns> True if logging will occur for section/level, false otherwise. </returns>
+        virtual bool IsLogEnabled(const char* section, Verboseness level) = 0;
 
         /// <summary> Explicitly destroys the logging provider. </summary>
         virtual void Destroy() = 0;
@@ -49,6 +48,9 @@ namespace providers {
         /// <summary> Prevent calling delete on the interface. Must use Destroy! </summary>
         virtual ~LoggingProvider() = default;
     };
+
+    /// <summary> Exports a getter function for retrieves the configured logging provider. </summary>
+    NAPA_API LoggingProvider& GetLoggingProvider();
 
     /// <summary> Singnature  of the logging provider factory method. </summary>
     typedef LoggingProvider* (*CreateLoggingProvider)();
