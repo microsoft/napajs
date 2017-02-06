@@ -13,10 +13,9 @@ namespace providers {
         virtual void Log(const char* section,
             Verboseness level,
             const char* traceId,
-            const char* title,
             const char* format, ...) override {}
 
-        virtual bool IsLogEnabled(const char* section, Verboseness level, const char* title) override {
+        virtual bool IsLogEnabled(const char* section, Verboseness level) override {
             return false;
         }
 
