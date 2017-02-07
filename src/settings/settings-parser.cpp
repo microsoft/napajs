@@ -13,9 +13,14 @@ static bool Parse(const std::vector<std::string>& args, Settings& settings) {
     options_description desc;
     desc.add_options()
         ("cores", value(&settings.cores), "number of cores")
-        ("v8Flags", value(&settings.v8Flags)->multitoken(), "v8 flags")
         ("loggingProvider", value(&settings.loggingProvider), "logging provider")
-        ("metricProvider", value(&settings.metricProvider), "metric provider");
+        ("metricProvider", value(&settings.metricProvider), "metric provider")
+        ("v8Flags", value(&settings.v8Flags)->multitoken(), "v8 flags")
+        ("initV8", value(&settings.initV8), "specify whether v8 should be initialized")
+        ("maxOldSpaceSize", value(&settings.maxOldSpaceSize), "max old space size in MB")
+        ("maxSemiSpaceSize", value(&settings.maxSemiSpaceSize), "max semi space size in MB")
+        ("maxExecutableSize", value(&settings.maxExecutableSize), "max executable size in MB")
+        ("maxStackSize", value(&settings.maxStackSize), "max isolate stack size in bytes");
 
     try {
         variables_map vm;

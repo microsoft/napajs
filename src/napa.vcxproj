@@ -29,6 +29,9 @@
       <AdditionalIncludeDirectories>..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>..\third-party;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="container.cpp" />
@@ -40,6 +43,7 @@
     <ClCompile Include="scheduler\simple-thread-pool.cpp" />
     <ClCompile Include="scheduler\task-decorators.cpp" />
     <ClCompile Include="settings\settings-parser.cpp" />
+    <ClCompile Include="v8\v8-common.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Binplace Include="$(OutputPath)\$(TargetFileName)">
