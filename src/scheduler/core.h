@@ -20,7 +20,8 @@ namespace scheduler {
         /// <summary> Constructor. </summary>
         /// <param name="id"> The task id. </param>
         /// <param name="settings"> Settings object. </param>
-        Core(CoreId id, const Settings &settings);
+        /// <param name="idleNotificationCallback"> Triggers when the core becomes idle. </param>
+        Core(CoreId id, const Settings &settings, std::function<void(CoreId)> idleNotificationCallback);
 
         /// <summary> Destructor. </summary>
         /// <note> This will block until all pending tasks are completed. </note>
@@ -31,11 +32,10 @@ namespace scheduler {
         /// <note> Same task instance may run on multiple cores, hence the use of shared_ptr. </node>
         void Schedule(std::shared_ptr<Task> task);
 
-        /// <summary> Subscribe to a notification when the core becomes idle. </summary>
-        /// <param name="callback"> The callback. </param>
-        void SubscribeForIdleNotifications(std::function<void(CoreId)> callback);
-
     private:
+
+        /// <summary> The core thread logic. </summary>
+        void CoreThreadFunc(const Settings& settings);
 
         struct Impl;
         std::unique_ptr<Impl> _impl;

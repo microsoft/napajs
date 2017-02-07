@@ -75,10 +75,7 @@ namespace scheduler {
         _cores.reserve(settings.cores);
 
         for (CoreId i = 0; i < settings.cores; i++) {
-            _cores.emplace_back(i, settings);
-
-            // Register to recieve idle notifications from cores
-            _cores[i].SubscribeForIdleNotifications([this](CoreId coreId) {
+            _cores.emplace_back(i, settings, [this](CoreId coreId) {
                 IdleCoreNotificationCallback(coreId);
             });
 

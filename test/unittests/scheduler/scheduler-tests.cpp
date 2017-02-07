@@ -38,8 +38,9 @@ template <uint32_t I>
 class TestCore {
 public:
 
-    TestCore(CoreId id, const Settings &settings) : _id(id) {
+    TestCore(CoreId id, const Settings &settings, std::function<void(CoreId)> idleCallback) : _id(id) {
         numberOfCores++;
+        _idleNotificationCallback = idleCallback;
     }
 
     ~TestCore() {
@@ -56,10 +57,6 @@ public:
             task->Execute();
             _idleNotificationCallback(_id);
         }));
-    }
-
-    void SubscribeForIdleNotifications(std::function<void(CoreId)> callback) {
-        _idleNotificationCallback = std::move(callback);
     }
 
     static uint32_t numberOfCores;

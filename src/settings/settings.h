@@ -22,6 +22,21 @@ namespace napa {
 
         /// <summary> V8 flags (cross-container). </summary>
         std::vector<std::string> v8Flags;
+
+        /// <summary> A flag to specify whether v8 should be initialized (cross-container). </summary>
+        bool initV8 = true;
+
+        /// <summary> Isolate memory contstraint - The maximum old space size in megabytes. </summary>
+        uint32_t maxOldSpaceSize = 0u;
+
+        /// <summary> Isolate memory contstraint - The maximum semi space size in megabytes. </summary>
+        uint32_t maxSemiSpaceSize = 0u;
+
+        /// <summary> Isolate memory contstraint - The maximum executable size in megabytes. </summary>
+        uint32_t maxExecutableSize = 0u;
+
+        /// <summary> The maximum size that the isolate stack is allowed to grow in bytes. </summary>
+        uint32_t maxStackSize = 500 * 1024;
     };
 
 }

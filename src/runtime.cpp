@@ -3,17 +3,16 @@
 #include "container.h"
 #include "providers/providers.h"
 #include "settings/settings-parser.h"
+#include "v8/v8-common.h"
 
 #include <thread>
-
 #include <iostream>
 
-
+static bool _initialized = false;
 static napa::Settings _globalSettings;
 
-napa_container_handle napa_container_create() {
-    std::cout << "napa_container_create()" << std::endl;
 
+napa_container_handle napa_container_create() {
     return reinterpret_cast<napa_container_handle>(new napa::Container());
 }
 
@@ -135,35 +134,57 @@ napa_container_response napa_container_run_sync(napa_container_handle handle,
 }
 
 napa_response_code napa_container_release(napa_container_handle handle) {
+    auto container = reinterpret_cast<napa::Container*>(handle);
+
+    // TODO @asib: call container shutdown API if exists.
+
+    delete container;
+
+    return NAPA_RESPONSE_SUCCESS;
+}
+
+static napa_response_code napa_initialize_common() {
+    if (!napa::providers::Initialize(_globalSettings)) {
+        return NAPA_RESPONSE_PROVIDERS_INIT_ERROR;
+    }
+
+    if (_globalSettings.initV8) {
+        napa::v8_common::Initialize();
+    }
+
+    _initialized = true;
+
     return NAPA_RESPONSE_SUCCESS;
 }
 
 napa_response_code napa_initialize(napa_string_ref settings) {
+    assert(_initialized == false);
+
     if (!napa::settings_parser::ParseFromString(NAPA_STRING_REF_TO_STD_STRING(settings), _globalSettings)) {
         return NAPA_RESPONSE_SETTINGS_PARSER_ERROR;
     }
 
-    if (!napa::providers::Initialize(_globalSettings)) {
-        return NAPA_RESPONSE_PROVIDERS_INIT_ERROR;
-    }
-
-    return NAPA_RESPONSE_SUCCESS;
+    return napa_initialize_common();
 }
 
 napa_response_code napa_initialize_from_console(int argc, char* argv[]) {
+    assert(_initialized == false);
+
     if (!napa::settings_parser::ParseFromConsole(argc, argv, _globalSettings)) {
         return NAPA_RESPONSE_SETTINGS_PARSER_ERROR;
     }
 
-    if (!napa::providers::Initialize(_globalSettings)) {
-        return NAPA_RESPONSE_PROVIDERS_INIT_ERROR;
-    }
-
-    return NAPA_RESPONSE_SUCCESS;
+    return napa_initialize_common();
 }
 
 napa_response_code napa_shutdown() {
+    assert(_initialized == true);
+
     napa::providers::Shutdown();
+
+    if (_globalSettings.initV8) {
+        napa::v8_common::Shutdown();
+    }
 
     return NAPA_RESPONSE_SUCCESS;
 }
@@ -177,11 +198,11 @@ static const char* NAPA_REPONSE_CODE_STRINGS[] = {
 
 #undef NAPA_RESPONSE_CODE_DEF
 
+template<class T, size_t N>
+constexpr size_t size(T(&)[N]) { return N; }
 
 const char* napa_response_code_to_string(napa_response_code code) {
-    std::cout << "napa_shutdownnapa_response_code_to_string()" << std::endl;
-
-    // TODO: assert code is in array boundaries
+    assert(code < size(NAPA_REPONSE_CODE_STRINGS));
 
     return NAPA_REPONSE_CODE_STRINGS[code];
 }
