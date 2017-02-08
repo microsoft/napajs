@@ -6,9 +6,7 @@
 
 // Forward declare container.
 namespace napa {
-namespace runtime {
     class Container;
-}
 }
 
 namespace napa {
@@ -23,9 +21,9 @@ namespace binding {
     private:
         static v8::Persistent<v8::Function> _constructor;
 
-        std::unique_ptr<napa::runtime::Container> _container;
+        std::unique_ptr<napa::Container> _container;
 
-        explicit ContainerWrap(std::unique_ptr<napa::runtime::Container> container);
+        explicit ContainerWrap(std::unique_ptr<napa::Container> container);
 
         static void NewCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
         static void Load(const v8::FunctionCallbackInfo<v8::Value>& args);

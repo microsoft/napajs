@@ -5,7 +5,7 @@
 #pragma warning(pop)
 
 #include "napa/v8-helpers.h"
-#include "napa-runtime.h"
+#include "napa.h"
 #include "container-wrap.h"
 
 #include <algorithm>
@@ -16,7 +16,7 @@ void Initialize(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
     if (args.Length() <= 0) {
         // No settings provided.
-        napa::runtime::InitializeFromConsole(0, nullptr);
+        napa::InitializeFromConsole(0, nullptr);
     } else {
         CHECK_ARG(
             isolate,
@@ -27,7 +27,7 @@ void Initialize(const v8::FunctionCallbackInfo<v8::Value>& args) {
             // Settings provided as string.
 
             v8::String::Utf8Value settings(args[0]->ToString());
-            napa::runtime::Initialize(*settings);
+            napa::Initialize(*settings);
         } else {
             // Settings provided as object.
 
@@ -40,13 +40,13 @@ void Initialize(const v8::FunctionCallbackInfo<v8::Value>& args) {
                 ss << " --" << kv.first << " " << kv.second;
             }
 
-            napa::runtime::Initialize(ss.str());
+            napa::Initialize(ss.str());
         }
     }
 }
 
 void Shutdown(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    napa::runtime::Shutdown();
+    napa::Shutdown();
 }
 
 void CreateContainer(const v8::FunctionCallbackInfo<v8::Value>& args) {

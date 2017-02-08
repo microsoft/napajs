@@ -1,7 +1,7 @@
 #pragma once
 
 #include "napa/exports.h"
-#include "napa/common-c.h"
+#include "napa/common.h"
 
 /// <summary> Represents napa response. </summary>
 typedef struct {
@@ -130,7 +130,7 @@ EXTERN_C NAPA_API napa_response_code napa_container_release(napa_container_handl
 EXTERN_C NAPA_API napa_response_code napa_initialize(napa_string_ref settings);
 
 /// <summary>
-///     Same as Napa_Runtime_Initialize only accepts arguments as provided by console
+///     Same as napa_initialize only accepts arguments as provided by console
 /// </summary>
 /// <param name="handle"> The container handle. </param>
 /// <param name="argc"> Number of arguments. </param>
