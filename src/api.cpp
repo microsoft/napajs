@@ -1,4 +1,4 @@
-#include "napa-runtime-c.h"
+#include "napa-c.h"
 
 #include "container.h"
 #include "providers/providers.h"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "napa-runtime-c.h"
+#include "napa-c.h"
 
 #include <memory>
 #include <functional>
@@ -8,7 +8,6 @@
 #include <vector>
 
 namespace napa {
-namespace runtime {
 
     /// <summary> Response class. </summary>
     struct Response {
@@ -33,7 +32,7 @@ namespace runtime {
     typedef std::function<void(Response)> RunCallback;
     typedef std::function<void(NapaResponseCode)> LoadCallback;
 
-    /// <summary> C++ class wrapper around napa runtime C APIs. </summary>
+    /// <summary> C++ class wrapper around napa C APIs. </summary>
     class Container {
     public:
         
@@ -91,17 +90,17 @@ namespace runtime {
     /// Implementation starts here.
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /// <summary> Initialize napa runtime with global scope settings. </summary>
+    /// <summary> Initialize napa with global scope settings. </summary>
     inline NapaResponseCode Initialize(const std::string& settings) {
         return napa_initialize(STD_STRING_TO_NAPA_STRING_REF(settings));
     }
 
-    /// <summary> Initialize napa runtime using console provided arguments. </summary>
+    /// <summary> Initialize napa using console provided arguments. </summary>
     inline NapaResponseCode InitializeFromConsole(int argc, char* argv[]) {
         return napa_initialize_from_console(argc, argv);
     }
 
-    /// <summary> Shut down napa runtime. </summary>
+    /// <summary> Shut down napa. </summary>
     inline NapaResponseCode Shutdown() {
         return napa_shutdown();
     }
@@ -203,5 +202,4 @@ namespace runtime {
 
         return Response(response);
     }
-}
 }

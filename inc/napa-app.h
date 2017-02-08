@@ -1,7 +1,6 @@
 #pragma once
 
-#include "napa-runtime.h"
-
+#include "napa.h"
 
 namespace napa {
 namespace app {
@@ -48,15 +47,15 @@ namespace app {
         NapaStringRef _content;
     };
 
-    typedef napa::runtime::Response Response;
+    typedef napa::Response Response;
 
     /// <summary> Facade class to facilitate napa app users in C++  </summary>
     class Engine {
     public:
-        typedef napa::runtime::RunCallback ResponseCallback;
+        typedef napa::RunCallback ResponseCallback;
 
         Engine();
-        Engine(const napa::runtime::Container& container);
+        Engine(const napa::Container& container);
 
         void Execute(const Request& request, ResponseCallback callback);
         Response ExecuteSync(const Request& request);
@@ -65,13 +64,13 @@ namespace app {
         static constexpr const char* ENTRY_FILE = "napa-app-main.js";
         static constexpr const char* ENTRY_FUNCTION = "handleRequest";
 
-        napa::runtime::Container _container;
+        napa::Container _container;
     };
 
-    inline Engine::Engine() : Engine(napa::runtime::Container()) {
+    inline Engine::Engine() : Engine(napa::Container()) {
     }
 
-    inline Engine::Engine(const napa::runtime::Container& container) : _container(container) {
+    inline Engine::Engine(const napa::Container& container) : _container(container) {
         _container.LoadFileSync(ENTRY_FILE);
     }
 

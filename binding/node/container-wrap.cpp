@@ -5,7 +5,7 @@
 #pragma warning(pop)
 
 #include "container-wrap.h"
-#include "napa-runtime.h"
+#include "napa.h"
 #include "napa/v8-helpers.h"
 #include "node-async-handler.h"
 
@@ -18,12 +18,12 @@ using namespace napa::binding;
 // Forward declaration.
 static std::vector<v8::Local<v8::Value>> CreateResponseValues(
     v8::Isolate* isolate,
-    const napa::runtime::Response& response);
+    const napa::Response& response);
 
 v8::Persistent<v8::Function> ContainerWrap::_constructor;
 
 
-ContainerWrap::ContainerWrap(std::unique_ptr<napa::runtime::Container> container) : 
+ContainerWrap::ContainerWrap(std::unique_ptr<napa::Container> container) : 
     _container(std::move(container)) {}
 
 void ContainerWrap::Init(v8::Isolate* isolate) {
@@ -83,7 +83,7 @@ void ContainerWrap::NewCallback(const v8::FunctionCallbackInfo<v8::Value>& args)
         }
     }
 
-    auto obj = new ContainerWrap(std::make_unique<napa::runtime::Container>(ss.str()));
+    auto obj = new ContainerWrap(std::make_unique<napa::Container>(ss.str()));
 
     obj->Wrap(args.This());
     args.GetReturnValue().Set(args.This());
@@ -187,7 +187,7 @@ void ContainerWrap::Run(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
     auto callback = v8::Local<v8::Function>::Cast(args[2]);
 
-    auto handler = NodeAsyncHandler<napa::runtime::Response>::New(
+    auto handler = NodeAsyncHandler<napa::Response>::New(
         isolate,
         callback,
         [isolate](const auto& response) { return CreateResponseValues(isolate, response); }
@@ -199,13 +199,13 @@ void ContainerWrap::Run(const v8::FunctionCallbackInfo<v8::Value>& args) {
         wrap->_container->Run(
             *func,
             runArgs,
-            [handler](napa::runtime::Response response) { handler->DispatchCallback(std::move(response)); },
+            [handler](napa::Response response) { handler->DispatchCallback(std::move(response)); },
             args[3]->Uint32Value(context).FromJust()); // timeout
     } else {
         wrap->_container->Run(
             *func,
             runArgs,
-            [handler](napa::runtime::Response response) { handler->DispatchCallback(std::move(response)); });
+            [handler](napa::Response response) { handler->DispatchCallback(std::move(response)); });
     }
 }
 
@@ -234,7 +234,7 @@ void ContainerWrap::RunSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
     auto wrap = ObjectWrap::Unwrap<ContainerWrap>(args.Holder());
 
-    napa::runtime::Response response;
+    napa::Response response;
     if (args.Length() > 2) {
         // Call with provided timeout.
         response = wrap->_container->RunSync(*func, runArgs, args[2]->Uint32Value(context).FromJust());
@@ -265,7 +265,7 @@ void ContainerWrap::RunSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
 }
 
 static std::vector<v8::Local<v8::Value>> CreateResponseValues(v8::Isolate* isolate,
-                                                               const napa::runtime::Response& response) {
+                                                               const napa::Response& response) {
     auto code = v8::Uint32::NewFromUnsigned(isolate, response.code);
 
     auto errorMessage = v8::String::NewFromUtf8(

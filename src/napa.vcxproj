@@ -34,11 +34,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="api.cpp" />
     <ClCompile Include="container.cpp" />
     <ClCompile Include="module\module-internal.cpp" />
     <ClCompile Include="platform\win\thread-local-storage.cpp" />
     <ClCompile Include="providers\providers.cpp" />
-    <ClCompile Include="runtime.cpp" />
     <ClCompile Include="scheduler\core.cpp" />
     <ClCompile Include="scheduler\simple-thread-pool.cpp" />
     <ClCompile Include="scheduler\task-decorators.cpp" />
