@@ -4,6 +4,7 @@
   <ItemGroup>
     <ProjectFile Include="hello-world\dirs.proj" />
     <ProjectFile Include="plus-number\dirs.proj" />
+    <ProjectFile Include="plus-number-transporter\dirs.proj" />
   </ItemGroup>
 
   <Import Project="$(ExtendedTargetsPath)\Traversal.targets" />

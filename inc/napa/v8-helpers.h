@@ -4,7 +4,6 @@
 #include <sstream>
 #include <unordered_map>
 
-
 #define CHECK_ARG_COMMON(isolate, expression, message, result, function, line)                                \
 if (!(expression)) {                                                                                          \
     std::stringstream temp;                                                                                   \
@@ -167,5 +166,6 @@ namespace v8_helpers {
 
         return scope.Escape(res);
     }
+
 }
 }

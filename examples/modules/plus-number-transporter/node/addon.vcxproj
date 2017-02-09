@@ -18,11 +18,11 @@
       <PreprocessorDefinitions Condition=" '$(AddonType)' != 'Napa' ">BUILDING_NODE_EXTENSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition=" '$(AddonType)' == 'Napa' ">NAPA_MODULE_EXTENSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\examples\modules\plus-number\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\examples\modules\plus-number-transporter\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="$(NapaVanillaRoot)\examples\modules\plus-number\src\plus-number.vcxproj" />
+    <ProjectReference Include="$(NapaVanillaRoot)\examples\modules\plus-number-transporter\src\plus-number-transporter.vcxproj" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)\addon.cpp" />

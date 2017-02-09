@@ -1,0 +1,8 @@
+{
+    "name": "plus-number-transporter",
+    "version": "0.0.1",
+    "author": "napav",
+    "description": "Example of a napa module passing an object by pointer.",
+    "main": "./lib/plus-number-transporter.js",
+    "types": "./types/plus-number-transporter.d.ts"
+}

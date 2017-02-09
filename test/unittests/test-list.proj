@@ -4,8 +4,9 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <DisableSpecificWarnings>4100;4996;4459</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\third-party\catch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\third-party\catch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
 
@@ -18,6 +19,7 @@
   <!-- Test code -->
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)\example\example.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\object-transport\object-transport-tests.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\scheduler\scheduler-tests.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\settings\parser-tests.cpp" />
   </ItemGroup>
