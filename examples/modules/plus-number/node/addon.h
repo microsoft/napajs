@@ -23,7 +23,7 @@ namespace demo {
         static const char* _exportName;
 
         /// <summary> Constructor with initial value. </summary>
-        explicit PlusNumberWrap(double value = 0);
+        explicit PlusNumberWrap(double value = 0.0);
 
         /// <summary> Create PlusNumber instance at V8. </summary>
         /// <param name="args"> Addend as PlusNumber constructor parameter. </param>

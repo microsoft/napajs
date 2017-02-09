@@ -14,7 +14,7 @@ namespace demo {
     public:
 
         /// <summary> Constructor with initial value. </summary>
-        explicit PlusNumber(double value = 0);
+        explicit PlusNumber(double value = 0.0);
 
         /// <summary> Add the given value and return the result. </summary>
         double Add(double value);

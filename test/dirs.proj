@@ -2,8 +2,8 @@
   <Import Project="$(EnvironmentConfig)" />
 
   <ItemGroup>
-    <ProjectFile Include="library-test\library-test.vcxproj" />
-    <ProjectFile Include="module-test\plus-number-test.njsproj" />
+    <ProjectFile Include="component\napa-component-tests.vcxproj" />
+    <ProjectFile Include="unittests\napa-unittests.vcxproj" />
   </ItemGroup>
 
   <Import Project="$(ExtendedTargetsPath)\Traversal.targets" />

@@ -1,0 +1,13 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(EnvironmentConfig)" />
+
+  <ItemGroup>
+    <ProjectFile Include="napa\addon.vcxproj" />
+    <ProjectFile Include="node\addon.vcxproj" />
+    <ProjectFile Include="script\script.proj" />
+    <ProjectFile Include="src\plus-number-transporter.vcxproj" />
+    <ProjectFile Include="test\dirs.proj" />
+  </ItemGroup>
+
+  <Import Project="$(ExtendedTargetsPath)\Traversal.targets" />
+</Project>

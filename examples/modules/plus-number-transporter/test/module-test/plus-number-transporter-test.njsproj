@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(EnvironmentConfig)" />
+
+  <PropertyGroup>
+    <AssemblyName>plus-number-transporter-test</AssemblyName>
+  </PropertyGroup>
+
+  <!-- Test files -->
+  <!-- It's using the default tsconfig.json@Napa.DevTools -->
+  <ItemGroup>
+    <TypeScriptCompile Include="test.ts" />
+  </ItemGroup>
+
+  <Import Project="$(PkgNapa_DevTools)\Napa.TestAdapter.targets" />
+
+  <ItemGroup>
+    <Robocopy Include="..\..\script\$(IntermediateOutputPath)\dist">
+      <DestinationFolder>$(QTestDirToDeploy)\app\node_modules\plus-number-transporter</DestinationFolder>
+    </Robocopy>
+  </ItemGroup>
+</Project>

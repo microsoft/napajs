@@ -3,7 +3,7 @@
 
   <ItemGroup>
     <ProjectFile Include="library-test\library-test.vcxproj" />
-    <ProjectFile Include="module-test\plus-number-test.njsproj" />
+    <ProjectFile Include="module-test\plus-number-transporter-test.njsproj" />
   </ItemGroup>
 
   <Import Project="$(ExtendedTargetsPath)\Traversal.targets" />

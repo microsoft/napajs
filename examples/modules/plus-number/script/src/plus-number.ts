@@ -4,6 +4,6 @@ export declare class PlusNumber {
     public add(value: number): number;
 }
 
-export function createPlusNumber(value: number = 0): PlusNumber {
+export function createPlusNumber(value: number = 0.0): PlusNumber {
     return addon.createPlusNumber(value);
 }

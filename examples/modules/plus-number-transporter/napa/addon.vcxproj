@@ -1,0 +1,13 @@
+﻿<!-- 
+    This is a custom dirs.proj file used specifically for addons.
+    It builds both the node flavor and the V8/Napa flavor using a single vcxproj file.
+    ProjectReference is used instead of ProjectFile because the Traversal target that 
+    is used when specifying a ProjectFile is masking away the additional target used 
+    to build the V8 flavor.
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup> 
+    <AddonType>Napa</AddonType> 
+  </PropertyGroup> 
+  <Import Project="..\node\addon.vcxproj" /> 
+</Project>
