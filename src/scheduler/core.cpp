@@ -55,6 +55,10 @@ Core::~Core() {
     }
 }
 
+
+Core::Core(Core&&) = default;
+Core& Core::operator=(Core&&) = default;
+
 void Core::Schedule(std::shared_ptr<Task> task) {
     assert(task != nullptr);
 
@@ -69,7 +73,7 @@ void Core::CoreThreadFunc(const Settings& settings) {
     // Since we are 1-1 with threads and isolates, a top level lock that is never released is ok.
     v8::Locker locker(isolate);
     
-    v8::Isolate::Scope isolate_scope(isolate);
+    v8::Isolate::Scope isolateScope(isolate);
     v8::HandleScope handleScope(isolate);
     v8::Local<v8::Context> context = v8::Context::New(isolate);
 

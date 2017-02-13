@@ -1,32 +1,50 @@
-#include "napa-c.h"
+#include <napa-c.h>
 
-#include "container.h"
 #include "providers/providers.h"
+#include "scheduler/load-task.h"
+#include "scheduler/scheduler.h"
+#include "scheduler/run-task.h"
 #include "settings/settings-parser.h"
 #include "v8/v8-common.h"
 
-#include <thread>
+#include <napa-log.h>
+
+#include <future>
+#include <fstream>
+#include <sstream>
 #include <iostream>
 
-static bool _initialized = false;
-static napa::Settings _globalSettings;
+#include <thread>
 
+
+using namespace napa;
+using namespace napa::scheduler;
+
+static bool _initialized = false;
+static Settings _globalSettings;
+
+/// <summary> Simple representation of a container. Groups objects that are part of a single container. </summary>
+struct Container {
+    Settings settings;
+    std::unique_ptr<Scheduler> scheduler;
+};
 
 napa_container_handle napa_container_create() {
-    return reinterpret_cast<napa_container_handle>(new napa::Container());
+    return reinterpret_cast<napa_container_handle>(new Container());
 }
 
 napa_response_code napa_container_init(napa_container_handle handle, napa_string_ref settings) {
-    // Container settings are based on global settings.
-    auto containerSettings = std::make_unique<napa::Settings>(_globalSettings);
+    auto container = reinterpret_cast<Container*>(handle);
 
-    if (napa::settings_parser::ParseFromString(NAPA_STRING_REF_TO_STD_STRING(settings), *containerSettings)) {
+    // Container settings are based on global settings.
+    container->settings = _globalSettings;
+
+    if (napa::settings_parser::ParseFromString(NAPA_STRING_REF_TO_STD_STRING(settings), container->settings)) {
         return NAPA_RESPONSE_SETTINGS_PARSER_ERROR;
     }
 
-    auto container = reinterpret_cast<napa::Container*>(handle);
-
-    container->Initialize(std::move(containerSettings));
+    // Create the container's scheduler.
+    container->scheduler = std::make_unique<Scheduler>(container->settings);
 
     return NAPA_RESPONSE_SUCCESS;
 }
@@ -38,48 +56,108 @@ napa_response_code napa_container_set_global_value(napa_container_handle handle 
     return NAPA_RESPONSE_SUCCESS;
 }
 
+static void napa_container_load_common(napa_container_handle handle,
+                                       std::string source,
+                                       LoadTask::LoadTaskCallback callback) {
+    auto container = reinterpret_cast<Container*>(handle);
+
+    auto loadTask = std::make_shared<LoadTask>(std::move(source), std::move(callback));
+
+    // TODO @asib: wrap this task with a TimeoutTaskDecorator with a constant timeout.
+
+    container->scheduler->ScheduleOnAllCores(std::move(loadTask));
+}
+
+static std::string read_file_content(napa_string_ref file) {
+    std::ifstream ifs;
+    ifs.open(NAPA_STRING_REF_TO_STD_STRING(file));
+
+    if (!ifs.is_open()) {
+        LOG_ERROR("Api", "Failed to open file %s", file.data);
+        return "";
+    }
+
+    std::stringstream buffer;
+    buffer << ifs.rdbuf();
+
+    return buffer.str();
+}
+
 void napa_container_load_file(napa_container_handle handle,
                               napa_string_ref file,
                               napa_container_load_callback callback,
                               void* context) {
-    std::cout << "napa_container_load_file()" << std::endl;
-    std::cout << "\tfile: " << file.data << std::endl;
+    // Although this is an async call, the reading of the file happens synchronously on the caller thread.
+    // This is because the load task is distributed to all cores and we don't want to read the file multiple times.
+    // We can spawn/reuse an additional thread just for reading before we schedule the load task, need to consider
+    // if this becomes a bottleneck.
+    auto fileContent = read_file_content(file);
+    if (fileContent.empty()) {
+        callback(NAPA_RESPONSE_LOAD_FILE_ERROR, context);
+        return;
+    }
 
-    // Mock async response
-    std::thread([callback, context]() {
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-
-        callback(NAPA_RESPONSE_SUCCESS, context);
-    }).detach();
+    napa_container_load_common(handle, std::move(fileContent), [callback, context](napa_response_code code) {
+        callback(code, context);
+    });
 }
 
 napa_response_code napa_container_load_file_sync(napa_container_handle handle, napa_string_ref file) {
-    std::cout << "napa_container_load_file_sync()" << std::endl;
-    std::cout << "\tfile: " << file.data << std::endl;
+    auto fileContent = read_file_content(file);
+    if (fileContent.empty()) {
+        return NAPA_RESPONSE_LOAD_FILE_ERROR;
+    }
 
-    return NAPA_RESPONSE_SUCCESS;
+    std::promise<napa_response_code> prom;
+    auto fut = prom.get_future();
+    napa_container_load_common(handle, std::move(fileContent), [&prom](napa_response_code code) {
+        prom.set_value(code);
+    });
+
+    return fut.get();
 }
 
 void napa_container_load(napa_container_handle handle,
                          napa_string_ref source,
                          napa_container_load_callback callback,
                          void* context) {
-    std::cout << "napa_container_load()" << std::endl;
-    std::cout << "\tsource: " << source.data << std::endl;
-
-    // Mock async response
-    std::thread([callback, context]() {
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-
-        callback(NAPA_RESPONSE_SUCCESS, context);
-    }).detach();
+    napa_container_load_common(handle,
+                               NAPA_STRING_REF_TO_STD_STRING(source),
+                               [callback, context](napa_response_code code) {
+        callback(code, context);
+    });
 }
 
 napa_response_code napa_container_load_sync(napa_container_handle handle, napa_string_ref source) {
-    std::cout << "napa_container_load_sync()" << std::endl;
-    std::cout << "\tsource: " << source.data << std::endl;
+    std::promise<napa_response_code> prom;
+    auto fut = prom.get_future();
+    napa_container_load_common(handle, NAPA_STRING_REF_TO_STD_STRING(source), [&prom](napa_response_code code) {
+        prom.set_value(code);
+    });
 
-    return NAPA_RESPONSE_SUCCESS;
+    return fut.get();
+}
+
+void napa_container_run_common(napa_container_handle handle,
+                               napa_string_ref func,
+                               size_t argc,
+                               const napa_string_ref argv[],
+                               RunTask::RunTaskCallback callback,
+                               uint32_t timeout) {
+    auto container = reinterpret_cast<Container*>(handle);
+
+    // TODO @asib: Wrap run task with a timeout decorator.
+
+    std::vector<std::string> args;
+    args.reserve(argc);
+
+    for (size_t i = 0; i < argc; i++) {
+        args.emplace_back(NAPA_STRING_REF_TO_STD_STRING(argv[i]));
+    }
+
+    auto task = std::make_shared<RunTask>(NAPA_STRING_REF_TO_STD_STRING(func), std::move(args), std::move(callback));
+
+    container->scheduler->Schedule(std::move(task));
 }
 
 void napa_container_run(napa_container_handle handle,
@@ -89,27 +167,10 @@ void napa_container_run(napa_container_handle handle,
                         napa_container_run_callback callback,
                         void* context,
                         uint32_t timeout) {
-    std::cout << "napa_container_run()" << std::endl;
-    std::cout << "\tfunc: " << func.data << std::endl;
-    std::cout << "\targc: " << argc << std::endl;
-
-    for (int i = 0; i < argc; i++) {
-        std::cout << "\t\t[" << i << "] " << argv[i].data << std::endl;
-    }
-    std::cout << "\ttimeout: " << timeout << std::endl;
-
-    // Mock async response
-    std::thread([callback, context]() {
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-
-        napa_container_response response;
-
-        response.code = NAPA_RESPONSE_SUCCESS;
-        response.error_message = CREATE_NAPA_STRING_REF("");
-        response.return_value = CREATE_NAPA_STRING_REF("{\"score\":2412}");
-
-        callback(response, context);
-    }).detach();
+    napa_container_run_common(handle, func, argc, argv,
+        [callback, context](napa_response_code code, napa_string_ref errorMessage, napa_string_ref returnValue) {
+        callback(napa_container_response{ code, errorMessage, returnValue }, context);
+    }, timeout);
 }
 
 napa_container_response napa_container_run_sync(napa_container_handle handle,
@@ -117,26 +178,19 @@ napa_container_response napa_container_run_sync(napa_container_handle handle,
                                                 size_t argc,
                                                 const napa_string_ref argv[],
                                                 uint32_t timeout) {
-    std::cout << "napa_container_run_sync()" << std::endl;
-    std::cout << "\tfunc: " << func.data << std::endl;
-    std::cout << "\targc: " << argc << std::endl;
-    
-    for (int i = 0; i < argc; i++) {
-        std::cout << "\t\t[" << i << "] " << argv[i].data << std::endl;
-    }
-    std::cout << "\ttimeout: " << timeout << std::endl;
+    std::promise<napa_container_response> prom;
+    auto fut = prom.get_future();
 
-    return napa_container_response {
-        NAPA_RESPONSE_SUCCESS,
-        CREATE_NAPA_STRING_REF(""),
-        CREATE_NAPA_STRING_REF("{\"score\":2412}")
-    };
+    napa_container_run_common(handle, func, argc, argv,
+        [&prom](napa_response_code code, napa_string_ref errorMessage, napa_string_ref returnValue) {
+        prom.set_value(napa_container_response{ code, errorMessage, returnValue });
+    }, timeout);
+
+    return fut.get();
 }
 
 napa_response_code napa_container_release(napa_container_handle handle) {
-    auto container = reinterpret_cast<napa::Container*>(handle);
-
-    // TODO @asib: call container shutdown API if exists.
+    auto container = reinterpret_cast<Container*>(handle);
 
     delete container;
 

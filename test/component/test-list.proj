@@ -9,6 +9,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+      <PreprocessorDefinitions>NAPA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\test\component;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -22,14 +23,18 @@
 
   <!-- Product code that is tested and needs to compile -->
   <ItemGroup>
+    <ClCompile Include="$(NapaVanillaRoot)\src\providers\providers.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\core.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\load-task.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\run-task.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\v8\v8-common.cpp" />
   </ItemGroup>
 
   <!-- Test code -->
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)\core\core-tests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)\object-transport-v8-helpers\object-transport-v8-helpers-tests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\core-tests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\tasks-tests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\object-transport-v8-helpers-tests.cpp" />
   </ItemGroup>
 
   <!-- Test artifacts binplace -->
