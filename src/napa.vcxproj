@@ -12,6 +12,9 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{77438208-443B-4D65-A9B2-B4827F32F7CB}</ProjectGuid>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -35,11 +38,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="api.cpp" />
-    <ClCompile Include="container.cpp" />
     <ClCompile Include="module\module-internal.cpp" />
     <ClCompile Include="platform\win\thread-local-storage.cpp" />
     <ClCompile Include="providers\providers.cpp" />
     <ClCompile Include="scheduler\core.cpp" />
+    <ClCompile Include="scheduler\load-task.cpp" />
+    <ClCompile Include="scheduler\run-task.cpp" />
     <ClCompile Include="scheduler\simple-thread-pool.cpp" />
     <ClCompile Include="scheduler\task-decorators.cpp" />
     <ClCompile Include="settings\settings-parser.cpp" />

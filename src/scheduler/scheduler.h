@@ -23,7 +23,7 @@ namespace scheduler {
 
         /// <summary> Constructor. </summary>
         /// <param name="settings"> A settings object. </param>
-        SchedulerImpl(const Settings& settings);
+        explicit SchedulerImpl(const Settings& settings);
 
         /// <summary> Destructor. Waits for all tasks to finish. </summary>
         ~SchedulerImpl();

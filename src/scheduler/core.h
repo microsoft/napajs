@@ -27,6 +27,14 @@ namespace scheduler {
         /// <note> This will block until all pending tasks are completed. </note>
         ~Core();
 
+        /// <summary> Non-copyable. </summary>
+        Core(const Core&) = delete;
+        Core& operator=(const Core&) = delete;
+
+        /// <summary> Moveable. </summary>
+        Core(Core&&);
+        Core& operator=(Core&&);
+
         /// <summary> Schedules a task on this core. </summary>
         /// <param name="task"> Task to schedule. </param>
         /// <note> Same task instance may run on multiple cores, hence the use of shared_ptr. </node>

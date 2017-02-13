@@ -15,6 +15,8 @@ typedef napa_string_ref NapaStringRef;
 #define CREATE_NAPA_STRING_REF_WITH_SIZE(data, size) (napa_string_ref { (data), (size) })
 #define CREATE_NAPA_STRING_REF(data) CREATE_NAPA_STRING_REF_WITH_SIZE(data, strlen(data))
 
+const napa_string_ref EMPTY_NAPA_STRING_REF = CREATE_NAPA_STRING_REF_WITH_SIZE(0, 0);
+
 #ifdef __cplusplus
 
 #define STD_STRING_TO_NAPA_STRING_REF(str) (napa_string_ref { (str).data(), (str).size() })
