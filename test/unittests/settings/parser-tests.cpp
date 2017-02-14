@@ -77,6 +77,14 @@ TEST_CASE("Parsing with multiple values for one setting", "[settings-parser]") {
     REQUIRE(settings.v8Flags[2] == "three");
 }
 
+TEST_CASE("Parsing with empty string succeeds", "[settings-parser]") {
+    Settings settings;
+    settings.cores = 0;
+    settings.loggingProvider = "";
+
+    REQUIRE(settings_parser::ParseFromString("", settings) == true);
+}
+
 TEST_CASE("Parsing with different value type fails", "[settings-parser]") {
     Settings settings;
     settings.cores = 0;

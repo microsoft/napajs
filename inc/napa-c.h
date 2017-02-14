@@ -60,13 +60,6 @@ EXTERN_C NAPA_API void napa_container_load_file(
     napa_container_load_callback callback,
     void* context);
 
-/// <summary> Loads the content of the provided file into the container synchronously. </summary>
-/// <param name="handle"> The container handle. </param>
-/// <param name="file"> The path to the JavaScript file. </param>
-EXTERN_C NAPA_API napa_response_code napa_container_load_file_sync(
-    napa_container_handle handle,
-    napa_string_ref file);
-
 /// <summary> Loads the provided source code into the container asynchronously. </summary>
 /// <param name="handle"> The container handle. </param>
 /// <param name="source"> The JavaScript source code. </param>
@@ -77,13 +70,6 @@ EXTERN_C NAPA_API void napa_container_load(
     napa_string_ref source,
     napa_container_load_callback callback,
     void* context);
-
-/// <summary> Loads the provided source code into the container synchronously. </summary>
-/// <param name="handle"> The container handle. </param>
-/// <param name="source"> The JavaScript source code. </param>
-EXTERN_C NAPA_API napa_response_code napa_container_load_sync(
-    napa_container_handle handle,
-    napa_string_ref source);
 
 /// <summary> Runs a pre-loaded function asynchronously. </summary>
 /// <param name="handle"> The container handle. </param>
@@ -100,19 +86,6 @@ EXTERN_C NAPA_API void napa_container_run(
     const napa_string_ref argv[],
     napa_container_run_callback callback,
     void* context,
-    uint32_t timeout);
-
-/// <summary> Runs a pre-loaded function synchronously. </summary>
-/// <param name="handle"> The container handle. </param>
-/// <param name="func"> The name of the function to run. </param>
-/// <param name="argc"> The number of arguments that are to be passed to the function. </param>
-/// <param name="argv"> The arguments. </param>
-/// <param name="timeout"> Timeout in milliseconds - Use 0 for inifinite. </param>
-EXTERN_C NAPA_API napa_container_response napa_container_run_sync(
-    napa_container_handle handle,
-    napa_string_ref func,
-    size_t argc,
-    const napa_string_ref argv[],
     uint32_t timeout);
 
 /// <summary> Cleanup container resources and free its memory. </summary>

@@ -22,4 +22,5 @@ NAPA_RESPONSE_CODE_DEF( LOAD_SCRIPT_ERROR,               "Failed to load JavaScr
 NAPA_RESPONSE_CODE_DEF( LOAD_FILE_ERROR,                 "Failed to load the JavaScript file in container"),
 NAPA_RESPONSE_CODE_DEF( RUN_FUNC_ERROR,                  "Failed to run the JavaScript function"),
 NAPA_RESPONSE_CODE_DEF( SETTINGS_PARSER_ERROR,           "Failed to parse settings"),
-NAPA_RESPONSE_CODE_DEF( PROVIDERS_INIT_ERROR,            "Failed to initialize providers")
+NAPA_RESPONSE_CODE_DEF( PROVIDERS_INIT_ERROR,            "Failed to initialize providers"),
+NAPA_RESPONSE_CODE_DEF( V8_INIT_ERROR,                   "Failed to initialize V8")

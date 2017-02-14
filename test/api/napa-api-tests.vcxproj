@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(EnvironmentConfig)" />
+  <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.Default.props" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4D4E992D-79A5-419D-8161-55D93069C606}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup>
+    <V8BinPath>$(PACKAGESROOT)\V8.Library\$(COMPILER_VERSION)\bin\$(BuildType)\$(BuildArchitecture)</V8BinPath>
+    <V8MiscPath>$(PACKAGESROOT)\V8.Library\misc\$(BuildType)\$(BuildArchitecture)</V8MiscPath>
+  </PropertyGroup>
+  <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.props" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\third-party\catch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\api-tests.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(NapaVanillaRoot)\src\napa.vcxproj" />
+  </ItemGroup>
+  <!-- Test artifacts binplace -->
+  <ItemGroup>
+    <Robocopy Include="$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.dll">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="$(V8BinPath)\icui18n.dll">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="$(V8BinPath)\icuuc.dll">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="$(V8BinPath)\v8.dll">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="$(V8MiscPath)\natives_blob.bin">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="$(V8MiscPath)\snapshot_blob.bin">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="$(MSBuildThisFileDirectory)\test.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+  </ItemGroup>
+  <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

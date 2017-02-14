@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <functional>
+#include <future>
 #include <string>
 #include <vector>
 
@@ -41,7 +42,7 @@ namespace napa {
 
         /// <summary> Creates a container instance. </summary>
         /// <param name="settings"> A settings string to set conainer specific settings. </param>
-        Container(const std::string& settings);
+        explicit Container(const std::string& settings);
 
         /// <summary> Deletes the underlying container handle, hence cleaning all container resources. </summary>
         ~Container();
@@ -91,7 +92,7 @@ namespace napa {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// <summary> Initialize napa with global scope settings. </summary>
-    inline NapaResponseCode Initialize(const std::string& settings) {
+    inline NapaResponseCode Initialize(const std::string& settings = "") {
         return napa_initialize(STD_STRING_TO_NAPA_STRING_REF(settings));
     }
 
@@ -135,7 +136,10 @@ namespace napa {
     inline Container::Container(const std::string& settings) {
         _handle = napa_container_create();
 
-        napa_container_init(_handle, STD_STRING_TO_NAPA_STRING_REF(settings));
+        auto res = napa_container_init(_handle, STD_STRING_TO_NAPA_STRING_REF(settings));
+        if (res != NAPA_RESPONSE_SUCCESS) {
+            throw std::runtime_error(napa_response_code_to_string(res));
+        }
     }
 
     inline Container::~Container() {
@@ -157,7 +161,14 @@ namespace napa {
     }
 
     inline NapaResponseCode Container::LoadFileSync(const std::string& file) {
-        return napa_container_load_file_sync(_handle, STD_STRING_TO_NAPA_STRING_REF(file));
+        std::promise<NapaResponseCode> prom;
+        auto fut = prom.get_future();
+
+        LoadFile(file, [&prom](NapaResponseCode code) {
+            prom.set_value(code);
+        });
+
+        return fut.get();
     }
 
     inline void Container::Load(const std::string& source, LoadCallback callback) {
@@ -171,7 +182,14 @@ namespace napa {
     }
 
     inline NapaResponseCode Container::LoadSync(const std::string& source) {
-        return napa_container_load_sync(_handle, STD_STRING_TO_NAPA_STRING_REF(source));
+        std::promise<NapaResponseCode> prom;
+        auto fut = prom.get_future();
+
+        Load(source, [&prom](NapaResponseCode code) {
+            prom.set_value(code);
+        });
+
+        return fut.get();
     }
 
     inline void Container::Run(const char* func,
@@ -193,13 +211,13 @@ namespace napa {
     inline Response Container::RunSync(const char* func,
                                        const std::vector<NapaStringRef>& args,
                                        uint32_t timeout) {
-        napa_container_response response = napa_container_run_sync(
-            _handle,
-            CREATE_NAPA_STRING_REF(func),
-            args.size(),
-            args.data(),
-            timeout);
+        std::promise<Response> prom;
+        auto fut = prom.get_future();
 
-        return Response(response);
+        Run(func, args, [&prom](Response response) {
+            prom.set_value(std::move(response));
+        }, timeout);
+
+        return fut.get();
     }
 }

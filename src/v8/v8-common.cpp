@@ -31,4 +31,5 @@ void napa::v8_common::Shutdown() {
     v8::V8::ShutdownPlatform();
 
     delete _platform;
+    _platform = nullptr;
 }
