@@ -14,11 +14,8 @@ void LoadTask::Execute() {
     v8::HandleScope scope(isolate);
     auto context = isolate->GetCurrentContext();
 
-    // V8 garbage collection frees ExternalOneByteStringResourceImpl.
-    auto externalString = new v8::ExternalOneByteStringResourceImpl(_source.data(), _source.length());
-
-    // Create a V8 string from the exernal string resource.
-    auto source = v8::String::NewExternal(isolate, externalString);
+    // Create a V8 string from the raw c string in this isolate.
+    auto source = v8::String::NewFromUtf8(isolate, _source.data(), v8::NewStringType::kNormal).ToLocalChecked();
 
     // Compile the source code.
     auto compileResult = v8::Script::Compile(context, source);

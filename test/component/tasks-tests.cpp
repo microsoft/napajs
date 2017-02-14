@@ -4,6 +4,7 @@
 #include "scheduler/load-task.h"
 #include "scheduler/run-task.h"
 #include "settings/settings.h"
+#include "v8/array-buffer-allocator.h"
 #include "v8-initialization-guard.h"
 
 
@@ -12,27 +13,6 @@
 
 using namespace napa;
 using namespace napa::scheduler;
-
-///<summary> Allocator that V8 uses to allocate |ArrayBuffer|'s memory. </summary>
-class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
-public:
-
-    ///<see> v8::ArrayBuffer::Allocator::Allocate </summary>
-    virtual void* Allocate(size_t length) override {
-        void* data = AllocateUninitialized(length);
-        return memset(data, 0, length);
-    }
-
-    ///<see> v8::ArrayBuffer::Allocator::AllocateUninitialized </summary>
-    virtual void* AllocateUninitialized(size_t length) override {
-        return malloc(length);
-    }
-
-    ///<see> v8::ArrayBuffer::Allocator::Free </summary>
-    virtual void Free(void* data, size_t length) override {
-        free(data);
-    }
-};
 
 // Make sure V8 it initialized exactly once.
 static V8InitializationGuard _guard;
@@ -44,7 +24,7 @@ TEST_CASE("tasks", "[tasks]") {
     napa::providers::Initialize(settings);
 
     // Create a new Isolate and make it the current one.
-    ArrayBufferAllocator allocator;
+    napa::v8_extensions::ArrayBufferAllocator allocator;
     v8::Isolate::CreateParams createParams;
     createParams.array_buffer_allocator = &allocator;
     auto isolate = v8::Isolate::New(createParams);

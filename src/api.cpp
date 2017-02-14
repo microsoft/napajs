@@ -9,6 +9,7 @@
 
 #include <napa-log.h>
 
+#include <atomic>
 #include <future>
 #include <fstream>
 #include <sstream>
@@ -20,7 +21,7 @@
 using namespace napa;
 using namespace napa::scheduler;
 
-static bool _initialized = false;
+static std::atomic<bool> _initialized = false;
 static Settings _globalSettings;
 
 /// <summary> Simple representation of a container. Groups objects that are part of a single container. </summary>
@@ -39,7 +40,7 @@ napa_response_code napa_container_init(napa_container_handle handle, napa_string
     // Container settings are based on global settings.
     container->settings = _globalSettings;
 
-    if (napa::settings_parser::ParseFromString(NAPA_STRING_REF_TO_STD_STRING(settings), container->settings)) {
+    if (!napa::settings_parser::ParseFromString(NAPA_STRING_REF_TO_STD_STRING(settings), container->settings)) {
         return NAPA_RESPONSE_SETTINGS_PARSER_ERROR;
     }
 
@@ -61,7 +62,15 @@ static void napa_container_load_common(napa_container_handle handle,
                                        LoadTask::LoadTaskCallback callback) {
     auto container = reinterpret_cast<Container*>(handle);
 
-    auto loadTask = std::make_shared<LoadTask>(std::move(source), std::move(callback));
+    // Make sure the callback is only called once, after all cores finished running the load task.
+    auto counter = std::make_shared<std::atomic<uint32_t>>(container->settings.cores);
+    auto callOnce = [callback = std::move(callback), counter](napa_response_code code) {
+        if (--(*counter) == 0) {
+            callback(code);
+        }
+    };
+
+    auto loadTask = std::make_shared<LoadTask>(std::move(source), std::move(callOnce));
 
     // TODO @asib: wrap this task with a TimeoutTaskDecorator with a constant timeout.
 
@@ -102,21 +111,6 @@ void napa_container_load_file(napa_container_handle handle,
     });
 }
 
-napa_response_code napa_container_load_file_sync(napa_container_handle handle, napa_string_ref file) {
-    auto fileContent = read_file_content(file);
-    if (fileContent.empty()) {
-        return NAPA_RESPONSE_LOAD_FILE_ERROR;
-    }
-
-    std::promise<napa_response_code> prom;
-    auto fut = prom.get_future();
-    napa_container_load_common(handle, std::move(fileContent), [&prom](napa_response_code code) {
-        prom.set_value(code);
-    });
-
-    return fut.get();
-}
-
 void napa_container_load(napa_container_handle handle,
                          napa_string_ref source,
                          napa_container_load_callback callback,
@@ -128,22 +122,13 @@ void napa_container_load(napa_container_handle handle,
     });
 }
 
-napa_response_code napa_container_load_sync(napa_container_handle handle, napa_string_ref source) {
-    std::promise<napa_response_code> prom;
-    auto fut = prom.get_future();
-    napa_container_load_common(handle, NAPA_STRING_REF_TO_STD_STRING(source), [&prom](napa_response_code code) {
-        prom.set_value(code);
-    });
-
-    return fut.get();
-}
-
-void napa_container_run_common(napa_container_handle handle,
-                               napa_string_ref func,
-                               size_t argc,
-                               const napa_string_ref argv[],
-                               RunTask::RunTaskCallback callback,
-                               uint32_t timeout) {
+void napa_container_run(napa_container_handle handle,
+                        napa_string_ref func,
+                        size_t argc,
+                        const napa_string_ref argv[],
+                        napa_container_run_callback callback,
+                        void* context,
+                        uint32_t timeout) {
     auto container = reinterpret_cast<Container*>(handle);
 
     // TODO @asib: Wrap run task with a timeout decorator.
@@ -155,38 +140,15 @@ void napa_container_run_common(napa_container_handle handle,
         args.emplace_back(NAPA_STRING_REF_TO_STD_STRING(argv[i]));
     }
 
-    auto task = std::make_shared<RunTask>(NAPA_STRING_REF_TO_STD_STRING(func), std::move(args), std::move(callback));
+    auto task = std::make_shared<RunTask>(
+        NAPA_STRING_REF_TO_STD_STRING(func),
+        std::move(args),
+        [callback, context](NapaResponseCode code, NapaStringRef errorMessage, NapaStringRef returnValue) {
+            callback(napa_container_response{ code, errorMessage, returnValue }, context);
+        }
+    );
 
     container->scheduler->Schedule(std::move(task));
-}
-
-void napa_container_run(napa_container_handle handle,
-                        napa_string_ref func,
-                        size_t argc,
-                        const napa_string_ref argv[],
-                        napa_container_run_callback callback,
-                        void* context,
-                        uint32_t timeout) {
-    napa_container_run_common(handle, func, argc, argv,
-        [callback, context](napa_response_code code, napa_string_ref errorMessage, napa_string_ref returnValue) {
-        callback(napa_container_response{ code, errorMessage, returnValue }, context);
-    }, timeout);
-}
-
-napa_container_response napa_container_run_sync(napa_container_handle handle,
-                                                napa_string_ref func,
-                                                size_t argc,
-                                                const napa_string_ref argv[],
-                                                uint32_t timeout) {
-    std::promise<napa_container_response> prom;
-    auto fut = prom.get_future();
-
-    napa_container_run_common(handle, func, argc, argv,
-        [&prom](napa_response_code code, napa_string_ref errorMessage, napa_string_ref returnValue) {
-        prom.set_value(napa_container_response{ code, errorMessage, returnValue });
-    }, timeout);
-
-    return fut.get();
 }
 
 napa_response_code napa_container_release(napa_container_handle handle) {
@@ -203,7 +165,9 @@ static napa_response_code napa_initialize_common() {
     }
 
     if (_globalSettings.initV8) {
-        napa::v8_common::Initialize();
+        if (!napa::v8_common::Initialize()) {
+            return NAPA_RESPONSE_V8_INIT_ERROR;
+        }
     }
 
     _initialized = true;
@@ -232,8 +196,6 @@ napa_response_code napa_initialize_from_console(int argc, char* argv[]) {
 }
 
 napa_response_code napa_shutdown() {
-    assert(_initialized == true);
-
     napa::providers::Shutdown();
 
     if (_globalSettings.initV8) {

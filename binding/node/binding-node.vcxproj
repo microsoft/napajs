@@ -49,4 +49,5 @@
   </ItemGroup>
   <Import Project="$(PACKAGESROOT)\NodeJs.Library\exports.props" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="$(NapaRoot)\tools\clang_tools\napa_checks.targets" />
 </Project>

@@ -1,5 +1,7 @@
 #include "core.h"
 
+#include "v8/array-buffer-allocator.h"
+
 // Disable third party library warnnings
 #pragma warning(push)
 #pragma warning(disable: 4127 4458 4068)
@@ -103,31 +105,9 @@ void Core::CoreThreadFunc(const Settings& settings) {
     }
 }
 
-
-///<summary> Allocator that V8 uses to allocate |ArrayBuffer|'s memory. </summary>
-class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
-public:
-
-    ///<see> v8::ArrayBuffer::Allocator::Allocate </summary>
-    virtual void* Allocate(size_t length) override {
-        void* data = AllocateUninitialized(length);
-        return memset(data, 0, length);
-    }
-
-    ///<see> v8::ArrayBuffer::Allocator::AllocateUninitialized </summary>
-    virtual void* AllocateUninitialized(size_t length) override {
-        return malloc(length);
-    }
-
-    ///<see> v8::ArrayBuffer::Allocator::Free </summary>
-    virtual void Free(void* data, size_t length) override {
-        free(data);
-    }
-};
-
 static v8::Isolate* CreateAndConfigureIsolate(const Settings& settings) {
     // The allocator is a global V8 setting.
-    static ArrayBufferAllocator commonAllocator;
+    static napa::v8_extensions::ArrayBufferAllocator commonAllocator;
 
     v8::Isolate::CreateParams createParams;
     createParams.array_buffer_allocator = &commonAllocator;
