@@ -60,5 +60,5 @@
   <Import Project="$(Pkgboost_program_options_vc140)\build\native\boost_program_options-vc140.targets" />
   <Import Project="$(Pkgboost_system_vc140)\build\native\boost_system-vc140.targets" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="$(NapaRoot)\tools\clang_tools\napa_checks.targets" />
+  <!-- <Import Project="$(NapaRoot)\tools\clang_tools\napa_checks.targets" /> -->
 </Project>

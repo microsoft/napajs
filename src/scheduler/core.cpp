@@ -17,7 +17,8 @@ using namespace napa;
 using namespace napa::scheduler;
 
 // Forward declaration
-static v8::Isolate* CreateAndConfigureIsolate(const Settings& settings);
+static v8::Isolate* CreateIsolate(const Settings& settings);
+static void ConfigureIsolate(v8::Isolate* isolate, const Settings& settings);
 
 struct Core::Impl {
 
@@ -68,19 +69,20 @@ void Core::Schedule(std::shared_ptr<Task> task) {
 }
 
 void Core::CoreThreadFunc(const Settings& settings) {
-    auto isolate = CreateAndConfigureIsolate(settings);
-    _impl->isolate = isolate;
+    _impl->isolate = CreateIsolate(settings);
 
     // If any user of the v8.dll uses a locker on any isolate, all isolates must be locked before use.
     // Since we are 1-1 with threads and isolates, a top level lock that is never released is ok.
-    v8::Locker locker(isolate);
-    
-    v8::Isolate::Scope isolateScope(isolate);
-    v8::HandleScope handleScope(isolate);
-    v8::Local<v8::Context> context = v8::Context::New(isolate);
+    v8::Locker locker(_impl->isolate);
+
+    ConfigureIsolate(_impl->isolate, settings);
+
+    v8::Isolate::Scope isolateScope(_impl->isolate);
+    v8::HandleScope handleScope(_impl->isolate);
+    v8::Local<v8::Context> context = v8::Context::New(_impl->isolate);
 
     // We set an empty security token so callee can access caller's context.
-    context->SetSecurityToken(v8::Undefined(isolate));
+    context->SetSecurityToken(v8::Undefined(_impl->isolate));
     v8::Context::Scope contextScope(context);
 
     // TODO @asib: This is where we need to call module loader for setting builtin and core modules.
@@ -105,7 +107,7 @@ void Core::CoreThreadFunc(const Settings& settings) {
     }
 }
 
-static v8::Isolate* CreateAndConfigureIsolate(const Settings& settings) {
+static v8::Isolate* CreateIsolate(const Settings& settings) {
     // The allocator is a global V8 setting.
     static napa::v8_extensions::ArrayBufferAllocator commonAllocator;
 
@@ -117,8 +119,10 @@ static v8::Isolate* CreateAndConfigureIsolate(const Settings& settings) {
     createParams.constraints.set_max_semi_space_size(settings.maxSemiSpaceSize);
     createParams.constraints.set_max_executable_size(settings.maxExecutableSize);
 
-    auto isolate = v8::Isolate::New(createParams);
+    return v8::Isolate::New(createParams);
+}
 
+static void ConfigureIsolate(v8::Isolate* isolate, const Settings& settings) {
     // TODO @asib: Configure GC and counters if needed.
 
     // Logs V8 error and prevent it from aborting.
@@ -137,6 +141,4 @@ static v8::Isolate* CreateAndConfigureIsolate(const Settings& settings) {
     uint32_t currentStackAddress;
     auto limit = (reinterpret_cast<uintptr_t>(&currentStackAddress - settings.maxStackSize / sizeof(uint32_t*)));
     isolate->SetStackLimit(limit);
-
-    return isolate;
 }
