@@ -18,6 +18,8 @@
 
 NAPA_RESPONSE_CODE_DEF( SUCCESS,                         "Success"),
 NAPA_RESPONSE_CODE_DEF( UNDEFINED,                       "Undefined"),
+NAPA_RESPONSE_CODE_DEF( INTERNAL_ERROR,                  "Napa internal error"),
+NAPA_RESPONSE_CODE_DEF( TIMEOUT,                         "The request timed out"),
 NAPA_RESPONSE_CODE_DEF( LOAD_SCRIPT_ERROR,               "Failed to load JavaScript code in container"),
 NAPA_RESPONSE_CODE_DEF( LOAD_FILE_ERROR,                 "Failed to load the JavaScript file in container"),
 NAPA_RESPONSE_CODE_DEF( RUN_FUNC_ERROR,                  "Failed to run the JavaScript function"),

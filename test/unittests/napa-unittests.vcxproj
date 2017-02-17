@@ -12,6 +12,9 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EDF80AF4-0CD6-47FF-9CEB-797D8AA7E656}</ProjectGuid>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -26,6 +29,5 @@
   </ItemGroup>
   <Import Project="test-list.proj" />
   <Import Project="tdd-list.proj" />
-  
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

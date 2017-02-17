@@ -27,6 +27,8 @@
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\core.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\load-task.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\run-task.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\terminable-task.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\timeout-service.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\v8\v8-common.cpp" />
   </ItemGroup>
 
@@ -59,6 +61,8 @@
   <!-- Package dependencies -->
   <Import Project="$(PACKAGESROOT)\V8.Library\exports.props" />
   <Import Project="$(Pkgboost)\build\native\boost.targets" />
+  <Import Project="$(Pkgboost_date_time_vc140)\build\native\boost_date_time-vc140.targets" />
   <Import Project="$(Pkgboost_filesystem_vc140)\build\native\boost_filesystem-vc140.targets" />
+  <Import Project="$(Pkgboost_regex_vc140)\build\native\boost_regex-vc140.targets" />
   <Import Project="$(Pkgboost_system_vc140)\build\native\boost_system-vc140.targets" />
 </Project>

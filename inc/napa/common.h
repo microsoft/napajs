@@ -12,10 +12,10 @@ typedef struct {
 
 typedef napa_string_ref NapaStringRef;
 
-#define CREATE_NAPA_STRING_REF_WITH_SIZE(data, size) (napa_string_ref { (data), (size) })
-#define CREATE_NAPA_STRING_REF(data) CREATE_NAPA_STRING_REF_WITH_SIZE(data, strlen(data))
+#define NAPA_STRING_REF_WITH_SIZE(data, size) (napa_string_ref { (data), (size) })
+#define NAPA_STRING_REF(data) NAPA_STRING_REF_WITH_SIZE(data, strlen(data))
 
-const napa_string_ref EMPTY_NAPA_STRING_REF = CREATE_NAPA_STRING_REF_WITH_SIZE(0, 0);
+const napa_string_ref EMPTY_NAPA_STRING_REF = NAPA_STRING_REF_WITH_SIZE(0, 0);
 
 #ifdef __cplusplus
 

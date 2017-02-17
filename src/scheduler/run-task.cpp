@@ -45,20 +45,35 @@ void RunTask::Execute() {
     v8::TryCatch tryCatch(isolate);
     auto res = function->Call(context->Global(), static_cast<int>(args.size()), args.data());
 
+    // Terminating an isolate may occur from a different thread, i.e. from timeout service.
+    // If the function call already finished successfully when the isolate is terminated it may lead
+    // to one the following:
+    //      1. Terminate was called before tryCatch.HasTerminated(), the user gets an error code.
+    //      2. Terminate was called after tryCatch.HasTerminated(), the user gets a success code.
+    //
+    //  In both cases the isolate is being restored since this happens before each task executes.
+    if (tryCatch.HasTerminated()) {
+        if (_terminationReason == TerminationReason::TIMEOUT) {
+            _callback(NAPA_RESPONSE_TIMEOUT, NAPA_STRING_REF("Run exceeded timeout"), EMPTY_NAPA_STRING_REF);
+        } else {
+            _callback(NAPA_RESPONSE_INTERNAL_ERROR, NAPA_STRING_REF("Run task terminated"), EMPTY_NAPA_STRING_REF);
+        }
+
+        return;
+    }
+
     if (tryCatch.HasCaught()) {
         auto exception = tryCatch.Exception();
         v8::String::Utf8Value errorMessage(exception);
 
         LOG_ERROR("RunTask", "Error occured while running function '%s', error: %s", _func.c_str(), *errorMessage);
-        _callback(NAPA_RESPONSE_RUN_FUNC_ERROR, 
-                  CREATE_NAPA_STRING_REF_WITH_SIZE(*errorMessage, static_cast<size_t>(errorMessage.length())),
-                  EMPTY_NAPA_STRING_REF);
+        _callback(NAPA_RESPONSE_RUN_FUNC_ERROR, NAPA_STRING_REF(*errorMessage), EMPTY_NAPA_STRING_REF);
         return;
     }
 
     // Note that the return value must be copied out if the callback wants to keep it.
     v8::String::Utf8Value returnValue(res);
     _callback(NAPA_RESPONSE_SUCCESS,
-              EMPTY_NAPA_STRING_REF,
-              CREATE_NAPA_STRING_REF_WITH_SIZE(*returnValue, static_cast<size_t>(returnValue.length())));
+        EMPTY_NAPA_STRING_REF,
+        NAPA_STRING_REF_WITH_SIZE(*returnValue, static_cast<size_t>(returnValue.length())));
 }
