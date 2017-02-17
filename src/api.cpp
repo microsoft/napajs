@@ -4,6 +4,7 @@
 #include "scheduler/load-task.h"
 #include "scheduler/scheduler.h"
 #include "scheduler/run-task.h"
+#include "scheduler/task-decorators.h"
 #include "settings/settings-parser.h"
 #include "v8/v8-common.h"
 
@@ -21,7 +22,7 @@
 using namespace napa;
 using namespace napa::scheduler;
 
-static std::atomic<bool> _initialized = false;
+static std::atomic<bool> _initialized(false);
 static Settings _globalSettings;
 
 /// <summary> Simple representation of a container. Groups objects that are part of a single container. </summary>
@@ -71,8 +72,6 @@ static void napa_container_load_common(napa_container_handle handle,
     };
 
     auto loadTask = std::make_shared<LoadTask>(std::move(source), std::move(callOnce));
-
-    // TODO @asib: wrap this task with a TimeoutTaskDecorator with a constant timeout.
 
     container->scheduler->ScheduleOnAllCores(std::move(loadTask));
 }
@@ -131,8 +130,6 @@ void napa_container_run(napa_container_handle handle,
                         uint32_t timeout) {
     auto container = reinterpret_cast<Container*>(handle);
 
-    // TODO @asib: Wrap run task with a timeout decorator.
-
     std::vector<std::string> args;
     args.reserve(argc);
 
@@ -140,13 +137,27 @@ void napa_container_run(napa_container_handle handle,
         args.emplace_back(NAPA_STRING_REF_TO_STD_STRING(argv[i]));
     }
 
-    auto task = std::make_shared<RunTask>(
-        NAPA_STRING_REF_TO_STD_STRING(func),
-        std::move(args),
-        [callback, context](NapaResponseCode code, NapaStringRef errorMessage, NapaStringRef returnValue) {
-            callback(napa_container_response{ code, errorMessage, returnValue }, context);
-        }
-    );
+    auto runTaskCallback = [callback, context](
+        NapaResponseCode code,
+        NapaStringRef errorMessage,
+        NapaStringRef returnValue) {
+        callback(napa_container_response{ code, errorMessage, returnValue }, context);
+    };
+
+    std::shared_ptr<Task> task;
+
+    if (timeout > 0) {
+        task = std::make_shared<TimeoutTaskDecorator<RunTask>>(
+            std::chrono::milliseconds(timeout),
+            NAPA_STRING_REF_TO_STD_STRING(func),
+            std::move(args),
+            std::move(runTaskCallback));
+    } else {
+        task = std::make_shared<RunTask>(
+            NAPA_STRING_REF_TO_STD_STRING(func),
+            std::move(args),
+            std::move(runTaskCallback));
+    }
 
     container->scheduler->Schedule(std::move(task));
 }

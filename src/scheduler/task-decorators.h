@@ -1,31 +1,51 @@
 #pragma once
 
 #include "task.h"
+#include "terminable-task.h"
+#include "timeout-service.h"
+
+#include <v8.h>
 
 #include <chrono>
 #include <memory>
+#include <utility>
 
 namespace napa {
 namespace scheduler {
 
-    /// <summary> Base class for task decorators. </summary>
+    template <typename TaskType>
     class TaskDecorator : public Task {
     public:
-        TaskDecorator(std::unique_ptr<Task> innerTask);
+        template <typename... Args>
+        TaskDecorator(Args&&... args) : _innerTask(std::forward<Args>(args)...) {}
 
     protected:
-        std::unique_ptr<Task> _innerTask;
+        TaskType _innerTask;
     };
 
-    /// <summary> A task decorator that enables timeout. </summary>
-    class TimeoutTaskDecorator : public TaskDecorator {
+    template <typename TaskType>
+    class TimeoutTaskDecorator : public TaskDecorator<TaskType> {
     public:
-        TimeoutTaskDecorator(std::chrono::microseconds timeout, std::unique_ptr<Task> innerTask);
+        static_assert(std::is_base_of<TerminableTask, TaskType>::value, "TaskType must inherit from TerminableTask");
 
-        virtual void Execute() override;
+        template <typename... Args>
+        TimeoutTaskDecorator(std::chrono::milliseconds timeout, Args&&... args) :
+            TaskDecorator<TaskType>(std::forward<Args>(args)...),
+            _timeout(timeout) {}
+
+        void Execute() override {
+            auto isolate = v8::Isolate::GetCurrent();
+
+            // RAII - token will cancel the callback upon destruction
+            auto token = TimeoutService::Instance().Register(_timeout, [this, isolate]() {
+                _innerTask.Terminate(TerminationReason::TIMEOUT, isolate);
+            });
+
+            _innerTask.Execute();
+        }
 
     private:
-        std::chrono::microseconds _timeout;
+        std::chrono::milliseconds _timeout;
     };
 }
 }

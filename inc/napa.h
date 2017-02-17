@@ -200,7 +200,7 @@ namespace napa {
 
         napa_container_run(
             _handle,
-            CREATE_NAPA_STRING_REF(func),
+            NAPA_STRING_REF(func),
             args.size(),
             args.data(),
             internal::CompletionHandler<RunCallback, napa_container_response>,

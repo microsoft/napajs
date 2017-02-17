@@ -101,6 +101,9 @@ void Core::CoreThreadFunc(const Settings& settings) {
             break;
         }
 
+        // Resume execution capabilities if isolate was previously terminated.
+        _impl->isolate->CancelTerminateExecution();
+
         task->Execute();
 
         // TODO @asib: perform post task cleanup operations.

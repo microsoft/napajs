@@ -1,6 +1,6 @@
 #pragma once
 
-#include "task.h"
+#include "terminable-task.h"
 
 #include "napa/common.h"
 
@@ -12,7 +12,7 @@ namespace napa {
 namespace scheduler {
 
     /// <summary> A task for running a pre-loaded javascript function. </summary>
-    class RunTask : public Task {
+    class RunTask : public TerminableTask {
     public:
 
         /// <summary> Signature of the callback function. </summary>
