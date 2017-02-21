@@ -2,12 +2,14 @@
 
 #include <napa/providers/logging.h>
 
+#include <iostream>
+
 #define LOG(section, level, traceId, format, ...) do {                       \
     auto& logger = napa::providers::GetLoggingProvider();                    \
     if (logger.IsLogEnabled(section, level)) {                               \
         logger.Log(section, level, traceId, format, __VA_ARGS__);            \
     }                                                                        \
-} while (0)
+} while (false)
 
 
 #define LOG_ERROR(section, format, ...) \
@@ -33,3 +35,20 @@
 
 #define LOG_DEBUG_WITH_TRACEID(section, traceId, format, ...) \
     LOG(section, napa::providers::Verboseness::Debug, traceId, format, __VA_ARGS__);
+
+
+#define NAPA_ASSERT(condition, message) do {            \
+    if (!(condition)) {                                 \
+        std::cerr << "Assertion failed: `"              \
+                  << #condition                         \
+                  << "`, file "                         \
+                  << __FILE__                           \
+                  << ", line "                          \
+                  << __LINE__                           \
+                  << " : "                              \
+                  << message                            \
+                  << "."                                \
+                  << std::endl;                         \
+        std::terminate();                               \
+    }                                                   \
+} while (false)

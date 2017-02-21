@@ -5,7 +5,8 @@
 #include "simple-thread-pool.h"
 #include "task.h"
 
-#include <assert.h>
+#include <napa-log.h>
+
 #include <atomic>
 #include <list>
 #include <memory>
@@ -104,7 +105,7 @@ namespace scheduler {
 
     template <typename CoreType>
     void SchedulerImpl<CoreType>::Schedule(std::shared_ptr<Task> task) {
-        assert(task != nullptr);
+        NAPA_ASSERT(task, "task is null");
         
         _synchronizer->Execute([this, task]() {
             if (_idleCores.empty()) {
@@ -124,7 +125,7 @@ namespace scheduler {
 
     template <typename CoreType>
     void SchedulerImpl<CoreType>::ScheduleOnCore(CoreId coreId, std::shared_ptr<Task> task) {
-        assert(coreId < _cores.size());
+        NAPA_ASSERT(coreId < _cores.size(), "core id out of range");
 
         _synchronizer->Execute([coreId, this, task]() {
             // If the core is idle, change it's status.
@@ -140,7 +141,7 @@ namespace scheduler {
 
     template <typename CoreType>
     void SchedulerImpl<CoreType>::ScheduleOnAllCores(std::shared_ptr<Task> task) {
-        assert(task != nullptr);
+        NAPA_ASSERT(task, "task is null");
 
         _synchronizer->Execute([this, task]() {
             // Clear all idle cores.
@@ -158,8 +159,8 @@ namespace scheduler {
 
     template <typename CoreType>
     void SchedulerImpl<CoreType>::IdleCoreNotificationCallback(CoreId coreId) {
-        assert(coreId < _cores.size());
-        
+        NAPA_ASSERT(coreId < _cores.size(), "core id out of range");
+
         if (_shouldStop) {
             return;
         }

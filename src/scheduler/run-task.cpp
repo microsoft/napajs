@@ -23,7 +23,7 @@ void RunTask::Execute() {
     auto funcVal = context->Global()->Get(functionName);
     if (!funcVal->IsFunction()) {
         std::string errorMessage = "Function not defined: " + _func;
-        LOG_ERROR("RunTask", errorMessage.c_str());
+        LOG_ERROR("Run", errorMessage.c_str());
         _callback(NAPA_RESPONSE_RUN_FUNC_ERROR, STD_STRING_TO_NAPA_STRING_REF(errorMessage), EMPTY_NAPA_STRING_REF);
         return;
     }
@@ -54,8 +54,10 @@ void RunTask::Execute() {
     //  In both cases the isolate is being restored since this happens before each task executes.
     if (tryCatch.HasTerminated()) {
         if (_terminationReason == TerminationReason::TIMEOUT) {
+            LOG_ERROR("Run", "Task was terminated due to timeout");
             _callback(NAPA_RESPONSE_TIMEOUT, NAPA_STRING_REF("Run exceeded timeout"), EMPTY_NAPA_STRING_REF);
         } else {
+            LOG_ERROR("Run", "Task was terminated for unknown reason");
             _callback(NAPA_RESPONSE_INTERNAL_ERROR, NAPA_STRING_REF("Run task terminated"), EMPTY_NAPA_STRING_REF);
         }
 
@@ -66,7 +68,7 @@ void RunTask::Execute() {
         auto exception = tryCatch.Exception();
         v8::String::Utf8Value errorMessage(exception);
 
-        LOG_ERROR("RunTask", "Error occured while running function '%s', error: %s", _func.c_str(), *errorMessage);
+        LOG_ERROR("Run", "Error occured while running function '%s', error: %s", _func.c_str(), *errorMessage);
         _callback(NAPA_RESPONSE_RUN_FUNC_ERROR, NAPA_STRING_REF(*errorMessage), EMPTY_NAPA_STRING_REF);
         return;
     }

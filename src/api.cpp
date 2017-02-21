@@ -11,10 +11,8 @@
 #include <napa-log.h>
 
 #include <atomic>
-#include <future>
 #include <fstream>
 #include <sstream>
-#include <iostream>
 
 #include <thread>
 
@@ -32,28 +30,38 @@ struct Container {
 };
 
 napa_container_handle napa_container_create() {
+    NAPA_ASSERT(_initialized, "Napa wasn't initialized");
+
     return reinterpret_cast<napa_container_handle>(new Container());
 }
 
 napa_response_code napa_container_init(napa_container_handle handle, napa_string_ref settings) {
+    NAPA_ASSERT(_initialized, "Napa wasn't initialized");
+    NAPA_ASSERT(handle, "Container handle is null");
     auto container = reinterpret_cast<Container*>(handle);
 
     // Container settings are based on global settings.
     container->settings = _globalSettings;
 
     if (!napa::settings_parser::ParseFromString(NAPA_STRING_REF_TO_STD_STRING(settings), container->settings)) {
+        LOG_ERROR("Api", "Failed to parse container settings: %s", settings.data);
         return NAPA_RESPONSE_SETTINGS_PARSER_ERROR;
     }
 
     // Create the container's scheduler.
     container->scheduler = std::make_unique<Scheduler>(container->settings);
 
+    LOG_INFO("Api", "Napa container initialized successfully");
+
     return NAPA_RESPONSE_SUCCESS;
 }
 
 napa_response_code napa_container_set_global_value(napa_container_handle handle ,napa_string_ref key, void* value) {
-    std::cout << "napa_container_set_global_value()" << std::endl;
-    std::cout << "\tkey: " << key.data << std::endl;
+    NAPA_ASSERT(_initialized, "Napa wasn't initialized");
+    NAPA_ASSERT(handle, "Container handle is null");
+
+    // TODO @asib: Add implementation and remove this warning.
+    LOG_WARNING("Api", "napa_container_set_global_value was called but implementation is missing");
 
     return NAPA_RESPONSE_SUCCESS;
 }
@@ -95,6 +103,9 @@ void napa_container_load_file(napa_container_handle handle,
                               napa_string_ref file,
                               napa_container_load_callback callback,
                               void* context) {
+    NAPA_ASSERT(_initialized, "Napa wasn't initialized");
+    NAPA_ASSERT(handle, "Container handle is null");
+
     // Although this is an async call, the reading of the file happens synchronously on the caller thread.
     // This is because the load task is distributed to all cores and we don't want to read the file multiple times.
     // We can spawn/reuse an additional thread just for reading before we schedule the load task, need to consider
@@ -114,11 +125,16 @@ void napa_container_load(napa_container_handle handle,
                          napa_string_ref source,
                          napa_container_load_callback callback,
                          void* context) {
-    napa_container_load_common(handle,
-                               NAPA_STRING_REF_TO_STD_STRING(source),
-                               [callback, context](napa_response_code code) {
-        callback(code, context);
-    });
+    NAPA_ASSERT(_initialized, "Napa wasn't initialized");
+    NAPA_ASSERT(handle, "Container handle is null");
+
+    napa_container_load_common(
+        handle,
+        NAPA_STRING_REF_TO_STD_STRING(source),
+        [callback, context](napa_response_code code) {
+            callback(code, context);
+        }
+    );
 }
 
 void napa_container_run(napa_container_handle handle,
@@ -128,6 +144,9 @@ void napa_container_run(napa_container_handle handle,
                         napa_container_run_callback callback,
                         void* context,
                         uint32_t timeout) {
+    NAPA_ASSERT(_initialized, "Napa wasn't initialized");
+    NAPA_ASSERT(handle, "Container handle is null");
+
     auto container = reinterpret_cast<Container*>(handle);
 
     std::vector<std::string> args;
@@ -163,6 +182,9 @@ void napa_container_run(napa_container_handle handle,
 }
 
 napa_response_code napa_container_release(napa_container_handle handle) {
+    NAPA_ASSERT(_initialized, "Napa wasn't initialized");
+    NAPA_ASSERT(handle, "Container handle is null");
+
     auto container = reinterpret_cast<Container*>(handle);
 
     delete container;
@@ -183,11 +205,13 @@ static napa_response_code napa_initialize_common() {
 
     _initialized = true;
 
+    LOG_INFO("Api", "Napa initialized successfully");
+
     return NAPA_RESPONSE_SUCCESS;
 }
 
 napa_response_code napa_initialize(napa_string_ref settings) {
-    assert(_initialized == false);
+    NAPA_ASSERT(!_initialized, "Napa was already initialized");
 
     if (!napa::settings_parser::ParseFromString(NAPA_STRING_REF_TO_STD_STRING(settings), _globalSettings)) {
         return NAPA_RESPONSE_SETTINGS_PARSER_ERROR;
@@ -197,7 +221,7 @@ napa_response_code napa_initialize(napa_string_ref settings) {
 }
 
 napa_response_code napa_initialize_from_console(int argc, char* argv[]) {
-    assert(_initialized == false);
+    NAPA_ASSERT(!_initialized, "Napa was already initialized");
 
     if (!napa::settings_parser::ParseFromConsole(argc, argv, _globalSettings)) {
         return NAPA_RESPONSE_SETTINGS_PARSER_ERROR;
@@ -207,11 +231,15 @@ napa_response_code napa_initialize_from_console(int argc, char* argv[]) {
 }
 
 napa_response_code napa_shutdown() {
+    NAPA_ASSERT(_initialized, "Napa wasn't initialized");
+
     napa::providers::Shutdown();
 
     if (_globalSettings.initV8) {
         napa::v8_common::Shutdown();
     }
+
+    LOG_INFO("Api", "Napa shutdown successfully");
 
     return NAPA_RESPONSE_SUCCESS;
 }
@@ -229,7 +257,7 @@ template<class T, size_t N>
 constexpr size_t size(T(&)[N]) { return N; }
 
 const char* napa_response_code_to_string(napa_response_code code) {
-    assert(code < size(NAPA_REPONSE_CODE_STRINGS));
+    NAPA_ASSERT(code < size(NAPA_REPONSE_CODE_STRINGS), "response code out of range");
 
     return NAPA_REPONSE_CODE_STRINGS[code];
 }
