@@ -1,5 +1,7 @@
 #include "run-task.h"
+
 #include <napa-log.h>
+#include <napa/v8-helpers.h>
 
 #include <v8.h>
 
@@ -15,9 +17,7 @@ void RunTask::Execute() {
     v8::HandleScope scope(isolate);
     auto context = isolate->GetCurrentContext();
 
-    // V8 garbage collection frees ExternalOneByteStringResourceImpl.
-    auto externalFunctionName = new v8::ExternalOneByteStringResourceImpl(_func.data(), _func.length());
-    auto functionName = v8::String::NewExternal(isolate, externalFunctionName);
+    auto functionName = napa::v8_helpers::MakeExternalV8String(isolate, _func);
 
     // Find the function in the global context of this isolate.
     auto funcVal = context->Global()->Get(functionName);
@@ -36,9 +36,7 @@ void RunTask::Execute() {
     std::vector<v8::Local<v8::Value>> args;
     args.reserve(_args.size());
     for (const auto& arg : _args) {
-        // V8 garbage collection frees ExternalOneByteStringResourceImpl.
-        auto externalArgName = new v8::ExternalOneByteStringResourceImpl(arg.data(), arg.length());
-        args.emplace_back(v8::String::NewExternal(isolate, externalArgName));
+        args.emplace_back(napa::v8_helpers::MakeExternalV8String(isolate, arg));
     }
 
     // Run the function.

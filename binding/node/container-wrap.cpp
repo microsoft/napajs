@@ -13,6 +13,7 @@
 #include <vector>
 
 using namespace napa::binding;
+using namespace napa::v8_helpers;
 
 
 // Forward declaration.
@@ -29,8 +30,7 @@ ContainerWrap::ContainerWrap(std::unique_ptr<napa::Container> container) :
 void ContainerWrap::Init(v8::Isolate* isolate) {
     // Prepare constructor template.
     v8::Local<v8::FunctionTemplate> functionTemplate = v8::FunctionTemplate::New(isolate, NewCallback);
-    functionTemplate->SetClassName(
-        v8::String::NewFromUtf8(isolate, "ContainerWrap", v8::NewStringType::kNormal).ToLocalChecked());
+    functionTemplate->SetClassName(MakeV8String(isolate, "ContainerWrap"));
     functionTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 
     // Prototypes.
@@ -182,7 +182,7 @@ void ContainerWrap::Run(const v8::FunctionCallbackInfo<v8::Value>& args) {
     std::vector<NapaStringRef> runArgs;
     runArgs.reserve(runArgValues.size());
     for (const auto& val : runArgValues) {
-        runArgs.emplace_back(CREATE_NAPA_STRING_REF_WITH_SIZE(val.Data(), val.Length()));
+        runArgs.emplace_back(NAPA_STRING_REF_WITH_SIZE(val.Data(), val.Length()));
     }
 
     auto callback = v8::Local<v8::Function>::Cast(args[2]);
@@ -229,7 +229,7 @@ void ContainerWrap::RunSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
     std::vector<NapaStringRef> runArgs;
     runArgs.reserve(runArgValues.size());
     for (const auto& val : runArgValues) {
-        runArgs.emplace_back(CREATE_NAPA_STRING_REF_WITH_SIZE(val.Data(), val.Length()));
+        runArgs.emplace_back(NAPA_STRING_REF_WITH_SIZE(val.Data(), val.Length()));
     }
 
     auto wrap = ObjectWrap::Unwrap<ContainerWrap>(args.Holder());
@@ -246,38 +246,22 @@ void ContainerWrap::RunSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
     auto returnObj = v8::Object::New(isolate);
 
-    returnObj->CreateDataProperty(
-        context,
-        v8::String::NewFromUtf8(isolate, "code", v8::NewStringType::kNormal).ToLocalChecked(),
-        responseValues[0]);
-
-    returnObj->CreateDataProperty(
-        context,
-        v8::String::NewFromUtf8(isolate, "errorMessage", v8::NewStringType::kNormal).ToLocalChecked(),
-        responseValues[1]);
-    
-    returnObj->CreateDataProperty(
-        context,
-        v8::String::NewFromUtf8(isolate, "returnValue", v8::NewStringType::kNormal).ToLocalChecked(),
-        responseValues[2]);
+    returnObj->CreateDataProperty(context, MakeV8String(isolate, "code"), responseValues[0]);
+    returnObj->CreateDataProperty(context, MakeV8String(isolate, "errorMessage"), responseValues[1]);
+    returnObj->CreateDataProperty(context, MakeV8String(isolate, "returnValue"), responseValues[2]);
 
     args.GetReturnValue().Set(returnObj);
 }
 
-static std::vector<v8::Local<v8::Value>> CreateResponseValues(v8::Isolate* isolate,
-                                                               const napa::Response& response) {
+static std::vector<v8::Local<v8::Value>> CreateResponseValues(
+    v8::Isolate* isolate,
+    const napa::Response& response) {
+
     auto code = v8::Uint32::NewFromUnsigned(isolate, response.code);
 
-    auto errorMessage = v8::String::NewFromUtf8(
-        isolate,
-        response.errorMessage.c_str(),
-        v8::NewStringType::kNormal).ToLocalChecked();
+    auto errorMessage = MakeV8String(isolate, response.errorMessage);
 
-    auto returnValueString = v8::String::NewFromUtf8(
-        isolate,
-        response.returnValue.c_str(),
-        v8::NewStringType::kNormal).ToLocalChecked();
-
+    auto returnValueString = MakeV8String(isolate, response.returnValue);
     auto returnValue = v8::JSON::Parse(isolate, returnValueString).ToLocalChecked();
 
     return { code, errorMessage, returnValue };

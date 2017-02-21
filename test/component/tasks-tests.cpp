@@ -17,14 +17,9 @@ using namespace napa::scheduler;
 using namespace std::chrono_literals;
 
 // Make sure V8 it initialized exactly once.
-static V8InitializationGuard _guard;
+static NapaInitializationGuard _guard;
 
 TEST_CASE("tasks", "[tasks]") {
-    // Initialize napa providers
-    Settings settings;
-    settings.loggingProvider = "";
-    napa::providers::Initialize(settings);
-
     // Create a new Isolate and make it the current one.
     napa::v8_extensions::ArrayBufferAllocator allocator;
     v8::Isolate::CreateParams createParams;

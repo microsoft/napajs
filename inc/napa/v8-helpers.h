@@ -4,20 +4,7 @@
 #include <sstream>
 #include <unordered_map>
 
-#define CHECK_ARG_COMMON(isolate, expression, message, result, function, line)                                \
-if (!(expression)) {                                                                                          \
-    std::stringstream temp;                                                                                   \
-    temp << function << ":" << line << " -- " << message;                                                     \
-    isolate->ThrowException(v8::Exception::TypeError(                                                         \
-        v8::String::NewFromUtf8(isolate, temp.str().c_str(), v8::NewStringType::kNormal).ToLocalChecked()));  \
-    return result;                                                                                            \
-}
-
-#define CHECK_ARG(isolate, expression, message)                                         \
-    CHECK_ARG_COMMON(isolate, expression, message, /* empty */, __FUNCTION__, __LINE__)
-
-#define CHECK_ARG_WITH_RETURN(isolate, expression, message, result)                     \
-    CHECK_ARG_COMMON(isolate, expression, message, result, __FUNCTION__, __LINE__)
+#include <v8.h>
 
 namespace napa {
 namespace v8_helpers {
@@ -167,5 +154,38 @@ namespace v8_helpers {
         return scope.Escape(res);
     }
 
+    inline v8::Local<v8::String> MakeV8String(v8::Isolate *isolate, const char* str) {
+        return v8::String::NewFromUtf8(isolate, str, v8::NewStringType::kNormal).ToLocalChecked();
+    }
+
+    inline v8::Local<v8::String> MakeV8String(v8::Isolate *isolate, const std::string& str) {
+        return MakeV8String(isolate, str.c_str());
+    }
+
+    inline v8::Local<v8::String> MakeExternalV8String(v8::Isolate *isolate, const char* data, size_t length) {
+        // V8 garbage collection frees ExternalOneByteStringResourceImpl.
+        auto externalResource = new v8::ExternalOneByteStringResourceImpl(data, length);
+        return v8::String::NewExternalOneByte(isolate, externalResource).ToLocalChecked();
+    }
+
+    inline v8::Local<v8::String> MakeExternalV8String(v8::Isolate *isolate, const std::string& str) {
+        return MakeExternalV8String(isolate, str.data(), str.length());
+    }
 }
 }
+
+#define CHECK_ARG_COMMON(isolate, expression, message, result, function, line)                                \
+if (!(expression)) {                                                                                          \
+    std::stringstream temp;                                                                                   \
+    temp << function << ":" << line << " -- " << message;                                                     \
+    isolate->ThrowException(v8::Exception::TypeError(napa::v8_helpers::MakeV8String(isolate, temp.str())));   \
+    return result;                                                                                            \
+}
+
+#define CHECK_ARG(isolate, expression, message)                                         \
+    CHECK_ARG_COMMON(isolate, expression, message, /* empty */, __FUNCTION__, __LINE__)
+
+#define CHECK_ARG_WITH_RETURN(isolate, expression, message, result)                     \
+    CHECK_ARG_COMMON(isolate, expression, message, result, __FUNCTION__, __LINE__)
+
+#define JS_ASSERT(isolate, expression, message) CHECK_ARG(isolate, expression, message)
