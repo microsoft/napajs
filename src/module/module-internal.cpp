@@ -1,7 +1,7 @@
 #include <napa/module-internal.h>
 #include <napa/thread-local-storage.h>
 
-#include <cassert>
+#include <napa-log.h>
 
 using namespace napa;
 using namespace napa::module;
@@ -20,7 +20,7 @@ IsolateData::IsolateData() {
 
 void* IsolateData::Get(IsolateDataId isolateDataId) {
     auto slotId = static_cast<size_t>(isolateDataId);
-    assert(slotId < GetIsolateData()._tlsIndexes.size());
+    NAPA_ASSERT(slotId < GetIsolateData()._tlsIndexes.size(), "slot id out of range");
 
     auto tlsIndex = GetIsolateData()._tlsIndexes[static_cast<size_t>(IsolateDataId::ISOLATE)];
     auto isolate = v8::Isolate::GetCurrent();
@@ -36,7 +36,7 @@ void* IsolateData::Get(IsolateDataId isolateDataId) {
 void IsolateData::Set(IsolateDataId isolateDataId,
                       void* data) {
     auto slotId = static_cast<size_t>(isolateDataId);
-    assert(slotId < GetIsolateData()._tlsIndexes.size());
+    NAPA_ASSERT(slotId < GetIsolateData()._tlsIndexes.size(), "slot id out of range");
 
     auto tlsIndex = GetIsolateData()._tlsIndexes[static_cast<size_t>(IsolateDataId::ISOLATE)];
     auto isolate = v8::Isolate::GetCurrent();

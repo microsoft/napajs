@@ -1,5 +1,7 @@
 #include "v8-common.h"
 
+#include <napa-log.h>
+
 #include <boost/dll/runtime_symbol_info.hpp>
 
 // V8 libraries
@@ -9,7 +11,7 @@
 static v8::Platform* _platform = nullptr;
 
 bool napa::v8_common::Initialize() {
-    assert(_platform == nullptr);
+    NAPA_ASSERT(!_platform, "V8 was already initialized");
 
     v8::V8::InitializeICU();
 
@@ -25,7 +27,7 @@ bool napa::v8_common::Initialize() {
 }
 
 void napa::v8_common::Shutdown() {
-    assert(_platform != nullptr);
+    NAPA_ASSERT(_platform, "V8 wasn't initialized");
 
     v8::V8::Dispose();
     v8::V8::ShutdownPlatform();

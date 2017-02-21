@@ -2,6 +2,8 @@
 
 #include "v8/array-buffer-allocator.h"
 
+#include <napa-log.h>
+
 // Disable third party library warnnings
 #pragma warning(push)
 #pragma warning(disable: 4127 4458 4068)
@@ -63,7 +65,7 @@ Core::Core(Core&&) = default;
 Core& Core::operator=(Core&&) = default;
 
 void Core::Schedule(std::shared_ptr<Task> task) {
-    assert(task != nullptr);
+    NAPA_ASSERT(task, "task was null");
 
     _impl->tasks.enqueue(std::move(task));
 }
@@ -128,14 +130,13 @@ static v8::Isolate* CreateIsolate(const Settings& settings) {
 static void ConfigureIsolate(v8::Isolate* isolate, const Settings& settings) {
     // TODO @asib: Configure GC and counters if needed.
 
-    // Logs V8 error and prevent it from aborting.
-    // The root cause of V8's fatal error must be caught and prevented.
     isolate->SetFatalErrorHandler([](const char* location, const char* message) {
-        // TODO @asib: log error message
+        LOG_ERROR("V8", "V8 Fatal error at %s. Error: %s", location, message);
     });
 
     // Prevent V8 from aborting on uncaught exception.
     isolate->SetAbortOnUncaughtExceptionCallback([](v8::Isolate*) {
+        LOG_ERROR("V8", "V8 uncaught exception was thrown.");
         return false;
     });
 

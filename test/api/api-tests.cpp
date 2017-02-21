@@ -9,7 +9,7 @@ std::once_flag flag;
 TEST_CASE("container apis", "[api]") {
     // Only call napa::Initialize once per process.
     std::call_once(flag, []() {
-        REQUIRE(napa::Initialize() == NAPA_RESPONSE_SUCCESS);
+        REQUIRE(napa::Initialize("--loggingProvider nop") == NAPA_RESPONSE_SUCCESS);
     });
 
     SECTION("load valid javascript") {

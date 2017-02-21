@@ -15,10 +15,14 @@ namespace providers {
                          Verboseness level,
                          const char* traceId,
                          const char* format, ...) override {
+            printf_s("[%s] ", section);
+            
             va_list vl;
             va_start(vl, format);
-            vfprintf(stdout, format, vl);
+            vfprintf_s(stdout, format, vl);
             va_end(vl);
+
+            printf_s("\n");
         }
 
         virtual bool IsLogEnabled(const char* section, Verboseness level) override {

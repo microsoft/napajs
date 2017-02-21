@@ -20,7 +20,7 @@ void LoadTask::Execute() {
     // Compile the source code.
     auto compileResult = v8::Script::Compile(context, source);
     if (compileResult.IsEmpty()) {
-        LOG_ERROR("LoadTask", "Failed compiling the provided source code");
+        LOG_ERROR("Load", "Failed while compiling the provided source code");
         _callback(NAPA_RESPONSE_LOAD_SCRIPT_ERROR);
         return;
     }
@@ -33,7 +33,7 @@ void LoadTask::Execute() {
         auto exception = tryCatch.Exception();
         v8::String::Utf8Value exceptionStr(exception);
 
-        LOG_ERROR("LoadTask", "JS exception thrown: %s", *exceptionStr);
+        LOG_ERROR("Load", "JS exception thrown: %s", *exceptionStr);
         _callback(NAPA_RESPONSE_LOAD_SCRIPT_ERROR);
         return;
     }
