@@ -1,7 +1,7 @@
 #include "catch.hpp"
 
 #include "scheduler/core.h"
-#include "v8-initialization-guard.h"
+#include "napa-initialization-guard.h"
 
 #include "v8.h"
 
@@ -30,7 +30,7 @@ private:
 };
 
 // Make sure V8 it initialized exactly once.
-static V8InitializationGuard _guard;
+static NapaInitializationGuard _guard;
 
 TEST_CASE("core runs scheduled task", "[scheduler-core]") {
     auto core = std::make_unique<Core>(0, Settings(), [](CoreId) {});
@@ -112,7 +112,7 @@ TEST_CASE("core runs javascript with stack overflow", "[scheduler-core]") {
         auto script = v8::Script::Compile(context, source).ToLocalChecked();
 
         v8::TryCatch tryCatch(isolate);
-        script->Run(context).ToLocalChecked();
+        script->Run(context);
 
         if (tryCatch.HasCaught()) {
             auto exception = tryCatch.Exception();
