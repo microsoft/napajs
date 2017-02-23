@@ -38,10 +38,10 @@ namespace scheduler {
 
             // RAII - token will cancel the callback upon destruction
             auto token = TimeoutService::Instance().Register(_timeout, [this, isolate]() {
-                _innerTask.Terminate(TerminationReason::TIMEOUT, isolate);
+                this->_innerTask.Terminate(TerminationReason::TIMEOUT, isolate);
             });
 
-            _innerTask.Execute();
+            this->_innerTask.Execute();
         }
 
     private:

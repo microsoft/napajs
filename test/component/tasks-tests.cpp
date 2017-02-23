@@ -6,7 +6,7 @@
 #include "scheduler/task-decorators.h"
 #include "settings/settings.h"
 #include "v8/array-buffer-allocator.h"
-#include "v8-initialization-guard.h"
+#include "napa-initialization-guard.h"
 
 #include "v8.h"
 
