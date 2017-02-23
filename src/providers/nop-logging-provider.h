@@ -10,10 +10,11 @@ namespace providers {
     class NopLoggingProvider : public LoggingProvider {
     public:
 
-        virtual void Log(const char* section,
+        virtual void LogMessage(
+            const char* section,
             Verboseness level,
             const char* traceId,
-            const char* format, ...) override {}
+            const char* message) override {}
 
         virtual bool IsLogEnabled(const char* section, Verboseness level) override {
             return false;

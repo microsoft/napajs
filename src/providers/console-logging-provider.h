@@ -2,7 +2,7 @@
 
 #include <napa/providers/logging.h>
 
-#include <stdarg.h>
+#include <stdio.h>
 
 namespace napa {
 namespace providers {
@@ -11,18 +11,12 @@ namespace providers {
     class ConsoleLoggingProvider : public LoggingProvider {
     public:
 
-        virtual void Log(const char* section,
-                         Verboseness level,
-                         const char* traceId,
-                         const char* format, ...) override {
-            printf_s("[%s] ", section);
-            
-            va_list vl;
-            va_start(vl, format);
-            vfprintf_s(stdout, format, vl);
-            va_end(vl);
-
-            printf_s("\n");
+        virtual void LogMessage(
+            const char* section,
+            Verboseness level,
+            const char* traceId,
+            const char* message) override {
+            printf("[%s] %s\n", section, message);
         }
 
         virtual bool IsLogEnabled(const char* section, Verboseness level) override {

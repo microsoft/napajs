@@ -23,16 +23,12 @@ namespace providers {
     class LoggingProvider {
     public:
 
-        /// <summary> Logs a formatted message. </summary>
+        /// <summary> Logs a message. </summary>
         /// <param name="section"> Logging section. </param>
         /// <param name="level"> Logging verboseness level. </param>
         /// <param name="traceId"> Trace ID. </param>
-        /// <param name="format"> Formatted string with variadic arguments. </param>
-        virtual void Log(
-            const char* section,
-            Verboseness level,
-            const char* traceId,
-            const char* format, ...) = 0;
+        /// <param name="message"> The message. </param>
+        virtual void LogMessage(const char* section, Verboseness level, const char* traceId, const char* message) = 0;
 
         /// <summary> Returns if logging is enabled for section/level/title. </summary>
         /// <param name="section"> Logging section. </param>
