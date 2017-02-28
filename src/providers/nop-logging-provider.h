@@ -14,6 +14,8 @@ namespace providers {
             const char* section,
             Verboseness level,
             const char* traceId,
+            const char* file,
+            int line,
             const char* message) override {}
 
         virtual bool IsLogEnabled(const char* section, Verboseness level) override {

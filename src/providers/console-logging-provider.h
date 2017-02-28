@@ -15,8 +15,10 @@ namespace providers {
             const char* section,
             Verboseness level,
             const char* traceId,
+            const char* file,
+            int line,
             const char* message) override {
-            printf("[%s] %s\n", section, message);
+            printf("[%s] %s [%s:%d]\n", section, message, file, line);
         }
 
         virtual bool IsLogEnabled(const char* section, Verboseness level) override {
