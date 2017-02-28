@@ -30,6 +30,8 @@ inline void LogFormattedMessage(
     const char* section,
     napa::providers::Verboseness level,
     const char* traceId,
+    const char* file,
+    int line,
     const char* format, ...) {
 
     char message[LOG_MAX_SIZE];
@@ -39,15 +41,15 @@ inline void LogFormattedMessage(
     va_end(args);
 
     NAPA_ASSERT(size >= 0, "Log formatting error, probably wrong format encoding");
-    logger.LogMessage(section, level, traceId, message);
+    logger.LogMessage(section, level, traceId, file, line, message);
 }
 
 
-#define LOG(section, level, traceId, format, ...) do {                               \
-    auto& logger = napa::providers::GetLoggingProvider();                            \
-    if (logger.IsLogEnabled(section, level)) {                                       \
-        LogFormattedMessage(logger, section, level, traceId, format, __VA_ARGS__);   \
-    }                                                                                \
+#define LOG(section, level, traceId, format, ...) do {                                                   \
+    auto& logger = napa::providers::GetLoggingProvider();                                                \
+    if (logger.IsLogEnabled(section, level)) {                                                           \
+        LogFormattedMessage(logger, section, level, traceId, __FILE__, __LINE__, format, __VA_ARGS__);   \
+    }                                                                                                    \
 } while (false)
 
 

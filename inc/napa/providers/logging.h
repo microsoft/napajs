@@ -27,8 +27,16 @@ namespace providers {
         /// <param name="section"> Logging section. </param>
         /// <param name="level"> Logging verboseness level. </param>
         /// <param name="traceId"> Trace ID. </param>
+        /// <param name="file"> The source file this log message originated from. </param>
+        /// <param name="line"> The source line this log message origiated from. </param>
         /// <param name="message"> The message. </param>
-        virtual void LogMessage(const char* section, Verboseness level, const char* traceId, const char* message) = 0;
+        virtual void LogMessage(
+            const char* section,
+            Verboseness level,
+            const char* traceId,
+            const char* file,
+            int line,
+            const char* message) = 0;
 
         /// <summary> Returns if logging is enabled for section/level/title. </summary>
         /// <param name="section"> Logging section. </param>
