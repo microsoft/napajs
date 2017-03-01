@@ -12,7 +12,7 @@
 
 #include <v8.h>
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <thread>
 
 using namespace napa;

@@ -1,5 +1,5 @@
 ---
-Checks:          '*,-google*,-llvm-header-guard,-llvm-include-order,-cppcoreguidelines-*,-readability-named-parameter,-cert-err58-cpp,-misc-noexcept-move-constructor'
+Checks:          '*,-google*,-llvm-header-guard,-llvm-include-order,-cppcoreguidelines*,-cppcoreguidelines-pro*,-readability-named-parameter,-cert-err58-cpp'
 WarningsAsErrors: ''
 HeaderFilterRegex: ''
 AnalyzeTemporaryDtors: false
@@ -15,7 +15,7 @@ CheckOptions:
   - key:             readability-identifier-naming.EnumCase
     value:           CamelCase
   - key:             readability-identifier-naming.FunctionCase
-    value:           CamelCase
+    value:           all_lower
   - key:             readability-identifier-naming.MemberCase
     value:           camelCase
   - key:             readability-identifier-naming.MethodCase

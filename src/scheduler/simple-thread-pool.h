@@ -36,7 +36,7 @@ namespace scheduler {
         public:
 
             /// <summary> Constructor. </summary>
-            Worker(SimpleThreadPool& p_pool);
+            Worker(SimpleThreadPool& pool);
 
             /// <summary> Main thread function. </summary>
             void operator()();

@@ -13,8 +13,8 @@ IsolateData& GetIsolateData() {
 }
 
 IsolateData::IsolateData() {
-    for (size_t i = 0; i < _tlsIndexes.size(); ++i) {
-        _tlsIndexes[i] = tls::Alloc();
+    for (auto& tlsIndex : _tlsIndexes) {
+        tlsIndex = tls::Alloc();
     }
 }
 

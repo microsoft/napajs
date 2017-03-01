@@ -56,7 +56,7 @@ napa_response_code napa_container_init(napa_container_handle handle, napa_string
     return NAPA_RESPONSE_SUCCESS;
 }
 
-napa_response_code napa_container_set_global_value(napa_container_handle handle ,napa_string_ref key, void* value) {
+napa_response_code napa_container_set_global_value(napa_container_handle handle ,napa_string_ref, void*) {
     NAPA_ASSERT(_initialized, "Napa wasn't initialized");
     NAPA_ASSERT(handle, "Container handle is null");
 
@@ -170,12 +170,12 @@ void napa_container_run(napa_container_handle handle,
             std::chrono::milliseconds(timeout),
             NAPA_STRING_REF_TO_STD_STRING(func),
             std::move(args),
-            std::move(runTaskCallback));
+            runTaskCallback);
     } else {
         task = std::make_shared<RunTask>(
             NAPA_STRING_REF_TO_STD_STRING(func),
             std::move(args),
-            std::move(runTaskCallback));
+            runTaskCallback);
     }
 
     container->scheduler->Schedule(std::move(task));
