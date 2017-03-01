@@ -30,7 +30,7 @@ void LoadTask::Execute() {
 
     // Run the source code.
     v8::TryCatch tryCatch(isolate);
-    script->Run(context);
+    (void)script->Run(context);
     if (tryCatch.HasCaught()) {
         auto exception = tryCatch.Exception();
         v8::String::Utf8Value exceptionStr(exception);

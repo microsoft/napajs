@@ -8,7 +8,7 @@ uint32_t tls::Alloc() {
 }
 
 bool tls::Free(uint32_t index) {
-    return TlsFree(index) ? true : false;
+    return TlsFree(index) != FALSE;
 }
 
 void* tls::GetValue(uint32_t index) {
@@ -16,5 +16,5 @@ void* tls::GetValue(uint32_t index) {
 }
 
 bool tls::SetValue(uint32_t index, void* value) {
-    return TlsSetValue(index, value) ? true : false;
+    return TlsSetValue(index, value) != FALSE;
 }

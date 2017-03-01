@@ -2,6 +2,11 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(EnvironmentConfig)" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.Default.props" />
+  <ItemGroup>
+    <QCustomInput Include="$(NapaVanillaRoot)\.clang-tidy" />
+    <QCustomInput Include="api\.clang-tidy" />
+  </ItemGroup>
+  
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -37,7 +42,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="api.cpp" />
+    <ClCompile Include="api\api.cpp" />
     <ClCompile Include="module\module-internal.cpp" />
     <ClCompile Include="platform\win\thread-local-storage.cpp" />
     <ClCompile Include="providers\providers.cpp" />
@@ -63,5 +68,5 @@
   <Import Project="$(Pkgboost_regex_vc140)\build\native\boost_regex-vc140.targets" />
   <Import Project="$(Pkgboost_system_vc140)\build\native\boost_system-vc140.targets" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
-  <!-- <Import Project="$(NapaRoot)\tools\clang_tools\napa_checks.targets" /> -->
+  <Import Project="$(NapaRoot)\tools\clang_tools\napa_checks.targets" />
 </Project>

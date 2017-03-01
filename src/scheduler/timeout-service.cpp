@@ -12,12 +12,12 @@ class TokenImpl : public TimeoutService::Token {
 public:
     explicit TokenImpl(boost::asio::io_service& ioService) : timer(ioService) {}
 
-    virtual void Cancel() override {
+    void Cancel() override {
         timer.cancel();
     }
 
-    ~TokenImpl() {
-        Cancel();
+    ~TokenImpl() override {
+        timer.cancel();
     }
 
     boost::asio::high_resolution_timer timer;
@@ -56,7 +56,7 @@ std::unique_ptr<TimeoutService::Token> TimeoutService::Register(
     auto token = std::make_unique<TokenImpl>(_impl.ioService);
 
     token->timer.expires_from_now(timeout);
-    token->timer.async_wait([callback](const boost::system::error_code &err) {
+    token->timer.async_wait([callback = std::move(callback)](const boost::system::error_code &err) {
         if (!err) {
             callback();
         }

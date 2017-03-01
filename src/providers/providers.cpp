@@ -58,9 +58,7 @@ MetricProvider& napa::providers::GetMetricProvider() {
 template <typename ProviderType>
 static ProviderType* LoadProvider(const std::string& providerName, const std::string& functionName) {
     // TODO @asib: resolve path to shared library given the provider name, need to use module loader APIs.
-    auto providerPath = providerName;
-
-    auto createProviderFunc = boost::dll::import<ProviderType*()>(providerPath, functionName);
+    auto createProviderFunc = boost::dll::import<ProviderType*()>(providerName, functionName);
     return createProviderFunc();
 }
 

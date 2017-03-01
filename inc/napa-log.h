@@ -2,6 +2,7 @@
 
 #include <napa/providers/logging.h>
 
+#include <exception> 
 #include <iostream>
 #include <stdarg.h>
 
