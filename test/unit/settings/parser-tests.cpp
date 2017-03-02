@@ -15,7 +15,7 @@ TEST_CASE("Parsing nothing doesn't fail", "[settings-parser]") {
 
 TEST_CASE("Parsing from string", "[settings-parser]") {
     Settings settings;
-    settings.cores = 0;
+    settings.cores = 1;
     settings.loggingProvider = "";
 
     REQUIRE(settings_parser::ParseFromString("--cores 5 --loggingProvider myProvider", settings));
@@ -26,7 +26,7 @@ TEST_CASE("Parsing from string", "[settings-parser]") {
 
 TEST_CASE("Parsing from console", "[settings-parser]") {
     Settings settings;
-    settings.cores = 0;
+    settings.cores = 1;
     settings.loggingProvider = "";
 
     std::vector<char*> args = { "--cores", "5", "--loggingProvider", "myProvider" };
@@ -54,7 +54,7 @@ TEST_CASE("Parsing does not change defaults if setting is not provided", "[setti
 
 TEST_CASE("Parsing with extra white spaces succeeds", "[settings-parser]") {
     Settings settings;
-    settings.cores = 0;
+    settings.cores = 1;
     settings.loggingProvider = "";
 
     REQUIRE(settings_parser::ParseFromString(" --cores 5  --loggingProvider \t   myProvider \t\t ", settings));
@@ -65,7 +65,7 @@ TEST_CASE("Parsing with extra white spaces succeeds", "[settings-parser]") {
 
 TEST_CASE("Parsing with multiple values for one setting", "[settings-parser]") {
     Settings settings;
-    settings.cores = 0;
+    settings.cores = 1;
     settings.v8Flags = {};
 
     REQUIRE(settings_parser::ParseFromString("--v8Flags one two three --cores 5", settings));
@@ -79,16 +79,12 @@ TEST_CASE("Parsing with multiple values for one setting", "[settings-parser]") {
 
 TEST_CASE("Parsing with empty string succeeds", "[settings-parser]") {
     Settings settings;
-    settings.cores = 0;
-    settings.loggingProvider = "";
 
     REQUIRE(settings_parser::ParseFromString("", settings) == true);
 }
 
 TEST_CASE("Parsing with different value type fails", "[settings-parser]") {
     Settings settings;
-    settings.cores = 0;
-    settings.loggingProvider = "";
 
     REQUIRE(settings_parser::ParseFromString("--cores five", settings) == false);
 }

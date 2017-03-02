@@ -5,7 +5,7 @@
 #define USING_V8_SHARED 1
 #endif
 
-#include "module-exports.h"
+#include "exports.h"
 
 #include <array>
 #include <tuple>
@@ -63,7 +63,7 @@ namespace module {
     };
 
     /// <summary> Napa specific isolate data stored at TLS. </summary>
-    class NAPA_MODULE_EXPORT IsolateData {
+    class NAPA_API IsolateData {
     public:
 
         /// <summary> Constructor to assign TLS index to all data. It's' done once at process level. </summary>
@@ -174,6 +174,14 @@ namespace module {
         } else {
             return scope.Escape(v8::Local<v8::Function>());
         }
+    }
+
+    namespace global_store {
+
+        /// <summary> Retrieve a value from the global store. </summary>
+        /// <param name="key"> A key identifying the desired value. </param>
+        /// <returns> The value if exists, nullptr otherwise. </returns>
+        NAPA_API void* GetValue(const char* key);
     }
 
 }   // End of namespace module.

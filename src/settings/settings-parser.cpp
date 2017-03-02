@@ -1,5 +1,7 @@
 #include "settings-parser.h"
 
+#include <napa-log.h>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>
 
@@ -31,7 +33,8 @@ static bool Parse(const std::vector<std::string>& args, Settings& settings) {
         return false;
     }
 
-    // TODO @asib: here is where we need to verify settings values are valid, i.e. cores is greater then 0.
+    NAPA_ASSERT(settings.cores > 0, "The number of cores must be greater than 0");
+    NAPA_ASSERT(settings.maxStackSize > 0, "The maximum allowed stack size must be greater than 0");
 
     return true;
 }

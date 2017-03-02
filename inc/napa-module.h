@@ -1,6 +1,6 @@
 #pragma once
 
-// Suppress 4100 warings.
+// Suppress 4100 warnings.
 #pragma warning(push)
 #pragma warning(disable: 4100)
 

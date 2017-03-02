@@ -107,8 +107,6 @@ void Core::CoreThreadFunc(const Settings& settings) {
         _impl->isolate->CancelTerminateExecution();
 
         task->Execute();
-
-        // TODO @asib: perform post task cleanup operations.
     }
 }
 
@@ -128,8 +126,6 @@ static v8::Isolate* CreateIsolate(const Settings& settings) {
 }
 
 static void ConfigureIsolate(v8::Isolate* isolate, const Settings& settings) {
-    // TODO @asib: Configure GC and counters if needed.
-
     isolate->SetFatalErrorHandler([](const char* location, const char* message) {
         LOG_ERROR("V8", "V8 Fatal error at %s. Error: %s", location, message);
     });
