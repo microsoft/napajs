@@ -1,5 +1,6 @@
 #include <napa-c.h>
 
+#include "module/global-store.h"
 #include "providers/providers.h"
 #include "scheduler/load-task.h"
 #include "scheduler/scheduler.h"
@@ -56,12 +57,14 @@ napa_response_code napa_container_init(napa_container_handle handle, napa_string
     return NAPA_RESPONSE_SUCCESS;
 }
 
-napa_response_code napa_container_set_global_value(napa_container_handle handle ,napa_string_ref, void*) {
+napa_response_code napa_container_set_global_value(napa_container_handle handle, napa_string_ref key, void* value) {
     NAPA_ASSERT(_initialized, "Napa wasn't initialized");
     NAPA_ASSERT(handle, "Container handle is null");
+    NAPA_ASSERT(value, "Global value is null");
 
-    // TODO @asib: Add implementation and remove this warning.
-    LOG_WARNING("Api", "napa_container_set_global_value was called but implementation is missing");
+    if (!napa::module::global_store::SetValue(NAPA_STRING_REF_TO_STD_STRING(key).c_str(), value)) {
+        return NAPA_RESPONSE_GLOBAL_VALUE_ERROR;
+    }
 
     return NAPA_RESPONSE_SUCCESS;
 }

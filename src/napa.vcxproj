@@ -43,6 +43,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="api\api.cpp" />
+    <ClCompile Include="module\global-store.cpp" />
     <ClCompile Include="module\module-internal.cpp" />
     <ClCompile Include="platform\win\thread-local-storage.cpp" />
     <ClCompile Include="providers\providers.cpp" />

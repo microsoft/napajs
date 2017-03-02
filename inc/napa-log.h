@@ -45,6 +45,7 @@ inline void LogFormattedMessage(
     logger.LogMessage(section, level, traceId, file, line, message);
 }
 
+#ifndef NAPA_LOG_DISABLED
 
 #define LOG(section, level, traceId, format, ...) do {                                                   \
     auto& logger = napa::providers::GetLoggingProvider();                                                \
@@ -53,6 +54,11 @@ inline void LogFormattedMessage(
     }                                                                                                    \
 } while (false)
 
+#else
+
+#define LOG(section, level, traceId, format, ...)
+
+#endif
 
 #define LOG_ERROR(section, format, ...) \
     LOG(section, napa::providers::Verboseness::Error, "", format, __VA_ARGS__);

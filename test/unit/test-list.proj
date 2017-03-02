@@ -4,6 +4,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <DisableSpecificWarnings>4100;4996;4459</DisableSpecificWarnings>
+      <PreprocessorDefinitions>NAPA_LOG_DISABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\third-party\catch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -12,6 +13,7 @@
 
   <!-- Product code that is tested and needs to compile -->
   <ItemGroup>
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\global-store.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\simple-thread-pool.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\timeout-service.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\settings\settings-parser.cpp" />
@@ -19,7 +21,7 @@
 
   <!-- Test code -->
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)\example\example.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\module\global-store-tests.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\object-transport\object-transport-tests.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\scheduler\scheduler-tests.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\scheduler\timeout-service-tests.cpp" />
