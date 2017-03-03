@@ -1,12 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(EnvironmentConfig)" />
-  <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.Default.props" />
-  <ItemGroup>
-    <QCustomInput Include="$(NapaVanillaRoot)\.clang-tidy" />
-    <QCustomInput Include="api\.clang-tidy" />
-  </ItemGroup>
-  
+  <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.Default.props" />  
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>

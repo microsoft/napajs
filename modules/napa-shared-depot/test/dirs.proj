@@ -2,10 +2,9 @@
   <Import Project="$(EnvironmentConfig)" />
 
   <ItemGroup>
-    <ProjectFile Include="examples\dirs.proj" />
-    <ProjectFile Include="modules\dirs.proj" />
-    <ProjectFile Include="src\napa.vcxproj" />
-    <ProjectFile Include="test\dirs.proj" />
+    <ProjectFile Include="dummy-module\dirs.proj" />
+    <ProjectFile Include="library-test\library-test.vcxproj" />
+    <ProjectFile Include="module-test\napa-shared-depot-test.njsproj" />
   </ItemGroup>
 
   <Import Project="$(ExtendedTargetsPath)\Traversal.targets" />

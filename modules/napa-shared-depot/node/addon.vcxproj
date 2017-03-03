@@ -25,21 +25,24 @@
     <TargetName Condition=" '$(AddonType)' != 'Napa' ">$(AddonName)</TargetName>
     <TargetName Condition=" '$(AddonType)' == 'Napa' ">$(AddonName)_napa</TargetName>
   </PropertyGroup>
-  <PropertyGroup>
-    <AddonName>addon</AddonName>
-    <TargetName Condition=" '$(AddonType)' != 'Napa' ">$(AddonName)</TargetName>
-    <TargetName Condition=" '$(AddonType)' == 'Napa' ">$(AddonName)_napa</TargetName>
-  </PropertyGroup>
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.props" />
   <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies Condition=" '$(AddonType)' == 'Napa' ">$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
     <ClCompile>
       <PreprocessorDefinitions Condition=" '$(AddonType)' != 'Napa' ">BUILDING_NODE_EXTENSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition=" '$(AddonType)' == 'Napa' ">NAPA_MODULE_EXTENSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\modules\napa-shared-depot\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ProjectReference Include="$(NapaVanillaRoot)\modules\napa-shared-depot\src\shared-depot.vcxproj" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)\addon.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\shared-barrel-wrap.cpp" />
   </ItemGroup>
   <Target Name="ChangeExtention" AfterTargets="Build">
     <Move SourceFiles="$(OutputPath)\$(TargetFileName)" DestinationFiles="$(OutputPath)\$(AddonName).node" Condition=" '$(AddonType)' != 'Napa' " />
@@ -47,5 +50,10 @@
   </Target>
   <Import Project="$(PACKAGESROOT)\NodeJs.Library\exports.props" Condition=" '$(AddonType)' != 'Napa' " />
   <Import Project="$(PACKAGESROOT)\V8.Library\exports.props" Condition=" '$(AddonType)' == 'Napa' " />
+  <Import Project="$(Pkgboost)\build\native\boost.targets" />
+  <Import Project="$(Pkgboost_chrono_vc140)\build\native\boost_chrono-vc140.targets" />
+  <Import Project="$(Pkgboost_date_time_vc140)\build\native\boost_date_time-vc140.targets" />
+  <Import Project="$(Pkgboost_system_vc140)\build\native\boost_system-vc140.targets" />
+  <Import Project="$(Pkgboost_thread_vc140)\build\native\boost_thread-vc140.targets" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

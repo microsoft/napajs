@@ -2,9 +2,10 @@
   <Import Project="$(EnvironmentConfig)" />
 
   <ItemGroup>
-    <ProjectFile Include="examples\dirs.proj" />
-    <ProjectFile Include="modules\dirs.proj" />
-    <ProjectFile Include="src\napa.vcxproj" />
+    <ProjectFile Include="napa\addon.vcxproj" />
+    <ProjectFile Include="node\addon.vcxproj" />
+    <ProjectFile Include="script\script.proj" />
+    <ProjectFile Include="src\shared-depot.vcxproj" />
     <ProjectFile Include="test\dirs.proj" />
   </ItemGroup>
 

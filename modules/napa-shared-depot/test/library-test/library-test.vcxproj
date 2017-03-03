@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(EnvironmentConfig)" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -13,22 +13,30 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.props" />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories>..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\modules\napa-shared-depot\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\third-party;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="plus-number-transporter.cpp" />
+    <ProjectReference Include="$(NapaVanillaRoot)\modules\napa-shared-depot\src\shared-depot.vcxproj" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <Import Project="$(Pkgboost)\build\native\boost.targets" />
+  <Import Project="$(Pkgboost_chrono_vc140)\build\native\boost_chrono-vc140.targets" />
+  <Import Project="$(Pkgboost_date_time_vc140)\build\native\boost_date_time-vc140.targets" />
+  <Import Project="$(Pkgboost_system_vc140)\build\native\boost_system-vc140.targets" />
+  <Import Project="$(Pkgboost_thread_vc140)\build\native\boost_thread-vc140.targets" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
