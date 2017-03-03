@@ -1,5 +1,5 @@
 ---
-Checks:          '*,-google*,-llvm-header-guard,-llvm-include-order,-cppcoreguidelines*,-cppcoreguidelines-pro*,-readability-named-parameter,-cert-err58-cpp'
+Checks:          '*,-google*,-llvm-header-guard,-llvm-include-order,-cppcoreguidelines*,-cppcoreguidelines-pro*,-readability-named-parameter,-cert-err58-cpp,-readability-function-size'
 WarningsAsErrors: ''
 HeaderFilterRegex: ''
 AnalyzeTemporaryDtors: false

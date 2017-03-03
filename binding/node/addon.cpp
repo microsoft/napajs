@@ -26,7 +26,7 @@ void Initialize(const v8::FunctionCallbackInfo<v8::Value>& args) {
         if (args[0]->IsString()) {
             // Settings provided as string.
 
-            v8::String::Utf8Value settings(args[0]->ToString());
+            v8::String::Utf8Value settings(args[0]->ToString(context).ToLocalChecked());
             napa::Initialize(*settings);
         } else {
             // Settings provided as object.
@@ -45,7 +45,7 @@ void Initialize(const v8::FunctionCallbackInfo<v8::Value>& args) {
     }
 }
 
-void Shutdown(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void Shutdown(const v8::FunctionCallbackInfo<v8::Value>&) {
     napa::Shutdown();
 }
 

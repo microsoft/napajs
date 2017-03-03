@@ -110,7 +110,7 @@ void ContainerWrap::Load(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
     auto wrap = ObjectWrap::Unwrap<ContainerWrap>(args.Holder());
     wrap->_container->Load(*source, [handler](NapaResponseCode responseCode) {
-        handler->DispatchCallback(std::move(responseCode));
+        handler->DispatchCallback(responseCode);
     });
 }
 
@@ -146,7 +146,7 @@ void ContainerWrap::LoadFile(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
     auto wrap = ObjectWrap::Unwrap<ContainerWrap>(args.Holder());
     wrap->_container->LoadFile(*file, [handler](NapaResponseCode responseCode) {
-        handler->DispatchCallback(std::move(responseCode));
+        handler->DispatchCallback(responseCode);
     });
 }
 
@@ -246,9 +246,9 @@ void ContainerWrap::RunSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
     auto returnObj = v8::Object::New(isolate);
 
-    returnObj->CreateDataProperty(context, MakeV8String(isolate, "code"), responseValues[0]);
-    returnObj->CreateDataProperty(context, MakeV8String(isolate, "errorMessage"), responseValues[1]);
-    returnObj->CreateDataProperty(context, MakeV8String(isolate, "returnValue"), responseValues[2]);
+    (void)returnObj->CreateDataProperty(context, MakeV8String(isolate, "code"), responseValues[0]);
+    (void)returnObj->CreateDataProperty(context, MakeV8String(isolate, "errorMessage"), responseValues[1]);
+    (void)returnObj->CreateDataProperty(context, MakeV8String(isolate, "returnValue"), responseValues[2]);
 
     args.GetReturnValue().Set(returnObj);
 }

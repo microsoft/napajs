@@ -109,14 +109,14 @@ namespace module {
     /// <param name="functionTemplate"> V8 function template object to bind with the given callback function. </param>
     /// <param name="name"> Method name. </param>
     /// <param name="callback"> Binding V8 function object. </param>
-    inline void SetPrototypeMethod(v8::Handle<v8::FunctionTemplate> functionTemplate,
+    inline void SetPrototypeMethod(v8::Local<v8::FunctionTemplate> functionTemplate,
                                    const char* name,
                                    v8::FunctionCallback callback) {
         auto isolate = v8::Isolate::GetCurrent();
         v8::HandleScope handleScope(isolate);
 
         auto signature = v8::Signature::New(isolate, functionTemplate);
-        auto signaturedFunctionTemplate = v8::FunctionTemplate::New(isolate, callback, v8::Handle<v8::Value>(), signature);
+        auto signaturedFunctionTemplate = v8::FunctionTemplate::New(isolate, callback, v8::Local<v8::Value>(), signature);
         auto function = signaturedFunctionTemplate->GetFunction();
 
         functionTemplate->PrototypeTemplate()->Set(v8::String::NewFromUtf8(isolate, name), function);
