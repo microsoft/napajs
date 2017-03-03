@@ -28,7 +28,10 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="plus-number-transporter.cpp" />
+    <ClCompile Include="shared-barrel.cpp" />
+    <ClCompile Include="shared-depot.cpp" />
   </ItemGroup>
+  <Import Project="$(Pkgboost)\build\native\boost.targets" />
+  <Import Project="$(Pkgboost_thread_vc140)\build\native\boost_thread-vc140.targets" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
