@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="AfterBuild" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <QCustomInput Include="$(NapaVanillaRoot)\tools\clang-tools\clang-tidy.exe" />
+    <QCustomInput Include="$(NapaRoot)\**\.clang-tidy" />
+  </ItemGroup>
+  
+  <Target Name="AfterBuild" DependsOnTargets="GetClCommandLines" Condition="'$(ClangOff)'==''">
+    <PropertyGroup>
+      <TempProperty>@(ClCompile, ' ')</TempProperty>
+      <FileListForTidy>$(TempProperty.Substring(0, $(TempProperty.Indexof('__temporary.cpp'))).Trim())</FileListForTidy>
+    </PropertyGroup>
+    <Exec Command="$(NapaVanillaRoot)\tools\clang-tools\clang-tidy.exe  $(FileListForTidy) -header-filter=$(NapaRoot)\\.* -warnings-as-errors=* -- --driver-mode=cl -Qunused-arguments @(ClCommandLines)"/>
+  </Target>
+</Project>

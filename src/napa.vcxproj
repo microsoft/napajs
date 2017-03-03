@@ -27,7 +27,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <DisableSpecificWarnings>4100;4459;4996</DisableSpecificWarnings>
-      <PreprocessorDefinitions>NAPA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NAPA_EXPORTS;V8_IMMINENT_DEPRECATION_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\third-party;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -51,11 +51,6 @@
     <ClCompile Include="settings\settings-parser.cpp" />
     <ClCompile Include="v8\v8-common.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <Binplace Include="$(OutputPath)\$(TargetFileName)">
-      <DestinationFolder>$(NapaVanillaBinplacePath)</DestinationFolder>
-    </Binplace>
-  </ItemGroup>
   <Import Project="$(PACKAGESROOT)\V8.Library\exports.props" />
   <Import Project="$(Pkgboost)\build\native\boost.targets" />
   <Import Project="$(Pkgboost_date_time_vc140)\build\native\boost_date_time-vc140.targets" />
@@ -64,5 +59,5 @@
   <Import Project="$(Pkgboost_regex_vc140)\build\native\boost_regex-vc140.targets" />
   <Import Project="$(Pkgboost_system_vc140)\build\native\boost_system-vc140.targets" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="$(NapaRoot)\tools\clang_tools\napa_checks.targets" />
+  <Import Project="$(NapaVanillaRoot)\tools\clang-tools\napa-checks.targets" />
 </Project>

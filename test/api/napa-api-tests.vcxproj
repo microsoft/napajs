@@ -31,7 +31,6 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\third-party\catch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -65,5 +64,9 @@
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
   </ItemGroup>
+  
+    <!-- Use napa catch adapter -->
+  <Import Project="$(NapaVanillaRoot)\tools\catch-adapter\napa-catch.targets" />
+  
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

@@ -2,6 +2,8 @@
   <Import Project="$(EnvironmentConfig)" />
 
   <ItemGroup>
+    <ProjectFile Include="binding\dirs.proj" />
+    <ProjectFile Include="deploy\binplace.proj" />
     <ProjectFile Include="examples\dirs.proj" />
     <ProjectFile Include="modules\dirs.proj" />
     <ProjectFile Include="src\napa.vcxproj" />

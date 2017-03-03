@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(EnvironmentConfig)" />
+  
+  <PropertyGroup>
+    <NapaVanillaDistribPath>$(DistribPath)\node_modules\napa</NapaVanillaDistribPath>
+    <NapaVanillaBinplacePath>$(BinplaceDistribPath)\node_modules\napa</NapaVanillaBinplacePath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <QCustomProjectReference Include="$(NapaVanillaRoot)\src\napa.vcxproj" />
+    <QCustomProjectReference Include="$(NapaVanillaRoot)\binding\node\addon.vcxproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Robocopy Include="$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.dll">
+      <DestinationFolder>$(NapaVanillaDistribPath)\bin</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="$(NapaVanillaRoot)\binding\node\$(IntermediateOutputPath)\addon.node">
+      <DestinationFolder>$(NapaVanillaDistribPath)\bin</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="$(NapaVanillaRoot)\inc">
+      <DestinationFolder>$(NapaVanillaDistribPath)\inc</DestinationFolder>
+    </Robocopy>
+  </ItemGroup>
+
+  <Import Project="$(ExtendedTargetsPath)\NoTarget.targets" />
+</Project>

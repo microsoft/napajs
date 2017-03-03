@@ -43,7 +43,7 @@ namespace binding {
         static void Release(NodeAsyncHandler<ResponseType>* handler);
 
         /// <summary> Invoking the stored V8 callback on node main thread. </summary>
-        void DispatchCallback(ResponseType&& response);
+        void DispatchCallback(ResponseType response);
 
     private:
 
@@ -95,8 +95,8 @@ namespace binding {
     }
 
     template <typename ResponseType>
-    void NodeAsyncHandler<ResponseType>::DispatchCallback(ResponseType&& response) {
-        _response = std::forward<ResponseType>(response);
+    void NodeAsyncHandler<ResponseType>::DispatchCallback(ResponseType response) {
+        _response = std::move(response);
 
         // Defer JS callback to the node main thread.
         uv_async_send(&_asyncHandle);
@@ -115,7 +115,7 @@ namespace binding {
         auto args = handler->_argsGeneratorFunc(handler->_response);
 
         // Call the user provided Javascript callback.
-        callback->Call(context, context->Global(), static_cast<int>(args.size()), args.data());
+        (void)callback->Call(context, context->Global(), static_cast<int>(args.size()), args.data());
 
         // Cleanup.
         uv_close(reinterpret_cast<uv_handle_t*>(asyncHandle), [](uv_handle_t* asyncHandle) {

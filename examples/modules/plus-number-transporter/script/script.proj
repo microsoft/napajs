@@ -8,11 +8,10 @@
   </ItemGroup>
   
   <ItemGroup>
-    <QcustomInput Include="tsconfig.json" />
-    <QcustomInput Include="src\plus-number-transporter.ts" />
-    <QcustomInput Include="$(INETROOT)\private\napa\build\codegen\**" />
-    <QcustomInput Include="$(INETROOT)\private\napa\build\@types\**" />
-    <QcustomInput Include="$(INETROOT)\private\napa\build\typescript\**" />
+    <QCustomInput Include="src\plus-number-transporter.ts" />
+    <QCustomInput Include="$(INETROOT)\private\napa\build\codegen\**" />
+    <QCustomInput Include="$(INETROOT)\private\napa\build\@types\**" />
+    <QCustomInput Include="$(INETROOT)\private\napa\build\typescript\**" />
   </ItemGroup>
   
   <Target Name="BuildScripts" AfterTargets="AfterBuild">
@@ -31,8 +30,10 @@
     <Copy SourceFiles="$(NapaVanillaRoot)\src\$(O)\napa.dll" DestinationFolder="$(O)\dist\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(O)\plus-number-transporter.js" DestinationFolder="$(O)\dist\lib" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(O)\plus-number-transporter.d.ts" DestinationFolder="$(O)\dist\types" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="tsconfig.json" DestinationFolder="$(O)\dist" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="package.json" DestinationFolder="$(O)\dist" ContinueOnError="false" SkipUnchangedFiles="true" />
+
+    <!-- Bypass build cop error ENL31102: Input ...\tsconfig.json is missing on the disk -->
+    <Exec Command="move tsconfig.json $(O)\dist\tsconfig.json" />
   </Target>
 
   <Import Project="$(ExtendedTargetsPath)\NoTarget.targets" />

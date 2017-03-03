@@ -3,16 +3,15 @@
   <Import Project="$(EnvironmentConfig)" />
   
   <ItemGroup>
-    <QCustomProjectReference Include="$(NapaVanillaRoot)\examples\modules\napa-shared-depot\napa\addon.vcxproj" />
-    <QCustomProjectReference Include="$(NapaVanillaRoot)\examples\modules\napa-shared-depot\node\addon.vcxproj" />
+    <QCustomProjectReference Include="$(NapaVanillaRoot)\modules\napa-shared-depot\napa\addon.vcxproj" />
+    <QCustomProjectReference Include="$(NapaVanillaRoot)\modules\napa-shared-depot\node\addon.vcxproj" />
   </ItemGroup>
   
   <ItemGroup>
-    <QcustomInput Include="tsconfig.json" />
-    <QcustomInput Include="src\napa-shared-depot.ts" />
-    <QcustomInput Include="$(INETROOT)\private\napa\build\codegen\**" />
-    <QcustomInput Include="$(INETROOT)\private\napa\build\@types\**" />
-    <QcustomInput Include="$(INETROOT)\private\napa\build\typescript\**" />
+    <QCustomInput Include="src\napa-shared-depot.ts" />
+    <QCustomInput Include="$(INETROOT)\private\napa\build\codegen\**" />
+    <QCustomInput Include="$(INETROOT)\private\napa\build\@types\**" />
+    <QCustomInput Include="$(INETROOT)\private\napa\build\typescript\**" />
   </ItemGroup>
   
   <Target Name="BuildScripts" AfterTargets="AfterBuild">
@@ -31,8 +30,10 @@
     <Copy SourceFiles="$(NapaVanillaRoot)\src\$(O)\napa.dll" DestinationFolder="$(O)\dist\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(O)\napa-shared-depot.js" DestinationFolder="$(O)\dist\lib" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(O)\napa-shared-depot.d.ts" DestinationFolder="$(O)\dist\types" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="tsconfig.json" DestinationFolder="$(O)\dist" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="package.json" DestinationFolder="$(O)\dist" ContinueOnError="false" SkipUnchangedFiles="true" />
+    
+    <!-- Bypass build cop error ENL31102: Input ...\tsconfig.json is missing on the disk -->
+    <Exec Command="move tsconfig.json $(O)\dist\tsconfig.json" />
   </Target>
 
   <Import Project="$(ExtendedTargetsPath)\NoTarget.targets" />

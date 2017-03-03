@@ -112,7 +112,7 @@ namespace v8_helpers {
                 auto key = props->Get(context, i).ToLocalChecked();
                 auto value = obj->Get(context, key).ToLocalChecked();
 
-                v8::String::Utf8Value keyString(key->ToString());
+                v8::String::Utf8Value keyString(key->ToString(context).ToLocalChecked());
 
                 res.emplace(*keyString, V8ValueTo<ValueType>(value));
             }
