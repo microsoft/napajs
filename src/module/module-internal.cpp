@@ -7,7 +7,7 @@ using namespace napa;
 using namespace napa::module;
 
 // Global instance of IsolateData.
-IsolateData& GetIsolateData() {
+IsolateData& IsolateData::GetInstance() {
     static IsolateData isolateData;
     return isolateData;
 }
@@ -18,33 +18,31 @@ IsolateData::IsolateData() {
     }
 }
 
+IsolateData::~IsolateData() {
+    for (auto tlsIndex : _tlsIndexes) {
+        tls::Free(tlsIndex);
+    }
+}
+
+void IsolateData::Init() {
+    for (auto tlsIndex : GetInstance()._tlsIndexes) {
+        tls::SetValue(tlsIndex, nullptr);
+    }
+}
+
 void* IsolateData::Get(IsolateDataId isolateDataId) {
     auto slotId = static_cast<size_t>(isolateDataId);
-    NAPA_ASSERT(slotId < GetIsolateData()._tlsIndexes.size(), "slot id out of range");
+    NAPA_ASSERT(slotId < GetInstance()._tlsIndexes.size(), "slot id out of range");
 
-    auto tlsIndex = GetIsolateData()._tlsIndexes[static_cast<size_t>(IsolateDataId::ISOLATE)];
-    auto isolate = v8::Isolate::GetCurrent();
-    auto current = static_cast<v8::Isolate*>(tls::GetValue(tlsIndex));
-    if (current != isolate) {
-        return nullptr;
-    }
-
-    tlsIndex = GetIsolateData()._tlsIndexes[slotId];
+    auto tlsIndex = GetInstance()._tlsIndexes[slotId];
     return tls::GetValue(tlsIndex);
 }
 
 void IsolateData::Set(IsolateDataId isolateDataId,
                       void* data) {
     auto slotId = static_cast<size_t>(isolateDataId);
-    NAPA_ASSERT(slotId < GetIsolateData()._tlsIndexes.size(), "slot id out of range");
+    NAPA_ASSERT(slotId < GetInstance()._tlsIndexes.size(), "slot id out of range");
 
-    auto tlsIndex = GetIsolateData()._tlsIndexes[static_cast<size_t>(IsolateDataId::ISOLATE)];
-    auto isolate = v8::Isolate::GetCurrent();
-    auto current = static_cast<v8::Isolate*>(tls::GetValue(tlsIndex));
-    if (current != isolate) {
-        tls::SetValue(tlsIndex, isolate);
-    }
-
-    tlsIndex = GetIsolateData()._tlsIndexes[slotId];
+    auto tlsIndex = GetInstance()._tlsIndexes[slotId];
     tls::SetValue(tlsIndex, data);
 }

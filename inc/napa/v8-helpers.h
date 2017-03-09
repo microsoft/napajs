@@ -154,12 +154,12 @@ namespace v8_helpers {
         return scope.Escape(res);
     }
 
-    inline v8::Local<v8::String> MakeV8String(v8::Isolate *isolate, const char* str) {
-        return v8::String::NewFromUtf8(isolate, str, v8::NewStringType::kNormal).ToLocalChecked();
+    inline v8::Local<v8::String> MakeV8String(v8::Isolate *isolate, const char* str, int length = -1) {
+        return v8::String::NewFromUtf8(isolate, str, v8::NewStringType::kNormal, length).ToLocalChecked();
     }
 
     inline v8::Local<v8::String> MakeV8String(v8::Isolate *isolate, const std::string& str) {
-        return MakeV8String(isolate, str.c_str());
+        return MakeV8String(isolate, str.c_str(), static_cast<int>(str.length()));
     }
 
     inline v8::Local<v8::String> MakeExternalV8String(v8::Isolate *isolate, const char* data, size_t length) {

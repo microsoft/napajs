@@ -27,7 +27,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <DisableSpecificWarnings>4100;4459;4996</DisableSpecificWarnings>
-      <PreprocessorDefinitions>NAPA_EXPORTS;V8_IMMINENT_DEPRECATION_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NAPA_EXPORTS;V8_IMMINENT_DEPRECATION_WARNINGS;USING_V8_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\third-party;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -40,6 +40,8 @@
     <ClCompile Include="api\api.cpp" />
     <ClCompile Include="module\global-store.cpp" />
     <ClCompile Include="module\module-internal.cpp" />
+    <ClCompile Include="module\module-loader.cpp" />
+    <ClCompile Include="platform\win\command-line.cpp" />
     <ClCompile Include="platform\win\thread-local-storage.cpp" />
     <ClCompile Include="providers\providers.cpp" />
     <ClCompile Include="scheduler\core.cpp" />
@@ -51,6 +53,11 @@
     <ClCompile Include="settings\settings-parser.cpp" />
     <ClCompile Include="v8\v8-common.cpp" />
   </ItemGroup>
+
+  <!-- Build-in and core modules -->
+  <Import Project="module\built-in\built-in-modules.proj" />
+  <Import Project="module\core\core-modules.proj" />
+
   <Import Project="$(PACKAGESROOT)\V8.Library\exports.props" />
   <Import Project="$(Pkgboost)\build\native\boost.targets" />
   <Import Project="$(Pkgboost_date_time_vc140)\build\native\boost_date_time-vc140.targets" />
