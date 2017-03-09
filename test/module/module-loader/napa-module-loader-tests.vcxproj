@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(EnvironmentConfig)" />
+  <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.Default.props" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup>
+    <V8BinPath>$(PACKAGESROOT)\V8.Library\$(COMPILER_VERSION)\bin\$(BuildType)\$(BuildArchitecture)</V8BinPath>
+    <V8MiscPath>$(PACKAGESROOT)\V8.Library\misc\$(BuildType)\$(BuildArchitecture)</V8MiscPath>
+  </PropertyGroup>
+  <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.props" />
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <ClCompile>
+      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+      <PreprocessorDefinitions>USING_V8_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="module-loader-tests.cpp" />
+  </ItemGroup>
+  <!-- To avoid exporting module-loader APIs -->
+  <ItemGroup>
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\module-loader.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\command-line.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\v8\v8-common.cpp" />
+  </ItemGroup>
+  <Import Project="$(NapaVanillaRoot)\src\module\built-in\built-in-modules.proj" />
+  <Import Project="$(NapaVanillaRoot)\src\module\core\core-modules.proj" />
+  <ItemGroup>
+    <ProjectReference Include="$(NapaVanillaRoot)\src\napa.vcxproj" />
+    <ProjectReference Include="$(NapaVanillaRoot)\test\module\sample\sample.vcxproj" />
+  </ItemGroup>
+  <!-- Test artifacts binplace -->
+  <ItemGroup>
+    <Robocopy Include="$(V8BinPath)\icui18n.dll">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="$(V8BinPath)\icuuc.dll">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="$(V8BinPath)\v8.dll">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="$(V8MiscPath)\natives_blob.bin">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="$(V8MiscPath)\snapshot_blob.bin">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="jsmodule.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="sample.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="sample-test.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="fstest.json">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="fstest.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="pathtest.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="cycle-a.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="cycle-b.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="cycle-main.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.dll">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="$(NapaVanillaRoot)\test\module\sample\$(IntermediateOutputPath)\sample.napa">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="module-resolution-test.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="toproxy.js">
+      <DestinationFolder>$(IntermediateOutputPath)\test</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="toupper.js">
+      <DestinationFolder>$(IntermediateOutputPath)\test</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="tests\sub\module-resolution-test-root.js">
+      <DestinationFolder>$(IntermediateOutputPath)\tests\sub</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="tests\sub\fstestsub.js">
+      <DestinationFolder>$(IntermediateOutputPath)\tests\sub</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="tests\sub\fstestsub.json">
+      <DestinationFolder>$(IntermediateOutputPath)\tests\sub</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="tests\sub\sub1\file1.js">
+      <DestinationFolder>$(IntermediateOutputPath)\tests\sub\sub1</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="tests\sub\sub1\file2.js">
+      <DestinationFolder>$(IntermediateOutputPath)\tests\sub\sub1</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="tests\node_modules\file2.js">
+      <DestinationFolder>$(IntermediateOutputPath)\tests\node_modules</DestinationFolder>
+    </Robocopy>
+  </ItemGroup>
+
+  <!-- Use napa catch adapter -->
+  <Import Project="$(NapaVanillaRoot)\tools\catch-adapter\napa-catch.targets" />
+
+  <Import Project="$(PACKAGESROOT)\V8.Library\exports.props" />
+  <Import Project="$(Pkgboost)\build\native\boost.targets" />
+  <Import Project="$(Pkgboost_filesystem_vc140)\build\native\boost_filesystem-vc140.targets" />
+  <Import Project="$(Pkgboost_system_vc140)\build\native\boost_system-vc140.targets" />
+
+  <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

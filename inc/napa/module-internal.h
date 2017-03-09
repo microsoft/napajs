@@ -66,8 +66,11 @@ namespace module {
     class NAPA_API IsolateData {
     public:
 
-        /// <summary> Constructor to assign TLS index to all data. It's' done once at process level. </summary>
-        IsolateData();
+        /// <summary> Returns the single instance of this class. </summary>
+        static IsolateData& GetInstance();
+
+        /// <summary> Initialize isolate data. </summary>
+        static void Init();
 
         /// <summary> Get stored TLS data. </summary>
         /// <param name="isolateDataId"> Pre-defined data id for Napa specific data. </param>
@@ -82,9 +85,17 @@ namespace module {
 
     private:
 
+        /// <summary> Constructor to assign TLS index to all data. It's done once at process level. </summary>
+        IsolateData();
+
+        /// <summary> Destructor. </summary>
+        ~IsolateData();
+
         /// <summary> It stores the tls index for all data. </summary>
         std::array<uint32_t, static_cast<size_t>(IsolateDataId::END_OF_ISOLATE_DATA_ID)> _tlsIndexes;
     };
+
+    #define INIT_ISOLATE_DATA IsolateData::Init
 
     /// <summary> It binds the method name with V8 function. </summary>
     /// <param name="exports"> V8 object to bind with the given callback function. </param>

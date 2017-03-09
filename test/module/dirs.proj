@@ -2,10 +2,8 @@
   <Import Project="$(EnvironmentConfig)" />
 
   <ItemGroup>
-    <ProjectFile Include="api\napa-api-tests.vcxproj" />
-    <ProjectFile Include="component\napa-component-tests.vcxproj" />
-    <ProjectFile Include="module\dirs.proj" />
-    <ProjectFile Include="unit\napa-unit-tests.vcxproj" />
+    <ProjectFile Include="sample\sample.vcxproj" />
+    <ProjectFile Include="module-loader\napa-module-loader-tests.vcxproj" />
   </ItemGroup>
 
   <Import Project="$(ExtendedTargetsPath)\Traversal.targets" />

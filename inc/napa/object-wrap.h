@@ -27,7 +27,7 @@ namespace module
         }
 
         template <class T>
-        static inline T* Unwrap(v8::Handle<v8::Object> handle) {
+        static inline T* Unwrap(v8::Local<v8::Object> handle) {
             assert(!handle.IsEmpty());
             assert(handle->InternalFieldCount() > 0);
 
@@ -52,7 +52,7 @@ namespace module
 
     protected:
 
-        void Wrap(v8::Handle<v8::Object> handle) {
+        void Wrap(v8::Local<v8::Object> handle) {
             assert(persistent().IsEmpty());
             assert(handle->InternalFieldCount() > 0);
             handle->SetAlignedPointerInInternalField(0, this);
