@@ -43,6 +43,10 @@
   
   <!-- Product code that is tested and needs to compile -->
   <ItemGroup>
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\module-internal.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\module-loader.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\command-line.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\thread-local-storage.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\providers\providers.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\core.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\load-task.cpp" />
@@ -51,6 +55,10 @@
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\timeout-service.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\v8\v8-common.cpp" />
   </ItemGroup>
+
+  <!-- Build-in and core modules -->
+  <Import Project="$(NapaVanillaRoot)\src\module\built-in\built-in-modules.proj" />
+  <Import Project="$(NapaVanillaRoot)\src\module\core\core-modules.proj" />
 
   <!-- Test code -->
   <ItemGroup>

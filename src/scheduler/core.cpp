@@ -1,5 +1,6 @@
 #include "core.h"
 
+#include "module/module-loader.h"
 #include "v8/array-buffer-allocator.h"
 
 #include <napa-log.h>
@@ -87,7 +88,8 @@ void Core::CoreThreadFunc(const Settings& settings) {
     context->SetSecurityToken(v8::Undefined(_impl->isolate));
     v8::Context::Scope contextScope(context);
 
-    // TODO @asib: This is where we need to call module loader for setting builtin and core modules.
+    // Load module loader and built-in modules of require, console and etc.
+    INIT_BUILTIN_MODULES(context);
 
     while (true) {
         std::shared_ptr<Task> task;
