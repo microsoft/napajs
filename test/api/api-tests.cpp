@@ -143,6 +143,17 @@ TEST_CASE("container apis", "[api]") {
         REQUIRE(response.errorMessage == "Run exceeded timeout");
     }
 
+    SECTION("load javascript requiring a module") {
+        napa::Container container;
+
+        auto responseCode = container.LoadSync("var path = require('path'); function func() { return path.extname('test.txt'); }");
+        REQUIRE(responseCode == NAPA_RESPONSE_SUCCESS);
+
+        auto response = container.RunSync("func", {});
+        REQUIRE(response.code == NAPA_RESPONSE_SUCCESS);
+        REQUIRE(response.returnValue == ".txt");
+    }
+
     /// <note>
     ///     This must be the last test in this test suite, since napa initialize and shutdown
     ///     can only run once per process.
