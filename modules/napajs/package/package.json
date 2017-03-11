@@ -1,0 +1,10 @@
+{
+    "name": "napajs",
+    "version": "0.0.2",
+    "author": "napajs",
+    "main": "./bin/addon",
+    "types": "./types/napajs.d.ts",
+    "dependencies": {
+        "@napajs/logger": "0.x.x"
+    }
+}

@@ -2,7 +2,8 @@
   <Import Project="$(EnvironmentConfig)" />
 
   <ItemGroup>
-    <ProjectFile Include="napa-shared-depot\dirs.proj" />
+    <ProjectFile Include="napajs\dirs.proj" />
+    <ProjectFile Include="@napajs\dirs.proj" />
   </ItemGroup>
 
   <Import Project="$(ExtendedTargetsPath)\Traversal.targets" />

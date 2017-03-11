@@ -5,14 +5,6 @@
 namespace napa {
 namespace providers {
 
-    /// <summary> Represents verboseness for logging. </summary>
-    enum class Verboseness {
-        Error,
-        Warning,
-        Info,
-        Debug
-    };
-
     /// <summary> Interface for a generic logging provider. </summary>
     /// <remarks> 
     ///     Ownership of this logging provider belongs to the shared library which created it. Hence the explicit
@@ -22,6 +14,14 @@ namespace providers {
     /// </remarks>
     class LoggingProvider {
     public:
+
+        /// <summary> Represents verboseness for logging. </summary>
+        enum class Verboseness {
+            Error = 0,
+            Warning,
+            Info,
+            Debug
+        };
 
         /// <summary> Logs a message. </summary>
         /// <param name="section"> Logging section. </param>

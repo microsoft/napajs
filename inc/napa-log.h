@@ -29,7 +29,7 @@ const size_t LOG_MAX_SIZE = 512;
 inline void LogFormattedMessage(
     napa::providers::LoggingProvider& logger,
     const char* section,
-    napa::providers::Verboseness level,
+    napa::providers::LoggingProvider::Verboseness level,
     const char* traceId,
     const char* file,
     int line,
@@ -61,25 +61,25 @@ inline void LogFormattedMessage(
 #endif
 
 #define LOG_ERROR(section, format, ...) \
-    LOG(section, napa::providers::Verboseness::Error, "", format, __VA_ARGS__);
+    LOG(section, napa::providers::LoggingProvider::Verboseness::Error, "", format, __VA_ARGS__);
 
-#define LOG_ERROR_WITH_TRACEID(section, traceId,  format, ...) \
-    LOG(section, napa::providers::Verboseness::Error, traceId, format, __VA_ARGS__);
+#define LOG_ERROR_WITH_TRACEID(section, traceId, format, ...) \
+    LOG(section, napa::providers::LoggingProvider::Verboseness::Error, traceId, format, __VA_ARGS__);
 
 #define LOG_WARNING(section, format, ...) \
-    LOG(section, napa::providers::Verboseness::Warning, "", format, __VA_ARGS__);
+    LOG(section, napa::providers::LoggingProvider::Verboseness::Warning, "", format, __VA_ARGS__);
 
 #define LOG_WARNING_WITH_TRACEID(section, traceId, format, ...) \
-    LOG(section, napa::providers::Verboseness::Warning, traceId, format, __VA_ARGS__);
+    LOG(section, napa::providers::LoggingProvider::Verboseness::Warning, traceId, format, __VA_ARGS__);
 
 #define LOG_INFO(section, format, ...) \
-    LOG(section, napa::providers::Verboseness::Info, "", format, __VA_ARGS__);
+    LOG(section, napa::providers::LoggingProvider::Verboseness::Info, "", format, __VA_ARGS__);
 
 #define LOG_INFO_WITH_TRACEID(section, traceId, format, ...) \
-    LOG(section, napa::providers::Verboseness::Info, traceId, format, __VA_ARGS__);
+    LOG(section, napa::providers::LoggingProvider::Verboseness::Info, traceId, format, __VA_ARGS__);
 
 #define LOG_DEBUG(section, format, ...) \
-    LOG(section, napa::providers::Verboseness::Debug, "", format, __VA_ARGS__);
+    LOG(section, napa::providers::LoggingProvider::Verboseness::Debug, "", format, __VA_ARGS__);
 
 #define LOG_DEBUG_WITH_TRACEID(section, traceId, format, ...) \
-    LOG(section, napa::providers::Verboseness::Debug, traceId, format, __VA_ARGS__);
+    LOG(section, napa::providers::LoggingProvider::Verboseness::Debug, traceId, format, __VA_ARGS__);
