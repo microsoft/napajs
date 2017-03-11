@@ -3,7 +3,7 @@
 // This is not a module extension, so define this macro to use V8 common macros.
 #define NAPA_MODULE_EXTENSION
 #include <napa-module.h>
-#include <napa/command-line.h>
+#include <napa/module/command-line.h>
 
 #include <iostream>
 #include <sstream>

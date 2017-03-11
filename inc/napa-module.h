@@ -5,9 +5,9 @@
 #pragma warning(disable: 4100)
 
 #ifdef NAPA_MODULE_EXTENSION
-#include "napa/module-internal.h"
-#include "napa/module-node-compat.h"
-#include "napa/object-wrap.h"
+#include "napa/module/module-internal.h"
+#include "napa/module/module-node-compat.h"
+#include "napa/module/object-wrap.h"
 #else
 #include <node.h>
 #include <node_object_wrap.h>

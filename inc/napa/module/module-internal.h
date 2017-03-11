@@ -5,7 +5,7 @@
 #define USING_V8_SHARED 1
 #endif
 
-#include "exports.h"
+#include <napa/exports.h>
 
 #include <array>
 #include <tuple>

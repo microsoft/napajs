@@ -3,6 +3,7 @@
 #include <cstdint>
 
 namespace napa {
+namespace module {
 namespace tls {
 
     /// <summary> Allocate a thread local storage index. </summary>
@@ -25,4 +26,5 @@ namespace tls {
     bool SetValue(uint32_t index, void* value);
 
 }   // End of namespce tls.
+}   // End of namespce module.
 }   // End of namespce napa.

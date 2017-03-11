@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include <napa/object-transport-v8-helpers.h>
+#include <napa/module/object-transport-v8-helpers.h>
 
 using namespace napa::module;
 

@@ -1,6 +1,6 @@
 #include <catch.hpp>
 
-#include <napa/object-transport.h>
+#include <napa/module/object-transport.h>
 
 using namespace napa;
 using namespace napa::module;
