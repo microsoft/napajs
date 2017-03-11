@@ -1,0 +1,8 @@
+{
+    "name": "@napajs/shared-depot",
+    "version": "0.0.1",
+    "author": "napajs",
+    "description": "Napa module enable a native object to be shared by multiple isolates.",
+    "main": "./lib/shared-depot.js",
+    "types": "./types/shared-depot.d.ts"
+}

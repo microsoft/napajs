@@ -1,0 +1,9 @@
+{
+    "name": "@napajs/logger",
+    "version": "0.0.1",
+    "author": "napajs",
+    "description": "Provides logging capabilites for napa.",
+    "keywords": ["napa", "logger"],
+    "main": "./lib/logger.js",
+    "types": "./types/logger.d.ts"
+}
