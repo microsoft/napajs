@@ -2,7 +2,7 @@
 #include "shared-depot.h"
 
 #include <napa-log.h>
-#include <napa/shared-wrap.h>
+#include <napa/module/shared-wrap.h>
 
 using namespace napa::module;
 

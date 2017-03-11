@@ -3,10 +3,9 @@
 #include <cassert>
 #include <v8.h>
 
-namespace napa
-{
-namespace module
-{
+namespace napa {
+namespace module {
+
     // Base class C++ class wrapper to manage lifetime.
     // It comes from node_object_wrap.h.
     class ObjectWrap {
@@ -111,5 +110,6 @@ namespace module
 
         v8::Persistent<v8::Object> _handle;
     };
+
 }   // End of namespace module.
 }   // End of namespace napa.

@@ -1,5 +1,5 @@
-#include <napa/module-internal.h>
-#include <napa/thread-local-storage.h>
+#include <napa/module/module-internal.h>
+#include <napa/module/thread-local-storage.h>
 
 #include <napa-log.h>
 

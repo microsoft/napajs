@@ -1,6 +1,6 @@
 #pragma once
 
-#include <napa/module-internal.h>
+#include <napa/module/module-internal.h>
 
 #include <functional>
 #include <memory>
