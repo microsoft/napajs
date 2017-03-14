@@ -1,12 +1,11 @@
 # Index of Modules@napajs
 
 ## Napa.JS fundementals
-- [@napajs/logging]() : Logger API for Napa.JS. 
-- [@napajs/metric]() : Metric API for Napa.JS.
-- [@napajs/timer](): High precision timer.
+- [@napajs/logger](../../modules/@napajs/logger/README.md) : Logging API for Napa.JS. 
+- [@napajs/metrics](./@napajs/metrics/README.md) : Metric API for Napa.JS.
 - [@napajs/shared-depot](): Sharing native objects across V8 isolates.
 - [@napajs/multi-task](): (TBD) High level API for multi-tasks.
-- [@napajs/app](): Application framework to build highly iterative applications.
+- [@napajs/vineyard](./@napajs/vineyard/README.md): Application framework to build highly iterative applications.
 
 ## General purpose modules
 - [@napajs/edge](): Interop with C# libraries
