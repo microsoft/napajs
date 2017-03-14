@@ -1,4 +1,4 @@
-# Logger module
+# @napajs/logger: Accessing Logging APIs
 
 This module provides uniform APIs for logging in napa.
 
