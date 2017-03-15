@@ -1,0 +1,10 @@
+{
+    "name": "napa-cl",
+    "version": "0.0.1",
+    "description": "A command line tool for napajs"
+    "author": "napajs",
+    "dependencies": {
+        "napajs": ">= 0.0.1",
+        "commander": ">= 2.9.0",
+    }
+}

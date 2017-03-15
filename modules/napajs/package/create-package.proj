@@ -11,20 +11,32 @@
     <QCustomInput Include="$(NapaVanillaRoot)\inc\**\*" />
   </ItemGroup> 
   
+  <PropertyGroup>
+    <PackageOutPath>$(IntermediateOutputPath)\node_modules\napajs</PackageOutPath>
+    <V8BinPath>$(PACKAGESROOT)\V8.Library\$(COMPILER_VERSION)\bin\$(BuildType)\$(BuildArchitecture)</V8BinPath>
+    <V8MiscPath>$(PACKAGESROOT)\V8.Library\misc\$(BuildType)\$(BuildArchitecture)</V8MiscPath>
+  </PropertyGroup>
+  
   <Target Name="CreateNpmPackage" AfterTargets="AfterBuild">
     <Message Text="Create NPM package." />
-    <MakeDir Directories="$(O)\node_modules\napajs\bin" ContinueOnError="false" Condition="!Exists('$(O)\node_modules\napajs\bin')" />
-    <MakeDir Directories="$(O)\node_modules\napajs\types" ContinueOnError="false" Condition="!Exists('$(O)\node_modules\napajs\types')" />
-    <Copy SourceFiles="..\node\$(O)\addon.node" DestinationFolder="$(O)\node_modules\napajs\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="..\napa\$(O)\addon.napa" DestinationFolder="$(O)\node_modules\napajs\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(NapaVanillaRoot)\src\$(O)\napa.dll" DestinationFolder="$(O)\node_modules\napajs\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="napajs.d.ts" DestinationFolder="$(O)\node_modules\napajs\types" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="package.json" DestinationFolder="$(O)\node_modules\napajs" ContinueOnError="false" SkipUnchangedFiles="true" />
+
+    <Copy SourceFiles="..\node\$(O)\addon.node" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="..\napa\$(O)\addon.napa" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(NapaVanillaRoot)\src\$(O)\napa.dll" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="napajs.d.ts" DestinationFolder="$(PackageOutPath)\types" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="package.json" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
     
     <ItemGroup>  
       <IncFiles Include="$(NapaVanillaRoot)\inc\**\*"/>  
     </ItemGroup> 
-    <Copy SourceFiles="@(IncFiles)" DestinationFiles="@(IncFiles->'$(O)\node_modules\napajs\inc\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(IncFiles)" DestinationFiles="@(IncFiles->'$(PackageOutPath)\inc\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+
+    <!-- Binplace v8 files -->
+    <Copy SourceFiles="$(V8BinPath)\icui18n.dll" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(V8BinPath)\icuuc.dll" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(V8BinPath)\v8.dll" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(V8MiscPath)\natives_blob.bin" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(V8MiscPath)\snapshot_blob.bin" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
   </Target>
 
   <Import Project="$(ExtendedTargetsPath)\NoTarget.targets" />
