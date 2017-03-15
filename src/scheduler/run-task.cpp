@@ -22,7 +22,7 @@ void RunTask::Execute() {
     // Find the function in the global context of this isolate.
     auto funcVal = context->Global()->Get(functionName);
     if (!funcVal->IsFunction()) {
-        std::string errorMessage = "Function not defined: " + _func;
+        std::string errorMessage = "Function '" + _func + "' not defined";
         LOG_ERROR("Run", errorMessage.c_str());
         _callback(NAPA_RESPONSE_RUN_FUNC_ERROR, STD_STRING_TO_NAPA_STRING_REF(errorMessage), EMPTY_NAPA_STRING_REF);
         return;
@@ -69,6 +69,10 @@ void RunTask::Execute() {
         LOG_ERROR("Run", "Error occured while running function '%s', error: %s", _func.c_str(), *errorMessage);
         _callback(NAPA_RESPONSE_RUN_FUNC_ERROR, NAPA_STRING_REF(*errorMessage), EMPTY_NAPA_STRING_REF);
         return;
+    }
+
+    if (res->IsObject()) {
+        res = v8_helpers::Stringify(isolate, res->ToObject());
     }
 
     // Note that the return value must be copied out if the callback wants to keep it.

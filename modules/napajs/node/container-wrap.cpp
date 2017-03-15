@@ -255,8 +255,12 @@ static std::vector<v8::Local<v8::Value>> CreateResponseValues(
 
     auto errorMessage = MakeV8String(isolate, response.errorMessage);
 
-    auto returnValueString = MakeV8String(isolate, response.returnValue);
-    auto returnValue = v8::JSON::Parse(isolate, returnValueString).ToLocalChecked();
+    v8::Local<v8::Value> returnValue;
+    if (response.returnValue.empty()) {
+        returnValue = v8::String::Empty(isolate);
+    } else {
+        returnValue = v8::JSON::Parse(isolate, MakeV8String(isolate, response.returnValue)).ToLocalChecked();
+    }
 
     return { code, errorMessage, returnValue };
 }

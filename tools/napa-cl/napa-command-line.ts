@@ -6,6 +6,7 @@ import readline = require('readline');
 program.version('0.0.1')
        .option('--file <filename>', 'Specify the file to load, if not provided will go into interactive mode')
        .option('--cores <num>', 'Number of cores/isolates the container will use (1 by default)', Number, 1)
+       .option('--timeout <ms>', "Specify timeout in milliseconds for run extension (2000 by default)", Number, 2000)
        .parse(process.argv);
 
 // Initialize napa.
@@ -85,10 +86,10 @@ function runExtension(args: string) {
         return;
     }
 
-    var response = container.runSync(argv[0], argv.splice(1));
+    var response = container.runSync(argv[0], argv.splice(1), program.timeout);
     if (response.code == 0) {
-        console.log("Response: " + response.returnValue)
+        console.log("\x1b[1m\x1b[32mResponse:\x1b[0m " + JSON.stringify(response.returnValue));
     } else {
-        console.log("Error: " + response.errorMessage)
+        console.log("\x1b[1m\x1b[31mError:\x1b[0m " + response.errorMessage);
     }
 }
