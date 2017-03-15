@@ -83,7 +83,7 @@ TEST_CASE("tasks", "[tasks]") {
         }).Execute();
 
         REQUIRE(responseCode == NAPA_RESPONSE_RUN_FUNC_ERROR);
-        REQUIRE(error == "Function not defined: bar");
+        REQUIRE(error == "Function 'bar' not defined");
     }
 
     SECTION("run fails when function throws exception") {
