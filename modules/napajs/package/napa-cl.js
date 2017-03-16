@@ -1,6 +1,6 @@
-import napa = require('napajs');
-import program = require('commander');
-import readline = require('readline');
+var napa = require('../bin/addon');
+var program = require('commander');
+var readline = require('readline');
 
 // Set command line options.
 program.version('0.0.1')
@@ -28,7 +28,7 @@ if (program.file) {
 }
 
 /// <summary> Enables single line interactive mode on the provided container. <summary>
-function launchInteractiveMode(container: napa.Container) {
+function launchInteractiveMode(container) {
     var rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
@@ -39,7 +39,7 @@ function launchInteractiveMode(container: napa.Container) {
     rl.setPrompt('\x1b[1m\x1b[36m>\x1b[0m ');
     rl.prompt(true);
 
-    rl.on('line', (input: string) => {
+    rl.on('line', (input) => {
         if (input.length > 0) {
             if (input[0] === '!') {
                 invokeExtension(input.substring(1).trim());
@@ -57,12 +57,12 @@ function launchInteractiveMode(container: napa.Container) {
 }
 
 /// <summary> Mapping of extension name to extension method. <summary>
-var extensions : { [name: string]: (ars: string) => void } = {
+var extensions = {
     run: runExtension
 };
 
 /// Summary> Dispatches to the correct extension handler. </summary>
-function invokeExtension(input: string) {
+function invokeExtension(input) {
     var extensionNameEndPosition = input.indexOf(' ');
     if (extensionNameEndPosition == -1) {
         console.log("Failed to parse the extension name");
@@ -79,7 +79,7 @@ function invokeExtension(input: string) {
 }
 
 /// <summary> 'run' extension implementation. Usage: !run functionName arg1 arg2 <summary>
-function runExtension(args: string) {
+function runExtension(args) {
     var argv = args.split(' ');
     if (argv.length == 0) {
         console.log("Illegal call to 'run' extension, use: '!run functionName arg1 arg2'");

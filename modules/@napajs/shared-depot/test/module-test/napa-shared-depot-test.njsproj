@@ -15,7 +15,7 @@
   <Import Project="$(PkgNapa_DevTools)\Napa.TestAdapter.targets" />
 
   <ItemGroup>
-    <Robocopy Include="..\..\script\$(IntermediateOutputPath)\dist">
+    <Robocopy Include="..\..\script\$(IntermediateOutputPath)\node_modules\@napajs\shared-depot">
       <DestinationFolder>$(QTestDirToDeploy)\app\node_modules\@napajs\shared-depot</DestinationFolder>
     </Robocopy>
   </ItemGroup>
