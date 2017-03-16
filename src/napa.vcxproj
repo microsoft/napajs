@@ -41,6 +41,7 @@
     <ClCompile Include="module\global-store.cpp" />
     <ClCompile Include="module\module-internal.cpp" />
     <ClCompile Include="module\module-loader.cpp" />
+    <ClCompile Include="module\module-resolver.cpp" />
     <ClCompile Include="platform\win\command-line.cpp" />
     <ClCompile Include="platform\win\thread-local-storage.cpp" />
     <ClCompile Include="providers\providers.cpp" />

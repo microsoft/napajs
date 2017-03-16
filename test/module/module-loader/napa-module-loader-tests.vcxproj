@@ -30,7 +30,7 @@
       <AdditionalDependencies>Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
-      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100;4996</DisableSpecificWarnings>
       <PreprocessorDefinitions>USING_V8_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -43,6 +43,7 @@
   <!-- To avoid exporting module-loader APIs -->
   <ItemGroup>
     <ClCompile Include="$(NapaVanillaRoot)\src\module\module-loader.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\module-resolver.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\command-line.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\v8\v8-common.cpp" />
   </ItemGroup>

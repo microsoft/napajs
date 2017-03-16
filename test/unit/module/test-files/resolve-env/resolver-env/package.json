@@ -1,0 +1,6 @@
+{
+    "name": "@napajs/resolve-directory",
+    "version": "0.0.1",
+    "author": "napajs",
+    "main": "resolve-file"
+}
