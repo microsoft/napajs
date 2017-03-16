@@ -38,6 +38,8 @@
   <ItemGroup>
     <ClCompile Include="$(NapaVanillaRoot)\src\module\core\file-system-helpers.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\global-store.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\module-resolver.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\command-line.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\simple-thread-pool.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\timeout-service.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\settings\settings-parser.cpp" />
@@ -48,10 +50,19 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="module\file-system-helpers-tests.cpp" />
     <ClCompile Include="module\global-store-tests.cpp" />
+    <ClCompile Include="module\module-resolver-tests.cpp" />
     <ClCompile Include="object-transport\object-transport-tests.cpp" />
     <ClCompile Include="scheduler\scheduler-tests.cpp" />
     <ClCompile Include="scheduler\timeout-service-tests.cpp" />
     <ClCompile Include="settings\parser-tests.cpp" />
+  </ItemGroup>
+
+  <!-- Test artifacts binplace -->
+  <ItemGroup>
+    <Robocopy Include="module\test-files">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <IsRecursive>true</IsRecursive>
+    </Robocopy>
   </ItemGroup>
 
   <!-- Use napa catch adapter -->

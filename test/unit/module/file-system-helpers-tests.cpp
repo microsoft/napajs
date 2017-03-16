@@ -2,8 +2,6 @@
 
 #include "module/core/file-system-helpers.h"
 
-//#include <boost/algorithm/string/trim.hpp>
-
 using namespace napa::module;
 
 TEST_CASE("File system helpers reads/writes a file correctly.", "[file-system-helpers]") {

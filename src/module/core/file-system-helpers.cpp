@@ -36,7 +36,6 @@ std::string file_system_helpers::ReadFileSync(const std::string& filename) {
 
     std::string content;
     content.resize(size);
-    //content[size] = '\0';
 
     for (size_t i = 0; i < size; ) {
         i += fread(&content[i], 1, size - i, source);
