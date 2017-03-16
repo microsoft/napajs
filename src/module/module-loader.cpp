@@ -143,7 +143,7 @@ private:
     PersistentModuleCache _moduleCache;
 
     /// <summary> Keep dll loaded. </summary>
-    std::vector<boost::shared_ptr<ModuleInfo>> _moduleInfos;
+    std::vector<boost::shared_ptr<NapaModule>> _napaModules;
 };
 
 ModuleLoader::ModuleLoader() : _impl(std::make_unique<ModuleLoader::ModuleLoaderImpl>()) {}
@@ -542,9 +542,9 @@ void ModuleLoader::ModuleLoaderImpl::LoadNapaModule(const boost::filesystem::pat
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
-    auto moduleInfo = boost::dll::import<ModuleInfo>(modulePath, napa::module::MODULE_INFO_EXPORT);
+    auto napaModule = boost::dll::import<NapaModule>(modulePath, napa::module::NAPA_MODULE_EXPORT);
 
-    if (moduleInfo == nullptr) {
+    if (napaModule == nullptr) {
         std::ostringstream oss;
         oss << "Can't get module information of " << modulePath;
         isolate->ThrowException(v8::Exception::Error(v8_helpers::MakeV8String(isolate, oss.str().c_str())));
@@ -553,9 +553,9 @@ void ModuleLoader::ModuleLoaderImpl::LoadNapaModule(const boost::filesystem::pat
         return;
     }
 
-    if (moduleInfo->version != MODULE_VERSION) {
+    if (napaModule->version != MODULE_VERSION) {
         std::ostringstream oss;
-        oss << "This addon version is not supported: " << moduleInfo->version;
+        oss << "This addon version is not supported: " << napaModule->version;
         isolate->ThrowException(v8::Exception::Error(v8_helpers::MakeV8String(isolate, oss.str().c_str())));
 
         args.GetReturnValue().SetUndefined();
@@ -563,7 +563,7 @@ void ModuleLoader::ModuleLoaderImpl::LoadNapaModule(const boost::filesystem::pat
     }
 
     // Since boost::dll unload dll when a reference object is gone, keep an instance into local store.
-    _moduleInfos.push_back(moduleInfo);
+    _napaModules.push_back(napaModule);
 
     // Create module object following the node module algorithm.
     auto moduleObject = CreateModuleObject(&modulePath);
@@ -584,7 +584,7 @@ void ModuleLoader::ModuleLoaderImpl::LoadNapaModule(const boost::filesystem::pat
 
     INIT_BUILTIN_MODULES(moduleContext);
 
-    auto exports = ExportModule(moduleContext->Global(), moduleInfo->initializer);
+    auto exports = ExportModule(moduleContext->Global(), napaModule->initializer);
     CacheModule(modulePath.string(), exports);
 
     args.GetReturnValue().Set(exports);
