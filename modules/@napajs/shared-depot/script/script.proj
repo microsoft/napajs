@@ -14,6 +14,10 @@
     <QCustomInput Include="$(INETROOT)\private\napa\build\typescript\**" />
   </ItemGroup>
   
+  <PropertyGroup>
+    <PackageOutPath>$(IntermediateOutputPath)\node_modules\@napajs\shared-depot</PackageOutPath>
+  </PropertyGroup>
+  
   <Target Name="BuildScripts" AfterTargets="AfterBuild">
     <Message Text="Compile scripts." />
     <Exec Command="$(NapaBuildRoot)\node\node.exe $(NapaBuildRoot)\codegen\tsconfig_gen.js -t $(NapaBuildRoot)\codegen\tsconfig.firstparty.json -v NAPABUILD_TYPES $(NapaBuildRoot)\@types" />
@@ -22,18 +26,16 @@
   
   <Target Name="CreateNpmPackage" DependsOnTargets="BuildScripts" AfterTargets="AfterBuild">
     <Message Text="Create NPM package." />
-    <MakeDir Directories="$(O)\dist\bin" ContinueOnError="false" Condition="!Exists('$(O)\dist\bin')" />
-    <MakeDir Directories="$(O)\dist\lib" ContinueOnError="false" Condition="!Exists('$(O)\dist\lib')" />
-    <MakeDir Directories="$(O)\dist\types" ContinueOnError="false" Condition="!Exists('$(O)\dist\types')" />
-    <Copy SourceFiles="..\node\$(O)\addon.node" DestinationFolder="$(O)\dist\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="..\napa\$(O)\addon.napa" DestinationFolder="$(O)\dist\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(NapaVanillaRoot)\src\$(O)\napa.dll" DestinationFolder="$(O)\dist\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(O)\shared-depot.js" DestinationFolder="$(O)\dist\lib" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(O)\shared-depot.d.ts" DestinationFolder="$(O)\dist\types" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="package.json" DestinationFolder="$(O)\dist" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="..\node\$(O)\addon.node" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="..\napa\$(O)\addon.napa" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(NapaVanillaRoot)\src\$(O)\napa.dll" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(O)\shared-depot.js" DestinationFolder="$(PackageOutPath)\lib" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(O)\shared-depot.d.ts" DestinationFolder="$(PackageOutPath)\types" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="package.json" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles=".npmrc" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
     
     <!-- Bypass build cop error ENL31102: Input ...\tsconfig.json is missing on the disk -->
-    <Exec Command="move tsconfig.json $(O)\dist\tsconfig.json" />
+    <Exec Command="move tsconfig.json $(PackageOutPath)\tsconfig.json" />
   </Target>
 
   <Import Project="$(ExtendedTargetsPath)\NoTarget.targets" />

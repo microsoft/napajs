@@ -16,6 +16,7 @@
     <V8BinPath>$(PACKAGESROOT)\V8.Library\$(COMPILER_VERSION)\bin\$(BuildType)\$(BuildArchitecture)</V8BinPath>
     <V8MiscPath>$(PACKAGESROOT)\V8.Library\misc\$(BuildType)\$(BuildArchitecture)</V8MiscPath>
   </PropertyGroup>
+
   
   <Target Name="CreateNpmPackage" AfterTargets="AfterBuild">
     <Message Text="Create NPM package." />
@@ -24,7 +25,10 @@
     <Copy SourceFiles="..\napa\$(O)\addon.napa" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(NapaVanillaRoot)\src\$(O)\napa.dll" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="napajs.d.ts" DestinationFolder="$(PackageOutPath)\types" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="napa-cl.js" DestinationFolder="$(PackageOutPath)\tools" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="napa-cl.bat" DestinationFolder="$(PackageOutPath)\tools" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="package.json" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles=".npmrc" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
     
     <ItemGroup>  
       <IncFiles Include="$(NapaVanillaRoot)\inc\**\*"/>  
