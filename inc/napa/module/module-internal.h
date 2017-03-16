@@ -20,14 +20,14 @@ namespace module {
     static const int32_t MODULE_VERSION = 2;
 
     /// <summary> Variable name to export for module registration. </summary>
-    static const char* MODULE_INFO_EXPORT = "_moduleInfo";
+    static const char* NAPA_MODULE_EXPORT = "_napa_module";
 
     /// <summary> Function pointer to initialize a module. It's called after a module is loaded. </summary>
     typedef void(*ModuleInitializer)(v8::Local<v8::Object> exports,
                                      v8::Local<v8::Value> module);
 
     /// <summary> Module information. </summary>
-    struct ModuleInfo {
+    struct NapaModule {
         /// <summary> Current module version. </summary>
         int32_t version;
 
@@ -138,7 +138,7 @@ namespace module {
 
     #define NAPA_REGISTER_MODULE(name, function) \
         extern "C" { \
-            _declspec(dllexport) napa::module::ModuleInfo _moduleInfo = { \
+            _declspec(dllexport) napa::module::NapaModule _napa_module = { \
                 napa::module::MODULE_VERSION, \
                 #name, \
                 reinterpret_cast<napa::module::ModuleInitializer>(function) \

@@ -28,9 +28,9 @@ public:
     /// <summary> It resolves a full module path from a given argument of require(). </summary>
     /// <param name="name"> Module name or path. </param>
     /// <param name="path"> Current context path. </param>
-    /// <returns> Full module path. </returns>
+    /// <returns> Module resolution details. </returns>
     /// <remarks> It also searches NODE_PATH directories. </remarks>
-    std::string Resolve(const char* name, const char* path);
+    ModuleInfo Resolve(const char* name, const char* path);
 
     /// <summary> It registers built-in or core modules, so they are resolved first. </summary>
     /// <param name="name"> Module name. </param>
@@ -45,14 +45,14 @@ private:
     /// <summary> It resolves a full module path from a given argument of require(). </summary>
     /// <param name="name"> Module name or path. </param>
     /// <param name="path"> Base path. </param>
-    /// <returns> Full module path. </returns>
-    std::string ResolveFromPath(const boost::filesystem::path& name, const boost::filesystem::path& path);
+    /// <returns> Module resolution details. </returns>
+    ModuleInfo ResolveFromPath(const boost::filesystem::path& name, const boost::filesystem::path& path);
 
     /// <summary> It resolves a full module path from 'NODE_PATH'. </summary>
     /// <param name="name"> Module name or path. </param>
     /// <param name="path"> Base path. </param>
-    /// <returns> Full module path. </returns>
-    std::string ResolveFromEnv(const boost::filesystem::path& name, const boost::filesystem::path& path);
+    /// <returns> Module resolution details. </returns>
+    ModuleInfo ResolveFromEnv(const boost::filesystem::path& name, const boost::filesystem::path& path);
 
     /// <summary> It checks whether a module exists or not. </summary>
     /// <param name="name"> Module name. </param>
@@ -62,20 +62,21 @@ private:
     /// <summary> It loads module as a file. </summary>
     /// <param name="name"> Module name. </param>
     /// <param name="path"> Base path. </param>
-    /// <returns> Resolved module path if it succeeds. Empty string, otherwise. </returns>
-    std::string LoadAsFile(const boost::filesystem::path& name, const boost::filesystem::path& path);
+    /// <param name="package"> Path to package.json. </param>
+    /// <returns> Module resolution details. </returns>
+    ModuleInfo LoadAsFile(const boost::filesystem::path& name, const boost::filesystem::path& path);
 
     /// <summary> It loads module as a directory. </summary>
     /// <param name="name"> Module path. </param>
     /// <param name="path"> Base path. </param>
-    /// <returns> Resolved module path if it succeeds. Empty string, otherwise. </returns>
-    std::string LoadAsDirectory(const boost::filesystem::path& name, const boost::filesystem::path& path);
+    /// <returns> Module resolution details. </returns>
+    ModuleInfo LoadAsDirectory(const boost::filesystem::path& name, const boost::filesystem::path& path);
 
     /// <summary> It loads module from node_modules directories. </summary>
     /// <param name="name"> Module name or path. </param>
     /// <param name="path"> Base path. </param>
-    /// <returns> Resolved module path if it succeeds. Empty string, otherwise. </returns>
-    std::string LoadNodeModules(const boost::filesystem::path& name, const boost::filesystem::path& path);
+    /// <returns> Module resolution details. </returns>
+    ModuleInfo LoadNodeModules(const boost::filesystem::path& name, const boost::filesystem::path& path);
 
     /// <summary> It returns all possible node module paths. </summary>
     /// <param name="path"> Base path. </param>
@@ -84,9 +85,9 @@ private:
 
     /// <summary> It tries the extension candidates. </summary>
     /// <param name="path"> Possible module path. </param>
-    /// <returns> Resolved module path if it succeeds. Empty string, otherwise. </returns>
+    /// <returns> Module resolution details. </returns>
     /// <remarks> "path" argument is changed. </remarks>
-    std::string TryExtensions(boost::filesystem::path& path);
+    ModuleInfo TryExtensions(boost::filesystem::path& path);
 
     /// <summary> It checks whether a path is relative. </summary>
     /// <param name="path"> Path. </param>
@@ -115,7 +116,7 @@ ModuleResolver::ModuleResolver() : _impl(std::make_unique<ModuleResolver::Module
 
 ModuleResolver::~ModuleResolver() = default;
 
-std::string ModuleResolver::Resolve(const char* name, const char* path) {
+ModuleInfo ModuleResolver::Resolve(const char* name, const char* path) {
     return _impl->Resolve(name, path);
 }
 
@@ -136,18 +137,18 @@ ModuleResolver::ModuleResolverImpl::ModuleResolverImpl() {
     }
 }
 
-#define RETURN_IF_NOT_EMPTY(run)    \
-    do {                            \
-        auto result = run;          \
-        if (!result.empty()) {      \
-            return result;          \
-        }                           \
+#define RETURN_IF_NOT_EMPTY(run)                    \
+    do {                                            \
+        auto result = run;                          \
+        if (result.type != ModuleType::NONE) {      \
+            return result;                          \
+        }                                           \
     } while (false);
 
-std::string ModuleResolver::ModuleResolverImpl::Resolve(const char* name, const char* path) {
+ModuleInfo ModuleResolver::ModuleResolverImpl::Resolve(const char* name, const char* path) {
     // If name is a built-in or core modules, return it.
     if (IsBuiltInOrCoreModule(name)) {
-        return std::string(name);
+        return ModuleInfo{ModuleType::CORE, std::string(name), std::string()};
     }
 
     // Normalize module context path.
@@ -171,8 +172,8 @@ bool ModuleResolver::ModuleResolverImpl::SetAsBuiltInOrCoreModule(const char* na
     return result.second;
 }
 
-std::string ModuleResolver::ModuleResolverImpl::ResolveFromPath(const boost::filesystem::path& name,
-                                                                const boost::filesystem::path& path) {
+ModuleInfo ModuleResolver::ModuleResolverImpl::ResolveFromPath(const boost::filesystem::path& name,
+                                                               const boost::filesystem::path& path) {
     // If name begins with './' or '/' or '../',
     if (IsRelativePath(name) || IsAbsolutePath(name)) {
         // Load as a file (path + name).
@@ -186,8 +187,8 @@ std::string ModuleResolver::ModuleResolverImpl::ResolveFromPath(const boost::fil
     return LoadNodeModules(name, path);
 }
 
-std::string ModuleResolver::ModuleResolverImpl::ResolveFromEnv(const boost::filesystem::path& name,
-                                                               const boost::filesystem::path& path) {
+ModuleInfo ModuleResolver::ModuleResolverImpl::ResolveFromEnv(const boost::filesystem::path& name,
+                                                              const boost::filesystem::path& path) {
     for (const auto& nodePath : _nodePaths) {
         if (nodePath == path) {
             continue;
@@ -196,26 +197,35 @@ std::string ModuleResolver::ModuleResolverImpl::ResolveFromEnv(const boost::file
         RETURN_IF_NOT_EMPTY(ResolveFromPath(name, nodePath.c_str()));
     }
 
-    return std::string();
+    return ModuleInfo{ModuleType::NONE, std::string(), std::string()};
 }
 
 bool ModuleResolver::ModuleResolverImpl::IsBuiltInOrCoreModule(const std::string& module) {
     return _builtInOrCoreModules.find(module) != _builtInOrCoreModules.end();
 }
 
-std::string ModuleResolver::ModuleResolverImpl::LoadAsFile(const boost::filesystem::path& name,
-                                                           const boost::filesystem::path& path) {
+ModuleInfo ModuleResolver::ModuleResolverImpl::LoadAsFile(const boost::filesystem::path& name,
+                                                          const boost::filesystem::path& path) {
     auto fullPath = CombinePath(name, path);
 
     if (boost::filesystem::is_regular_file(fullPath)) {
-        return fullPath.string();
+        ModuleType type = ModuleType::JAVASCRIPT;
+
+        auto extension = boost::filesystem::extension(fullPath);
+        if (extension == JSON_OBJECT_EXTENSION) {
+            type = ModuleType::JSON;
+        } else if (extension == NAPA_MODULE_EXTENSION) {
+            type = ModuleType::NAPA;
+        }
+
+        return ModuleInfo{type, fullPath.string(), std::string()};
     }
 
     return TryExtensions(fullPath);
 }
 
-std::string ModuleResolver::ModuleResolverImpl::LoadAsDirectory(const boost::filesystem::path& name,
-                                                                const boost::filesystem::path& path) {
+ModuleInfo ModuleResolver::ModuleResolverImpl::LoadAsDirectory(const boost::filesystem::path& name,
+                                                               const boost::filesystem::path& path) {
     auto fullPath = CombinePath(name, path);
 
     auto packageJson = fullPath / "package.json";
@@ -227,7 +237,11 @@ std::string ModuleResolver::ModuleResolverImpl::LoadAsDirectory(const boost::fil
             boost::filesystem::path mainPath(package.get<std::string>("main"));
             mainPath = mainPath.normalize().make_preferred();
 
-            RETURN_IF_NOT_EMPTY(LoadAsFile(mainPath, fullPath));
+            auto moduleInfo = LoadAsFile(mainPath, fullPath);
+            if (moduleInfo.type != ModuleType::NONE) {
+                moduleInfo.packageJsonPath = packageJson.string();
+                return moduleInfo;
+            }
         } catch (...) {}    // ignore exception and continue.
     }
 
@@ -235,8 +249,8 @@ std::string ModuleResolver::ModuleResolverImpl::LoadAsDirectory(const boost::fil
     return TryExtensions(fullPath);
 }
 
-std::string ModuleResolver::ModuleResolverImpl::LoadNodeModules(const boost::filesystem::path& name,
-                                                                const boost::filesystem::path& path) {
+ModuleInfo ModuleResolver::ModuleResolverImpl::LoadNodeModules(const boost::filesystem::path& name,
+                                                               const boost::filesystem::path& path) {
     auto modulePaths = GetNodeModulesPaths(path);
     for (const auto& modulePath :modulePaths) {
         // Load as a file (path + name).
@@ -246,7 +260,7 @@ std::string ModuleResolver::ModuleResolverImpl::LoadNodeModules(const boost::fil
         RETURN_IF_NOT_EMPTY(LoadAsDirectory(name, modulePath));
     }
 
-    return std::string();
+    return ModuleInfo{ModuleType::NONE, std::string(), std::string()};
 }
 
 std::vector<std::string> ModuleResolver::ModuleResolverImpl::GetNodeModulesPaths(const boost::filesystem::path& path) {
@@ -267,23 +281,23 @@ std::vector<std::string> ModuleResolver::ModuleResolverImpl::GetNodeModulesPaths
     return subpaths;
 }
 
-std::string ModuleResolver::ModuleResolverImpl::TryExtensions(boost::filesystem::path& path) {
+ModuleInfo ModuleResolver::ModuleResolverImpl::TryExtensions(boost::filesystem::path& path) {
     path.replace_extension(JAVASCRIPT_MODULE_EXTENSION);
     if (boost::filesystem::is_regular_file(path)) {
-        return path.string();
+        return ModuleInfo{ModuleType::JAVASCRIPT, path.string(), std::string()};
     }
 
     path.replace_extension(JSON_OBJECT_EXTENSION);
     if (boost::filesystem::is_regular_file(path)) {
-        return path.string();
+        return ModuleInfo{ModuleType::JSON, path.string(), std::string()};
     }
 
     path.replace_extension(NAPA_MODULE_EXTENSION);
     if (boost::filesystem::is_regular_file(path)) {
-        return path.string();
+        return ModuleInfo{ModuleType::NAPA, path.string(), std::string()};
     }
 
-    return std::string();
+    return ModuleInfo{ModuleType::NONE, std::string(), std::string()};
 }
 
 bool ModuleResolver::ModuleResolverImpl::IsRelativePath(const boost::filesystem::path& path) const {
