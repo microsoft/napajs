@@ -32,7 +32,7 @@
     <Copy SourceFiles="$(O)\shared-depot.js" DestinationFolder="$(PackageOutPath)\lib" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(O)\shared-depot.d.ts" DestinationFolder="$(PackageOutPath)\types" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="package.json" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles=".npmrc" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(NapaBuildRoot)\node\.npmrc" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
     
     <!-- Bypass build cop error ENL31102: Input ...\tsconfig.json is missing on the disk -->
     <Exec Command="move tsconfig.json $(PackageOutPath)\tsconfig.json" />
