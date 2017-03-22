@@ -3,6 +3,7 @@
 
   <ItemGroup>
     <ProjectFile Include="logger\create-package.proj" />
+    <ProjectFile Include="metrics\create-package.proj" />
     <ProjectFile Include="shared-depot\dirs.proj" />
   </ItemGroup>
 

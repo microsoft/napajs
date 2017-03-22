@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(EnvironmentConfig)" />
+
+  <ItemGroup>
+    <QCustomInput Include="index.ts" />
+    <QCustomInput Include="$(NapaBuildRoot)\**\*" />
+  </ItemGroup>
+  
+  <PropertyGroup>
+    <PackageOutPath>$(IntermediateOutputPath)\node_modules\@napajs\metrics</PackageOutPath>
+  </PropertyGroup>
+
+  <Import Project="$(NapaBuildRoot)\node\npm.targets" />
+  
+  <Target Name="BuildScripts" AfterTargets="AfterBuild">
+    <CallTarget Targets="NpmInstall" />
+    
+    <Message Text="Compile scripts." />
+    <Exec Command="$(NapaBuildRoot)\node\node.exe $(NapaBuildRoot)\typescript\lib\tsc.js index.ts --declaration --outDir $(O)" />
+    
+    <CallTarget Targets="NpmCleanup" />
+  </Target>
+  
+  <Target Name="CreateNpmPackage" DependsOnTargets="BuildScripts" AfterTargets="AfterBuild">
+    <Message Text="Create NPM package." />
+    <Copy SourceFiles="$(O)\index.js" DestinationFolder="$(PackageOutPath)\lib" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(O)\index.d.ts" DestinationFolder="$(PackageOutPath)\types" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="README.md" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="package.json" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
+    
+    <CallTarget Targets="NpmPublish" />
+  </Target>
+
+  <Import Project="$(ExtendedTargetsPath)\NoTarget.targets" />
+</Project>
