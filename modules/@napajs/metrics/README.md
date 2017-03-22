@@ -1,8 +1,7 @@
 # @napajs/metrics: Accessing Metric APIs
 
 ## Introduction
-`@napajs/metrics` is a facade module to exposing API to access metrics. Like `@najajs/logger`, metrics module allow user to set metric provider, thus user don't need to update code to switch between different metric implementation.
-
+`@napajs/metrics` is a facade module for exposing API to access metrics. Like `@najajs/logger`, metrics module allow user to set metric provider, thus user don't need to update code to switch between different metric implementation.
 
 
 ## Setup
@@ -10,26 +9,27 @@
 import metrics = require('@napajs/metrics');
 
 class MyMetric implements metrics.Metric {
-    public constructor(section: string, 
-                     name: string, 
-                     type: metrics.MetricType, 
-                     dimensionNames: string[]) {
+    public constructor(section: string, name: string, type: metrics.MetricType, dimensionNames: string[]) {
         this.section = section;
         this.name = name;
     }
 
     public increment(dimensionValues: string[] = []) {
         var key = JSON.stringify(dimensionValues);
-        if (values[key] == null)
+        if (values[key] == null) {
             values[key] = 0;
+        }
+
         values[key]--;
     }
 
     public decrement(dimensionValues: string[] = []) {
         // User logic.
         var key = JSON.stringify(dimensionValues);
-        if (values[key] == null)
+        if (values[key] == null) {
             values[key] = 0;
+        }
+            
         values[key]++;
     }
 
@@ -44,10 +44,7 @@ class MyMetric implements metrics.Metric {
 }
 
 class MyMetricProvider implements metrics.MetricProvider {
-    public getMetric(section: string, 
-                     name: string, 
-                     type: metrics.MetricType, 
-                     dimensionNames: string[]): metrics.Metric {
+    public getMetric(section: string, name: string, type: metrics.MetricType, dimensionNames: string[]): metrics.Metric {
         return new MyMetric(section, name, type, dimensionNames);
     }
 }
@@ -72,8 +69,8 @@ metrics.setProvider(napa.getMetricProvider());
         metrics.get("Example Code",      // Metric section name.
                     "Total QPS",         // Metric name.
                     metrics.Number,      // Set type to Number.
-                    []                   // No dimensions.
-                    )
+                    []);                 // No dimensions.
+                    
     count.increment();
     count.decrement();
     
@@ -83,11 +80,11 @@ metrics.setProvider(napa.getMetricProvider());
 // Example: Metrics for rate.
 {
     let rate: metrics.Metric = 
-        metrics.get("Example Code",      // Metric section name.
-                    "Total QPS",         // Metric name.
-                    metrics.Rate,        // Set type to Rate.
-                    ['Entry Point Name'] // 1 dimension.
-                    )
+        metrics.get("Example Code",         // Metric section name.
+                    "Total QPS",            // Metric name.
+                    metrics.Rate,           // Set type to Rate.
+                    ['Entry Point Name']);  // 1 dimension.
+
     rate.increment('Example Entrypoint');
     rate.decrement('Example Entrypoint');
 }
@@ -95,40 +92,30 @@ metrics.setProvider(napa.getMetricProvider());
 // Example: Metrics for recording a timespan.
 {
     let latency: metrics.Metric = 
-        metrics.get("Example Code",        // Metric section name.
+        metrics.get("Example Code",           // Metric section name.
                     "Process Latency",        // Metric name.
                     metrics.Percentile,       // Metric type.
-                    ["Function Name"]         // Function name as the only 1 dimension.
-                    );
+                    ["Function Name"]);       // Function name as the only 1 dimension.
 
-    metrics.recordElapse(latency, () => {
-            func1();
-        },
-        ["Call func1"]);
+    metrics.recordElapse(latency, () => { func1(); }, ["Call func1"]);
 
-    metrics.recordElapse(latency, () => {
-            func2();
-        },
-        ["Call func2"]);
+    metrics.recordElapse(latency, () => { func2(); }, ["Call func2"]);
 }
 
 // Example: using metrics.TimePoint
 {
     // Another way of setting metrics.
     let latency: metrics.Metric = 
-        metrics.get("Example Code",        // Metric section name.
+        metrics.get("Example Code",           // Metric section name.
                     "Process Latency",        // Metric name.
                     metrics.Percentile,       // Metric type.
-                    ["Function Name"]         // Function name as the only 1 dimension.
-                    );
+                    ["Function Name"]);       // Function name as the only 1 dimension.
+                    
 
     var start: metrics.TimePoint = metrics.now();
     func3();
-    var durationInMS: number = metrics.elapseSince(start);
-    latency.set(durationInMS, ["Call func3"]);
-
-    // TODO: do we support converting TimePoint to Date? (std::chrono support convert time_point to std::time_t)
-    // TODO: do we also support converting Date to TimePoint?
+    var durationInMicroSeconds: number = metrics.elapseSince(start);
+    latency.set(durationInMicroSeconds, ["Call func3"]);
 }
 ```
 

@@ -1,0 +1,13 @@
+{
+    "name": "@napajs/metrics",
+    "version": "0.0.1",
+    "author": "napajs",
+    "description": "Provides metrics capabilites for napa.",
+    "keywords": ["napa", "metrics"],
+    "main": "./lib/index.js",
+    "types": "./types/index.d.ts",
+    "readme": "README.md",
+    "devDependencies": {
+        "@types/node": ">= 7.0.8"
+    }
+}
