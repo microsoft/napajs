@@ -10,9 +10,6 @@ module.exports = function () {
         // From module root via relative path.
         "../../sample.napa",
         "../../sample",
-        // From module root (working directory by default)
-        "sample.napa",
-        "sample",
         // from .\node_modules to parents' recursively.
         "file2.js",
         "file2"

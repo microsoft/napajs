@@ -95,7 +95,7 @@ namespace module {
         std::array<uint32_t, static_cast<size_t>(IsolateDataId::END_OF_ISOLATE_DATA_ID)> _tlsIndexes;
     };
 
-    #define INIT_ISOLATE_DATA IsolateData::Init
+    #define INIT_ISOLATE_DATA napa::module::IsolateData::Init
 
     /// <summary> It binds the method name with V8 function. </summary>
     /// <param name="exports"> V8 object to bind with the given callback function. </param>

@@ -6,7 +6,7 @@
 namespace napa {
 namespace module {
 
-    enum class ModuleType {
+    enum class ModuleType : size_t {
         /// <summary> Module is not resolved correctly. </summary>
         NONE,
 
@@ -20,7 +20,10 @@ namespace module {
         JSON,
 
         /// <summary> Binary module. </summary>
-        NAPA
+        NAPA,
+
+        /// <summary> End of module type. </summary>
+        END_OF_MODULE_TYPE
     };
 
     /// <summary> Module's detail information acquired at path resolution. </summary>
@@ -69,7 +72,7 @@ namespace module {
         /// True if it successfully adds a module.
         /// If it fails or there is a duplication, return false.
         /// </returns>
-        bool SetAsBuiltInOrCoreModule(const char* name);
+        bool SetAsCoreModule(const char* name);
 
     private:
 

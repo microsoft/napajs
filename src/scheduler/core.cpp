@@ -89,7 +89,7 @@ void Core::CoreThreadFunc(const Settings& settings) {
     v8::Context::Scope contextScope(context);
 
     // Load module loader and built-in modules of require, console and etc.
-    INIT_BUILTIN_MODULES(context);
+    CREATE_MODULE_LOADER();
 
     while (true) {
         std::shared_ptr<Task> task;

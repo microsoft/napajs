@@ -189,3 +189,8 @@ if (!(expression)) {                                                            
     CHECK_ARG_COMMON(isolate, expression, message, result, __FUNCTION__, __LINE__)
 
 #define JS_ASSERT(isolate, expression, message) CHECK_ARG(isolate, expression, message)
+
+#define JS_ENSURE(isolate, expression, message) CHECK_ARG(isolate, expression, message)
+
+#define JS_ENSURE_WITH_RETURN(isolate, expression, message, result)                     \
+    CHECK_ARG_WITH_RETURN(isolate, expression, message, result)

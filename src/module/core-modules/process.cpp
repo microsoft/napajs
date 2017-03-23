@@ -28,26 +28,21 @@ namespace {
 
 }   // End of anonymous namespace.
 
-void process::Init(v8::Local<v8::Context> context) {
+void process::Init(v8::Local<v8::Object> exports) {
     auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
 
-    auto process = v8::ObjectTemplate::New(isolate);
+    auto context = isolate->GetCurrentContext();
 
-    NAPA_SET_METHOD(process, "cwd", CwdCallback);
-    NAPA_SET_METHOD(process, "exit", ExitCallback);
-    NAPA_SET_METHOD(process, "hrtime", HrtimeCallback);
-
-    auto instance = process->NewInstance();
+    NAPA_SET_METHOD(exports, "cwd", CwdCallback);
+    NAPA_SET_METHOD(exports, "exit", ExitCallback);
+    NAPA_SET_METHOD(exports, "hrtime", HrtimeCallback);
 
     auto arguments = v8::Array::New(isolate, command_line::argc);
     for (int i = 0; i < command_line::argc; ++i) {
         (void)arguments->CreateDataProperty(context, i, v8_helpers::MakeV8String(isolate, command_line::argv[i]));
     }
-    (void)instance->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "argv"), arguments);
-
-    (void)context->Global()->CreateDataProperty(isolate->GetCurrentContext(),
-                                                v8_helpers::MakeV8String(isolate, "process"),
-                                                instance);
+    (void)exports->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "argv"), arguments);
 }
 
 namespace {

@@ -38,9 +38,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="api\api.cpp" />
+    <ClCompile Include="module\binary-module-loader.cpp" />
+    <ClCompile Include="module\core-module-loader.cpp" />
+    <ClCompile Include="module\javascript-module-loader.cpp" />
+    <ClCompile Include="module\json-module-loader.cpp" />
     <ClCompile Include="module\global-store.cpp" />
+    <ClCompile Include="module\module-cache.cpp" />
     <ClCompile Include="module\module-internal.cpp" />
     <ClCompile Include="module\module-loader.cpp" />
+    <ClCompile Include="module\module-loader-helpers.cpp" />
     <ClCompile Include="module\module-resolver.cpp" />
     <ClCompile Include="platform\win\command-line.cpp" />
     <ClCompile Include="platform\win\thread-local-storage.cpp" />
@@ -55,9 +61,8 @@
     <ClCompile Include="v8\v8-common.cpp" />
   </ItemGroup>
 
-  <!-- Build-in and core modules -->
-  <Import Project="module\built-in\built-in-modules.proj" />
-  <Import Project="module\core\core-modules.proj" />
+  <!-- Core modules -->
+  <Import Project="module\core-modules\core-modules.proj" />
 
   <Import Project="$(PACKAGESROOT)\V8.Library\exports.props" />
   <Import Project="$(Pkgboost)\build\native\boost.targets" />
