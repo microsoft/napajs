@@ -1,7 +1,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)\console.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\file-system.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\file-system-helpers.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\path.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\process.cpp" />
   </ItemGroup>
 </Project>

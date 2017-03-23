@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include "module/core/file-system-helpers.h"
+#include "module/core-modules/file-system-helpers.h"
 
 using namespace napa::module;
 

@@ -42,19 +42,30 @@
   </ItemGroup>
   <!-- To avoid exporting module-loader APIs -->
   <ItemGroup>
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\binary-module-loader.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\core-module-loader.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\javascript-module-loader.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\json-module-loader.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\module-cache.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\module-loader.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\module-loader-helpers.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\module-resolver.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\command-line.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\v8\v8-common.cpp" />
   </ItemGroup>
-  <Import Project="$(NapaVanillaRoot)\src\module\built-in\built-in-modules.proj" />
-  <Import Project="$(NapaVanillaRoot)\src\module\core\core-modules.proj" />
+  <Import Project="$(NapaVanillaRoot)\src\module\core-modules\core-modules.proj" />
   <ItemGroup>
     <ProjectReference Include="$(NapaVanillaRoot)\src\napa.vcxproj" />
     <ProjectReference Include="$(NapaVanillaRoot)\test\module\sample\sample.vcxproj" />
   </ItemGroup>
   <!-- Test artifacts binplace -->
   <ItemGroup>
+    <Robocopy Include="$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.dll">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="$(NapaVanillaRoot)\test\module\sample\$(IntermediateOutputPath)\sample.napa">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
     <Robocopy Include="$(V8BinPath)\icui18n.dll">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
@@ -70,24 +81,6 @@
     <Robocopy Include="$(V8MiscPath)\snapshot_blob.bin">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
-    <Robocopy Include="jsmodule.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
-    </Robocopy>
-    <Robocopy Include="sample.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
-    </Robocopy>
-    <Robocopy Include="sample-test.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
-    </Robocopy>
-    <Robocopy Include="fstest.json">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
-    </Robocopy>
-    <Robocopy Include="fstest.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
-    </Robocopy>
-    <Robocopy Include="pathtest.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
-    </Robocopy>
     <Robocopy Include="cycle-a.js">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
@@ -97,13 +90,25 @@
     <Robocopy Include="cycle-main.js">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
-    <Robocopy Include="$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.dll">
+    <Robocopy Include="fstest.js">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
-    <Robocopy Include="$(NapaVanillaRoot)\test\module\sample\$(IntermediateOutputPath)\sample.napa">
+    <Robocopy Include="fstest.json">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="jsmodule.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="jsontest.js">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
     <Robocopy Include="module-resolution-test.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="pathtest.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="sample-test.js">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
     <Robocopy Include="toproxy.js">
@@ -111,6 +116,9 @@
     </Robocopy>
     <Robocopy Include="toupper.js">
       <DestinationFolder>$(IntermediateOutputPath)\test</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="tests\node_modules\file2.js">
+      <DestinationFolder>$(IntermediateOutputPath)\tests\node_modules</DestinationFolder>
     </Robocopy>
     <Robocopy Include="tests\sub\module-resolution-test-root.js">
       <DestinationFolder>$(IntermediateOutputPath)\tests\sub</DestinationFolder>
@@ -126,9 +134,6 @@
     </Robocopy>
     <Robocopy Include="tests\sub\sub1\file2.js">
       <DestinationFolder>$(IntermediateOutputPath)\tests\sub\sub1</DestinationFolder>
-    </Robocopy>
-    <Robocopy Include="tests\node_modules\file2.js">
-      <DestinationFolder>$(IntermediateOutputPath)\tests\node_modules</DestinationFolder>
     </Robocopy>
   </ItemGroup>
 

@@ -9,8 +9,8 @@ namespace module {
 namespace process {
 
     /// <summary> Set console object as global variable of given context. </summary>
-    /// <param name="context"> V8 context for running javascript. </param>
-    void Init(v8::Local<v8::Context> context);
+    /// <param name="exports"> Object to set module. </param>
+    void Init(v8::Local<v8::Object> exports);
 
 }   // End of namespace process
 }   // End of namespace module

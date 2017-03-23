@@ -36,7 +36,7 @@
 
   <!-- Product code that is tested and needs to compile -->
   <ItemGroup>
-    <ClCompile Include="$(NapaVanillaRoot)\src\module\core\file-system-helpers.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\core-modules\file-system-helpers.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\global-store.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\module-resolver.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\command-line.cpp" />

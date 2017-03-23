@@ -30,7 +30,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100;4996</DisableSpecificWarnings>
       <PreprocessorDefinitions>NAPA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -43,8 +43,15 @@
   
   <!-- Product code that is tested and needs to compile -->
   <ItemGroup>
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\binary-module-loader.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\core-module-loader.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\javascript-module-loader.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\json-module-loader.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\module-cache.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\module-internal.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\module-loader.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\module-loader-helpers.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\module-resolver.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\command-line.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\thread-local-storage.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\providers\providers.cpp" />
@@ -56,9 +63,8 @@
     <ClCompile Include="$(NapaVanillaRoot)\src\v8\v8-common.cpp" />
   </ItemGroup>
 
-  <!-- Build-in and core modules -->
-  <Import Project="$(NapaVanillaRoot)\src\module\built-in\built-in-modules.proj" />
-  <Import Project="$(NapaVanillaRoot)\src\module\core\core-modules.proj" />
+  <!-- Core modules -->
+  <Import Project="$(NapaVanillaRoot)\src\module\core-modules\core-modules.proj" />
 
   <!-- Test code -->
   <ItemGroup>

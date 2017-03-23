@@ -62,8 +62,8 @@ TEST_CASE("resolve node modules correctly.", "[module-resolver]") {
 
     SECTION("resolve built-in or core modules") {
         // Set build-in and core modules.
-        GetModuleResolver().SetAsBuiltInOrCoreModule("console");
-        GetModuleResolver().SetAsBuiltInOrCoreModule("fs");
+        GetModuleResolver().SetAsCoreModule("console");
+        GetModuleResolver().SetAsCoreModule("fs");
 
         // 'console' built-in module.
         ResolveIt("console", "console", ModuleType::CORE);
@@ -99,6 +99,12 @@ TEST_CASE("resolve node modules correctly.", "[module-resolver]") {
 
         // Starts with "./", but a file doesn't exist.
         ResolveIt("./resolve-file-non-existent", "", ModuleType::NONE);
+
+        // Start with "./", but a file doesn't exist and it doesn't resolve to ".js" file.
+        ResolveIt("./resolve-file-no.json", "", ModuleType::NONE);
+
+        // Start with "./", but a file doesn't exist and it doesn't resolve to ".js" file.
+        ResolveIt("./resolve-file-no.napa", "", ModuleType::NONE);
 
         // Starts with "../" and a file exists.
         std::ostringstream oss;

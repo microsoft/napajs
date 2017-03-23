@@ -1,4 +1,4 @@
-var sample = require('sample.napa');
+var sample = require('./sample.napa');
 
 var runSampleNode = function() {
     // Create wrapped C++ object.

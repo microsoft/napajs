@@ -18,16 +18,8 @@ namespace {
 
 }   // End of anonymous namespace.
 
-void console::Init(v8::Local<v8::Context> context) {
-    auto isolate = v8::Isolate::GetCurrent();
-
-    auto console = v8::ObjectTemplate::New(isolate);
-
-    NAPA_SET_METHOD(console, "log", LogCallback);
-
-    (void)context->Global()->CreateDataProperty(isolate->GetCurrentContext(),
-                                                v8_helpers::MakeV8String(isolate, "console"),
-                                                console->NewInstance());
+void console::Init(v8::Local<v8::Object> exports) {
+    NAPA_SET_METHOD(exports, "log", LogCallback);
 }
 
 namespace {
