@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "allowJs": true,
+        "baseUrl": ".",
+        "paths": {
+            "*": ["*"]
+        }
+    }
+}

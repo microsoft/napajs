@@ -3,6 +3,7 @@
   <Import Project="$(EnvironmentConfig)" />
   
   <ItemGroup>
+    <QCustomProjectReference Include="$(NapaVanillaRoot)\lib\js-core-modules.proj" />
     <QCustomProjectReference Include="..\napa\addon.vcxproj" />
     <QCustomProjectReference Include="..\node\addon.vcxproj" />
   </ItemGroup>
@@ -29,9 +30,15 @@
     <Copy SourceFiles="napa-cl.bat" DestinationFolder="$(PackageOutPath)\tools" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="package.json" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(NapaBuildRoot)\node\.npmrc" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
-    
+
+    <!-- Core modules -->
     <ItemGroup>  
-      <IncFiles Include="$(NapaVanillaRoot)\inc\**\*"/>  
+      <JsCoreModuleFiles Include="$(NapaVanillaRoot)\lib\$(O)\**\*"/>  
+    </ItemGroup> 
+    <Copy SourceFiles="@(JsCoreModuleFiles)" DestinationFiles="@(JsCoreModuleFiles->'$(PackageOutPath)\lib\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+
+    <ItemGroup>  
+      <IncFiles Include="$(NapaVanillaRoot)\inc\**\*.js"/>  
     </ItemGroup> 
     <Copy SourceFiles="@(IncFiles)" DestinationFiles="@(IncFiles->'$(PackageOutPath)\inc\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
 

@@ -3,6 +3,7 @@
 
   <ItemGroup>
     <ProjectFile Include="examples\dirs.proj" />
+    <ProjectFile Include="lib\js-core-modules.proj" />
     <ProjectFile Include="modules\dirs.proj" />
     <ProjectFile Include="src\napa.vcxproj" />
     <ProjectFile Include="test\dirs.proj" />
