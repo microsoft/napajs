@@ -1,6 +1,6 @@
 {
     "name": "@napajs/metrics",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "author": "napajs",
     "description": "Provides metrics capabilites for napa.",
     "keywords": ["napa", "metrics"],

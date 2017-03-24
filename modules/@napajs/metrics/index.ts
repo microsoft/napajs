@@ -36,7 +36,7 @@ export function get(section: string, name: string, type: MetricType, dimensionNa
     return new MetricWrap(metric, dimensionNames.length);
 }
 
-var _metricProvider: MetricProvider = new NopProvider();
+var _metricProvider: MetricProvider = undefined;
 
 /// <summary> Sets the underlying metric provider. </summary>
 export function setProvider(provider: MetricProvider) {
@@ -119,3 +119,8 @@ class NopProvider implements MetricProvider {
         return _nopMetric;
     }
 }
+
+// Set NopProvider as default.
+// NOTE: Set _metricProvider to a NopProvider instance after class NopProvider definition 
+// to work around TypeScript issue: https://github.com/Microsoft/TypeScript/issues/14847
+_metricProvider = new NopProvider();
