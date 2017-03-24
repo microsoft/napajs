@@ -28,7 +28,7 @@
     <Copy SourceFiles="$(O)\index.d.ts" DestinationFolder="$(PackageOutPath)\types" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="README.md" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="package.json" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
-    
+
     <CallTarget Targets="NpmPublish" />
   </Target>
 
