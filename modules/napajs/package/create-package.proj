@@ -18,7 +18,8 @@
     <V8MiscPath>$(PACKAGESROOT)\V8.Library\misc\$(BuildType)\$(BuildArchitecture)</V8MiscPath>
   </PropertyGroup>
 
-  
+  <Import Project="$(NapaBuildRoot)\node\npm.targets" />
+
   <Target Name="CreateNpmPackage" AfterTargets="AfterBuild">
     <Message Text="Create NPM package." />
 
@@ -29,7 +30,6 @@
     <Copy SourceFiles="napa-cl.js" DestinationFolder="$(PackageOutPath)\tools" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="napa-cl.bat" DestinationFolder="$(PackageOutPath)\tools" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="package.json" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(NapaBuildRoot)\node\.npmrc" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
 
     <!-- Core modules -->
     <ItemGroup>  
@@ -48,6 +48,8 @@
     <Copy SourceFiles="$(V8BinPath)\v8.dll" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(V8MiscPath)\natives_blob.bin" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(V8MiscPath)\snapshot_blob.bin" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+
+    <CallTarget Targets="NpmPublish" />
   </Target>
 
   <Import Project="$(ExtendedTargetsPath)\NoTarget.targets" />
