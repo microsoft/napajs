@@ -1,6 +1,6 @@
 {
     "name": "@napajs/logger",
-    "version": "0.0.3",
+    "version": "0.1.0",
     "author": "napajs",
     "description": "Provides logging capabilites for napa.",
     "keywords": ["napa", "logger"],
