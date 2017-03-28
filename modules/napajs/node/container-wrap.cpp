@@ -116,7 +116,9 @@ void ContainerWrap::LoadSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
     v8::String::Utf8Value source(args[0]->ToString());
 
     auto wrap = ObjectWrap::Unwrap<ContainerWrap>(args.Holder());
-    wrap->_container->LoadSync(*source);
+    auto responseCode = wrap->_container->LoadSync(*source);
+
+    args.GetReturnValue().Set(v8::Uint32::NewFromUnsigned(isolate, responseCode));
 }
 
 void ContainerWrap::LoadFile(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -152,7 +154,9 @@ void ContainerWrap::LoadFileSync(const v8::FunctionCallbackInfo<v8::Value>& args
     v8::String::Utf8Value file(args[0]->ToString());
 
     auto wrap = ObjectWrap::Unwrap<ContainerWrap>(args.Holder());
-    wrap->_container->LoadFileSync(*file);
+    auto responseCode = wrap->_container->LoadFileSync(*file);
+    
+    args.GetReturnValue().Set(v8::Uint32::NewFromUnsigned(isolate, responseCode));
 }
 
 void ContainerWrap::Run(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -247,9 +251,7 @@ void ContainerWrap::RunSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
     args.GetReturnValue().Set(returnObj);
 }
 
-static std::vector<v8::Local<v8::Value>> CreateResponseValues(
-    v8::Isolate* isolate,
-    const napa::Response& response) {
+static std::vector<v8::Local<v8::Value>> CreateResponseValues(v8::Isolate* isolate, const napa::Response& response) {
 
     auto code = v8::Uint32::NewFromUnsigned(isolate, response.code);
 
@@ -259,7 +261,11 @@ static std::vector<v8::Local<v8::Value>> CreateResponseValues(
     if (response.returnValue.empty()) {
         returnValue = v8::String::Empty(isolate);
     } else {
-        returnValue = v8::JSON::Parse(isolate, MakeV8String(isolate, response.returnValue)).ToLocalChecked();
+        // If parse fails, return the string as is.
+        returnValue = MakeV8String(isolate, response.returnValue);
+
+        v8::TryCatch tryCatch;
+        returnValue = v8::JSON::Parse(isolate, v8::Local<v8::String>::Cast(returnValue)).FromMaybe(returnValue);
     }
 
     return { code, errorMessage, returnValue };
