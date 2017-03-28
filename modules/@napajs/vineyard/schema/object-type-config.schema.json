@@ -1,0 +1,76 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://vineyard.napajs.org/object-type-config",
+  "type": "array",
+  "title": "Type config schema in Napa.",
+  "description": "Type config is a sub config file under app config in Napa.",
+  "name": "/",
+  "items": {
+    "id": "http://vineyard.napajs.org/object-type-config/item",
+    "type": "object",
+    "title": "Type definition schema.",
+    "description": "Type definition describes type name and where the constructor locates.",
+    "name": "item",
+    "properties": {
+      "typeName": {
+        "id": "http://vineyard.napajs.org/object-type-config/item/typeName",
+        "type": "string",
+        "title": "Type schema.",
+        "description": "Type name, case-sensitive.",
+        "name": "typeName"
+      },
+      "override": {
+        "id": "http://vineyard.napajs.org/object-type-config/item/override",
+        "type": "boolean",
+        "title": "Override schema.",
+        "description": "If this type will override the same type name declared before this definition..",
+        "name": "override",
+        "default": false
+      },
+      "description": {
+        "id": "http://vineyard.napajs.org/object-type-config/item/description",
+        "type": "string",
+        "title": "Description schema.",
+        "description": "Description of the type.",
+        "name": "description"
+      },
+      "moduleName": {
+        "id": "http://vineyard.napajs.org/object-type-config/item/moduleName",
+        "type": "string",
+        "title": "Module name schema.",
+        "description": "Module name of the constructor.",
+        "name": "moduleName"
+      },
+      "functionName": {
+        "id": "http://vineyard.napajs.org/object-type-config/item/functionName",
+        "type": "string",
+        "title": "Function name schema.",
+        "description": "Function name as constructor.",
+        "name": "functionName"
+      },
+      "schema": {
+        "id": "http://vineyard.napajs.org/object-type-config/item/schema",
+        "type": "string",
+        "title": "JSON Schema for value element.",
+        "description": "JSON schema for value element.",
+        "name": "schema"
+      },
+      "exampleObjects": {
+        "id": "http://vineyard.napajs.org/provider-config/item/exampleObjects",
+        "type": "array",
+        "title": "Example objects schema.",
+        "description": "Example objects for current type.",
+        "name": "exampleObjects",
+        "items": {}
+      }
+    },
+    "additionalProperties": false,
+    "required": [
+      "typeName",
+      "description",
+      "moduleName",
+      "functionName",
+      "exampleObjects"
+    ]
+  }
+}

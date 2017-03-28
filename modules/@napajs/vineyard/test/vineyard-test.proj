@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(EnvironmentConfig)" />
+  
+  <PropertyGroup>
+    <AssemblyName>napajs-vineyard-test</AssemblyName>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <QCustomInput Include="..\package.json" />
+    <QCustomInput Include="..\README.md" />
+    <QCustomInput Include="..\config\**\*" />
+    <QCustomInput Include="..\lib\*.ts" />
+    <QCustomInput Include="..\lib\*.js" />
+    <QCustomInput Include="..\schema\**\*" />
+    <QCustomInput Include="**\*" />
+    <QCustomInput Include="$(NapaBuildRoot)\**\*" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PackageJsonDirectory>..\</PackageJsonDirectory>
+    <PackageOutPath>$(IntermediateOutputPath)\node_modules\@napajs\vineyard</PackageOutPath>
+  </PropertyGroup>
+
+  <Import Project="$(NapaBuildRoot)\node\npm.targets" />
+
+  <!-- Build scripts-->
+  <Target Name="BuildScripts" AfterTargets="AfterBuild">
+    <CallTarget Targets="NpmInstall" />
+
+    <Message Text="Compile scripts." />
+    <!-- Building ./test will build ./lib as a dependency. -->
+    <Exec Command="$(NapaBuildRoot)\node\node.exe $(NapaBuildRoot)\typescript\lib\tsc.js --outDir $(PackageOutPath)" />
+
+    <CallTarget Targets="NpmCleanup" />
+
+    <Message Text="Binplace schema, config and meta-data files." />
+
+    <!-- Copy package.json and README.md -->
+    <Copy SourceFiles="..\package.json" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="..\README.md" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
+    
+    <!-- Copy JavaScript files-->
+    <ItemGroup>
+      <JsFiles Include="..\lib\**\*.js"/>
+    </ItemGroup>
+    <Copy SourceFiles="@(JsFiles)" DestinationFiles="@(JsFiles->'$(PackageOutPath)\lib\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+    
+    <!-- Copy config files-->
+    <ItemGroup>
+      <ConfigFiles Include="..\config\**\*"/>
+    </ItemGroup>
+    <Copy SourceFiles="@(ConfigFiles)" DestinationFiles="@(ConfigFiles->'$(PackageOutPath)\config\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+    
+    <!-- Copy schema files-->
+    <ItemGroup>
+      <SchemaFiles Include="..\schema\**\*"/>
+    </ItemGroup>
+    <Copy SourceFiles="@(SchemaFiles)" DestinationFiles="@(SchemaFiles->'$(PackageOutPath)\schema\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+  
+    <!-- Copy test config files-->
+    <ItemGroup>
+      <TestConfigFiles Include="config\**\*"/>
+    </ItemGroup>
+    <Copy SourceFiles="@(TestConfigFiles)" DestinationFiles="@(TestConfigFiles->'$(PackageOutPath)\test\config\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+
+    <!-- Copy test application files-->
+    <ItemGroup>
+      <TestAppFiles Include="test-app\**\*"/>
+    </ItemGroup>
+    <Copy SourceFiles="@(TestAppFiles)" DestinationFiles="@(TestAppFiles->'$(PackageOutPath)\test\test-app\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Import Project="$(ExtendedTargetsPath)\NoTarget.targets" />
+</Project>

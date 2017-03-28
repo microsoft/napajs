@@ -1,0 +1,139 @@
+[
+  {
+    "name": "listApplications",
+    "description": "List all applications in current system.",
+    "value": {
+      "_type": "EntryPoint",
+      "moduleName": "@napajs/vineyard",
+      "functionName": "builtins.entryPoints.listApplications",
+      "displayRank": 900,
+      "exampleRequests": [
+        {
+          "application": "example",
+          "entryPoint": "listApplications"
+        }
+      ]
+    }
+  },
+  {
+    "name": "listEntryPoints",
+    "description": "List all entry points for current application.",
+    "value": {
+      "_type": "EntryPoint",
+      "moduleName": "@napajs/vineyard",
+      "functionName": "builtins.entryPoints.listEntryPoints",
+      "displayRank": 900,
+      "exampleRequests": [
+        {
+          "application": "bing",
+          "entryPoint": "listEntryPoints"
+        }
+      ]
+    }
+  },
+  {
+    "name": "listNamedObjects",
+    "description": "List all named objects for current application.",
+    "value": {
+      "_type": "EntryPoint",
+      "moduleName": "@napajs/vineyard",
+      "functionName": "builtins.entryPoints.listNamedObjects",
+      "displayRank": 900,
+      "exampleRequests": [
+        {
+          "application": "bing",
+          "entryPoint": "listNamedObjects"
+        }
+      ]
+    }
+  },
+  {
+    "name": "listTypes",
+    "description": "List all types supported in current application.",
+    "value": {
+      "_type": "EntryPoint",
+      "moduleName": "@napajs/vineyard",
+      "functionName": "builtins.entryPoints.listTypes",
+      "displayRank": 900,
+      "exampleRequests": [
+        {
+          "application": "bing",
+          "entryPoint": "listTypes"
+        }
+      ]
+    }
+  },
+  {
+    "name": "listProviders",
+    "description": "List URI providers supported in current application.",
+    "value": {
+      "_type": "EntryPoint",
+      "moduleName": "@napajs/vineyard",
+      "functionName": "builtins.entryPoints.listProviders",
+      "displayRank": 900,
+      "exampleRequests": [
+        {
+          "application": "bing",
+          "entryPoint": "listProviders"
+        }
+      ]
+    }
+  },
+  {
+    "name": "getNamedObject",
+    "description": "Get an object as JSON based on current application.",
+    "value": {
+      "_type": "EntryPoint",
+      "moduleName": "@napajs/vineyard",
+      "functionName": "builtins.entryPoints.getNamedObject",
+      "displayRank": 900,
+      "exampleRequests": [
+        {
+          "application": "bing",
+          "entryPoint": "getNamedObject",
+          "input": {
+            "name": "getType"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "getType",
+    "description": "Get definition of a type in current application.",
+    "value": {
+      "_type": "EntryPoint",
+      "moduleName": "@napajs/vineyard",
+      "functionName": "builtins.entryPoints.getType",
+      "displayRank": 900,
+      "exampleRequests": [
+        {
+          "application": "bing",
+          "entryPoint": "getType",
+          "input": {
+            "typeName": "functionName"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "getProvider",
+    "description": "Get the provider definition for a URI protocol.",
+    "value": {
+      "_type": "EntryPoint",
+      "moduleName": "@napajs/vineyard",
+      "functionName": "builtins.entryPoints.getProvider",
+      "displayRank": 900,
+      "exampleRequests": [
+        {
+          "application": "bing",
+          "entryPoint": "getProvider",
+          "input": {
+            "protocolName": "te"
+          }
+        }
+      ]
+    }
+  }
+]

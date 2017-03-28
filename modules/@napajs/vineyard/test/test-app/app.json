@@ -1,0 +1,29 @@
+{
+    "id": "test-app",
+
+    "description": "Test application",
+
+    "allowPerRequestOverride": true,
+
+    "defaultExecutionStack": [
+        "finalizeResponse",
+        "executeEntryPoint"
+    ],
+
+    "objectTypes": [
+        "./object-types.json"
+    ],
+    "objectProviders": [
+        "./object-providers.json"
+    ],
+    "namedObjects": [
+        "./entrypoints.json",
+        "./objects.json"
+    ],
+    "metrics": {
+        "sectionName": "TestApp",
+        "definition": [
+            "./metrics.json"
+        ]
+    }
+}

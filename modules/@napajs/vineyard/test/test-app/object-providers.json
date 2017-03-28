@@ -1,0 +1,11 @@
+[
+    {
+        "protocol": "ProtocolA",
+        "description": "Protocol A",
+        "moduleName": "./test-app",
+        "functionName": "providers.provideA",
+        "exampleUri": [
+            "ProtocolA://abcde"
+        ]
+    }
+]

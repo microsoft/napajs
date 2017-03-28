@@ -5,6 +5,7 @@
     <ProjectFile Include="logger\create-package.proj" />
     <ProjectFile Include="metrics\create-package.proj" />
     <ProjectFile Include="shared-depot\dirs.proj" />
+    <ProjectFile Include="vineyard\dirs.proj" />
   </ItemGroup>
 
   <Import Project="$(ExtendedTargetsPath)\Traversal.targets" />
