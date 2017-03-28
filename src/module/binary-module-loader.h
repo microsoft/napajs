@@ -1,6 +1,5 @@
 #pragma once
 
-#include "module-cache.h"
 #include "module-file-loader.h"
 
 #include <boost/shared_ptr.hpp>
@@ -16,7 +15,8 @@ namespace module {
     public:
 
         /// <summary> Constructor. </summary>
-        BinaryModuleLoader(BuiltInsSetter builtInsSetter);
+        /// <param name="builtsInSetter"> Built-in modules registerer. </param>
+        BinaryModuleLoader(BuiltInModulesSetter builtInModulesSetter);
 
         /// <summary> It loads a module from binary file. </summary>
         /// <param name="path"> Module path called by require(). </param>
@@ -27,7 +27,7 @@ namespace module {
     private:
 
         /// Built-in modules registerer.
-        BuiltInsSetter _builtInsSetter;
+        BuiltInModulesSetter _builtInModulesSetter;
 
         /// <summary> It keeps binary modules loaded. </summary>
         /// <remarks> boost::dll unload a shared library when no reference is there. </remarks>

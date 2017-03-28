@@ -1,4 +1,5 @@
 #include "javascript-module-loader.h"
+#include "module-cache.h"
 #include "module-loader-helpers.h"
 
 #include <napa/v8-helpers.h>
@@ -6,8 +7,8 @@
 using namespace napa;
 using namespace napa::module;
 
-JavascriptModuleLoader::JavascriptModuleLoader(BuiltInsSetter builtInsSetter, ModuleCache& cache)
-    : _builtInsSetter(std::move(builtInsSetter)) , _cache(cache) {}
+JavascriptModuleLoader::JavascriptModuleLoader(BuiltInModulesSetter builtInModulesSetter, ModuleCache& moduleCache)
+    : _builtInModulesSetter(std::move(builtInModulesSetter)) , _moduleCache(moduleCache) {}
 
 bool JavascriptModuleLoader::TryGet(const std::string& path, v8::Local<v8::Object>& module) {
     auto isolate = v8::Isolate::GetCurrent();
@@ -23,10 +24,10 @@ bool JavascriptModuleLoader::TryGet(const std::string& path, v8::Local<v8::Objec
     context->SetSecurityToken(v8::Undefined(isolate));
     v8::Context::Scope contextScope(context);
 
-    _builtInsSetter(context);
+    _builtInModulesSetter(context);
 
     // To prevent cycle, cache unloaded module first.
-    _cache.Insert(path, module_loader_helpers::ExportModule(context->Global(), nullptr));
+    _moduleCache.Upsert(path, module_loader_helpers::ExportModule(context->Global(), nullptr));
 
     v8::TryCatch tryCatch;
     {

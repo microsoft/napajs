@@ -81,6 +81,12 @@
     <Robocopy Include="$(V8MiscPath)\snapshot_blob.bin">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
+    <Robocopy Include="core-module-tests.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="core-modules.json">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
     <Robocopy Include="cycle-a.js">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
@@ -116,6 +122,15 @@
     </Robocopy>
     <Robocopy Include="toupper.js">
       <DestinationFolder>$(IntermediateOutputPath)\test</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="lib\assert.js">
+      <DestinationFolder>$(IntermediateOutputPath)\lib</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="lib\console.js">
+      <DestinationFolder>$(IntermediateOutputPath)\lib</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="lib\fs.js">
+      <DestinationFolder>$(IntermediateOutputPath)\lib</DestinationFolder>
     </Robocopy>
     <Robocopy Include="tests\node_modules\file2.js">
       <DestinationFolder>$(IntermediateOutputPath)\tests\node_modules</DestinationFolder>

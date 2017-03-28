@@ -182,6 +182,13 @@ TEST_CASE("require.resolve", "[module-loader]") {
     REQUIRE(result);
 }
 
+TEST_CASE("core modules", "[module-loader]") {
+    auto result = RunScriptFile("core-module-tests.js", [](v8::Local<v8::Value> run) {
+        return run->BooleanValue();
+    });
+    REQUIRE(result);
+}
+
 TEST_CASE("process", "[module-loader]") {
     std::ostringstream oss;
     oss << "process.argv.length;";

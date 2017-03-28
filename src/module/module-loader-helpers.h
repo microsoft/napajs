@@ -6,6 +6,19 @@ namespace napa {
 namespace module {
 namespace module_loader_helpers {
 
+    /// <summary> Core module information from 'core-modules.json'. </summary>
+    struct CoreModuleInfo {
+        /// <summary> Core module name. </summary>
+        std::string name;
+
+        /// <summary> True if it's a built-in module. False, otherwise. </summary>
+        bool isBuiltIn;
+
+        /// <summary> Constructor. </summary>
+        CoreModuleInfo(std::string name, bool isBuiltIn)
+            : name(std::move(name)), isBuiltIn(isBuiltIn) {}
+    };
+
     /// <summary> It exports loaded module. </summary>
     /// <param name="object"> Loaded javascript object. </param>
     /// <param name="initializer"> Callback function to initialize a module. </param>
@@ -17,6 +30,10 @@ namespace module_loader_helpers {
     /// <returns> Directory of context. If called from external string, module root directory will be returned. </returns>
     std::string GetCurrentContextDirectory();
 
+    /// <summary> It returns the directory of napa runtime. </summary>
+    /// <returns> Directory of napa runtime. </returns>
+    std::string GetModuleRootDirectory();
+
     /// <summary> Set __dirname and __filename. </summary>
     /// <param name="exports"> Object to set modue paths. </param>
     void SetContextModulePath(v8::Local<v8::Object> exports);
@@ -25,6 +42,9 @@ namespace module_loader_helpers {
     /// <param name="path"> Module path called by require(). </param>
     /// <returns> V8 context object. </returns>
     v8::Local<v8::Context> SetUpModuleContext(const std::string& path);
+
+    /// <summary> It reads javascript core module information. </summary>
+    std::vector<CoreModuleInfo> ReadCoreModulesJson();
 
     /// <summary> It reads a module file to javascript string. </summary>
     /// <param name="path"> File path to read. </param>

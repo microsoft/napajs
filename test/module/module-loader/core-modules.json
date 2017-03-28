@@ -1,0 +1,14 @@
+[
+    {
+        "name": "assert",
+        "type": "core"
+    },
+    {
+        "name": "console",
+        "type": "builtin"
+    },
+    {
+        "name": "fs",
+        "type": "core"
+    }
+]
