@@ -1,7 +1,5 @@
 # @napajs/vineyard: Application framework for building highly iterative applications
 
-TODO: move this to modules/@napajs/vineyard/README.md later.
-
 ## Introduction
 There are already many application frameworks under Node.JS, like express.js, etc. Why do we need another application framework? 
 
@@ -198,17 +196,14 @@ import app = require('@napajs/vineyard');
 
 /// Function for entrypoint 'echo'. 
 /// See 'named-objects.json' below on how we register this entrypoint.
-/// The 1st parameter of an entrypoint is the input from request.
-/// The 2nd parameter is an vy.RequestContext object.
-/// In 'echo', we don't need to access request context, so simply not to declare it.
-export function echo(text: string) {
+/// The 1st parameter is a vy.RequestContext object.
+/// The 2nd parameter is the input from request.
+export function echo(context: vy.RequestContext, text: string) {
     return text;
 }
 
 /// Function for entrypoint 'compute', which is to compute sum on an array of numbers. 
-/// Since we support computation function override, which needs to access the vy.RequestContext object,
-/// we declare vy.RequestContext as the 2nd parameter of 'compute'.
-export function compute(numberArray: number[], context: vy.RequestContext) {
+export function compute(context: vy.RequestContext, numberArray: number[]) {
     var func = (list: number[]) => {
         return list.reduce((sum: number, value: number) => {
                 return sum + value;
@@ -253,7 +248,11 @@ TODO:
     "objectTypes": ["./object-types.json"],
     "objectProviders": ["./object-providers.json"],
     "namedObjects": ["./named-objects.json"],
-    "interceptors": ["./interceptors.json"]
+    "interceptors": ["./interceptors.json"],
+    "metrics": {
+        "sectionName": "ExampleApp",
+        "definitions": ["./metrics.json"]
+    }
 }
 ```
 `example-app/object-types.json` (a configuration file for objectTypes)
@@ -263,10 +262,11 @@ See [[Object Type]](#object-type).
 ```json
 [
     {
-        "type": "<type-name>",
+        "typeName": "<type-name>",
         "description": "<type-description>",
-        "module": "<module-name>",
-        "constructor": "<function-name-as-constructor>"
+        "moduleName": "<module-name>",
+        "functionName": "<function-name-as-constructor>",
+        "schema": "<JSON schema to check object input>"
     }
 ]
 
@@ -280,8 +280,8 @@ See [[Object Provider]](#object-provider)
     {
         "protocol": "<protocol-name>",
         "description": "<protocol-description>",
-        "module": "<module-name>",
-        "function": "<function-name-as-loader>"
+        "moduleName": "<module-name>",
+        "functionName": "<function-name-as-loader>"
     }
 ]
 
@@ -366,8 +366,9 @@ export interface IObjectFactory {
     {
         "type": "<type-name>",
         "description": "<description-of-type>",
-        "module": "<module-name>",
-        "constructor": "<constructor-function-name>"
+        "moduleName": "<module-name>",
+        "functionName": "<constructor-function-name>",
+        "schema": "<JSON-schema-for-input>"
     }
 ]
 ```
@@ -389,8 +390,8 @@ A predefined function object.
 ```json
 {
     "_type": "Function",
-    "module": "a-module",
-    "function": "aFunction"
+    "moduleName": "a-module",
+    "functionName": "someNamespace.aFunction"
 }
 ```
 or an embeded JavaScript function definition:
@@ -414,8 +415,13 @@ JSON input to construct an entrypoint.
 ```json
 {
     "_type": "Entrypoint",
-    "module": "a-module",
-    "function": "aEntrypoint"
+    "moduleName": "a-module",
+    "functionName": "someNamespace.aEntrypoint",
+    "displayRank": 1,
+    "executionStack": [
+        "finalizeResponse",
+        "executeEntryPoint"
+    ]
 }
 ```
 ### Object Provider
@@ -457,8 +463,8 @@ export interface ObjectProvider {
     {
         "protocol": "<protocol-name>",
         "description": "<protocol-description>",
-        "module": "<module-name>",
-        "function": "<function-name-as-loader>"
+        "moduleName": "<module-name>",
+        "functionName": "<function-name-as-loader>"
     }
 ]
 
@@ -495,7 +501,7 @@ export class NamedObject {
     }
 }
 
-export interface INamedObjectCollection {
+export interface NamedObjectCollection {
     /// <summary> Get named object by name. </summary>
     /// <param name="name"> Name. Case-sensitive. </summary>
     /// <returns> Named object if found. Otherwise undefined. </returns>
@@ -516,8 +522,8 @@ Please note: Entrypoint registration is simply a named object registration.
         // Entrypoint, created as an object with type (Entrypoint).
         "value": {
             "_type": "EntryPoint",
-            "module": "./example",
-            "function": "echo"
+            "moduleName": "./example",
+            "functionName": "echo"
         }
     },
     {

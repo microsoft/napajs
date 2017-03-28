@@ -1,0 +1,32 @@
+///////////////////////////////////////////////////////////////
+// This file contains root settings for vinyard.
+// Users can do per-application override of these values.
+
+{
+    // Allow per-request override or not.
+    "allowPerRequestOverride": true,
+
+    // Throw exception on error or return response with error code.
+    "throwExceptionOnError": true,
+
+    // Default execution stack of interceptors if not specified per-application or per-entryPoint.
+    "defaultExecutionStack": [
+        "finalizeResponse",
+        "executeEntryPoint"
+    ],
+
+    // Default available object types.
+    "objectTypes": [
+        "./builtin-types.json"
+    ],
+
+    // Default available object providers.
+    "objectProviders": [
+    ],
+
+    // Default available named objects.
+    "namedObjects": [
+        "./builtin-interceptors.json",
+        "./builtin-entrypoints.json" 
+    ]
+}

@@ -1,0 +1,67 @@
+[
+    {
+        "typeName": "Function",
+        "description": "Constructor for Function object.",
+        "moduleName": "@napajs/vineyard",
+        "functionName": "builtins.types.createFunction",
+        "schema": "@napajs/vineyard/schema/function-def.schema.json",
+        "exampleObjects": [
+            {
+                "_type": "Function",
+                "function": "function() { return 0; }"
+            },
+            {
+                "_type": "Function",
+                "moduleName": "someModule",
+                "functionName": "someNamespace.someFunction"
+            }
+        ]
+    },
+    {
+        "typeName": "EntryPoint",
+        "description": "Entrypoint type .",
+        "moduleName": "@napajs/vineyard",
+        "functionName": "builtins.types.createEntryPoint",
+        "schema": "@napajs/vineyard/schema/entrypoint-def.schema.json",
+        "exampleObjects": [   
+            {
+                "_type": "EntryPoint",
+                "moduleName": "someModule",
+                "functionName": "someNamespace.someFunction",
+                "displayRank": 100
+                // Using default execution stack.
+            },
+            {
+                "_type": "EntryPoint",
+                "moduleName": "someModule",
+                "functionName": "someNamespace.someFunction",
+                "displayRank": 100,
+                // Using custom execution stack.
+                "executionStack": [
+                    "logRequestResponse",
+                    "finalizeResponse",
+                    "executeEntryPoint"
+                ]
+            }
+        ]
+    },
+    {
+        "typeName": "Interceptor",
+        "description": "Interceptor is a function defined as: (requestContext: RequestContext) => Promise<Response>.",
+        "moduleName": "@napajs/vineyard",
+        "functionName": "builtins.types.createInterceptor",
+        "schema": "@napajs/vineyard/schema/interceptor-def.schema.json",
+        "exampleObjects": [
+            {
+                "_type": "Interceptor",
+                "moduleName": "someModule",
+                "functionName": "someNamespace.someFunction"
+            },
+            {
+                "_type": "Interceptor",
+                "function": "function(context) { return context.continueExecution(); } "
+            }
+
+        ]
+    }
+]

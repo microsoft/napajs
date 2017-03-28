@@ -1,0 +1,75 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://vineyard.napajs.org/object-provider-config",
+  "type": "array",
+  "title": "Object provider config Schema.",
+  "description": "Object provider config as a sub file of app config in Napa.",
+  "name": "/",
+  "items": {
+    "id": "http://vineyard.napajs.org/object-provider-config/item",
+    "type": "object",
+    "title": "Object provider definition schema.",
+    "description": "Object provider definition describes protocol name and object loading function.",
+    "name": "item",
+    "properties": {
+      "protocol": {
+        "id": "http://vineyard.napajs.org/object-provider-config/item/protocol",
+        "type": "string",
+        "title": "Protocol schema.",
+        "description": "Protocol name that current provider is responsible.",
+        "name": "protocol"
+      },
+      "override": {
+        "id": "http://vineyard.napajs.org/object-provider-config/item/override",
+        "type": "boolean",
+        "title": "Override schema.",
+        "description": "If this provider will override the provider for the same protocol name declared before this definition.",
+        "name": "override",
+        "default": false
+      },
+      "description": {
+        "id": "http://vineyard.napajs.org/object-provider-config/item/description",
+        "type": "string",
+        "title": "Description schema.",
+        "description": "Description of current protocol.",
+        "name": "description"
+      },
+      "exampleUri": {
+        "id": "http://vineyard.napajs.org/object-provider-config/item/exampleUri",
+        "type": "array",
+        "title": "Example URI.",
+        "description": "Example of URIs",
+        "name": "exampleUri",
+        "items": {
+          "id": "http://vineyard.napajs.org/object-provider-config/item/exampleUri/item",
+          "type": "string",
+          "title": "example Uri item.",
+          "description": "Example Uri for this protocol.",
+          "name": "item"
+        }
+      },
+      "moduleName": {
+        "id": "http://vineyard.napajs.org/object-provider-config/item/moduleName",
+        "type": "string",
+        "title": "Module name schema.",
+        "description": "Module name for the provider.",
+        "name": "moduleName"
+      },
+      "functionName": {
+        "id": "http://vineyard.napajs.org/object-provider-config/item/functionName",
+        "type": "string",
+        "title": "Function name schema.",
+        "description": "Function name for the provisioning function.",
+        "name": "functionName"
+      }
+    },
+    "additionalProperties": false,
+    "required": [
+      "protocol",
+      "description",
+      "exampleUri",
+      "moduleName",
+      "functionName"
+    ]
+  }
+}

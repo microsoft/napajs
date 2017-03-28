@@ -1,0 +1,66 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://vineyard.napajs.org/counter-config",
+  "type": "array",
+  "title": "Counter config schema.",
+  "description": "Counter config file is a sub file of application config in Napa.",
+  "name": "/",
+  "items": {
+    "id": "http://vineyard.napajs.org/counter-config/item",
+    "type": "object",
+    "title": "Counter definition schema.",
+    "description": "An explanation about the puropose of this instance described by this schema.",
+    "name": "item",
+    "properties": {
+      "name": {
+        "id": "http://vineyard.napajs.org/counter-config/item/name",
+        "type": "string",
+        "title": "Name schema.",
+        "description": "Counter variable name accessed via app.counters.<counterName>. Please use identifier for this property.",
+        "name": "name"
+      },
+      "displayName": {
+        "id": "http://vineyard.napajs.org/counter-config/item/displayName",
+        "type": "string",
+        "title": "Display name schema.",
+        "description": "Display name for the counter, which will be displayed in monitoring tools.",
+        "name": "displayName"
+      },
+      "description": {
+        "id": "http://vineyard.napajs.org/counter-config/item/description",
+        "type": "string",
+        "title": "Description schema.",
+        "description": "Description of this counter.",
+        "name": "description"
+      },
+      "type": {
+        "id": "http://vineyard.napajs.org/counter-config/item/type",
+        "enum": [ "Number", "Rate", "Percentile" ],
+        "title": "Counter type schema.",
+        "description": "An explanation about the puropose of this instance described by this schema.",
+        "name": "type"
+      },
+      "dimensionNames": {
+        "id": "http://vineyard.napajs.org/napa-config/global/counters/dimensionNames",
+        "type": "array",
+        "title": "Dimension Names",
+        "description": "List of dimension names being recorded with every counter sample.",
+        "name": "dimensionNames",
+        "items": {
+          "id": "http://vineyard.napajs.org/napa-config/global/counters/dimensionNames/item",
+          "type": "string",
+          "title": "Dimension name.",
+          "description": "Dimension name metric.",
+          "name": "item"
+        }
+      }
+    },
+    "additionalProperties": false,
+    "required": [
+      "name",
+      "displayName",
+      "type",
+      "dimensionNames"
+    ]
+  }
+}

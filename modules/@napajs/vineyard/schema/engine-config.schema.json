@@ -1,0 +1,86 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://vineyard.napajs.org/engine-config",
+  "type": "object",
+  "title": "Vineyard application configuration schema.",
+  "description": "This JSON schema defines the root JSON file to define a vineyard application.",
+  "name": "/",
+  "properties": {
+    "allowPerRequestOverride": {
+        "id": "http://vineyard.napajs.org/object-type-config/item/allowPerRequestOverride",
+        "type": "boolean",
+        "title": "Allow per-request override schema.",
+        "description": "Whether to allow per-request override for this application.",
+        "name": "allowPerRequestOverride",
+        "default": true
+    },
+    "throwExceptionOnError": {
+        "id": "http://vineyard.napajs.org/object-type-config/item/throwExceptionOnError",
+        "type": "boolean",
+        "title": "Throw exception on error schema.",
+        "description": "Whether to throw exception on error, or return error response code.",
+        "name": "throwExceptionOnError",
+        "default": true
+    },
+    "defaultExecutionStack": {
+      "id": "http://vineyard.napajs.org/engine-config/defaultExecutionStack",
+      "type": "array",
+      "title": "Default execution stack consists of a list of interceptor names.",
+      "description": "Optional. If not specified, will inherit from Engine configuration.",
+      "name": "defaultExecutionStack",
+      "items": {
+        "id": "http://vineyard.napajs.org/engine-config/defaultExecutionStack/0",
+        "type": "string",
+        "title": "Interceptor name",
+        "description": "Interceptor are stacked as execution stack. ."
+      }
+    },
+    "objectTypes": {
+      "id": "http://vineyard.napajs.org/engine-config/objectTypes",
+      "type": "array",
+      "title": "Object type definition files.",
+      "description": "Required. Object types supported in this application.",
+      "name": "objectTypes",
+      "items": {
+        "id": "http://vineyard.napajs.org/engine-config/objectTypes/0",
+        "type": "string",
+        "title": "Path of an object type definition file",
+        "description": "Multiple object type definition file is supported."
+      }
+    },
+    "namedObjects": {
+      "id": "http://vineyard.napajs.org/engine-config/namedObjects",
+      "type": "array",
+      "title": "Named objects definition files.",
+      "description": "Required. Named objects are objects that you want to access them by app.getObject('<name>').",
+      "name": "namedObjects",
+      "items": {
+        "id": "http://vineyard.napajs.org/engine-config/namedObjects/0",
+        "type": "string",
+        "title": "Path of a named object definition file.",
+        "description": "Multiple named object definition file is supported."
+      }
+    },
+    "objectProviders": {
+      "id": "http://vineyard.napajs.org/engine-config/objectProviders",
+      "type": "array",
+      "title": "Object providers definition files.",
+      "description": "Optional. Object providers are functions that provide objects by URI.",
+      "name": "objectProviders",
+      "items": {
+        "id": "http://vineyard.napajs.org/engine-config/objectProviders/0",
+        "type": "string",
+        "title": "Path of an object provider definition file.",
+        "description": "Multiple object provider definition file is supported."
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "allowPerRequestOverride",
+    "throwExceptionOnError",
+    "defaultExecutionStack",
+    "objectTypes",
+    "namedObjects"
+  ]
+}

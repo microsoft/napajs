@@ -1,0 +1,57 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://vineyard.napajs.org/named-object-config",
+  "type": "array",
+  "title": "Named object config schema.",
+  "description": "Named object config as a sub-file of app config in Napa.",
+  "name": "/",
+  "items": {
+    "id": "http://vineyard.napajs.org/named-object-config/item",
+    "type": "object",
+    "title": "Named object definition schema.",
+    "description": "Named object definition.",
+    "name": "item",
+    "properties": {
+      "name": {
+        "id": "http://vineyard.napajs.org/named-object-config/item/name",
+        "type": "string",
+        "title": "Name schema.",
+        "description": "Well-known name in current application.",
+        "name": "name"
+      },
+      "override": {
+        "id": "http://vineyard.napajs.org/named-object-config/item/override",
+        "type": "boolean",
+        "title": "Override schema.",
+        "description": "If this named object will override the object with the same name declared before this definition.",
+        "name": "override",
+        "default": false
+      },
+      "description": {
+        "id": "http://vineyard.napajs.org/named-object-config/item/description",
+        "type": "string",
+        "title": "Description schema.",
+        "description": "Description of this object.",
+        "name": "description"
+      },
+      "private": {
+        "id": "http://vineyard.napajs.org/named-object-config/item/private",
+        "type": "boolean",
+        "title": "Private schema.",
+        "description": "If this object is private.",
+        "name": "private"
+      },
+      "value": {
+        "id": "http://vineyard.napajs.org/named-object-config/item/value",
+        "title": "Value schema.",
+        "description": "Value of current object, can be any JS object, or object with _type property or URI.",
+        "name": "value"
+      }
+    },
+    "additionalProperties": false,
+    "required": [
+      "name",
+      "value"
+    ]
+  }
+}

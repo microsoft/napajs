@@ -1,0 +1,29 @@
+[
+    {
+        "typeName": "TypeA",
+        "description": "Test type A",
+        "moduleName": "./test-app",
+        "functionName": "types.createA",
+        "exampleObjects": [
+            {
+                "_type": "TypeA",
+                "value": 1
+            }
+        ]
+    },
+    {
+        "typeName": "TypeB",
+        "description": "Test type B",
+        "moduleName": "./test-app",
+        "functionName": "types.createB",
+        "exampleObjects": [
+            {
+                "_type": "TypeB",
+                "value": {
+                    "_type": "TypeA",
+                    "value": 1
+                }
+            }
+        ]
+    }
+]
