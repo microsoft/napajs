@@ -1,7 +1,6 @@
 #pragma once
 
-#include "module-cache.h"
-#include "module-file-loader.h"
+#include "javascript-module-loader.h"
 
 #include <string>
 
@@ -9,11 +8,16 @@ namespace napa {
 namespace module {
 
     /// <summary> It loads a core module. </summary>
-    class CoreModuleLoader : public ModuleFileLoader {
+    class CoreModuleLoader : public JavascriptModuleLoader {
     public:
 
         /// <summary> Constructor. </summary>
-        CoreModuleLoader(ModuleCache& cache);
+        /// <param name="builtsInSetter"> Built-in modules registerer. </param>
+        /// <param name="moduleCache"> Cache for all modules. </param>
+        /// <param name="bindingCache"> Cache for binding core binary modules. </param>
+        CoreModuleLoader(BuiltInModulesSetter builtInModulesSetter,
+                         ModuleCache& moduleCache,
+                         ModuleCache& bindingCache);
 
         /// <summary> It loads a core module. </summary>
         /// <param name="name"> Core module name. </param>
@@ -23,8 +27,8 @@ namespace module {
 
     private:
 
-        /// Module cache instance.
-        ModuleCache& _cache;
+        /// Cache instance for binding binary core modules.
+        ModuleCache& _bindingCache;
     };
 
 }   // End of namespace module.

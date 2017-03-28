@@ -17,7 +17,7 @@ ModuleCache::ModuleCache() : _impl(std::make_unique<ModuleCache::ModuleCacheImpl
 
 ModuleCache::~ModuleCache() = default;
 
-void ModuleCache::Insert(const std::string& path, v8::Local<v8::Object> module) {
+void ModuleCache::Upsert(const std::string& path, v8::Local<v8::Object> module) {
     if (module.IsEmpty()) {
         return;
     }

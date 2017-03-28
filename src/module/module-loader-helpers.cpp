@@ -1,18 +1,17 @@
 #include "module-loader-helpers.h" 
 #include "core-modules/file-system-helpers.h"
 
+#include <napa-log.h>
 #include <napa/v8-helpers.h>
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/dll.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 using namespace napa;
 using namespace napa::module;
-
-namespace {
-
-    std::string _moduleRootDirectory = boost::dll::this_line_location().parent_path().string();
-
-}   // End of anonymous namespace.
 
 v8::Local<v8::Object> module_loader_helpers::ExportModule(v8::Local<v8::Object> object,
                                                           const napa::module::ModuleInitializer& initializer) {
@@ -39,11 +38,16 @@ std::string module_loader_helpers::GetCurrentContextDirectory() {
     if (contextObject.IsEmpty() 
         || contextObject->IsNull()
         || !contextObject->Has(dirPropertyName)) {
-        return _moduleRootDirectory;
+        return GetModuleRootDirectory();
     }
 
     v8::String::Utf8Value callingPath(contextObject->Get(dirPropertyName));
     return std::string(*callingPath);
+}
+
+std::string module_loader_helpers::GetModuleRootDirectory() {
+    static std::string moduleRootDirectory = boost::dll::this_line_location().parent_path().string();
+    return moduleRootDirectory;
 }
 
 void module_loader_helpers::SetContextModulePath(v8::Local<v8::Object> exports) {
@@ -54,7 +58,7 @@ void module_loader_helpers::SetContextModulePath(v8::Local<v8::Object> exports) 
 
     (void)exports->CreateDataProperty(context,
                                       v8_helpers::MakeV8String(isolate, "__dirname"),
-                                      v8_helpers::MakeV8String(isolate, _moduleRootDirectory.c_str()));
+                                      v8_helpers::MakeV8String(isolate, GetModuleRootDirectory().c_str()));
     (void)exports->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "__filename"), v8::Null(isolate));
 }
 
@@ -76,7 +80,7 @@ v8::Local<v8::Context> module_loader_helpers::SetUpModuleContext(const std::stri
 
     if (path.empty()) {
         (void)module->Set(v8_helpers::MakeV8String(isolate, "__dirname"),
-                            v8_helpers::MakeV8String(isolate, _moduleRootDirectory.c_str()));
+                            v8_helpers::MakeV8String(isolate, GetModuleRootDirectory().c_str()));
         (void)module->Set(v8_helpers::MakeV8String(isolate, "__filename"), v8::Null(isolate));
     } else {
         boost::filesystem::path current(path);
@@ -95,6 +99,37 @@ v8::Local<v8::Context> module_loader_helpers::SetUpModuleContext(const std::stri
                           scope.Escape(context));
 
     return scope.Escape(context);
+}
+
+std::vector<module_loader_helpers::CoreModuleInfo> module_loader_helpers::ReadCoreModulesJson() {
+    static const std::string CORE_MODULES_JSON_PATH =
+        (boost::filesystem::path(GetModuleRootDirectory()) / "core-modules.json").string();
+
+    if (!boost::filesystem::exists(CORE_MODULES_JSON_PATH)) {
+        return std::vector<CoreModuleInfo>();
+    }
+
+    std::vector<CoreModuleInfo> coreModuleInfos;
+
+    // Reserve capacity to help avoiding too frequent allocation.
+    coreModuleInfos.reserve(16);
+
+    boost::property_tree::ptree modules;
+    try {
+        boost::property_tree::json_parser::read_json(CORE_MODULES_JSON_PATH, modules);
+
+        for (const auto& value : modules) {
+            const auto& module = value.second;
+
+            coreModuleInfos.emplace_back(module.get<std::string>("name"),
+                                         boost::iequals(module.get<std::string>("type"), "builtin"));
+        }
+    } catch (const std::exception& ex) {
+        LOG_ERROR("ModuleLoader", ex.what());
+        return std::vector<CoreModuleInfo>();
+    }
+
+    return coreModuleInfos;
 }
 
 v8::Local<v8::String> module_loader_helpers::ReadModuleFile(const std::string& path) {

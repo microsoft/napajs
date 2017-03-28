@@ -4,12 +4,11 @@
 
 #include <functional>
 #include <string>
-#include <vector>
 
 namespace napa {
 namespace module {
 
-    using BuiltInsSetter = std::function<void (v8::Local<v8::Context> context)>;
+    using BuiltInModulesSetter = std::function<void (v8::Local<v8::Context> context)>;
 
     /// <summary> Interface to load a module from file. </summary>
     class ModuleFileLoader {

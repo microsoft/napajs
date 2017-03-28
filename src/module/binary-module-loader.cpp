@@ -8,7 +8,8 @@
 using namespace napa;
 using namespace napa::module;
 
-BinaryModuleLoader::BinaryModuleLoader(BuiltInsSetter builtInsSetter) : _builtInsSetter(std::move(builtInsSetter)) {}
+BinaryModuleLoader::BinaryModuleLoader(BuiltInModulesSetter builtInModulesSetter)
+    : _builtInModulesSetter(std::move(builtInModulesSetter)) {}
 
 bool BinaryModuleLoader::TryGet(const std::string& path, v8::Local<v8::Object>& module) {
     auto isolate = v8::Isolate::GetCurrent();
@@ -34,7 +35,7 @@ bool BinaryModuleLoader::TryGet(const std::string& path, v8::Local<v8::Object>& 
     context->SetSecurityToken(v8::Undefined(isolate));
     v8::Context::Scope contextScope(context);
 
-    _builtInsSetter(context);
+    _builtInModulesSetter(context);
 
     module = scope.Escape(module_loader_helpers::ExportModule(context->Global(), napaModule->initializer));
     return true;

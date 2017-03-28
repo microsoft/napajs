@@ -25,10 +25,10 @@ namespace module {
         ModuleCache(ModuleCache&&) = default;
         ModuleCache& operator=(ModuleCache&&) = default;
 
-        /// <summary> It caches a module using path as a key. </summary>
+        /// <summary> It inserts or updates a module into cache using path as a key. </summary>
         /// <param name="path"> The module name path. </param>
         /// <param name="module"> V8 representative javascript object to be cached. </param>
-        void Insert(const std::string& path, v8::Local<v8::Object> module);
+        void Upsert(const std::string& path, v8::Local<v8::Object> module);
 
         /// <summary> A helper to load a module from cache. </summary>
         /// <param name="path"> Full path of javascript or napa module. </param>

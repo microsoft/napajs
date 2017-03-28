@@ -1,6 +1,5 @@
 #pragma once
 
-#include "module-cache.h"
 #include "module-file-loader.h"
 
 #include <string>
@@ -8,12 +7,17 @@
 namespace napa {
 namespace module {
 
+    // forward declaration.
+    class ModuleCache;
+
     /// <summary> It loads a module from javascript file. </summary>
     class JavascriptModuleLoader : public ModuleFileLoader {
     public:
 
         /// <summary> Constructor. </summary>
-        JavascriptModuleLoader(BuiltInsSetter builtInsSetter, ModuleCache& cache);
+        /// <param name="builtsInSetter"> Built-in modules registerer. </param>
+        /// <param name="moduleCache"> Cache for all modules. </param>
+        JavascriptModuleLoader(BuiltInModulesSetter builtInModulesSetter, ModuleCache& moduleCache);
 
         /// <summary> It loads a module from javascript file. </summary>
         /// <param name="path"> Module path called by require(). </param>
@@ -24,10 +28,10 @@ namespace module {
     private:
 
         /// Built-in modules registerer.
-        BuiltInsSetter _builtInsSetter;
+        BuiltInModulesSetter _builtInModulesSetter;
 
         /// Module cache instance.
-        ModuleCache& _cache;
+        ModuleCache& _moduleCache;
     };
 
 }   // End of namespace module.
