@@ -32,7 +32,10 @@ namespace module_loader_helpers {
 
     /// <summary> It returns the directory of napa runtime. </summary>
     /// <returns> Directory of napa runtime. </returns>
-    std::string GetModuleRootDirectory();
+    const std::string& GetModuleRootDirectory();
+
+    /// <summary> It returns the process current working directory. </summary>
+    const std::string& GetCurrentWorkingDirectory();
 
     /// <summary> Set __dirname and __filename. </summary>
     /// <param name="exports"> Object to set modue paths. </param>

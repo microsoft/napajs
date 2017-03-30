@@ -35,7 +35,7 @@ TEST_CASE("tasks", "[tasks]") {
 
     SECTION("load valid javascript") {
         NapaResponseCode loadResponseCode;
-        LoadTask("var i = 3 + 5;", [&loadResponseCode](NapaResponseCode code) {
+        LoadTask("var i = 3 + 5;", "", [&loadResponseCode](NapaResponseCode code) {
             loadResponseCode = code;
         }).Execute();
 
@@ -44,7 +44,7 @@ TEST_CASE("tasks", "[tasks]") {
 
     SECTION("load fails when javascript is malformed") {
         NapaResponseCode loadResponseCode;
-        LoadTask("var j = 3 +", [&loadResponseCode](NapaResponseCode code) {
+        LoadTask("var j = 3 +", "", [&loadResponseCode](NapaResponseCode code) {
             loadResponseCode = code;
         }).Execute();
 
@@ -53,7 +53,7 @@ TEST_CASE("tasks", "[tasks]") {
 
     SECTION("load fails when javascript exception is thrown") {
         NapaResponseCode loadResponseCode;
-        LoadTask("throw Error('error');", [&loadResponseCode](NapaResponseCode code) {
+        LoadTask("throw Error('error');", "", [&loadResponseCode](NapaResponseCode code) {
             loadResponseCode = code;
         }).Execute();
 
