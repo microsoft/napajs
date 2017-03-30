@@ -11,10 +11,11 @@
 
 #include <napa-log.h>
 
+#include <boost/filesystem.hpp>
+
 #include <atomic>
 #include <fstream>
 #include <sstream>
-
 #include <thread>
 
 
@@ -71,6 +72,7 @@ napa_response_code napa_container_set_global_value(napa_container_handle handle,
 
 static void napa_container_load_common(napa_container_handle handle,
                                        std::string source,
+                                       std::string sourceOrigin,
                                        LoadTask::LoadTaskCallback callback) {
     auto container = reinterpret_cast<Container*>(handle);
 
@@ -82,17 +84,17 @@ static void napa_container_load_common(napa_container_handle handle,
         }
     };
 
-    auto loadTask = std::make_shared<LoadTask>(std::move(source), std::move(callOnce));
+    auto loadTask = std::make_shared<LoadTask>(std::move(source), std::move(sourceOrigin), std::move(callOnce));
 
     container->scheduler->ScheduleOnAllCores(std::move(loadTask));
 }
 
-static std::string read_file_content(napa_string_ref file) {
+static std::string read_file_content(const std::string& filePath) {
     std::ifstream ifs;
-    ifs.open(NAPA_STRING_REF_TO_STD_STRING(file));
+    ifs.open(filePath);
 
     if (!ifs.is_open()) {
-        LOG_ERROR("Api", "Failed to open file %s", file.data);
+        LOG_ERROR("Api", "Failed to open file %s", filePath.c_str());
         return "";
     }
 
@@ -109,19 +111,30 @@ void napa_container_load_file(napa_container_handle handle,
     NAPA_ASSERT(_initialized, "Napa wasn't initialized");
     NAPA_ASSERT(handle, "Container handle is null");
 
+    auto filePath = boost::filesystem::path(NAPA_STRING_REF_TO_STD_STRING(file));
+    if (filePath.is_relative()) {
+        filePath = (boost::filesystem::current_path() / filePath).normalize().make_preferred();
+    }
+
     // Although this is an async call, the reading of the file happens synchronously on the caller thread.
     // This is because the load task is distributed to all cores and we don't want to read the file multiple times.
     // We can spawn/reuse an additional thread just for reading before we schedule the load task, need to consider
     // if this becomes a bottleneck.
-    auto fileContent = read_file_content(file);
+    auto filePathString = filePath.string();
+    auto fileContent = read_file_content(filePathString);
     if (fileContent.empty()) {
         callback(NAPA_RESPONSE_LOAD_FILE_ERROR, context);
         return;
     }
 
-    napa_container_load_common(handle, std::move(fileContent), [callback, context](napa_response_code code) {
-        callback(code, context);
-    });
+    napa_container_load_common(
+        handle,
+        std::move(fileContent),
+        std::move(filePathString),
+        [callback, context](napa_response_code code) {
+            callback(code, context);
+        }
+    );
 }
 
 void napa_container_load(napa_container_handle handle,
@@ -134,6 +147,7 @@ void napa_container_load(napa_container_handle handle,
     napa_container_load_common(
         handle,
         NAPA_STRING_REF_TO_STD_STRING(source),
+        "",
         [callback, context](napa_response_code code) {
             callback(code, context);
         }

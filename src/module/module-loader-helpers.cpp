@@ -38,16 +38,21 @@ std::string module_loader_helpers::GetCurrentContextDirectory() {
     if (contextObject.IsEmpty() 
         || contextObject->IsNull()
         || !contextObject->Has(dirPropertyName)) {
-        return GetModuleRootDirectory();
+        return GetCurrentWorkingDirectory();
     }
 
     v8::String::Utf8Value callingPath(contextObject->Get(dirPropertyName));
     return std::string(*callingPath);
 }
 
-std::string module_loader_helpers::GetModuleRootDirectory() {
+const std::string& module_loader_helpers::GetModuleRootDirectory() {
     static std::string moduleRootDirectory = boost::dll::this_line_location().parent_path().string();
     return moduleRootDirectory;
+}
+
+const std::string& module_loader_helpers::GetCurrentWorkingDirectory() {
+    static std::string currentWorkingDirectory = boost::filesystem::current_path().string();
+    return currentWorkingDirectory;
 }
 
 void module_loader_helpers::SetContextModulePath(v8::Local<v8::Object> exports) {
@@ -58,7 +63,7 @@ void module_loader_helpers::SetContextModulePath(v8::Local<v8::Object> exports) 
 
     (void)exports->CreateDataProperty(context,
                                       v8_helpers::MakeV8String(isolate, "__dirname"),
-                                      v8_helpers::MakeV8String(isolate, GetModuleRootDirectory().c_str()));
+                                      v8_helpers::MakeV8String(isolate, GetCurrentWorkingDirectory()));
     (void)exports->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "__filename"), v8::Null(isolate));
 }
 
@@ -80,15 +85,15 @@ v8::Local<v8::Context> module_loader_helpers::SetUpModuleContext(const std::stri
 
     if (path.empty()) {
         (void)module->Set(v8_helpers::MakeV8String(isolate, "__dirname"),
-                            v8_helpers::MakeV8String(isolate, GetModuleRootDirectory().c_str()));
+                            v8_helpers::MakeV8String(isolate, GetCurrentWorkingDirectory()));
         (void)module->Set(v8_helpers::MakeV8String(isolate, "__filename"), v8::Null(isolate));
     } else {
         boost::filesystem::path current(path);
 
         (void)module->Set(v8_helpers::MakeV8String(isolate, "__dirname"),
-                            v8_helpers::MakeV8String(isolate, current.parent_path().string().c_str()));
+                            v8_helpers::MakeV8String(isolate, current.parent_path().string()));
         (void)module->Set(v8_helpers::MakeV8String(isolate, "__filename"),
-                            v8_helpers::MakeV8String(isolate, path.c_str()));
+                            v8_helpers::MakeV8String(isolate, path));
     }
 
     // Create a sandbox to load javascript module.

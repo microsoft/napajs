@@ -13,7 +13,7 @@ namespace module {
     class ModuleLoader {
     public:
 
-        /// <summary> It creats a module loader. One thread can have only one module loader. </summary>
+        /// <summary> It creates a module loader. One thread can have only one module loader. </summary>
         static void CreateModuleLoader();
 
         /// <summary>

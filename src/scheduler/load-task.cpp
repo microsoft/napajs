@@ -3,12 +3,14 @@
 
 #include <napa/v8-helpers.h>
 
+#include <boost/filesystem.hpp>
 #include <v8.h>
 
 using namespace napa::scheduler;
 
-LoadTask::LoadTask(std::string source, LoadTaskCallback callback) :
+LoadTask::LoadTask(std::string source, std::string sourceOrigin, LoadTaskCallback callback) :
     _source(std::move(source)),
+    _sourceOrigin(std::move(sourceOrigin)),
     _callback(std::move(callback)) {}
 
 void LoadTask::Execute() {
@@ -16,11 +18,21 @@ void LoadTask::Execute() {
     v8::HandleScope scope(isolate);
     auto context = isolate->GetCurrentContext();
 
-    // Create a V8 string from the string in this isolate.
+    auto filename = v8_helpers::MakeV8String(isolate, _sourceOrigin);
+    boost::filesystem::path originPath = boost::filesystem::path(_sourceOrigin);
+    if (originPath.is_absolute()) {
+        auto global = context->Global();
+
+        auto dirname = v8_helpers::MakeV8String(isolate, originPath.parent_path().string());
+        (void)global->Set(context, v8_helpers::MakeV8String(isolate, "__dirname"), dirname);
+        (void)global->Set(context, v8_helpers::MakeV8String(isolate, "__filename"), filename);
+    }
+
     auto source = napa::v8_helpers::MakeV8String(isolate, _source);
+    auto sourceOrigin = v8::ScriptOrigin(filename);
 
     // Compile the source code.
-    auto compileResult = v8::Script::Compile(context, source);
+    auto compileResult = v8::Script::Compile(context, source, &sourceOrigin);
     if (compileResult.IsEmpty()) {
         LOG_ERROR("Load", "Failed while compiling the provided source code");
         _callback(NAPA_RESPONSE_LOAD_SCRIPT_ERROR);

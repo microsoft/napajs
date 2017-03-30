@@ -19,14 +19,18 @@ namespace scheduler {
 
         /// <summary> Constructor. </summary>
         /// <param name="source"> The JS source code to load on the isolate the runs this task. </param>
+        /// <param name="sourceOrigin"> The origin of the source code. </param>
         /// <param name="callback"> A callback that is triggered when the task execution completed. </param>
-        LoadTask(std::string source, LoadTaskCallback callback = [](NapaResponseCode) {});
+        LoadTask(std::string source,
+            std::string sourceOrigin = "",
+            LoadTaskCallback callback = [](NapaResponseCode) {});
 
         /// <summary> Overrides Task.Execute to define loading execution logic. </summary>
         virtual void Execute() override;
 
     private:
         std::string _source;
+        std::string _sourceOrigin;
         LoadTaskCallback _callback;
     };
 }
