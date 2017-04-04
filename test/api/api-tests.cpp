@@ -154,6 +154,26 @@ TEST_CASE("container apis", "[api]") {
         REQUIRE(response.returnValue == ".txt");
     }
 
+    SECTION("load and call run all with success") {
+        napa::Container container;
+
+        auto responseCode = container.LoadSync("function register() { }");
+        REQUIRE(responseCode == NAPA_RESPONSE_SUCCESS);
+
+        responseCode = container.RunAllSync("register", {});
+        REQUIRE(responseCode == NAPA_RESPONSE_SUCCESS);
+    }
+
+    SECTION("load and call run all with failure") {
+        napa::Container container;
+
+        auto responseCode = container.LoadSync("function register() { throw new Error(); }");
+        REQUIRE(responseCode == NAPA_RESPONSE_SUCCESS);
+
+        responseCode = container.RunAllSync("register", {});
+        REQUIRE(responseCode == NAPA_RESPONSE_RUN_FUNC_ERROR);
+    }
+
     /// <note>
     ///     This must be the last test in this test suite, since napa initialize and shutdown
     ///     can only run once per process.

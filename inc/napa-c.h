@@ -11,8 +11,9 @@ typedef struct {
 } napa_container_response;
 
 /// <summary> Callback signatures. </summary>
-typedef void(*napa_container_run_callback)(napa_container_response response, void* context);
 typedef void(*napa_container_load_callback)(napa_response_code code, void* context);
+typedef void(*napa_container_run_callback)(napa_container_response response, void* context);
+typedef void(*napa_container_run_all_callback)(napa_response_code code, void* context);
 
 /// <summary>
 ///     Container handle type.
@@ -87,6 +88,21 @@ EXTERN_C NAPA_API void napa_container_run(
     napa_container_run_callback callback,
     void* context,
     uint32_t timeout);
+
+/// <summary> Runs a pre-loaded function asynchronously on all the container isolates. </summary>
+/// <param name="handle"> The container handle. </param>
+/// <param name="func"> The name of the function to run. </param>
+/// <param name="argc"> The number of arguments that are to be passed to the function. </param>
+/// <param name="argv"> The arguments. </param>
+/// <param name="callback"> A callback that is triggered when execution is done. </param>
+/// <param name="context"> An opaque pointer that is passed back in the callback. </param>
+EXTERN_C NAPA_API void napa_container_run_all(
+    napa_container_handle handle,
+    napa_string_ref func,
+    size_t argc,
+    const napa_string_ref argv[],
+    napa_container_run_all_callback callback,
+    void* context);
 
 /// <summary> Cleanup container resources and free its memory. </summary>
 /// <param name="handle"> The container handle. </param>

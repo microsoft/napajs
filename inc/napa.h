@@ -30,8 +30,9 @@ namespace napa {
     };
 
     /// <summary> Response callback signature. </summary>
-    typedef std::function<void(Response)> RunCallback;
     typedef std::function<void(NapaResponseCode)> LoadCallback;
+    typedef std::function<void(Response)> RunCallback;
+    typedef std::function<void(NapaResponseCode)> RunAllCallback;
 
     /// <summary> C++ class wrapper around napa C APIs. </summary>
     class Container {
@@ -82,6 +83,17 @@ namespace napa {
         /// <param name="args"> The arguments to the function. </param>
         /// <param name="timeout"> Timeout in milliseconds - default is inifinite. </param>
         Response RunSync(const char* func, const std::vector<NapaStringRef>& args, uint32_t timeout = 0);
+
+        /// <summary> Runs a pre-loaded JS function on all isolates asynchronously. </summary>
+        /// <param name="func"> The name of the function to run. </param>
+        /// <param name="args"> The arguments to the function. </param>
+        /// <param name="callback"> A callback that is triggered when execution is done. </param>
+        void RunAll(const char* func, const std::vector<NapaStringRef>& args, RunAllCallback callback);
+
+        /// <summary> Runs a pre-loaded JS function on all isolates synchronously. </summary>
+        /// <param name="func"> The name of the function to run. </param>
+        /// <param name="args"> The arguments to the function. </param>
+        NapaResponseCode RunAllSync(const char* func, const std::vector<NapaStringRef>& args);
 
     private:
         napa_container_handle _handle;
@@ -217,6 +229,29 @@ namespace napa {
         Run(func, args, [&prom](Response response) {
             prom.set_value(std::move(response));
         }, timeout);
+
+        return fut.get();
+    }
+
+    inline void Container::RunAll(const char* func, const std::vector<NapaStringRef>& args, RunAllCallback callback) {
+        auto context = new internal::AsyncCompletionContext<RunAllCallback>(std::move(callback));
+
+        napa_container_run_all(
+            _handle,
+            NAPA_STRING_REF(func),
+            args.size(),
+            args.data(),
+            internal::CompletionHandler<RunAllCallback, napa_response_code>,
+            context);
+    }
+
+    inline NapaResponseCode Container::RunAllSync(const char* func, const std::vector<NapaStringRef>& args) {
+        std::promise<NapaResponseCode> prom;
+        auto fut = prom.get_future();
+
+        RunAll(func, args, [&prom](NapaResponseCode response) {
+            prom.set_value(std::move(response));
+        });
 
         return fut.get();
     }

@@ -58,7 +58,8 @@ function launchInteractiveMode(container) {
 
 /// <summary> Mapping of extension name to extension method. <summary>
 var extensions = {
-    run: runExtension
+    run: runExtension,
+    runAll: runAllExtension,
 };
 
 /// Summary> Dispatches to the correct extension handler. </summary>
@@ -91,5 +92,21 @@ function runExtension(args) {
         console.log("\x1b[1m\x1b[32mResponse:\x1b[0m " + JSON.stringify(response.returnValue));
     } else {
         console.log("\x1b[1m\x1b[31mError:\x1b[0m " + response.errorMessage);
+    }
+}
+
+/// <summary> 'runAll' extension implementation. Usage: !runAll functionName arg1 arg2 <summary>
+function runAllExtension(args) {
+    var argv = args.split(' ');
+    if (argv.length == 0) {
+        console.log("Illegal call to 'runAll' extension, use: '!runAll functionName arg1 arg2'");
+        return;
+    }
+
+    var responseCode = container.runAllSync(argv[0], argv.splice(1));
+    if (responseCode == 0) {
+        console.log("\x1b[1m\x1b[32mSuccess\x1b[0m");
+    } else {
+        console.log("\x1b[1m\x1b[31m" + napa.getResponseCodeString(responseCode) +  "\x1b[0m");
     }
 }

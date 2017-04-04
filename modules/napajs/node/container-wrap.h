@@ -37,6 +37,8 @@ namespace binding {
         static void LoadFileSync(const v8::FunctionCallbackInfo<v8::Value>& args);
         static void Run(const v8::FunctionCallbackInfo<v8::Value>& args);
         static void RunSync(const v8::FunctionCallbackInfo<v8::Value>& args);
+        static void RunAll(const v8::FunctionCallbackInfo<v8::Value>& args);
+        static void RunAllSync(const v8::FunctionCallbackInfo<v8::Value>& args);
     };
 }
 }

@@ -17,6 +17,7 @@
 #include <fstream>
 #include <sstream>
 #include <thread>
+#include <vector>
 
 
 using namespace napa;
@@ -196,6 +197,37 @@ void napa_container_run(napa_container_handle handle,
     }
 
     container->scheduler->Schedule(std::move(task));
+}
+
+void napa_container_run_all(napa_container_handle handle,
+                            napa_string_ref func,
+                            size_t argc,
+                            const napa_string_ref argv[],
+                            napa_container_run_all_callback callback,
+                            void* context) {
+    NAPA_ASSERT(_initialized, "Napa wasn't initialized");
+    NAPA_ASSERT(handle, "Container handle is null");
+
+    auto container = reinterpret_cast<Container*>(handle);
+
+    std::vector<std::string> args;
+    args.reserve(argc);
+
+    for (size_t i = 0; i < argc; i++) {
+        args.emplace_back(NAPA_STRING_REF_TO_STD_STRING(argv[i]));
+    }
+
+    // Make sure the callback is only called once, after all cores finished running the task.
+    auto counter = std::make_shared<std::atomic<uint32_t>>(container->settings.cores);
+    auto callOnce = [counter, callback, context](NapaResponseCode code, NapaStringRef, NapaStringRef) {
+        if (--(*counter) == 0) {
+            callback(code, context);
+        }
+    };
+
+    auto task = std::make_shared<RunTask>(NAPA_STRING_REF_TO_STD_STRING(func), std::move(args), callOnce);
+
+    container->scheduler->ScheduleOnAllCores(std::move(task));
 }
 
 napa_response_code napa_container_release(napa_container_handle handle) {

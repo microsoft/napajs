@@ -35,6 +35,8 @@ void ContainerWrap::Init(v8::Isolate* isolate) {
     NODE_SET_PROTOTYPE_METHOD(functionTemplate, "loadFileSync", LoadFileSync);
     NODE_SET_PROTOTYPE_METHOD(functionTemplate, "run", Run);
     NODE_SET_PROTOTYPE_METHOD(functionTemplate, "runSync", RunSync);
+    NODE_SET_PROTOTYPE_METHOD(functionTemplate, "runAll", RunAll);
+    NODE_SET_PROTOTYPE_METHOD(functionTemplate, "runAllSync", RunAllSync);
 
     // Set persistent constructor into V8.
     NAPA_SET_PERSISTENT_CONSTRUCTOR(_exportName, functionTemplate->GetFunction());
@@ -249,6 +251,67 @@ void ContainerWrap::RunSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
     (void)returnObj->CreateDataProperty(context, MakeV8String(isolate, "returnValue"), responseValues[2]);
 
     args.GetReturnValue().Set(returnObj);
+}
+
+void ContainerWrap::RunAll(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    auto isolate = v8::Isolate::GetCurrent();
+    auto context = isolate->GetCurrentContext();
+
+    CHECK_ARG(isolate, args[0]->IsString(), "first parameter to container.runAll must be the function name");
+    CHECK_ARG(isolate, args[1]->IsArray(), "second parameter to container.runAll must be the arguments array");
+    CHECK_ARG(isolate, args[2]->IsFunction(), "third parameter to container.runAll must be the callback");
+
+    v8::String::Utf8Value func(args[0]->ToString());
+
+    auto runArgValues = napa::v8_helpers::V8ArrayToVector<napa::v8_helpers::Utf8String>(
+        isolate,
+        v8::Local<v8::Array>::Cast(args[1]));
+
+    std::vector<NapaStringRef> runArgs;
+    runArgs.reserve(runArgValues.size());
+    for (const auto& val : runArgValues) {
+        runArgs.emplace_back(NAPA_STRING_REF_WITH_SIZE(val.Data(), val.Length()));
+    }
+
+    auto callback = v8::Local<v8::Function>::Cast(args[2]);
+
+    auto handler = NodeAsyncHandler<NapaResponseCode>::New(isolate, callback, [isolate](const auto& responseCode) {
+        std::vector<v8::Local<v8::Value>> res;
+        res.push_back(v8::Uint32::NewFromUnsigned(isolate, responseCode));
+        return res;
+    });
+
+    auto wrap = ObjectWrap::Unwrap<ContainerWrap>(args.Holder());
+
+    wrap->_container->RunAll(*func, runArgs, [handler](NapaResponseCode responseCode) {
+        handler->DispatchCallback(responseCode);
+    });
+}
+
+void ContainerWrap::RunAllSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    auto isolate = v8::Isolate::GetCurrent();
+    auto context = isolate->GetCurrentContext();
+
+    CHECK_ARG(isolate, args[0]->IsString(), "first parameter to container.runAllSync must be the function name");
+    CHECK_ARG(isolate, args[1]->IsArray(), "second parameter to container.runAllSync must be the arguments array");
+
+    v8::String::Utf8Value func(args[0]->ToString());
+
+    auto runArgValues = napa::v8_helpers::V8ArrayToVector<napa::v8_helpers::Utf8String>(
+        isolate,
+        v8::Local<v8::Array>::Cast(args[1]));
+
+    std::vector<NapaStringRef> runArgs;
+    runArgs.reserve(runArgValues.size());
+    for (const auto& val : runArgValues) {
+        runArgs.emplace_back(NAPA_STRING_REF_WITH_SIZE(val.Data(), val.Length()));
+    }
+
+    auto wrap = ObjectWrap::Unwrap<ContainerWrap>(args.Holder());
+
+    auto responseCode = wrap->_container->RunAllSync(*func, runArgs);
+
+    args.GetReturnValue().Set(v8::Uint32::NewFromUnsigned(isolate, responseCode));
 }
 
 static std::vector<v8::Local<v8::Value>> CreateResponseValues(v8::Isolate* isolate, const napa::Response& response) {
