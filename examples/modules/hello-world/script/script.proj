@@ -9,9 +9,7 @@
   
   <ItemGroup>
     <QCustomInput Include="src\hello-world.ts" />
-    <QCustomInput Include="$(INETROOT)\private\napa\build\codegen\**" />
-    <QCustomInput Include="$(INETROOT)\private\napa\build\@types\**" />
-    <QCustomInput Include="$(INETROOT)\private\napa\build\typescript\**" />
+    <QCustomInput Include="$(NapaBuildRoot)\**\*" />
   </ItemGroup>
   
   <Target Name="BuildScripts" AfterTargets="AfterBuild">
