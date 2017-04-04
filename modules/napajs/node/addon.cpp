@@ -65,6 +65,18 @@ void GetLoggingProvider(const v8::FunctionCallbackInfo<v8::Value>& args) {
     napa::binding::LoggingProviderWrap::NewInstance(args);
 }
 
+void GetResponseCodeString(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    auto isolate = v8::Isolate::GetCurrent();
+    auto context = isolate->GetCurrentContext();
+
+    CHECK_ARG(isolate, args[0]->IsUint32(), "response code must be a valid uint32");
+
+    auto responseCode = args[0]->Uint32Value();
+
+    auto responseCodeString = napa_response_code_to_string(static_cast<napa_response_code>(responseCode));
+    args.GetReturnValue().Set(napa::v8_helpers::MakeV8String(isolate, responseCodeString));
+}
+
 void InitAll(v8::Local<v8::Object> exports) {
 #ifndef NAPA_MODULE_EXTENSION
     napa::binding::ContainerWrap::Init(v8::Isolate::GetCurrent());
@@ -76,6 +88,7 @@ void InitAll(v8::Local<v8::Object> exports) {
     NAPA_SET_METHOD(exports, "shutdown", Shutdown);
     NAPA_SET_METHOD(exports, "createContainer", CreateContainer);
     NAPA_SET_METHOD(exports, "getLoggingProvider", GetLoggingProvider);
+    NAPA_SET_METHOD(exports, "getResponseCodeString", GetResponseCodeString);
 }
 
 NAPA_MODULE(addon, InitAll)
