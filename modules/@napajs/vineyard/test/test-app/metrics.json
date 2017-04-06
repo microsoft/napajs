@@ -1,9 +1,0 @@
-[
-    {
-        "name": "requestRateFoo",
-        "type": "Rate",
-        "displayName": "Request Rate Foo",
-        "description": "Request rate of foo",
-        "dimensionNames": []
-     }
-]

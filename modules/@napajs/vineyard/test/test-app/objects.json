@@ -1,9 +1,0 @@
-[
-    {
-        "name": "objectA",
-        "value": {
-            "_type": "TypeA",
-            "value": 1
-        }
-    }
-]
