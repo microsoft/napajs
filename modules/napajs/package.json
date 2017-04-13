@@ -7,5 +7,9 @@
     "dependencies": {
         "@napajs/logger": ">= 0.0.1",
         "commander": ">= 2.9.0"
+    },
+    "devDependencies": {
+        "@types/node": ">= 7.0.8",
+        "@types/mocha": ">= 2.2.0"
     }
 }
