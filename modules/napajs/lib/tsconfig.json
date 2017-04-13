@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "experimentalDecorators": true,
+        "noImplicitAny": false,
+        "sourceMap": false,
+        "lib": ["es2015"],
+        "outDir": "./objd/amd64"
+    },
+    "exclude": [
+       "node_modules"
+    ]
+}

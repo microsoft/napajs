@@ -10,6 +10,8 @@
 
   <ItemGroup>  
     <QCustomInput Include="$(NapaVanillaRoot)\inc\**\*" />
+    <QCustomInput Include="..\package.json" />
+    <QCustomInput Include="..\README.md" />
   </ItemGroup> 
   
   <PropertyGroup>
@@ -30,7 +32,8 @@
     <Copy SourceFiles="napajs.d.ts" DestinationFolder="$(PackageOutPath)\types" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="napa-cl.js" DestinationFolder="$(PackageOutPath)\tools" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="napa-cl.bat" DestinationFolder="$(PackageOutPath)\tools" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="package.json" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="..\package.json" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="..\README.md" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
 
     <!-- Core modules -->
     <ItemGroup>  
