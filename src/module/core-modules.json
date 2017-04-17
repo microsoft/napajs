@@ -1,6 +1,22 @@
 [
     {
+        "name": "assert",
+        "type": "core"
+    },
+    {
         "name": "events",
+        "type": "core"
+    },
+    {
+        "name": "process",
+        "type": "builtin"
+    },
+    {
+        "name": "tty",
+        "type": "core"
+    },
+    {
+        "name": "util",
         "type": "core"
     }
 ]

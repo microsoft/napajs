@@ -26,6 +26,10 @@ namespace {
     /// <param name="args"> A string argument of path. </param>
     void ExistsSyncCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 
+    /// <summary> Read a directory synchronously. </summary>
+    /// <param name="args"> A string argument of path. </param>
+    void ReaddirSyncCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
+
 }   // End of anonymous namespace.
 
 void file_system::Init(v8::Local<v8::Object> exports) {
@@ -33,6 +37,7 @@ void file_system::Init(v8::Local<v8::Object> exports) {
     NAPA_SET_METHOD(exports, "writeFileSync", WriteFileSyncCallback);
     NAPA_SET_METHOD(exports, "mkdirSync", MkdirSyncCallback);
     NAPA_SET_METHOD(exports, "existsSync", ExistsSyncCallback);
+    NAPA_SET_METHOD(exports, "readdirSync", ReaddirSyncCallback);
 }
 
 namespace {
@@ -123,6 +128,32 @@ namespace {
         auto exists = file_system_helpers::ExistsSync(std::string(*path));
 
         args.GetReturnValue().Set(exists);
+    }
+
+    void ReaddirSyncCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
+        auto isolate = v8::Isolate::GetCurrent();
+        v8::HandleScope scope(isolate);
+
+        CHECK_ARG(isolate,
+            args.Length() >= 1,
+            "fs.readdirSync requires 1 parameters.");
+
+        CHECK_ARG(isolate,
+            args[0]->IsString(),
+            "fs.readdirSync requires a string as the 1st parameter for the path to check.");
+
+        v8::String::Utf8Value directory(args[0]);
+        auto names = file_system_helpers::ReadDirectorySync(std::string(*directory));
+
+        auto context = isolate->GetCurrentContext();
+        auto count = static_cast<uint32_t>(names.size());
+        auto result = v8::Array::New(isolate, count);
+
+        for (uint32_t i = 0; i < count; ++i) {
+            (void)result->CreateDataProperty(context, i, v8_helpers::MakeV8String(isolate, names[i]));
+        }
+            
+        args.GetReturnValue().Set(result);
     }
 
 }   // End of anonymous namespace.

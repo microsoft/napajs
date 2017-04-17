@@ -28,7 +28,7 @@ bool BinaryModuleLoader::TryGet(const std::string& path, v8::Local<v8::Object>& 
     // Since boost::dll unload dll when a reference object is gone, keep an instance into local store.
     _modules.push_back(napaModule);
 
-    auto context = module_loader_helpers::SetUpModuleContext(path);
+    auto context = module_loader_helpers::SetupModuleContext(path);
     JS_ENSURE_WITH_RETURN(isolate, !context.IsEmpty(), "Can't create module context for " + path, false);
 
     // We set an empty security token so callee can access caller's context.

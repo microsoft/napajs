@@ -39,7 +39,7 @@
     <ClCompile Include="$(NapaVanillaRoot)\src\module\core-modules\file-system-helpers.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\global-store.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\module-resolver.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\command-line.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\platform.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\simple-thread-pool.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\timeout-service.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\settings\settings-parser.cpp" />

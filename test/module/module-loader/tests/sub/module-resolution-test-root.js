@@ -1,3 +1,5 @@
+var assert = require('assert');
+
 //
 // Test require with path information
 //
@@ -28,9 +30,8 @@ module.exports = function () {
 
 var path = require('path');
 
-if (__filename != path.resolve(__dirname, "module-resolution-test-root.js"))
-    throw new Error();
+assert.equal(__filename, path.resolve(__dirname, "module-resolution-test-root.js"));
 
-if (__dirname != path.resolve("tests\\sub"))
-    throw new Error();
+assert.equal(__dirname, path.resolve("tests\\sub"));
 
+assert.equal(module.id, path.resolve(__dirname, "module-resolution-test-root.js"));

@@ -1,7 +1,7 @@
 #include "catch.hpp"
 
 #include <module/module-resolver.h>
-#include <napa/module/command-line.h>
+#include <napa/module/platform.h>
 
 #include <boost/filesystem.hpp>
 
@@ -16,9 +16,9 @@ namespace {
         static bool setNodePath = []() {
             std::ostringstream oss;
             oss << (boost::filesystem::current_path() / "resolve-env").string()
-                << command_line::ENV_DELIMITER
+                << platform::ENV_DELIMITER
                 << (boost::filesystem::current_path() / "child" / "node_modules" / "child").string();
-            return command_line::SetEnv("NODE_PATH", oss.str().c_str());
+            return platform::SetEnv("NODE_PATH", oss.str().c_str());
         }();
         REQUIRE(setNodePath);
 

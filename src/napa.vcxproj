@@ -48,7 +48,7 @@
     <ClCompile Include="module\module-loader.cpp" />
     <ClCompile Include="module\module-loader-helpers.cpp" />
     <ClCompile Include="module\module-resolver.cpp" />
-    <ClCompile Include="platform\win\command-line.cpp" />
+    <ClCompile Include="platform\win\platform.cpp" />
     <ClCompile Include="platform\win\thread-local-storage.cpp" />
     <ClCompile Include="providers\providers.cpp" />
     <ClCompile Include="scheduler\core.cpp" />

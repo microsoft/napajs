@@ -1,6 +1,7 @@
 #include <catch.hpp>
 
 #include <module/module-loader.h>
+#include <napa/module/platform.h>
 #include <napa/module/module-internal.h>
 #include <napa/v8-helpers.h>
 #include <v8/array-buffer-allocator.h>
@@ -207,6 +208,27 @@ TEST_CASE("process", "[module-loader]") {
         return boost::filesystem::exists(boost::filesystem::path(*value));
     });
     REQUIRE(result);
+
+    oss.str("");
+    oss << "process.execPath;";
+
+    result = RunScript(oss.str(), [](v8::Local<v8::Value> run) {
+        v8::String::Utf8Value value(run);
+        return boost::dll::this_line_location() == boost::filesystem::path(*value);
+    });
+    REQUIRE(result);
+
+    result = RunScriptFile("processtest.js", [](v8::Local<v8::Value> run) {
+        return run->BooleanValue();
+    });
+    REQUIRE(result);
+}
+
+TEST_CASE("assert", "[module-loader]") {
+    auto result = RunScriptFile("asserttest.js", [](v8::Local<v8::Value> run) {
+        return run->BooleanValue();
+    });
+    REQUIRE(result);
 }
 
 TEST_CASE("file system", "[module-loader]") {
@@ -216,8 +238,36 @@ TEST_CASE("file system", "[module-loader]") {
     REQUIRE(result);
 }
 
+TEST_CASE("global", "[module-loader]") {
+    auto result = RunScriptFile("globaltest.js", [](v8::Local<v8::Value> run) {
+        return run->BooleanValue();
+    });
+    REQUIRE(result);
+}
+
 TEST_CASE("path", "[module-loader]") {
     auto result = RunScriptFile("pathtest.js", [](v8::Local<v8::Value> run) {
+        return run->BooleanValue();
+    });
+    REQUIRE(result);
+}
+
+TEST_CASE("os", "[module-loader]") {
+    auto result = RunScriptFile("ostest.js", [](v8::Local<v8::Value> run) {
+        return run->BooleanValue();
+    });
+    REQUIRE(result);
+}
+
+TEST_CASE("util", "[module-loader]") {
+    auto result = RunScriptFile("utiltest.js", [](v8::Local<v8::Value> run) {
+        return run->BooleanValue();
+    });
+    REQUIRE(result);
+}
+
+TEST_CASE("tty", "[module-loader]") {
+    auto result = RunScriptFile("ttytest.js", [](v8::Local<v8::Value> run) {
         return run->BooleanValue();
     });
     REQUIRE(result);

@@ -1,6 +1,6 @@
 #include "module-resolver.h"
 
-#include <napa/module/command-line.h>
+#include <napa/module/platform.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
@@ -126,10 +126,10 @@ bool ModuleResolver::SetAsCoreModule(const char* name) {
 }
 
 ModuleResolver::ModuleResolverImpl::ModuleResolverImpl() {
-    auto envPath = command_line::GetEnv("NODE_PATH");
+    auto envPath = platform::GetEnv("NODE_PATH");
     if (!envPath.empty()) {
         std::vector<std::string> nodePaths;
-        boost::split(nodePaths, envPath, boost::is_any_of(command_line::ENV_DELIMITER));
+        boost::split(nodePaths, envPath, boost::is_any_of(platform::ENV_DELIMITER));
         for (auto& nodePath : nodePaths) {
             if (boost::filesystem::exists(nodePath)) {
                 _nodePaths.emplace_back(std::move(nodePath));

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace napa {
 namespace module {
@@ -26,6 +27,11 @@ namespace file_system_helpers {
     /// <param name="path"> Path to check. </param>
     /// <returns> True if path exists. </returns>
     bool ExistsSync(const std::string& path);
+
+    /// <summary> Read a directory synchronously. </summary>
+    /// <param name="directory"> Directory to read. </param>
+    /// <returns> File and directory names except '.' and '..'. </returns>
+    std::vector<std::string> ReadDirectorySync(const std::string& directory);
 
 }   // End of namespace file_system_helpers
 }   // End of namespace module

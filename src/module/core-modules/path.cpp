@@ -3,6 +3,7 @@
 // This is not a module extension, so define this macro to use V8 common macros.
 #define NAPA_MODULE_EXTENSION
 #include <napa-module.h>
+#include <napa/module/platform.h>
 
 #include <boost/filesystem.hpp>
 #include <string>
@@ -36,6 +37,15 @@ namespace {
     /// </summary>
     /// <param name="args"> A sequence of paths to resolve. </param>
     void ResolveCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+    /// <summary>
+    /// Join a sequence of paths to one.
+    /// Example:
+    /// path.join('/foo', 'bar', 'baz/asdf', 'quux', '..')
+    /// // returns '/foo/bar/baz/asdf'
+    /// </summary>
+    /// <param name="args"> A sequence of paths to join. </param>
+    void JoinCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 
     /// <summary>
     /// Parent directory name of a file name.
@@ -108,13 +118,23 @@ namespace {
 }   // End of anonymous namespace.
 
 void path::Init(v8::Local<v8::Object> exports) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
+
+    auto context = isolate->GetCurrentContext();
+
     NAPA_SET_METHOD(exports, "normalize", NormalizeCallback);
     NAPA_SET_METHOD(exports, "resolve", ResolveCallback);
+    NAPA_SET_METHOD(exports, "join", JoinCallback);
     NAPA_SET_METHOD(exports, "dirname", DirnameCallback);
     NAPA_SET_METHOD(exports, "basename", BasenameCallback);
     NAPA_SET_METHOD(exports, "extname", ExtnameCallback);
     NAPA_SET_METHOD(exports, "isAbsolute", IsAbsoluteCallback);
     NAPA_SET_METHOD(exports, "relative", RelativeCallback);
+
+    (void)exports->CreateDataProperty(context,
+                                      v8_helpers::MakeV8String(isolate, "sep"),
+                                      v8_helpers::MakeV8String(isolate, platform::DIR_SEPARATOR));
 }
 
 namespace {
@@ -151,6 +171,30 @@ namespace {
             path = boost::filesystem::absolute(boost::filesystem::path(*nextPath), path);
         }
         path.normalize().make_preferred();
+        args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, path.string()));
+    }
+
+    void JoinCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
+        auto isolate = v8::Isolate::GetCurrent();
+        v8::HandleScope scope(isolate);
+
+        CHECK_ARG(isolate,
+            args.Length() > 0 && args[0]->IsString(),
+            "path.join requires at least one string parameters.");
+
+        v8::String::Utf8Value basePath(args[0]);
+        auto path = boost::filesystem::path(*basePath);
+
+        for (int i = 1; i < args.Length(); ++i) {
+            CHECK_ARG(isolate,
+                args[i]->IsString(),
+                "path.join doesn't accept non-string argument.");
+            
+            v8::String::Utf8Value nextPath(args[i]);
+            path /= *nextPath;
+        }
+        path.normalize().make_preferred();
+
         args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, path.string()));
     }
 

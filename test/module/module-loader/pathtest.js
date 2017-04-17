@@ -1,107 +1,106 @@
+var assert = require('assert');
 var path = require('path');
 
-function assertEqual(a, b) {
-    if (a != b) {
-        console.log("Actual:" + a);
-        console.log("Expected:" + b);
-        throw new Error();
-    }
-}
-
-assertEqual(
+assert.equal(
     path.normalize('a\\b\\..\\c/./d/././.'),
     "a\\c\\d\\.");
 
-assertEqual(
+assert.equal(
     path.resolve('c:\\foo/bar', "a.txt"), 
     "c:\\foo\\bar\\a.txt");
 
-assertEqual(
+assert.equal(
     path.resolve("abc.txt"), 
     process.cwd() + "\\abc.txt");
 
-assertEqual(
+assert.equal(
     path.resolve("abc", "efg", "../hij", "./xyz.txt"),
     process.cwd() + "\\abc\\hij\\xyz.txt");
 
-assertEqual(
+assert.equal(
     path.resolve("abc", "d:/a.txt"), 
     "d:\\a.txt");
 
-assertEqual(
+assert.equal(
+    path.join("/foo", "bar", "baz/asdf", "quux", ".."),
+    "\\foo\\bar\\baz\\asdf");
+
+assert.equal(
     path.dirname("c:"), 
     "c:");
 
-assertEqual(
+assert.equal(
     path.dirname("c:\\windows"), 
     "c:\\");
 
-assertEqual(
+assert.equal(
     path.dirname("c:\\windows\\abc.txt"), 
     "c:\\windows");
 
-assertEqual(
+assert.equal(
     path.basename("c:\\windows\\abc.txt"), 
     "abc.txt");
 
-assertEqual(
+assert.equal(
     path.basename("c:\\windows\\a"), 
     "a");
 
-assertEqual(
+assert.equal(
     path.basename("c:\\windows\\abc.txt", ".txt"), 
     "abc");
 
-assertEqual(
+assert.equal(
     path.basename("c:\\windows\\abc.txt", ".Txt"), 
     "abc.txt");
 
-assertEqual(
+assert.equal(
     path.extname("c:\\windows\\abc.txt"), 
     ".txt");
 
-assertEqual(
+assert.equal(
     path.extname("c:\\windows\\a.json.txt"), 
     ".txt");
 
-assertEqual(
+assert.equal(
     path.extname("c:\\windows\\a."), 
     ".");
 
-assertEqual(
+assert.equal(
     path.isAbsolute("c:\\windows\\a."), 
     true);
 
-assertEqual(
+assert.equal(
     path.isAbsolute("c:/windows/.."), 
     true);
 
-assertEqual(
+assert.equal(
     path.isAbsolute("../abc"), 
     false);
 
-assertEqual(
+assert.equal(
     path.isAbsolute("./abc"), 
     false);
 
-assertEqual(
+assert.equal(
     path.isAbsolute("abc"), 
     false);
 
-assertEqual(
+assert.equal(
     path.relative("c:\\a\\..\\b", "c:\\b"), 
     ".");
 
-assertEqual(
+assert.equal(
     path.relative("c:/a", "d:/b/../c"), 
     "d:\\c");
 
-assertEqual(
+assert.equal(
     path.relative("z:/a", "a.txt"), 
     process.cwd() + "\\a.txt");
 
-assertEqual(
+assert.equal(
     path.relative("c:/a", "c:/"), 
     "..");
+
+assert.notEqual("foo/bar\\baz".indexOf(path.sep), -1);
 
 true;
