@@ -46,8 +46,10 @@ void LoadTask::Execute() {
     if (tryCatch.HasCaught()) {
         auto exception = tryCatch.Exception();
         v8::String::Utf8Value exceptionStr(exception);
+        auto stackTrace = tryCatch.StackTrace();
+        v8::String::Utf8Value stackTraceStr(stackTrace);
 
-        LOG_ERROR("Load", "JS exception thrown: %s", *exceptionStr);
+        LOG_ERROR("Load", "JS exception thrown: %s - %s", *exceptionStr, *stackTraceStr);
         _callback(NAPA_RESPONSE_LOAD_SCRIPT_ERROR);
         return;
     }

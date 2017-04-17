@@ -41,6 +41,13 @@ public:
     /// <summary> Constructor. </summary>
     ModuleLoaderImpl();
 
+    /// <summary> Bootstrap core modules into module loader. </summary>
+    /// <remarks>
+    /// Bootstraping must be done after module loader is created and registered into isolate data
+    /// because Javascript core modules may call 'require'.
+    /// </remarks>
+    void Bootstrap();
+
 private:
 
     /// <summary> Global callback function for require(). </summary>
@@ -69,16 +76,13 @@ private:
                               bool isBuiltInModule,
                               const napa::module::ModuleInitializer& initializer);
 
-    /// <summary> It bootstraps core modules, which can be loaded with or without require(). </summary>
-    /// <param name="context"> V8 context. </param>
-    void BootstrapCoreModules(v8::Local<v8::Context> context);
-
     /// <summary> It sets up built-in modules at each module's' context. </summary>
     /// <param name="context"> V8 context. </param>
-    void SetUpBuiltInModules(v8::Local<v8::Context> context);
+    void SetupBuiltInModules(v8::Local<v8::Context> context);
 
     /// <summary> It sets up require function. </summary>
-    void SetUpRequire(v8::Local<v8::Context> context);
+    /// <param name="context"> V8 context. </param>
+    void SetupRequire(v8::Local<v8::Context> context);
 
     /// <summary> It adds the extra functions, which access module loader's function, into built-in modules. <summary>
     /// <param name="context"> V8 context. </param>
@@ -106,6 +110,9 @@ void ModuleLoader::CreateModuleLoader() {
     if (moduleLoader == nullptr) {
         moduleLoader = new ModuleLoader();
         IsolateData::Set(IsolateDataId::MODULE_LOADER, moduleLoader);
+
+        // Now, Javascript core module's 'require' can find module loader instance correctly.
+        moduleLoader->_impl->Bootstrap();
     }
 }
 
@@ -115,7 +122,7 @@ ModuleLoader::~ModuleLoader() = default;
 
 ModuleLoader::ModuleLoaderImpl::ModuleLoaderImpl() {
     auto builtInModulesSetter = [this](v8::Local<v8::Context> context) {
-        SetUpBuiltInModules(context);
+        SetupBuiltInModules(context);
     };
 
     // Set up module loaders for each module type.
@@ -127,19 +134,45 @@ ModuleLoader::ModuleLoaderImpl::ModuleLoaderImpl() {
         std::make_unique<BinaryModuleLoader>(builtInModulesSetter)
     }};
 
+    // Set up top-level context.
+    module_loader_helpers::SetupTopLevelContext();
+
+    // Initialize core modules listed in core-modules.h.
+    INITIALIZE_CORE_MODULES(LoadBinaryCoreModule)
+}
+
+void ModuleLoader::ModuleLoaderImpl::Bootstrap() {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
     auto context = isolate->GetCurrentContext();
 
-    // Set the root module path of global context as the script path.
-    module_loader_helpers::SetContextModulePath(context->Global());
+    // Set up built-in modules from binaries.
+    SetupBuiltInModules(context);
 
-    // Initialize core modules listed in core-modules.h.
-    INITIALIZE_CORE_MODULES(LoadBinaryCoreModule)
+    // Load core module information from 'core-modules.json'.
+    auto coreModuleInfos = module_loader_helpers::ReadCoreModulesJson();
+    for (auto& info : coreModuleInfos) {
+        _resolver.SetAsCoreModule(info.name.c_str());
 
-    // Bootstrap core modules.
-    BootstrapCoreModules(context);
+        if (info.isBuiltIn) {
+            _builtInNames.emplace(std::move(info.name));
+        }
+    }
+
+    auto& coreModuleLoader = _loaders[static_cast<size_t>(ModuleType::CORE)];
+
+    // Override built-in modules with javascript file if exists.
+    for (const auto& name : _builtInNames) {
+        v8::Local<v8::Object> module;
+        if (coreModuleLoader->TryGet(name, module)) {
+            // If javascript core module exists, replace the existing one.
+            _moduleCache.Upsert(name, module);
+            (void)context->Global()->Set(context,
+                                         v8_helpers::MakeV8String(isolate, name),
+                                         module);
+        }
+    }
 }
 
 void ModuleLoader::ModuleLoaderImpl::RequireCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -235,7 +268,7 @@ void ModuleLoader::ModuleLoaderImpl::LoadBinaryCoreModule(
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
-    auto context = module_loader_helpers::SetUpModuleContext(std::string());
+    auto context = module_loader_helpers::SetupModuleContext(std::string());
     NAPA_ASSERT(!context.IsEmpty(), "Can't set up context for core modules");
 
     // We set an empty security token so callee can access caller's context.
@@ -260,43 +293,11 @@ void ModuleLoader::ModuleLoaderImpl::LoadBinaryCoreModule(
     }
 }
 
-void ModuleLoader::ModuleLoaderImpl::BootstrapCoreModules(v8::Local<v8::Context> context) {
+void ModuleLoader::ModuleLoaderImpl::SetupBuiltInModules(v8::Local<v8::Context> context) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
-    // Set up built-in modules from binaries.
-    SetUpBuiltInModules(context);
-
-    // Load core module information from 'core-modules.json'.
-    auto coreModuleInfos = module_loader_helpers::ReadCoreModulesJson();
-    for (auto& info : coreModuleInfos) {
-        _resolver.SetAsCoreModule(info.name.c_str());
-
-        if (info.isBuiltIn) {
-            _builtInNames.emplace(std::move(info.name));
-        }
-    }
-
-    auto& coreModuleLoader = _loaders[static_cast<size_t>(ModuleType::CORE)];
-
-    // Override built-in modules with javascript file if exists.
-    for (const auto& name : _builtInNames) {
-        v8::Local<v8::Object> module;
-        if (coreModuleLoader->TryGet(name, module)) {
-            // If javascript core module exists, replace the existing one.
-            _moduleCache.Upsert(name, module);
-            (void)context->Global()->Set(context,
-                                         v8_helpers::MakeV8String(isolate, name),
-                                         module);
-        }
-    }
-}
-
-void ModuleLoader::ModuleLoaderImpl::SetUpBuiltInModules(v8::Local<v8::Context> context) {
-    auto isolate = v8::Isolate::GetCurrent();
-    v8::HandleScope scope(isolate);
-
-    SetUpRequire(context);
+    SetupRequire(context);
 
     // Assume that built-in modules are already cached.
     for (const auto& name : _builtInNames) {
@@ -312,7 +313,7 @@ void ModuleLoader::ModuleLoaderImpl::SetUpBuiltInModules(v8::Local<v8::Context> 
     DecorateBuiltInModules(context);
 }
 
-void ModuleLoader::ModuleLoaderImpl::SetUpRequire(v8::Local<v8::Context> context) {
+void ModuleLoader::ModuleLoaderImpl::SetupRequire(v8::Local<v8::Context> context) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 

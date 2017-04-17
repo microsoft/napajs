@@ -17,7 +17,7 @@ bool JavascriptModuleLoader::TryGet(const std::string& path, v8::Local<v8::Objec
     auto source = module_loader_helpers::ReadModuleFile(path);
     JS_ENSURE_WITH_RETURN(isolate, !source.IsEmpty(), "Can't read Javascript module: " + path, false);
 
-    auto context = module_loader_helpers::SetUpModuleContext(path);
+    auto context = module_loader_helpers::SetupModuleContext(path);
     JS_ENSURE_WITH_RETURN(isolate, !context.IsEmpty(), "Can't create module context for: " + path, false);
 
     // We set an empty security token so callee can access caller's context.

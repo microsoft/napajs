@@ -50,7 +50,7 @@
     <ClCompile Include="$(NapaVanillaRoot)\src\module\module-loader.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\module-loader-helpers.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\module-resolver.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\command-line.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\platform.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\v8\v8-common.cpp" />
   </ItemGroup>
   <Import Project="$(NapaVanillaRoot)\src\module\core-modules\core-modules.proj" />
@@ -60,6 +60,11 @@
   </ItemGroup>
   <!-- Test artifacts binplace -->
   <ItemGroup>
+    <Robocopy Include="$(NapaVanillaRoot)\lib\$(IntermediateOutputPath)">
+      <DestinationFolder>$(IntermediateOutputPath)\lib</DestinationFolder>
+      <FileMatch>*.js</FileMatch>
+      <IsRecursive>true</IsRecursive>
+    </Robocopy>
     <Robocopy Include="$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.dll">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
@@ -81,6 +86,9 @@
     <Robocopy Include="$(V8MiscPath)\snapshot_blob.bin">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
+    <Robocopy Include="asserttest.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
     <Robocopy Include="core-module-tests.js">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
@@ -96,25 +104,43 @@
     <Robocopy Include="cycle-main.js">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
-    <Robocopy Include="fstest.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
-    </Robocopy>
-    <Robocopy Include="fstest.json">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
-    </Robocopy>
     <Robocopy Include="jsmodule.js">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
     <Robocopy Include="jsontest.js">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
+    <Robocopy Include="fstest.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="fstest.json">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="globaltest.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="globaltest-module.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
     <Robocopy Include="module-resolution-test.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="ostest.js">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
     <Robocopy Include="pathtest.js">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
+    <Robocopy Include="processtest.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
     <Robocopy Include="sample-test.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="ttytest.js">
+      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="utiltest.js">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
     <Robocopy Include="toproxy.js">
@@ -123,13 +149,10 @@
     <Robocopy Include="toupper.js">
       <DestinationFolder>$(IntermediateOutputPath)\test</DestinationFolder>
     </Robocopy>
-    <Robocopy Include="lib\assert.js">
+    <Robocopy Include="lib\tconsole.js">
       <DestinationFolder>$(IntermediateOutputPath)\lib</DestinationFolder>
     </Robocopy>
-    <Robocopy Include="lib\console.js">
-      <DestinationFolder>$(IntermediateOutputPath)\lib</DestinationFolder>
-    </Robocopy>
-    <Robocopy Include="lib\fs.js">
+    <Robocopy Include="lib\tfs.js">
       <DestinationFolder>$(IntermediateOutputPath)\lib</DestinationFolder>
     </Robocopy>
     <Robocopy Include="tests\node_modules\file2.js">

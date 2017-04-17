@@ -52,7 +52,7 @@
     <ClCompile Include="$(NapaVanillaRoot)\src\module\module-loader.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\module-loader-helpers.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\module-resolver.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\command-line.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\platform.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\thread-local-storage.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\providers\providers.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\core.cpp" />

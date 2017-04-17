@@ -4,11 +4,27 @@
         "type": "core"
     },
     {
-        "name": "console",
+        "name": "events",
+        "type": "core"
+    },
+    {
+        "name": "process",
         "type": "builtin"
     },
     {
-        "name": "fs",
+        "name": "tconsole",
+        "type": "builtin"
+    },
+    {
+        "name": "tfs",
+        "type": "core"
+    },
+    {
+        "name": "tty",
+        "type": "core"
+    },
+    {
+        "name": "util",
         "type": "core"
     }
 ]

@@ -37,14 +37,13 @@ namespace module_loader_helpers {
     /// <summary> It returns the process current working directory. </summary>
     const std::string& GetCurrentWorkingDirectory();
 
-    /// <summary> Set __dirname and __filename. </summary>
-    /// <param name="exports"> Object to set modue paths. </param>
-    void SetContextModulePath(v8::Local<v8::Object> exports);
+    /// <summary> It sets globals and the root module path of global context as the script path. </summary>
+    void SetupTopLevelContext();
 
     /// <summary> It creates a module context. </summary>
     /// <param name="path"> Module path called by require(). </param>
     /// <returns> V8 context object. </returns>
-    v8::Local<v8::Context> SetUpModuleContext(const std::string& path);
+    v8::Local<v8::Context> SetupModuleContext(const std::string& path);
 
     /// <summary> It reads javascript core module information. </summary>
     std::vector<CoreModuleInfo> ReadCoreModulesJson();

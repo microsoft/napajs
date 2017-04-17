@@ -1,6 +1,8 @@
 #include "file-system-helpers.h"
 
 #include <boost/filesystem.hpp>
+
+#include <algorithm>
 #include <memory>
 #include <sstream>
 
@@ -87,4 +89,15 @@ void file_system_helpers::MkdirSync(const std::string& directory) {
 bool file_system_helpers::ExistsSync(const std::string& path) {
     auto fullPath = GetFileFullPath(path);
     return boost::filesystem::exists(fullPath);
+}
+
+std::vector<std::string> file_system_helpers::ReadDirectorySync(const std::string& directory) {
+    boost::filesystem::path path(GetFileFullPath(directory));
+
+    std::vector<std::string> names;
+    for (const auto& entry : boost::filesystem::directory_iterator(path)) {
+        names.emplace_back(entry.path().filename().string());
+    }
+
+    return names;
 }

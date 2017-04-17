@@ -3,7 +3,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)\console.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\file-system.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\file-system-helpers.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\os.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\path.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\process.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\tty-wrap.cpp" />
   </ItemGroup>
 </Project>
