@@ -3,132 +3,131 @@
 #include "napa/exports.h"
 #include "napa/common.h"
 
-/// <summary> Represents napa response. </summary>
+
+/// <summary> Represents an execution request for a zone. </summary>
 typedef struct {
+
+    /// <summary> The module that exports the function to execute. </summary>
+    napa_string_ref module;
+
+    /// <summary> The function to execute. </summary>
+    napa_string_ref function;
+
+    /// <summary> The function arguments. </summary>
+    const napa_string_ref* arguments;
+
+    /// <summary> The number of arguments. </summary>
+    size_t arguments_count;
+
+    /// <summary> Timeout in milliseconds - Use 0 for inifinite. </summary>
+    uint32_t timeout;
+
+    /// <summary> A context used for transporting handles across zones/workers. </summary>
+    void* transport_context;
+} napa_zone_request;
+
+/// <summary> Represents a response from executing in a zone. </summary>
+typedef struct {
+
+    /// <summary> A response code. </summary>
     napa_response_code code;
+
+    /// <summary> The error message in case of an error. </summary>
     napa_string_ref error_message;
+
+    /// <summary> The return value in case of success. </summary>
     napa_string_ref return_value;
-} napa_container_response;
+
+    /// <summary> A context used for transporting handles across zones/workers. </summary>
+    void* transport_context;
+} napa_zone_response;
 
 /// <summary> Callback signatures. </summary>
-typedef void(*napa_container_load_callback)(napa_response_code code, void* context);
-typedef void(*napa_container_run_callback)(napa_container_response response, void* context);
-typedef void(*napa_container_run_all_callback)(napa_response_code code, void* context);
+typedef void(*napa_zone_broadcast_callback)(napa_response_code code, void* context);
+typedef void(*napa_zone_execute_callback)(napa_zone_response response, void* context);
 
 /// <summary>
-///     Container handle type.
-///     In C language there are no classes, so empty struct is used in order to ensure type safety.
+///     Zone handle type.
 /// </summary>
-typedef struct {} *napa_container_handle;
+typedef struct napa_zone *napa_zone_handle;
 
-/// <summary> Creates a napa container. </summary>
-EXTERN_C NAPA_API napa_container_handle napa_container_create();
+/// <summary> Creates a napa zone. </summary>
+/// <param name="id"> A unique id for the zone. </param>
+/// <remarks>
+///     This function returns a handle that must be release when it's no longer needed.
+///     Napa keeps track of all zone handles and destroys the zone when all handles have been released.
+/// </remarks>
+EXTERN_C NAPA_API napa_zone_handle napa_zone_create(napa_string_ref id);
+
+/// <summary> Retrieves a zone by id. </summary>
+/// <param name="id"> A unique id for the zone. </param>
+/// <returns> The zone handle if exists, null otherwise. </returns>
+/// <remarks>
+///     This function returns a handle that must be release when it's no longer needed.
+///     Napa keeps track of all zone handles and destroys the zone when all handles have been released.
+/// </remarks>
+EXTERN_C NAPA_API napa_zone_handle napa_zone_get(napa_string_ref id);
+
+/// <summary> Releases the zone handle. When all handles for a zone are released the zone is destoryed. </summary>
+/// <param name="handle"> The zone handle. </param>
+EXTERN_C NAPA_API napa_response_code napa_zone_release(napa_zone_handle handle);
 
 /// <summary>
-///     Initializes the napa container, providing specific settings.
+///     Initializes the napa zone, providing specific settings.
 ///     The provided settings override any settings that were previously set.
 ///     TODO: specify public settings here
 /// </summary>
-/// <param name="handle"> The container handle. </param>
+/// <param name="handle"> The zone handle. </param>
 /// <param name="settings"> The settings string. </param>
-EXTERN_C NAPA_API napa_response_code napa_container_init(
-    napa_container_handle handle,
+EXTERN_C NAPA_API napa_response_code napa_zone_init(
+    napa_zone_handle handle,
     napa_string_ref settings);
 
-/// <summary> Sets an opaque pointer and it's associated key. </summary>
-/// <param name="handle"> The container handle. </param>
-/// <param name="key"> A unique identifier for the opaque value pointer. </param>
-/// <param name="value">
-///     A void pointer that enables the caller to provide long lived objects that can be accessed
-///     using a dedicated core module (TODO: Replace comment with real module name).
-///     This value is kept available to be used as long as the container is not destroyed/released.
-///     It is the responsibility of the caller to free its memory but it should not occur before
-///     the container destruction.
-/// </param>
-EXTERN_C NAPA_API napa_response_code napa_container_set_global_value(
-    napa_container_handle handle,
-    napa_string_ref key,
-    void* value);
+/// <summary> Retrieves the zone id. </summary>
+/// <param name="handle"> The zone handle. </param>
+EXTERN_C NAPA_API napa_string_ref napa_zone_get_id(napa_zone_handle handle);
 
-/// <summary> Loads the content of the provided file into the container asynchronously. </summary>
-/// <param name="handle"> The container handle. </param>
-/// <param name="file"> The path to the JavaScript file. </param>
-/// <param name="callback"> A callback that is triggered when loading is done. </param>
-/// <param name="context"> An opaque pointer that is passed back in the callback. </param>
-EXTERN_C NAPA_API void napa_container_load_file(
-    napa_container_handle handle,
-    napa_string_ref file,
-    napa_container_load_callback callback,
-    void* context);
-
-/// <summary> Loads the provided source code into the container asynchronously. </summary>
-/// <param name="handle"> The container handle. </param>
+/// <summary> Compiles and run the provided source code on all zone workers. </summary>
+/// <param name="handle"> The zone handle. </param>
 /// <param name="source"> The JavaScript source code. </param>
-/// <param name="callback"> A callback that is triggered when loading is done. </param>
+/// <param name="callback"> A callback that is triggered when broadcast is done. </param>
 /// <param name="context"> An opaque pointer that is passed back in the callback. </param>
-EXTERN_C NAPA_API void napa_container_load(
-    napa_container_handle handle,
+EXTERN_C NAPA_API void napa_zone_broadcast(
+    napa_zone_handle handle,
     napa_string_ref source,
-    napa_container_load_callback callback,
+    napa_zone_broadcast_callback callback,
     void* context);
 
-/// <summary> Runs a pre-loaded function asynchronously. </summary>
-/// <param name="handle"> The container handle. </param>
-/// <param name="func"> The name of the function to run. </param>
-/// <param name="argc"> The number of arguments that are to be passed to the function. </param>
-/// <param name="argv"> The arguments. </param>
+/// <summary> Executes a pre-loaded function asynchronously in a single zone wroker. </summary>
+/// <param name="handle"> The zone handle. </param>
+/// <param name="request"> The execution request. </param>
 /// <param name="callback"> A callback that is triggered when execution is done. </param>
 /// <param name="context"> An opaque pointer that is passed back in the callback. </param>
-/// <param name="timeout"> Timeout in milliseconds - Use 0 for inifinite. </param>
-EXTERN_C NAPA_API void napa_container_run(
-    napa_container_handle handle,
-    napa_string_ref func,
-    size_t argc,
-    const napa_string_ref argv[],
-    napa_container_run_callback callback,
-    void* context,
-    uint32_t timeout);
-
-/// <summary> Runs a pre-loaded function asynchronously on all the container isolates. </summary>
-/// <param name="handle"> The container handle. </param>
-/// <param name="func"> The name of the function to run. </param>
-/// <param name="argc"> The number of arguments that are to be passed to the function. </param>
-/// <param name="argv"> The arguments. </param>
-/// <param name="callback"> A callback that is triggered when execution is done. </param>
-/// <param name="context"> An opaque pointer that is passed back in the callback. </param>
-EXTERN_C NAPA_API void napa_container_run_all(
-    napa_container_handle handle,
-    napa_string_ref func,
-    size_t argc,
-    const napa_string_ref argv[],
-    napa_container_run_all_callback callback,
+EXTERN_C NAPA_API void napa_zone_execute(
+    napa_zone_handle handle,
+    napa_zone_request request,
+    napa_zone_execute_callback callback,
     void* context);
-
-/// <summary> Cleanup container resources and free its memory. </summary>
-/// <param name="handle"> The container handle. </param>
-EXTERN_C NAPA_API napa_response_code napa_container_release(napa_container_handle handle);
 
 /// <summary>
-///     Global napa initialization. Invokes initialization steps that are cross containers.
-///     The settings passed represent the defaults for all the containers
-///     but can be overriden in the container initialization API.
+///     Global napa initialization. Invokes initialization steps that are cross zones.
+///     The settings passed represent the defaults for all the zones
+///     but can be overriden in the zone initialization API.
 ///     TODO: specify public settings here.
 /// </summary>
-/// <param name="handle"> The container handle. </param>
 /// <param name="settings"> The settings string. </param>
 EXTERN_C NAPA_API napa_response_code napa_initialize(napa_string_ref settings);
 
 /// <summary>
 ///     Same as napa_initialize only accepts arguments as provided by console
 /// </summary>
-/// <param name="handle"> The container handle. </param>
 /// <param name="argc"> Number of arguments. </param>
 /// <param name="argv"> The arguments. </param>
 EXTERN_C NAPA_API napa_response_code napa_initialize_from_console(
     int argc,
     char* argv[]);
 
-/// <summary> Invokes napa shutdown steps. All non released containers will be destroyed. </summary>
+/// <summary> Invokes napa shutdown steps. All non released zones will be destroyed. </summary>
 EXTERN_C NAPA_API napa_response_code napa_shutdown();
 
 /// <summary> Convert the napa response code to its string representation. </summary>

@@ -35,12 +35,15 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <!-- Comment out ProjectReference if you want to prototype addon with addon-slim.cpp -->
     <ProjectReference Include="$(NapaVanillaRoot)\src\napa.vcxproj" />
   </ItemGroup>
   <ItemGroup>
+    <!-- <ClCompile Include="$(MSBuildThisFileDirectory)\addon-slim.cpp" /> -->
     <ClCompile Include="$(MSBuildThisFileDirectory)\addon.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)\container-wrap.cpp" Condition=" '$(AddonType)' != 'Napa' " />
     <ClCompile Include="$(MSBuildThisFileDirectory)\logging-provider-wrap.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\transport-context-wrap-impl.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\zone-wrap.cpp" Condition=" '$(AddonType)' != 'Napa' " />
   </ItemGroup>
   <Target Name="ChangeExtention" AfterTargets="Build">
     <Move SourceFiles="$(OutputPath)\$(TargetFileName)" DestinationFiles="$(OutputPath)\$(AddonName).node" Condition=" '$(AddonType)' != 'Napa' " />

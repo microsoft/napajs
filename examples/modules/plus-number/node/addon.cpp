@@ -34,7 +34,7 @@ void PlusNumberWrap::NewInstance(const v8::FunctionCallbackInfo<v8::Value>& args
     const int argc = 1;
     Local<Value> argv[argc] = { args[0] };
 
-    auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(_exportName);
+    auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(_exportName, PlusNumberWrap);
     auto context = isolate->GetCurrentContext();
     auto instance = constructor->NewInstance(context, argc, argv).ToLocalChecked();
 

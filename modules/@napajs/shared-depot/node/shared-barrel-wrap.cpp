@@ -58,7 +58,7 @@ v8::Local<v8::Object> SharedBarrelWrap::NewInstance() {
     auto isolate = v8::Isolate::GetCurrent();
     v8::EscapableHandleScope scope(isolate);
 
-    auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(_exportName);
+    auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(_exportName, SharedBarrelWrap);
     auto context = isolate->GetCurrentContext();
     auto instance = constructor->NewInstance(context).ToLocalChecked();
 

@@ -1,4 +1,4 @@
-#include "core.h"
+#include "worker.h"
 
 #include "module/module-loader.h"
 #include "v8/array-buffer-allocator.h"
@@ -20,58 +20,56 @@ using namespace napa;
 using namespace napa::scheduler;
 
 // Forward declaration
-static v8::Isolate* CreateIsolate(const Settings& settings);
-static void ConfigureIsolate(v8::Isolate* isolate, const Settings& settings);
+static v8::Isolate* CreateIsolate(const ZoneSettings& settings);
+static void ConfigureIsolate(v8::Isolate* isolate, const ZoneSettings& settings);
 
-struct Core::Impl {
+struct Worker::Impl {
 
-    /// <summary> The core id. </summary>
-    CoreId id;
+    /// <summary> The worker id. </summary>
+    WorkerId id;
 
     /// <summary> The thread that executes the tasks. </summary>
-    std::thread coreThread;
+    std::thread workerThread;
 
-    /// <summary> Queue for tasks scheduled on this core. </summary>
+    /// <summary> Queue for tasks scheduled on this worker. </summary>
     moodycamel::BlockingConcurrentQueue<std::shared_ptr<Task>> tasks;
 
-    /// <summary> V8 isolate associated with this core. </summary>
+    /// <summary> V8 isolate associated with this worker. </summary>
     v8::Isolate* isolate;
 
-    /// <summary> A callback function that is called when a core becomes idle. </summary>
-    std::function<void(CoreId)> idleNotficationCallback;
+    /// <summary> A callback function that is called when a worker becomes idle. </summary>
+    std::function<void(WorkerId)> idleNotficationCallback;
 };
 
-Core::Core(CoreId id,
-           const Settings& settings,
-           std::function<void(CoreId)> idleNotificationCallback)
-           : _impl(std::make_unique<Core::Impl>()) {
+Worker::Worker(WorkerId id, const ZoneSettings& settings, std::function<void(WorkerId)> idleNotificationCallback)
+    : _impl(std::make_unique<Worker::Impl>()) {
+
     _impl->id = id;
     _impl->idleNotficationCallback = std::move(idleNotificationCallback);
-    _impl->coreThread = std::thread(&Core::CoreThreadFunc, this, settings);
+    _impl->workerThread = std::thread(&Worker::WorkerThreadFunc, this, settings);
 }
 
-Core::~Core() {
+Worker::~Worker() {
     // Signal the thread loop that it should stop processing tasks.
     _impl->tasks.enqueue(nullptr);
 
-    _impl->coreThread.join();
+    _impl->workerThread.join();
 
     if (_impl->isolate != nullptr) {
         _impl->isolate->Dispose();
     }
 }
 
+Worker::Worker(Worker&&) = default;
+Worker& Worker::operator=(Worker&&) = default;
 
-Core::Core(Core&&) = default;
-Core& Core::operator=(Core&&) = default;
-
-void Core::Schedule(std::shared_ptr<Task> task) {
+void Worker::Schedule(std::shared_ptr<Task> task) {
     NAPA_ASSERT(task, "task was null");
 
     _impl->tasks.enqueue(std::move(task));
 }
 
-void Core::CoreThreadFunc(const Settings& settings) {
+void Worker::WorkerThreadFunc(const ZoneSettings& settings) {
     _impl->isolate = CreateIsolate(settings);
 
     // If any user of the v8.dll uses a locker on any isolate, all isolates must be locked before use.
@@ -100,7 +98,7 @@ void Core::CoreThreadFunc(const Settings& settings) {
             _impl->tasks.wait_dequeue(task);
         }
 
-        // A null task means that the core needs to shutdown.
+        // A null task means that the worker needs to shutdown.
         if (task == nullptr) {
             break;
         }
@@ -112,7 +110,7 @@ void Core::CoreThreadFunc(const Settings& settings) {
     }
 }
 
-static v8::Isolate* CreateIsolate(const Settings& settings) {
+static v8::Isolate* CreateIsolate(const ZoneSettings& settings) {
     // The allocator is a global V8 setting.
     static napa::v8_extensions::ArrayBufferAllocator commonAllocator;
 
@@ -127,7 +125,7 @@ static v8::Isolate* CreateIsolate(const Settings& settings) {
     return v8::Isolate::New(createParams);
 }
 
-static void ConfigureIsolate(v8::Isolate* isolate, const Settings& settings) {
+static void ConfigureIsolate(v8::Isolate* isolate, const ZoneSettings& settings) {
     isolate->SetFatalErrorHandler([](const char* location, const char* message) {
         LOG_ERROR("V8", "V8 Fatal error at %s. Error: %s", location, message);
     });

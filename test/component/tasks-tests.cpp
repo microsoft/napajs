@@ -1,8 +1,8 @@
 #include "catch.hpp"
 
 #include "providers/providers.h"
-#include "scheduler/load-task.h"
-#include "scheduler/run-task.h"
+#include "scheduler/broadcast-task.h"
+#include "scheduler/execute-task.h"
 #include "scheduler/task-decorators.h"
 #include "settings/settings.h"
 #include "v8/array-buffer-allocator.h"
@@ -35,7 +35,7 @@ TEST_CASE("tasks", "[tasks]") {
 
     SECTION("load valid javascript") {
         NapaResponseCode loadResponseCode;
-        LoadTask("var i = 3 + 5;", "", [&loadResponseCode](NapaResponseCode code) {
+        BroadcastTask("var i = 3 + 5;", "", [&loadResponseCode](NapaResponseCode code) {
             loadResponseCode = code;
         }).Execute();
 
@@ -44,133 +44,124 @@ TEST_CASE("tasks", "[tasks]") {
 
     SECTION("load fails when javascript is malformed") {
         NapaResponseCode loadResponseCode;
-        LoadTask("var j = 3 +", "", [&loadResponseCode](NapaResponseCode code) {
+        BroadcastTask("var j = 3 +", "", [&loadResponseCode](NapaResponseCode code) {
             loadResponseCode = code;
         }).Execute();
 
-        REQUIRE(loadResponseCode == NAPA_RESPONSE_LOAD_SCRIPT_ERROR);
+        REQUIRE(loadResponseCode == NAPA_RESPONSE_BROADCAST_SCRIPT_ERROR);
     }
 
     SECTION("load fails when javascript exception is thrown") {
         NapaResponseCode loadResponseCode;
-        LoadTask("throw Error('error');", "", [&loadResponseCode](NapaResponseCode code) {
+        BroadcastTask("throw Error('error');", "", [&loadResponseCode](NapaResponseCode code) {
             loadResponseCode = code;
         }).Execute();
 
-        REQUIRE(loadResponseCode == NAPA_RESPONSE_LOAD_SCRIPT_ERROR);
+        REQUIRE(loadResponseCode == NAPA_RESPONSE_BROADCAST_SCRIPT_ERROR);
     }
 
-    SECTION("run succeeds with a valid and existing function") {
-        LoadTask("function foo(a, b) { return Number(a) + Number(b); }").Execute();
-        
-        NapaResponseCode responseCode;
-        std::string returnVal;
-        RunTask("foo", { "3", "5" }, [&](NapaResponseCode code, NapaStringRef errorMessage, NapaStringRef returnValue) {
-            responseCode = code;
-            returnVal = NAPA_STRING_REF_TO_STD_STRING(returnValue);
+    SECTION("execute succeeds with a valid and existing function") {
+        BroadcastTask("function foo(a, b) { return Number(a) + Number(b); }").Execute();
+
+        ExecuteRequest request;
+        request.function = NAPA_STRING_REF("foo");
+        request.arguments = { NAPA_STRING_REF("3"), NAPA_STRING_REF("5") };
+
+        ExecuteResponse response;
+        ExecuteTask(request, [&](ExecuteResponse res) {
+            response = std::move(res);
         }).Execute();
 
-        REQUIRE(responseCode == NAPA_RESPONSE_SUCCESS);
-        REQUIRE(returnVal == "8");
+        REQUIRE(response.code == NAPA_RESPONSE_SUCCESS);
+        REQUIRE(response.returnValue == "8");
     }
 
-    SECTION("run fails for non-existing function") {
-        NapaResponseCode responseCode;
-        std::string error;
-        RunTask("bar", { "3", "5" }, [&](NapaResponseCode code, NapaStringRef errorMessage, NapaStringRef returnValue) {
-            responseCode = code;
-            error = NAPA_STRING_REF_TO_STD_STRING(errorMessage);
+    SECTION("execute fails for non-existing function") {
+        ExecuteRequest request;
+        request.function = NAPA_STRING_REF("bar");
+        request.arguments = { NAPA_STRING_REF("3"), NAPA_STRING_REF("5") };
+
+        ExecuteResponse response;
+        ExecuteTask(request, [&](ExecuteResponse res) {
+            response = std::move(res);
         }).Execute();
 
-        REQUIRE(responseCode == NAPA_RESPONSE_RUN_FUNC_ERROR);
-        REQUIRE(error == "Function 'bar' not defined");
+        REQUIRE(response.code == NAPA_RESPONSE_EXECUTE_FUNC_ERROR);
+        REQUIRE(response.errorMessage == "Function 'bar' not defined");
     }
 
-    SECTION("run fails when function throws exception") {
-        LoadTask("function f1(a, b) { throw 'an error' }").Execute();
+    SECTION("execute fails when function throws exception") {
+        BroadcastTask("function f1(a, b) { throw 'an error' }").Execute();
 
-        NapaResponseCode responseCode;
-        std::string error;
-        RunTask("f1", { "3", "5" }, [&](NapaResponseCode code, NapaStringRef errorMessage, NapaStringRef returnValue) {
-            responseCode = code;
-            error = NAPA_STRING_REF_TO_STD_STRING(errorMessage);
+        ExecuteRequest request;
+        request.function = NAPA_STRING_REF("f1");
+        request.arguments = { NAPA_STRING_REF("3"), NAPA_STRING_REF("5") };
+
+        ExecuteResponse response;
+        ExecuteTask(request, [&](ExecuteResponse res) {
+            response = std::move(res);
         }).Execute();
 
-        REQUIRE(responseCode == NAPA_RESPONSE_RUN_FUNC_ERROR);
-        REQUIRE(error == "an error");
+        REQUIRE(response.code == NAPA_RESPONSE_EXECUTE_FUNC_ERROR);
+        REQUIRE(response.errorMessage == "an error");
     }
 
-    SECTION("run succeeds when timeout was not exceeded") {
-        LoadTask("function f2(a, b) { return Number(a) + Number(b); }").Execute();
+    SECTION("execute succeeds when timeout was not exceeded") {
+        BroadcastTask("function f2(a, b) { return Number(a) + Number(b); }").Execute();
 
-        NapaResponseCode responseCode;
-        std::string returnVal;
+        ExecuteRequest request;
+        request.function = NAPA_STRING_REF("f2");
+        request.arguments = { NAPA_STRING_REF("3"), NAPA_STRING_REF("5") };
 
-        TimeoutTaskDecorator<RunTask>(
-            30ms,
-            "f2",
-            std::vector<std::string>({ "3", "5" }),
-            [&](NapaResponseCode code, NapaStringRef errorMessage, NapaStringRef returnValue) {
-                responseCode = code;
-                returnVal = NAPA_STRING_REF_TO_STD_STRING(returnValue);
-            }
-        ).Execute();
+        ExecuteResponse response;
+        TimeoutTaskDecorator<ExecuteTask>(30ms, request, [&](ExecuteResponse res) {
+            response = std::move(res);
+        }).Execute();
 
-        REQUIRE(responseCode == NAPA_RESPONSE_SUCCESS);
-        REQUIRE(returnVal == "8");
+        REQUIRE(response.code == NAPA_RESPONSE_SUCCESS);
+        REQUIRE(response.returnValue == "8");
     }
 
-    SECTION("run fails when timeout exceeded") {
-        LoadTask("function f3() { while(true) {} }").Execute();
+    SECTION("execute fails when timeout exceeded") {
+        BroadcastTask("function f3() { while(true) {} }").Execute();
 
-        NapaResponseCode responseCode;
-        std::string error;
+        ExecuteRequest request;
+        request.function = NAPA_STRING_REF("f3");
 
-        TimeoutTaskDecorator<RunTask>(
-            30ms,
-            "f3",
-            std::vector<std::string>(),
-            [&](NapaResponseCode code, NapaStringRef errorMessage, NapaStringRef returnValue) {
-                responseCode = code;
-                error = NAPA_STRING_REF_TO_STD_STRING(errorMessage);
-            }
-        ).Execute();
+        ExecuteResponse response;
+        TimeoutTaskDecorator<ExecuteTask>(30ms, request, [&](ExecuteResponse res) {
+            response = std::move(res);
+        }).Execute();
 
-        REQUIRE(responseCode == NAPA_RESPONSE_TIMEOUT);
-        REQUIRE(error == "Run exceeded timeout");
+        REQUIRE(response.code == NAPA_RESPONSE_TIMEOUT);
+        REQUIRE(response.errorMessage == "Execute exceeded timeout");
     }
 
-    SECTION("run succeeds after a failed task execution") {
-        LoadTask("function f4() { while(true) {} }").Execute();
-        LoadTask("function f5(a, b) { return Number(a) + Number(b); }").Execute();
+    SECTION("execute succeeds after a failed task") {
+        BroadcastTask("function f4() { while(true) {} }").Execute();
+        BroadcastTask("function f5(a, b) { return Number(a) + Number(b); }").Execute();
 
-        NapaResponseCode responseCode;
-        std::string error;
+        ExecuteRequest request1;
+        request1.function = NAPA_STRING_REF("f4");
 
-        TimeoutTaskDecorator<RunTask>(
-            30ms,
-            "f4",
-            std::vector<std::string>(),
-            [&](NapaResponseCode code, NapaStringRef errorMessage, NapaStringRef returnValue) {
-                responseCode = code;
-                error = NAPA_STRING_REF_TO_STD_STRING(errorMessage);
-            }
-        ).Execute();
-        REQUIRE(responseCode == NAPA_RESPONSE_TIMEOUT);
-        REQUIRE(error == "Run exceeded timeout");
+        ExecuteResponse response1;
+        TimeoutTaskDecorator<ExecuteTask>(30ms, request1, [&](ExecuteResponse res) {
+            response1 = std::move(res);
+        }).Execute();
 
-        std::string retValue;
+        REQUIRE(response1.code == NAPA_RESPONSE_TIMEOUT);
+        REQUIRE(response1.errorMessage == "Execute exceeded timeout");
 
-        TimeoutTaskDecorator<RunTask>(
-            30ms,
-            "f5",
-            std::vector<std::string>({ "3", "5" }),
-            [&](NapaResponseCode code, NapaStringRef errorMessage, NapaStringRef returnValue) {
-                responseCode = code;
-                retValue = NAPA_STRING_REF_TO_STD_STRING(returnValue);
-            }
-        ).Execute();
-        REQUIRE(responseCode == NAPA_RESPONSE_SUCCESS);
-        REQUIRE(retValue == "8");
+        ExecuteRequest request2;
+        request2.function = NAPA_STRING_REF("f5");
+        request2.arguments = { NAPA_STRING_REF("3"), NAPA_STRING_REF("5") };
+
+        ExecuteResponse response2;
+        TimeoutTaskDecorator<ExecuteTask>(30ms, request2, [&](ExecuteResponse res) {
+            response2 = std::move(res);
+        }).Execute();
+
+        REQUIRE(response2.code == NAPA_RESPONSE_SUCCESS);
+        REQUIRE(response2.returnValue == "8");
     }
 }

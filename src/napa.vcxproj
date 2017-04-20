@@ -42,7 +42,6 @@
     <ClCompile Include="module\core-module-loader.cpp" />
     <ClCompile Include="module\javascript-module-loader.cpp" />
     <ClCompile Include="module\json-module-loader.cpp" />
-    <ClCompile Include="module\global-store.cpp" />
     <ClCompile Include="module\module-cache.cpp" />
     <ClCompile Include="module\module-internal.cpp" />
     <ClCompile Include="module\module-loader.cpp" />
@@ -51,13 +50,14 @@
     <ClCompile Include="platform\win\platform.cpp" />
     <ClCompile Include="platform\win\thread-local-storage.cpp" />
     <ClCompile Include="providers\providers.cpp" />
-    <ClCompile Include="scheduler\core.cpp" />
-    <ClCompile Include="scheduler\load-task.cpp" />
-    <ClCompile Include="scheduler\run-task.cpp" />
+    <ClCompile Include="scheduler\broadcast-task.cpp" />
+    <ClCompile Include="scheduler\execute-task.cpp" />
     <ClCompile Include="scheduler\simple-thread-pool.cpp" />
     <ClCompile Include="scheduler\terminable-task.cpp" />
     <ClCompile Include="scheduler\timeout-service.cpp" />
+    <ClCompile Include="scheduler\worker.cpp" />
     <ClCompile Include="settings\settings-parser.cpp" />
+    <ClCompile Include="zone\zone-impl.cpp" />
     <ClCompile Include="v8\v8-common.cpp" />
   </ItemGroup>
 

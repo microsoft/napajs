@@ -6,67 +6,68 @@
 
 std::once_flag flag;
 
-TEST_CASE("container apis", "[api]") {
+TEST_CASE("zone apis", "[api]") {
     // Only call napa::Initialize once per process.
     std::call_once(flag, []() {
         REQUIRE(napa::Initialize("--loggingProvider console") == NAPA_RESPONSE_SUCCESS);
     });
 
-    SECTION("load valid javascript") {
-        napa::Container container;
+    SECTION("create zone with bootstrap file") {
+        napa::ZoneProxy zone("zone1", "--bootstrapFile bootstrap.js");
 
-        auto response = container.LoadSync("var i = 3 + 5;");
+        napa::ExecuteRequest request;
+        request.function = NAPA_STRING_REF("func");
+        auto response = zone.ExecuteSync(request);
+
+        REQUIRE(response.code == NAPA_RESPONSE_SUCCESS);
+        REQUIRE(response.returnValue == "bootstrap");
+    }
+
+    SECTION("broadcast valid javascript") {
+        napa::ZoneProxy zone("zone1");
+
+        auto response = zone.BroadcastSync("var i = 3 + 5;");
 
         REQUIRE(response == NAPA_RESPONSE_SUCCESS);
     }
 
-    SECTION("load illegal javascript") {
-        napa::Container container;
+    SECTION("broadcast illegal javascript") {
+        napa::ZoneProxy zone("zone1");
 
-        auto response = container.LoadSync("var i = 3 +");
+        auto response = zone.BroadcastSync("var i = 3 +");
 
-        REQUIRE(response == NAPA_RESPONSE_LOAD_SCRIPT_ERROR);
+        REQUIRE(response == NAPA_RESPONSE_BROADCAST_SCRIPT_ERROR);
     }
 
-    SECTION("load valid javascript file") {
-        napa::Container container;
+    SECTION("broadcast and execute javascript") {
+        napa::ZoneProxy zone("zone1");
 
-        auto response = container.LoadFileSync("test.js");
-
-        REQUIRE(response == NAPA_RESPONSE_SUCCESS);
-    }
-
-    SECTION("load valid non existing javascript file") {
-        napa::Container container;
-
-        auto response = container.LoadFileSync("non-existing-file.js");
-
-        REQUIRE(response == NAPA_RESPONSE_LOAD_FILE_ERROR);
-    }
-
-    SECTION("load and run javascript") {
-        napa::Container container;
-
-        auto responseCode = container.LoadSync("function func(a, b) { return Number(a) + Number(b); }");
+        auto responseCode = zone.BroadcastSync("function func(a, b) { return Number(a) + Number(b); }");
         REQUIRE(responseCode == NAPA_RESPONSE_SUCCESS);
 
-        auto response = container.RunSync("func", { NAPA_STRING_REF("2"), NAPA_STRING_REF("3") });
+        napa::ExecuteRequest request;
+        request.function = NAPA_STRING_REF("func");
+        request.arguments = { NAPA_STRING_REF("2"), NAPA_STRING_REF("3") };
+
+        auto response = zone.ExecuteSync(request);
         REQUIRE(response.code == NAPA_RESPONSE_SUCCESS);
         REQUIRE(response.returnValue == "5");
     }
 
-    SECTION("load and run javascript async") {
-        napa::Container container;
+    SECTION("broadcast and execute javascript async") {
+        napa::ZoneProxy zone("zone1");
 
-        std::promise<napa::Response> promise;
+        std::promise<napa::ExecuteResponse> promise;
         auto future = promise.get_future();
 
-        container.Load("function func(a, b) { return Number(a) + Number(b); }", [&promise, &container](NapaResponseCode) {
-            container.Run("func", { NAPA_STRING_REF("2"), NAPA_STRING_REF("3") },
-                [&promise](napa::Response response) {
-                    promise.set_value(std::move(response));
-                }
-            );
+        zone.Broadcast("function func(a, b) { return Number(a) + Number(b); }", [&promise, &zone](NapaResponseCode) {
+            napa::ExecuteRequest request;
+            request.function = NAPA_STRING_REF("func");
+            request.arguments = { NAPA_STRING_REF("2"), NAPA_STRING_REF("3") };
+            
+            zone.Execute(request, [&promise](napa::ExecuteResponse response) {
+                promise.set_value(std::move(response));
+            });
         });
 
         auto response = future.get();
@@ -74,18 +75,21 @@ TEST_CASE("container apis", "[api]") {
         REQUIRE(response.returnValue == "5");
     }
 
-    SECTION("load and run javascript without timing out") {
-        napa::Container container;
+    SECTION("broadcast and execute javascript without timing out") {
+        napa::ZoneProxy zone("zone1");
 
-        std::promise<napa::Response> promise;
+        std::promise<napa::ExecuteResponse> promise;
         auto future = promise.get_future();
 
-        container.Load("function func(a, b) { return Number(a) + Number(b); }", [&promise, &container](NapaResponseCode) {
-            container.Run("func", { NAPA_STRING_REF("2"), NAPA_STRING_REF("3") },
-                [&promise](napa::Response response) {
-                    promise.set_value(std::move(response));
-                },
-                30);
+        zone.Broadcast("function func(a, b) { return Number(a) + Number(b); }", [&promise, &zone](NapaResponseCode) {
+            napa::ExecuteRequest request;
+            request.function = NAPA_STRING_REF("func");
+            request.arguments = { NAPA_STRING_REF("2"), NAPA_STRING_REF("3") };
+            request.timeout = 30;
+
+            zone.Execute(request, [&promise](napa::ExecuteResponse response) {
+                promise.set_value(std::move(response));
+            });
         });
 
         auto response = future.get();
@@ -93,46 +97,57 @@ TEST_CASE("container apis", "[api]") {
         REQUIRE(response.returnValue == "5");
     }
 
-    SECTION("load and run javascript with exceeded timeout") {
-        napa::Container container;
+    SECTION("broadcast and execute javascript with exceeded timeout") {
+        napa::ZoneProxy zone("zone1");
 
-        std::promise<napa::Response> promise;
+        std::promise<napa::ExecuteResponse> promise;
         auto future = promise.get_future();
 
-        container.Load("function func() { while(true) {} }", [&promise, &container](NapaResponseCode) {
-            container.Run("func", {},
-                [&promise](napa::Response response) {
-                    promise.set_value(std::move(response));
-                },
-                30);
+        zone.Broadcast("function func() { while(true) {} }", [&promise, &zone](NapaResponseCode) {
+            napa::ExecuteRequest request;
+            request.function = NAPA_STRING_REF("func");
+            request.timeout = 30;
+
+            zone.Execute(request, [&promise](napa::ExecuteResponse response) {
+                promise.set_value(std::move(response));
+            });
         });
 
         auto response = future.get();
         REQUIRE(response.code == NAPA_RESPONSE_TIMEOUT);
-        REQUIRE(response.errorMessage == "Run exceeded timeout");
+        REQUIRE(response.errorMessage == "Execute exceeded timeout");
     }
 
-    SECTION("run 2 javascript functions, one succeeds and one times out") {
-        napa::Container container;
+    SECTION("execute 2 javascript functions, one succeeds and one times out") {
+        napa::ZoneProxy zone("zone1");
 
-        auto res = container.LoadSync("function f1(a, b) { return Number(a) + Number(b); }");
+        auto res = zone.BroadcastSync("function f1(a, b) { return Number(a) + Number(b); }");
         REQUIRE(res == NAPA_RESPONSE_SUCCESS);
-        res = container.LoadSync("function f2() { while(true) {} }");
+        res = zone.BroadcastSync("function f2() { while(true) {} }");
         REQUIRE(res == NAPA_RESPONSE_SUCCESS);
 
-        std::promise<napa::Response> promise1;
+        std::promise<napa::ExecuteResponse> promise1;
         auto future1 = promise1.get_future();
 
-        std::promise<napa::Response> promise2;
+        std::promise<napa::ExecuteResponse> promise2;
         auto future2 = promise2.get_future();
 
-        container.Run("f1", { NAPA_STRING_REF("2"), NAPA_STRING_REF("3") }, [&promise1](napa::Response response) {
-            promise1.set_value(std::move(response));
-        }, 30);
+        napa::ExecuteRequest request1;
+        request1.function = NAPA_STRING_REF("f1");
+        request1.arguments = { NAPA_STRING_REF("2"), NAPA_STRING_REF("3") };
+        request1.timeout = 30;
 
-        container.Run("f2", {}, [&promise2](napa::Response response) {
+        napa::ExecuteRequest request2;
+        request2.function = NAPA_STRING_REF("f2");
+        request2.timeout = 30;
+
+        zone.Execute(request1, [&promise1](napa::ExecuteResponse response) {
+            promise1.set_value(std::move(response));
+        });
+
+        zone.Execute(request2, [&promise2](napa::ExecuteResponse response) {
             promise2.set_value(std::move(response));
-        }, 30);
+        });
 
         auto response = future1.get();
         REQUIRE(response.code == NAPA_RESPONSE_SUCCESS);
@@ -140,38 +155,34 @@ TEST_CASE("container apis", "[api]") {
 
         response = future2.get();
         REQUIRE(response.code == NAPA_RESPONSE_TIMEOUT);
-        REQUIRE(response.errorMessage == "Run exceeded timeout");
+        REQUIRE(response.errorMessage == "Execute exceeded timeout");
     }
 
-    SECTION("load javascript requiring a module") {
-        napa::Container container;
+    SECTION("broadcast javascript requiring a module") {
+        napa::ZoneProxy zone("zone1");
 
-        auto responseCode = container.LoadSync("var path = require('path'); function func() { return path.extname('test.txt'); }");
+        auto responseCode = zone.BroadcastSync("var path = require('path'); function func() { return path.extname('test.txt'); }");
         REQUIRE(responseCode == NAPA_RESPONSE_SUCCESS);
 
-        auto response = container.RunSync("func", {});
+        napa::ExecuteRequest request;
+        request.function = NAPA_STRING_REF("func");
+
+        auto response = zone.ExecuteSync(request);
         REQUIRE(response.code == NAPA_RESPONSE_SUCCESS);
         REQUIRE(response.returnValue == ".txt");
     }
 
-    SECTION("load and call run all with success") {
-        napa::Container container;
+    SECTION("execute function in a module") {
+        napa::ZoneProxy zone("zone1");
 
-        auto responseCode = container.LoadSync("function register() { }");
-        REQUIRE(responseCode == NAPA_RESPONSE_SUCCESS);
+        napa::ExecuteRequest request;
+        request.module = NAPA_STRING_REF("path");
+        request.function = NAPA_STRING_REF("extname");
+        request.arguments = { NAPA_STRING_REF("test.txt") };
 
-        responseCode = container.RunAllSync("register", {});
-        REQUIRE(responseCode == NAPA_RESPONSE_SUCCESS);
-    }
-
-    SECTION("load and call run all with failure") {
-        napa::Container container;
-
-        auto responseCode = container.LoadSync("function register() { throw new Error(); }");
-        REQUIRE(responseCode == NAPA_RESPONSE_SUCCESS);
-
-        responseCode = container.RunAllSync("register", {});
-        REQUIRE(responseCode == NAPA_RESPONSE_RUN_FUNC_ERROR);
+        auto response = zone.ExecuteSync(request);
+        REQUIRE(response.code == NAPA_RESPONSE_SUCCESS);
+        REQUIRE(response.returnValue == ".txt");
     }
 
     /// <note>

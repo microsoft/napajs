@@ -13,11 +13,11 @@ class TestTask : public Task {
 public:
     TestTask(std::function<void()> callback = []() {}) : 
         numberOfExecutions(0),
-        lastExecutedCoreId(99),
+        lastExecutedWorkerId(99),
         _callback(std::move(callback)) {}
 
-    void SetCurrentCoreId(CoreId id) {
-        lastExecutedCoreId = id;
+    void SetCurrentWorkerId(WorkerId id) {
+        lastExecutedWorkerId = id;
     }
 
     virtual void Execute() override
@@ -27,7 +27,7 @@ public:
     }
 
     std::atomic<uint32_t> numberOfExecutions;
-    std::atomic<CoreId> lastExecutedCoreId;
+    std::atomic<WorkerId> lastExecutedWorkerId;
 
 private:
     std::function<void()> _callback;
@@ -35,15 +35,15 @@ private:
 
 
 template <uint32_t I>
-class TestCore {
+class TestWorker {
 public:
 
-    TestCore(CoreId id, const Settings &settings, std::function<void(CoreId)> idleCallback) : _id(id) {
-        numberOfCores++;
+    TestWorker(WorkerId id, const ZoneSettings &settings, std::function<void(WorkerId)> idleCallback) : _id(id) {
+        numberOfWorkers++;
         _idleNotificationCallback = idleCallback;
     }
 
-    ~TestCore() {
+    ~TestWorker() {
         for (auto& fut : _futures) {
             fut.get();
         }
@@ -51,7 +51,7 @@ public:
 
     void Schedule(std::shared_ptr<Task> task) {
         auto testTask = std::dynamic_pointer_cast<TestTask>(task);
-        testTask->SetCurrentCoreId(_id);
+        testTask->SetCurrentWorkerId(_id);
 
         _futures.emplace_back(std::async(std::launch::async, [this, task]() {
             task->Execute();
@@ -59,62 +59,62 @@ public:
         }));
     }
 
-    static uint32_t numberOfCores;
+    static uint32_t numberOfWorkers;
 
 private:
-    CoreId _id;
+    WorkerId _id;
     std::vector<std::shared_future<void>> _futures;
-    std::function<void(CoreId)> _idleNotificationCallback;
+    std::function<void(WorkerId)> _idleNotificationCallback;
 };
 
 template <uint32_t I>
-uint32_t TestCore<I>::numberOfCores = 0;
+uint32_t TestWorker<I>::numberOfWorkers = 0;
 
 
-TEST_CASE("scheduler creates correct number of cores", "[scheduler]") {
-    Settings settings;
-    settings.cores = 3;
+TEST_CASE("scheduler creates correct number of worker", "[scheduler]") {
+    ZoneSettings settings;
+    settings.workers = 3;
 
-    auto scehduler = std::make_unique<SchedulerImpl<TestCore<1>>>(settings);
+    auto scehduler = std::make_unique<SchedulerImpl<TestWorker<1>>>(settings);
 
-    REQUIRE(TestCore<1>::numberOfCores == settings.cores);
+    REQUIRE(TestWorker<1>::numberOfWorkers == settings.workers);
 }
 
 TEST_CASE("scheduler assigns tasks correctly", "[scheduler]") {
-    Settings settings;
-    settings.cores = 3;
+    ZoneSettings settings;
+    settings.workers = 3;
 
-    auto scehduler = std::make_unique<SchedulerImpl<TestCore<2>>>(settings);
+    auto scehduler = std::make_unique<SchedulerImpl<TestWorker<2>>>(settings);
     auto task = std::make_shared<TestTask>();
 
-    SECTION("schedules on exactly one core") {
+    SECTION("schedules on exactly one worker") {
         scehduler->Schedule(task);
         scehduler = nullptr; // force draining all scheduled tasks
 
         REQUIRE(task->numberOfExecutions == 1);
     }
 
-    SECTION("schedule on a specific core") {
-        scehduler->ScheduleOnCore(2, task);
+    SECTION("schedule on a specific worker") {
+        scehduler->ScheduleOnWorker(2, task);
         scehduler = nullptr; // force draining all scheduled tasks
 
         REQUIRE(task->numberOfExecutions == 1);
-        REQUIRE(task->lastExecutedCoreId == 2);
+        REQUIRE(task->lastExecutedWorkerId == 2);
     }
 
-    SECTION("schedule on all cores") {
-        scehduler->ScheduleOnAllCores(task);
+    SECTION("schedule on all workers") {
+        scehduler->ScheduleOnAllWorkers(task);
         scehduler = nullptr; // force draining all scheduled tasks
 
-        REQUIRE(task->numberOfExecutions == settings.cores);
+        REQUIRE(task->numberOfExecutions == settings.workers);
     }
 }
 
 TEST_CASE("scheduler distributes and schedules all tasks", "[scheduler]") {
-    Settings settings;
-    settings.cores = 4;
+    ZoneSettings settings;
+    settings.workers = 4;
 
-    auto scehduler = std::make_unique<SchedulerImpl<TestCore<3>>>(settings);
+    auto scehduler = std::make_unique<SchedulerImpl<TestWorker<3>>>(settings);
 
     std::vector<std::shared_ptr<TestTask>> tasks;
     for (size_t i = 0; i < 1000; i++) {
@@ -125,15 +125,15 @@ TEST_CASE("scheduler distributes and schedules all tasks", "[scheduler]") {
 
     scehduler = nullptr; // force draining all scheduled tasks
 
-    std::vector<bool> scheduledCoresFlags = { false, false, false, false };
+    std::vector<bool> scheduledWorkersFlags = { false, false, false, false };
     for (size_t i = 0; i < 1000; i++) {
         // Make sure that each task was executed once
         REQUIRE(tasks[i]->numberOfExecutions == 1);
-        scheduledCoresFlags[tasks[i]->lastExecutedCoreId] = true;
+        scheduledWorkersFlags[tasks[i]->lastExecutedWorkerId] = true;
     }
 
-    // Make sure that all cores were participating
-    for (auto flag: scheduledCoresFlags) {
+    // Make sure that all workers were participating
+    for (auto flag: scheduledWorkersFlags) {
         REQUIRE(flag);
     }
 }

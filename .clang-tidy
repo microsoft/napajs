@@ -1,5 +1,5 @@
 ---
-Checks:          '*,-google*,-llvm-header-guard,-llvm-include-order,-cppcoreguidelines-*,-readability-named-parameter,-cert-err58-cpp,-misc-noexcept-move-constructor,-clang-diagnostic-deprecated-*'
+Checks:          '*,-google*,-llvm-header-guard,-llvm-include-order,-cppcoreguidelines-*,-readability-named-parameter,-cert-err58-cpp,-misc-noexcept-move-constructor,-clang-diagnostic-deprecated-*,-modernize-pass-by-value'
 WarningsAsErrors: ''
 HeaderFilterRegex: ''
 AnalyzeTemporaryDtors: false

@@ -186,14 +186,5 @@ namespace module {
             return scope.Escape(v8::Local<v8::Function>());
         }
     }
-
-    namespace global_store {
-
-        /// <summary> Retrieve a value from the global store. </summary>
-        /// <param name="key"> A key identifying the desired value. </param>
-        /// <returns> The value if exists, nullptr otherwise. </returns>
-        NAPA_API void* GetValue(const char* key);
-    }
-
 }   // End of namespace module.
 }   // End of namespace napa.

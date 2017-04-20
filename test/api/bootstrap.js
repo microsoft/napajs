@@ -1,0 +1,4 @@
+
+function func() {
+    return "bootstrap";
+}

@@ -1,4 +1,4 @@
-#include "load-task.h"
+#include "broadcast-task.h"
 #include <napa-log.h>
 
 #include <napa/v8-helpers.h>
@@ -8,12 +8,12 @@
 
 using namespace napa::scheduler;
 
-LoadTask::LoadTask(std::string source, std::string sourceOrigin, LoadTaskCallback callback) :
+BroadcastTask::BroadcastTask(std::string source, std::string sourceOrigin, BroadcastTaskCallback callback) :
     _source(std::move(source)),
     _sourceOrigin(std::move(sourceOrigin)),
     _callback(std::move(callback)) {}
 
-void LoadTask::Execute() {
+void BroadcastTask::Execute() {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
     auto context = isolate->GetCurrentContext();
@@ -34,8 +34,8 @@ void LoadTask::Execute() {
     // Compile the source code.
     auto compileResult = v8::Script::Compile(context, source, &sourceOrigin);
     if (compileResult.IsEmpty()) {
-        LOG_ERROR("Load", "Failed while compiling the provided source code");
-        _callback(NAPA_RESPONSE_LOAD_SCRIPT_ERROR);
+        LOG_ERROR("Broadcast", "Failed while compiling the provided source code");
+        _callback(NAPA_RESPONSE_BROADCAST_SCRIPT_ERROR);
         return;
     }
     auto script = compileResult.ToLocalChecked();
@@ -49,8 +49,8 @@ void LoadTask::Execute() {
         auto stackTrace = tryCatch.StackTrace();
         v8::String::Utf8Value stackTraceStr(stackTrace);
 
-        LOG_ERROR("Load", "JS exception thrown: %s - %s", *exceptionStr, *stackTraceStr);
-        _callback(NAPA_RESPONSE_LOAD_SCRIPT_ERROR);
+        LOG_ERROR("Broadcast", "JS exception thrown: %s - %s", *exceptionStr, *stackTraceStr);
+        _callback(NAPA_RESPONSE_BROADCAST_SCRIPT_ERROR);
         return;
     }
 

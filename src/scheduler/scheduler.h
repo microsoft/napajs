@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core.h"
+#include "worker.h"
 #include "settings/settings.h"
 #include "simple-thread-pool.h"
 #include "task.h"
@@ -17,47 +17,47 @@
 namespace napa {
 namespace scheduler {
 
-    /// <summary> The scheduler is responsible for assigning tasks to cores. </summary>
-    template <typename CoreType>
+    /// <summary> The scheduler is responsible for assigning tasks to workers. </summary>
+    template <typename WorkerType>
     class SchedulerImpl {
     public:
 
         /// <summary> Constructor. </summary>
         /// <param name="settings"> A settings object. </param>
-        explicit SchedulerImpl(const Settings& settings);
+        explicit SchedulerImpl(const ZoneSettings& settings);
 
         /// <summary> Destructor. Waits for all tasks to finish. </summary>
         ~SchedulerImpl();
 
-        /// <summary> Schedules the task on a single core. </summary>
+        /// <summary> Schedules the task on a single worker. </summary>
         /// <param name="task"> Task to schedule. </param>
         void Schedule(std::shared_ptr<Task> task);
 
-        /// <summary> Schedules the task on a specific core. </summary>
-        /// <param name="coreId"> The id of the core. </param>
+        /// <summary> Schedules the task on a specific worker. </summary>
+        /// <param name="workerId"> The id of the worker. </param>
         /// <param name="task"> Task to schedule. </param>
-        void ScheduleOnCore(CoreId coreId, std::shared_ptr<Task> task);
+        void ScheduleOnWorker(WorkerId workerId, std::shared_ptr<Task> task);
 
-        /// <summary> Schedules the task on all cores. </summary>
+        /// <summary> Schedules the task on all workers. </summary>
         /// <param name="task"> Task to schedule. </param>
-        void ScheduleOnAllCores(std::shared_ptr<Task> task);
+        void ScheduleOnAllWorkers(std::shared_ptr<Task> task);
 
     private:
 
-        /// <summary> The logic invoked when a core is idle. </summary>
-        void IdleCoreNotificationCallback(CoreId coreId);
+        /// <summary> The logic invoked when a worker is idle. </summary>
+        void IdleWorkerNotificationCallback(WorkerId workerId);
 
-        /// <summary> The cores that are used for running the tasks. </summary>
-        std::vector<CoreType> _cores;
+        /// <summary> The workers that are used for running the tasks. </summary>
+        std::vector<WorkerType> _workers;
 
-        /// <summary> New tasks that weren't assigned to a specific core. </summary>
+        /// <summary> New tasks that weren't assigned to a specific worker. </summary>
         std::queue<std::shared_ptr<Task>> _nonScheduledTasks;
 
-        /// <summary> List of idle cores, used when assigning non scheduled tasks. </summary>
-        std::list<CoreId> _idleCores;
+        /// <summary> List of idle workers, used when assigning non scheduled tasks. </summary>
+        std::list<WorkerId> _idleWorkers;
 
-        /// <summary> Flags to indicate that a core is in the idle list. </summary>
-        std::vector<std::list<CoreId>::iterator> _idleCoresFlags;
+        /// <summary> Flags to indicate that a worker is in the idle list. </summary>
+        std::vector<std::list<WorkerId>::iterator> _idleWorkersFlags;
 
         /// <summary> Uses a single thread to synchronize task queuing and posting. </summary>
         std::unique_ptr<SimpleThreadPool> _synchronizer;
@@ -66,28 +66,29 @@ namespace scheduler {
         std::atomic<bool> _shouldStop;
     };
 
-    typedef SchedulerImpl<Core> Scheduler;
+    typedef SchedulerImpl<Worker> Scheduler;
 
-    template <typename CoreType>
-    SchedulerImpl<CoreType>::SchedulerImpl(const Settings& settings) :
-            _idleCoresFlags(settings.cores),
-            _synchronizer(std::make_unique<SimpleThreadPool>(1)),
-            _shouldStop(false) {
-        _cores.reserve(settings.cores);
+    template <typename WorkerType>
+    SchedulerImpl<WorkerType>::SchedulerImpl(const ZoneSettings& settings) :
+        _idleWorkersFlags(settings.workers),
+        _synchronizer(std::make_unique<SimpleThreadPool>(1)),
+        _shouldStop(false) {
 
-        for (CoreId i = 0; i < settings.cores; i++) {
-            _cores.emplace_back(i, settings, [this](CoreId coreId) {
-                IdleCoreNotificationCallback(coreId);
+        _workers.reserve(settings.workers);
+
+        for (WorkerId i = 0; i < settings.workers; i++) {
+            _workers.emplace_back(i, settings, [this](WorkerId workerId) {
+                IdleWorkerNotificationCallback(workerId);
             });
 
-            // All cores are idle initially.
-            auto iter = _idleCores.emplace(_idleCores.end(), i);
-            _idleCoresFlags[i] = iter;
+            // All workers are idle initially.
+            auto iter = _idleWorkers.emplace(_idleWorkers.end(), i);
+            _idleWorkersFlags[i] = iter;
         }
     }
 
-    template <typename CoreType>
-    SchedulerImpl<CoreType>::~SchedulerImpl() {
+    template <typename WorkerType>
+    SchedulerImpl<WorkerType>::~SchedulerImpl() {
         // Wait for all tasks to be scheduled.
         while (_nonScheduledTasks.size() > 0) {
             std::this_thread::yield();
@@ -99,84 +100,84 @@ namespace scheduler {
         // Wait for synchornizer to finish his book-keeping.
         _synchronizer = nullptr;
 
-        // Wait for all cores to finish processing remaining tasks.
-        _cores.clear();
+        // Wait for all workers to finish processing remaining tasks.
+        _workers.clear();
     }
 
-    template <typename CoreType>
-    void SchedulerImpl<CoreType>::Schedule(std::shared_ptr<Task> task) {
+    template <typename WorkerType>
+    void SchedulerImpl<WorkerType>::Schedule(std::shared_ptr<Task> task) {
         NAPA_ASSERT(task, "task is null");
         
         _synchronizer->Execute([this, task]() {
-            if (_idleCores.empty()) {
-                // If there is no idle core, put the task into the non-scheduled queue.
+            if (_idleWorkers.empty()) {
+                // If there is no idle worker, put the task into the non-scheduled queue.
                 _nonScheduledTasks.emplace(std::move(task));
             } else {
-                // Pop the core id from the idle cores list.
-                auto coreId = _idleCores.front();
-                _idleCores.pop_front();
-                _idleCoresFlags[coreId] = _idleCores.end();
+                // Pop the worker id from the idle workers list.
+                auto workerId = _idleWorkers.front();
+                _idleWorkers.pop_front();
+                _idleWorkersFlags[workerId] = _idleWorkers.end();
 
-                // Schedule task on core
-                _cores[coreId].Schedule(std::move(task));
+                // Schedule task on worker
+                _workers[workerId].Schedule(std::move(task));
             }
         });
     }
 
-    template <typename CoreType>
-    void SchedulerImpl<CoreType>::ScheduleOnCore(CoreId coreId, std::shared_ptr<Task> task) {
-        NAPA_ASSERT(coreId < _cores.size(), "core id out of range");
+    template <typename WorkerType>
+    void SchedulerImpl<WorkerType>::ScheduleOnWorker(WorkerId workerId, std::shared_ptr<Task> task) {
+        NAPA_ASSERT(workerId < _workers.size(), "worker id out of range");
 
-        _synchronizer->Execute([coreId, this, task]() {
-            // If the core is idle, change it's status.
-            if (_idleCoresFlags[coreId] != _idleCores.end()) {
-                _idleCores.erase(_idleCoresFlags[coreId]);
-                _idleCoresFlags[coreId] = _idleCores.end();
+        _synchronizer->Execute([workerId, this, task]() {
+            // If the worker is idle, change it's status.
+            if (_idleWorkersFlags[workerId] != _idleWorkers.end()) {
+                _idleWorkers.erase(_idleWorkersFlags[workerId]);
+                _idleWorkersFlags[workerId] = _idleWorkers.end();
             }
 
-            // Schedule task on core
-            _cores[coreId].Schedule(std::move(task));
+            // Schedule task on worker
+            _workers[workerId].Schedule(std::move(task));
         });
     }
 
-    template <typename CoreType>
-    void SchedulerImpl<CoreType>::ScheduleOnAllCores(std::shared_ptr<Task> task) {
+    template <typename WorkerType>
+    void SchedulerImpl<WorkerType>::ScheduleOnAllWorkers(std::shared_ptr<Task> task) {
         NAPA_ASSERT(task, "task is null");
 
         _synchronizer->Execute([this, task]() {
-            // Clear all idle cores.
-            _idleCores.clear();
-            for (auto& flag : _idleCoresFlags) {
-                flag = _idleCores.end();
+            // Clear all idle workers.
+            _idleWorkers.clear();
+            for (auto& flag : _idleWorkersFlags) {
+                flag = _idleWorkers.end();
             }
 
-            // Schedule the task on all cores.
-            for (auto& core : _cores) {
-                core.Schedule(task);
+            // Schedule the task on all workers.
+            for (auto& worker : _workers) {
+                worker.Schedule(task);
             }
         });
     }
 
-    template <typename CoreType>
-    void SchedulerImpl<CoreType>::IdleCoreNotificationCallback(CoreId coreId) {
-        NAPA_ASSERT(coreId < _cores.size(), "core id out of range");
+    template <typename WorkerType>
+    void SchedulerImpl<WorkerType>::IdleWorkerNotificationCallback(WorkerId workerId) {
+        NAPA_ASSERT(workerId < _workers.size(), "worker id out of range");
 
         if (_shouldStop) {
             return;
         }
 
-        _synchronizer->Execute([this, coreId]() {
+        _synchronizer->Execute([this, workerId]() {
             if (!_nonScheduledTasks.empty()) {
-                // If there is a non scheduled task, schedule it on the idle core.
+                // If there is a non scheduled task, schedule it on the idle worker.
                 auto task = _nonScheduledTasks.front();
                 _nonScheduledTasks.pop();
 
-                _cores[coreId].Schedule(std::move(task));
+                _workers[workerId].Schedule(std::move(task));
             } else {
-                // Put core in idle list.
-                if (_idleCoresFlags[coreId] == _idleCores.end()) {
-                    auto iter = _idleCores.emplace(_idleCores.end(), coreId);
-                    _idleCoresFlags[coreId] = iter;
+                // Put worker in idle list.
+                if (_idleWorkersFlags[workerId] == _idleWorkers.end()) {
+                    auto iter = _idleWorkers.emplace(_idleWorkers.end(), workerId);
+                    _idleWorkersFlags[workerId] = iter;
                 }
             }
         });

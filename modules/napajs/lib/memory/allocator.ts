@@ -1,10 +1,10 @@
-import * as transportable from '../transport/transportable';
 import { Handle } from './handle';
+import { Shareable } from './shareable';
 
 /// <summary> Javascript interface for allocator.
 /// An allocator must be a native object shared by all isolates, which allocate memory.
 /// </summary> 
-export interface Allocator extends Handle {
+export interface Allocator extends Shareable {
     /// <summary> Allocate memory of requested size in bytes. </summary>
     allocate(size: number): Handle;
 

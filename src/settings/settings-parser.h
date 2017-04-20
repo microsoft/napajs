@@ -2,10 +2,24 @@
 
 #include "settings.h"
 
+#include <boost/algorithm/string.hpp>
+
+#include <iostream>
 #include <string>
+#include <vector>
 
 namespace napa {
 namespace settings_parser {
+
+    /// <summary> Parses napa settings from a vector of arguments. </summary>
+    /// <param name="str"> The arguments holding the settings. </param>
+    /// <param name="settings">
+    ///     A setting out parameter that is filled with parsed settings.
+    ///     Settings that do not appear in the settings string will not be changed.
+    /// </param>
+    /// <returns> True if parsing succeeded, false otherwise. </returns>
+    bool Parse(const std::vector<std::string>& args, ZoneSettings& settings);
+    bool Parse(const std::vector<std::string>& args, PlatformSettings& settings);
 
     /// <summary> Parses napa settings from string. </summary>
     /// <param name="str"> The settings string that will be parsed. </param>
@@ -14,7 +28,20 @@ namespace settings_parser {
     ///     Settings that do not appear in the settings string will not be changed.
     /// </param>
     /// <returns> True if parsing succeeded, false otherwise. </returns>
-    bool ParseFromString(const std::string& str, Settings& settings);
+    template <typename SettingsType>
+    bool ParseFromString(const std::string& str, SettingsType& settings) {
+        std::vector<std::string> args;
+
+        try {
+            boost::split(args, str, boost::is_any_of("\t "), boost::token_compress_on);
+        }
+        catch (std::exception& ex) {
+            std::cerr << "Failed to split input string [" << str << "] error: " << ex.what() << std::endl;
+            return false;
+        }
+
+        return Parse(args, settings);
+    }
 
     /// <summary> Parses napa settings console args. </summary>
     /// <param name="argc"> Number of arguments. </param>
@@ -24,6 +51,16 @@ namespace settings_parser {
     ///     Settings that do not appear in the settings string will not be changed.
     /// </param>
     /// <returns> True if parsing succeeded, false otherwise. </returns>
-    bool ParseFromConsole(int argc, char* argv[], Settings& settings); 
+    template <typename SettingsType>
+    bool ParseFromConsole(int argc, char* argv[], SettingsType& settings) {
+        std::vector<std::string> args;
+
+        args.reserve(argc);
+        for (auto i = 0; i < argc; i++) {
+            args.emplace_back(argv[i]);
+        }
+
+        return Parse(args, settings);
+    }
 }
 }

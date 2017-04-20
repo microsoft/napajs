@@ -1,6 +1,7 @@
 #pragma once
 
 #include "napa-c.h"
+#include <napa/zone.h>
 
 #include <memory>
 #include <functional>
@@ -8,102 +9,10 @@
 #include <string>
 #include <vector>
 
+
 namespace napa {
 
-    /// <summary> Response class. </summary>
-    struct Response {
-        Response() : code(NAPA_RESPONSE_UNDEFINED) {}
-
-        Response(napa_container_response response) :
-            code(response.code),
-            errorMessage(NAPA_STRING_REF_TO_STD_STRING(response.error_message)),
-            returnValue(NAPA_STRING_REF_TO_STD_STRING(response.return_value)) {}
-
-        /// <summary> Response code. </summary>
-        NapaResponseCode code;
-
-        /// <summary> Error message. Empty when response code is success. </summary>
-        std::string errorMessage;
-
-        /// <summary> Napa return value. </summary>
-        std::string returnValue;
-    };
-
-    /// <summary> Response callback signature. </summary>
-    typedef std::function<void(NapaResponseCode)> LoadCallback;
-    typedef std::function<void(Response)> RunCallback;
-    typedef std::function<void(NapaResponseCode)> RunAllCallback;
-
-    /// <summary> C++ class wrapper around napa C APIs. </summary>
-    class Container {
-    public:
-        
-        /// <summary> Creates a container instance. </summary>
-        Container();
-
-        /// <summary> Creates a container instance. </summary>
-        /// <param name="settings"> A settings string to set conainer specific settings. </param>
-        explicit Container(const std::string& settings);
-
-        /// <summary> Deletes the underlying container handle, hence cleaning all container resources. </summary>
-        ~Container();
-
-        /// <summary> Sets a value in container scope. </summary>
-        /// <param name="key"> A unique identifier for the value. </param>
-        /// <param name="value"> The value. </param>
-        NapaResponseCode SetGlobalValue(const std::string& key, void* value);
-
-        /// <summary> Loads a JS file into the container asynchronously. </summary>
-        /// <param name="file"> The JS file. </param>
-        /// <param name="callback"> A callback that is triggered when loading is done. </param>
-        void LoadFile(const std::string& file, LoadCallback callback);
-
-        /// <summary> Loads a JS file into the container synchronously. </summary>
-        /// <param name="file"> The JS file. </param>
-        NapaResponseCode LoadFileSync(const std::string& file);
-
-        /// <summary> Loads a JS source into the container asynchronously. </summary>
-        /// <param name="source"> The JS source. </param>
-        /// <param name="callback"> A callback that is triggered when loading is done. </param>
-        void Load(const std::string& source, LoadCallback callback);
-
-        /// <summary> Loads a JS source into the container synchronously. </summary>
-        /// <param name="source"> The JS source. </param>
-        NapaResponseCode LoadSync(const std::string& source);
-
-        /// <summary> Runs a pre-loaded JS function asynchronously. </summary>
-        /// <param name="func"> The name of the function to run. </param>
-        /// <param name="args"> The arguments to the function. </param>
-        /// <param name="callback"> A callback that is triggered when execution is done. </param>
-        /// <param name="timeout"> Timeout in milliseconds - default is inifinite. </param>
-        void Run(const char* func, const std::vector<NapaStringRef>& args, RunCallback callback, uint32_t timeout = 0);
-
-        /// <summary> Runs a pre-loaded JS function synchronously. </summary>
-        /// <param name="func"> The name of the function to run. </param>
-        /// <param name="args"> The arguments to the function. </param>
-        /// <param name="timeout"> Timeout in milliseconds - default is inifinite. </param>
-        Response RunSync(const char* func, const std::vector<NapaStringRef>& args, uint32_t timeout = 0);
-
-        /// <summary> Runs a pre-loaded JS function on all isolates asynchronously. </summary>
-        /// <param name="func"> The name of the function to run. </param>
-        /// <param name="args"> The arguments to the function. </param>
-        /// <param name="callback"> A callback that is triggered when execution is done. </param>
-        void RunAll(const char* func, const std::vector<NapaStringRef>& args, RunAllCallback callback);
-
-        /// <summary> Runs a pre-loaded JS function on all isolates synchronously. </summary>
-        /// <param name="func"> The name of the function to run. </param>
-        /// <param name="args"> The arguments to the function. </param>
-        NapaResponseCode RunAllSync(const char* func, const std::vector<NapaStringRef>& args);
-
-    private:
-        napa_container_handle _handle;
-    };
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// Implementation starts here.
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /// <summary> Initialize napa with global scope settings. </summary>
+    /// <summary> Initializes napa with global scope settings. </summary>
     inline NapaResponseCode Initialize(const std::string& settings = "") {
         return napa_initialize(STD_STRING_TO_NAPA_STRING_REF(settings));
     }
@@ -118,141 +27,100 @@ namespace napa {
         return napa_shutdown();
     }
 
-    /// <summary> Helper classes and functions in internal namespace. </summary>
-    namespace internal {
-        template <typename CallbackType>
-        struct AsyncCompletionContext {
-            AsyncCompletionContext(CallbackType&& callback) : callback(std::forward<CallbackType>(callback)) {}
+    /// <summary> C++ proxy around napa Zone C APIs. </summary>
+    class ZoneProxy : public Zone {
+    public:
 
-            /// <summary> Non copyable and non movable. </summary>
-            AsyncCompletionContext(const AsyncCompletionContext&) = delete;
-            AsyncCompletionContext& operator=(const AsyncCompletionContext&) = delete;
-            AsyncCompletionContext(AsyncCompletionContext&&) = delete;
-            AsyncCompletionContext& operator=(AsyncCompletionContext&&) = delete;
+        /// <summary> Creates a new zone and wraps it with a zone proxy instance. </summary>
+        /// <param name="id"> A unique id for the zone. </param>
+        /// <param name="settings"> A settings string to set zone specific settings. </param>
+        explicit ZoneProxy(const std::string& id, const std::string& settings = "") : _zoneId(id) {
+            _handle = napa_zone_create(STD_STRING_TO_NAPA_STRING_REF(id));
 
-            /// <summary> User callback. </summary>
-            CallbackType callback;
-        };
-
-        template <typename CallbackType, typename ResponseType>
-        inline void CompletionHandler(ResponseType response, void* context) {
-            std::unique_ptr<AsyncCompletionContext<CallbackType>> completionContext(
-                reinterpret_cast<AsyncCompletionContext<CallbackType>*>(context));
-
-            completionContext->callback(response);
+            auto res = napa_zone_init(_handle, STD_STRING_TO_NAPA_STRING_REF(settings));
+            if (res != NAPA_RESPONSE_SUCCESS) {
+                napa_zone_release(_handle);
+                throw std::runtime_error(napa_response_code_to_string(res));
+            }
         }
-    }
 
-    inline Container::Container() : Container("") {}
-
-    inline Container::Container(const std::string& settings) {
-        _handle = napa_container_create();
-
-        auto res = napa_container_init(_handle, STD_STRING_TO_NAPA_STRING_REF(settings));
-        if (res != NAPA_RESPONSE_SUCCESS) {
-            throw std::runtime_error(napa_response_code_to_string(res));
+        /// <summary> Releases the underlying zone handle. </summary>
+        virtual ~ZoneProxy() {
+            napa_zone_release(_handle);
         }
-    }
 
-    inline Container::~Container() {
-        napa_container_release(_handle);
-    }
+        /// <see cref="Zone::GetId" />
+        virtual const std::string& GetId() const override {
+            return _zoneId;
+        }
 
-    inline NapaResponseCode Container::SetGlobalValue(const std::string& key, void* value) {
-        return napa_container_set_global_value(_handle, STD_STRING_TO_NAPA_STRING_REF(key), value);
-    }
+        /// <see cref="Zone::Broadcast" />
+        virtual void Broadcast(const std::string& source, BroadcastCallback callback) override {
+            // Will be deleted on when the callback scope ends.
+            auto context = new BroadcastCallback(std::move(callback));
 
-    inline void Container::LoadFile(const std::string& file, LoadCallback callback) {
-        auto context = new internal::AsyncCompletionContext<LoadCallback>(std::move(callback));
+            napa_zone_broadcast(
+                _handle,
+                STD_STRING_TO_NAPA_STRING_REF(source),
+                [](napa_response_code code, void* context) {
+                    // Ensures the context is deleted when this scope ends.
+                    std::unique_ptr<BroadcastCallback> callback(reinterpret_cast<BroadcastCallback*>(context));
 
-        napa_container_load_file(
-            _handle,
-            STD_STRING_TO_NAPA_STRING_REF(file),
-            internal::CompletionHandler<LoadCallback, NapaResponseCode>,
-            context);
-    }
+                    (*callback)(code);
+                }, context);
+        }
 
-    inline NapaResponseCode Container::LoadFileSync(const std::string& file) {
-        std::promise<NapaResponseCode> prom;
-        auto fut = prom.get_future();
+        /// <see cref="Zone::Execute" />
+        virtual void Execute(const ExecuteRequest& request, ExecuteCallback callback) override {
+            // Will be deleted on when the callback scope ends.
+            auto context = new ExecuteCallback(std::move(callback));
 
-        LoadFile(file, [&prom](NapaResponseCode code) {
-            prom.set_value(code);
-        });
+            napa_zone_request req;
+            req.module = request.module;
+            req.function = request.function;
+            req.arguments = request.arguments.data();
+            req.arguments_count = request.arguments.size();
+            req.timeout = request.timeout;
 
-        return fut.get();
-    }
+            // Release ownership of transport context
+            req.transport_context = reinterpret_cast<void*>(request.transportContext.release());
 
-    inline void Container::Load(const std::string& source, LoadCallback callback) {
-        auto context = new internal::AsyncCompletionContext<LoadCallback>(std::move(callback));
+            napa_zone_execute(_handle, req, [](napa_zone_response response, void* context) {
+                // Ensures the context is deleted when this scope ends.
+                std::unique_ptr<ExecuteCallback> callback(reinterpret_cast<ExecuteCallback*>(context));
 
-        napa_container_load(
-            _handle,
-            STD_STRING_TO_NAPA_STRING_REF(source),
-            internal::CompletionHandler<LoadCallback, napa_response_code>,
-            context);
-    }
+                ExecuteResponse res;
+                res.code = response.code;
+                res.errorMessage = NAPA_STRING_REF_TO_STD_STRING(response.error_message);
+                res.returnValue = NAPA_STRING_REF_TO_STD_STRING(response.return_value);
 
-    inline NapaResponseCode Container::LoadSync(const std::string& source) {
-        std::promise<NapaResponseCode> prom;
-        auto fut = prom.get_future();
+                // Assume ownership of transport context
+                res.transportContext.reset(
+                    reinterpret_cast<napa::memory::TransportContext*>(response.transport_context));
 
-        Load(source, [&prom](NapaResponseCode code) {
-            prom.set_value(code);
-        });
+                (*callback)(std::move(res));
+            }, context);
+        }
 
-        return fut.get();
-    }
+        /// <summary> Retrieves a new zone proxy for the zone id, throws if zone is not found. </summary>
+        static std::unique_ptr<ZoneProxy> Get(const std::string& id) {
+            auto handle = napa_zone_get(STD_STRING_TO_NAPA_STRING_REF(id));
+            if (!handle) {
+                throw std::runtime_error("No zone exists for id '" + id + "'");
+            }
 
-    inline void Container::Run(const char* func,
-                               const std::vector<NapaStringRef>& args,
-                               RunCallback callback,
-                               uint32_t timeout) {
-        auto context = new internal::AsyncCompletionContext<RunCallback>(std::move(callback));
+            return std::unique_ptr<ZoneProxy>(new ZoneProxy(id, handle));
+        }
 
-        napa_container_run(
-            _handle,
-            NAPA_STRING_REF(func),
-            args.size(),
-            args.data(),
-            internal::CompletionHandler<RunCallback, napa_container_response>,
-            context,
-            timeout);
-    }
+    private:
 
-    inline Response Container::RunSync(const char* func,
-                                       const std::vector<NapaStringRef>& args,
-                                       uint32_t timeout) {
-        std::promise<Response> prom;
-        auto fut = prom.get_future();
+        /// <summary> Private constructor to create a C++ zone proxy from a C handle. </summary>
+        explicit ZoneProxy(const std::string& id, napa_zone_handle handle) : _zoneId(id), _handle(handle) {}
 
-        Run(func, args, [&prom](Response response) {
-            prom.set_value(std::move(response));
-        }, timeout);
+        /// <summary> The zone id. </summary>
+        std::string _zoneId;
 
-        return fut.get();
-    }
-
-    inline void Container::RunAll(const char* func, const std::vector<NapaStringRef>& args, RunAllCallback callback) {
-        auto context = new internal::AsyncCompletionContext<RunAllCallback>(std::move(callback));
-
-        napa_container_run_all(
-            _handle,
-            NAPA_STRING_REF(func),
-            args.size(),
-            args.data(),
-            internal::CompletionHandler<RunAllCallback, napa_response_code>,
-            context);
-    }
-
-    inline NapaResponseCode Container::RunAllSync(const char* func, const std::vector<NapaStringRef>& args) {
-        std::promise<NapaResponseCode> prom;
-        auto fut = prom.get_future();
-
-        RunAll(func, args, [&prom](NapaResponseCode response) {
-            prom.set_value(std::move(response));
-        });
-
-        return fut.get();
-    }
+        /// <summary> Underlying zone handle. </summary>
+        napa_zone_handle _handle;
+    };
 }

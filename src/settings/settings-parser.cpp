@@ -2,62 +2,64 @@
 
 #include <napa-log.h>
 
-#include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>
-
-#include <iostream>
 
 using namespace boost::program_options;
 using namespace napa;
 
-static bool Parse(const std::vector<std::string>& args, Settings& settings) {
-    // All parsing options should be added here.
-    options_description desc;
+static void AddZoneOptions(options_description& desc, ZoneSettings& settings) {
+    // Zone parsing options should be added here.
     desc.add_options()
-        ("cores", value(&settings.cores), "number of cores")
-        ("loggingProvider", value(&settings.loggingProvider), "logging provider")
-        ("metricProvider", value(&settings.metricProvider), "metric provider")
-        ("v8Flags", value(&settings.v8Flags)->multitoken(), "v8 flags")
-        ("initV8", value(&settings.initV8), "specify whether v8 should be initialized")
+        ("workers", value(&settings.workers), "number of workers")
+        ("bootstrapFile", value(&settings.bootstrapFile), "bootstrap file")
         ("maxOldSpaceSize", value(&settings.maxOldSpaceSize), "max old space size in MB")
         ("maxSemiSpaceSize", value(&settings.maxSemiSpaceSize), "max semi space size in MB")
         ("maxExecutableSize", value(&settings.maxExecutableSize), "max executable size in MB")
         ("maxStackSize", value(&settings.maxStackSize), "max isolate stack size in bytes");
+}
+
+static void AddPlatformOptions(options_description& desc, PlatformSettings& settings) {
+    // Platform parsing options should be added here.
+    desc.add_options()
+        ("loggingProvider", value(&settings.loggingProvider), "logging provider")
+        ("metricProvider", value(&settings.metricProvider), "metric provider")
+        ("v8Flags", value(&settings.v8Flags)->multitoken(), "v8 flags")
+        ("initV8", value(&settings.initV8), "specify whether v8 should be initialized");
+}
+
+bool settings_parser::Parse(const std::vector<std::string>& args, ZoneSettings& settings) {
+    options_description desc;
+    AddZoneOptions(desc, settings);
 
     try {
         variables_map vm;
         store(command_line_parser(args).options(desc).run(), vm);
         notify(vm);
     } catch (std::exception& ex) {
-        std::cerr << "Failed to parse settings. Error: " << ex.what() << std::endl;
+        std::cerr << "Failed to parse zone settings. Error: " << ex.what() << std::endl;
         return false;
     }
 
-    NAPA_ASSERT(settings.cores > 0, "The number of cores must be greater than 0");
+    NAPA_ASSERT(settings.workers > 0, "The number of workers must be greater than 0");
     NAPA_ASSERT(settings.maxStackSize > 0, "The maximum allowed stack size must be greater than 0");
 
     return true;
 }
 
-bool settings_parser::ParseFromString(const std::string& str, Settings& settings) {
-    std::vector<std::string> args;
+bool settings_parser::Parse(const std::vector<std::string>& args, PlatformSettings& settings) {
+    options_description desc;
+    AddZoneOptions(desc, settings);
+    AddPlatformOptions(desc, settings);
 
     try {
-        boost::split(args, str, boost::is_any_of("\t "), boost::token_compress_on);
-    } catch (std::exception& ex) {
-        std::cerr << "Failed to split input string [" << str << "] error: " << ex.what() << std::endl;
+        variables_map vm;
+        store(command_line_parser(args).options(desc).run(), vm);
+        notify(vm);
+    }
+    catch (std::exception& ex) {
+        std::cerr << "Failed to parse platform settings. Error: " << ex.what() << std::endl;
         return false;
     }
 
-    return Parse(args, settings);
-}
-
-bool settings_parser::ParseFromConsole(int argc, char* argv[], Settings& settings) {
-    std::vector<std::string> args;
-
-    for (auto i = 0; i < argc; i++) {
-        args.emplace_back(argv[i]);
-    }
-
-    return Parse(args, settings);
+    return true;
 }
