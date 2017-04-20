@@ -55,9 +55,9 @@
     <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\platform.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\thread-local-storage.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\providers\providers.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\core.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\load-task.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\run-task.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\worker.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\broadcast-task.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\execute-task.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\terminable-task.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\timeout-service.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\v8\v8-common.cpp" />
@@ -69,7 +69,7 @@
   <!-- Test code -->
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)\core-tests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\worker-tests.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\tasks-tests.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\object-transport-v8-helpers-tests.cpp" />
   </ItemGroup>

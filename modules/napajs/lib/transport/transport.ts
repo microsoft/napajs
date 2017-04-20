@@ -1,16 +1,28 @@
 import * as path from 'path';
 import * as transportable from './transportable';
+import * as nontransportable from './non-transportable';
 
 /// <summary> Per-isolate cid => constructor registry. </summary>
 let _registry: Map<string, new(...args) => transportable.Transportable> 
     = new Map<string, new(...args) => transportable.Transportable>(); 
 
 /// <summary> Register a TransportableObject sub-class with a Constructor ID (cid). </summary>
-export function register(cid: string, subClass: new(...args) => any) {
+export function register(subClass: new(...args) => any) {
+    // Check cid from constructor first, which is for TransportableObject. 
+    // Thus we don't need to construct the object to get cid according to Transportable interface. 
+    let cid: string = subClass['_cid'];
+    if (cid == null) {
+        cid = new subClass().cid();
+    }
+    if (cid == null) {
+        throw new Error(`Class "${subClass.name}" doesn't have cid property, did you forget put @cid decorator before class declaration?`);
+    }
+    if (nontransportable.CID === cid) {
+        throw new Error(`Class "${subClass.name}" is not transportable.`);
+    }
     if (_registry.has(cid)) {
         throw new Error(`Constructor ID (cid) "${cid}" is already registered.`);
     }
-    subClass['_cid'] = cid;
     _registry.set(cid, subClass);
 }
 

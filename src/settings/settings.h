@@ -8,35 +8,44 @@
 
 namespace napa {
 
-    /// <summary> The settings a user may set to customize napa. Initialized with defaults. </summary>
-    struct Settings {
+    /// <summary> Zone specific settings. </summary>
+    struct ZoneSettings {
 
-        /// <summary> The number of container cores. </summary>
-        uint32_t cores = std::max(1u, std::thread::hardware_concurrency() / 2);
+        /// <summary> The zone id. </summary>
+        std::string id;
 
-        /// <summary> The logging provider (cross-container). </summary>
-        std::string loggingProvider = "console";
+        /// <summary> The number of zone workers. </summary>
+        uint32_t workers = std::max(1u, std::thread::hardware_concurrency() / 2);
 
-        /// <summary> The metric provider (cross-container). </summary>
-        std::string metricProvider;
+        /// <summary> A file that will be loaded on all zone workers in global scope. </summary>
+        std::string bootstrapFile;
 
-        /// <summary> V8 flags (cross-container). </summary>
-        std::vector<std::string> v8Flags;
-
-        /// <summary> A flag to specify whether v8 should be initialized (cross-container). </summary>
-        bool initV8 = true;
-
-        /// <summary> Isolate memory contstraint - The maximum old space size in megabytes. </summary>
+        /// <summary> Isolate memory constraint - The maximum old space size in megabytes. </summary>
         uint32_t maxOldSpaceSize = 0u;
 
-        /// <summary> Isolate memory contstraint - The maximum semi space size in megabytes. </summary>
+        /// <summary> Isolate memory constraint - The maximum semi space size in megabytes. </summary>
         uint32_t maxSemiSpaceSize = 0u;
 
-        /// <summary> Isolate memory contstraint - The maximum executable size in megabytes. </summary>
+        /// <summary> Isolate memory constraint - The maximum executable size in megabytes. </summary>
         uint32_t maxExecutableSize = 0u;
 
         /// <summary> The maximum size that the isolate stack is allowed to grow in bytes. </summary>
         uint32_t maxStackSize = 500 * 1024;
     };
 
+    /// <summary> Platform settings. These are cross-zone settings as well as default settings for zones. </summary>
+    struct PlatformSettings : ZoneSettings {
+
+        /// <summary> The logging provider. </summary>
+        std::string loggingProvider = "console";
+
+        /// <summary> The metric provider. </summary>
+        std::string metricProvider;
+
+        /// <summary> V8 flags. </summary>
+        std::vector<std::string> v8Flags;
+
+        /// <summary> A flag to specify whether v8 should be initialized. </summary>
+        bool initV8 = true;
+    };
 }

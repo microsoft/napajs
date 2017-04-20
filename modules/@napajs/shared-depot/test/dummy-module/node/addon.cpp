@@ -1,6 +1,8 @@
 #include <napa-log.h>
 #include <napa/module/shared-wrap.h>
 
+#include <mutex>
+
 using namespace napa;
 using namespace napa::module;
 

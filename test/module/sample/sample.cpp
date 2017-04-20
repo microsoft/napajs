@@ -26,7 +26,7 @@ public:
         const int argc = 1;
         v8::Local<v8::Value> argv[argc] = { args[0] };
 
-        auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(_exportName);
+        auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(_exportName, SampleNode);
         auto context = isolate->GetCurrentContext();
         auto instance = constructor->NewInstance(context, argc, argv).ToLocalChecked();
 
@@ -40,7 +40,7 @@ public:
         const int argc = 1;
         v8::Local<v8::Value> argv[argc] = { v8::Number::New(isolate, score) };
 
-        auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(_exportName);
+        auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(_exportName, SampleNode);
         return scope.Escape(constructor->NewInstance(argc, argv));
     }
 
@@ -128,7 +128,7 @@ public:
         auto isolate = v8::Isolate::GetCurrent();
         v8::HandleScope scope(isolate);
 
-        auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(_exportName);
+        auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(_exportName, SampleContainer);
         JS_ASSERT(isolate, !constructor.IsEmpty(), "No registered constructor.");
 
         auto context = isolate->GetCurrentContext();

@@ -11,19 +11,19 @@ namespace napa {
 namespace scheduler {
 
     /// <summary> A task for loading javascript source code. </summary>
-    class LoadTask : public Task {
+    class BroadcastTask : public Task {
     public:
         
         /// <summary> Signature of the callback function. </summary>
-        typedef std::function<void(NapaResponseCode responseCode)> LoadTaskCallback;
+        typedef std::function<void(NapaResponseCode responseCode)> BroadcastTaskCallback;
 
         /// <summary> Constructor. </summary>
         /// <param name="source"> The JS source code to load on the isolate the runs this task. </param>
         /// <param name="sourceOrigin"> The origin of the source code. </param>
         /// <param name="callback"> A callback that is triggered when the task execution completed. </param>
-        LoadTask(std::string source,
+        BroadcastTask(std::string source,
             std::string sourceOrigin = "",
-            LoadTaskCallback callback = [](NapaResponseCode) {});
+            BroadcastTaskCallback callback = [](NapaResponseCode) {});
 
         /// <summary> Overrides Task.Execute to define loading execution logic. </summary>
         virtual void Execute() override;
@@ -31,7 +31,7 @@ namespace scheduler {
     private:
         std::string _source;
         std::string _sourceOrigin;
-        LoadTaskCallback _callback;
+        BroadcastTaskCallback _callback;
     };
 }
 }

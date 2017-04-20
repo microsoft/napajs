@@ -23,7 +23,7 @@ static LoggingProvider* _loggingProvider = nullptr;
 static MetricProvider* _metricProvider = nullptr;
 
 
-bool napa::providers::Initialize(const napa::Settings& settings) {
+bool napa::providers::Initialize(const napa::PlatformSettings& settings) {
     try {
         _loggingProvider = LoadLoggingProvider(settings.loggingProvider);
         _metricProvider = LoadMetricProvider(settings.metricProvider);

@@ -1,7 +1,7 @@
 import * as zone from './zone';
 import * as napa from './napa-zone';
 import * as node from './node-zone';
-import * as addon from '../bin/addon';
+var addon = require('../../bin/addon');
 
 /// <summary> 
 ///     Describes the available platform settings, these setting include cross zone settings

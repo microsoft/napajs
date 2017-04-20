@@ -60,7 +60,7 @@
     <Robocopy Include="$(V8MiscPath)\snapshot_blob.bin">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
-    <Robocopy Include="$(MSBuildThisFileDirectory)\test.js">
+    <Robocopy Include="$(MSBuildThisFileDirectory)\bootstrap.js">
       <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
     </Robocopy>
   </ItemGroup>

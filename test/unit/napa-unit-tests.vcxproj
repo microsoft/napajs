@@ -37,7 +37,6 @@
   <!-- Product code that is tested and needs to compile -->
   <ItemGroup>
     <ClCompile Include="$(NapaVanillaRoot)\src\module\core-modules\file-system-helpers.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\module\global-store.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\module-resolver.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\platform.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\simple-thread-pool.cpp" />
@@ -49,7 +48,6 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="module\file-system-helpers-tests.cpp" />
-    <ClCompile Include="module\global-store-tests.cpp" />
     <ClCompile Include="module\module-resolver-tests.cpp" />
     <ClCompile Include="object-transport\object-transport-tests.cpp" />
     <ClCompile Include="scheduler\scheduler-tests.cpp" />

@@ -7,28 +7,40 @@
 /// 
 /// </summary>
 
+/// <summary> export transport.register and TransportContext to avoid multiple import from client side. </summary>
+import * as memory from '../memory';
+import * as nontransportable from './non-transportable';
 import * as transport from './transport'
 import * as path from 'path';
 
 /// <summary> Transport context carries additional information needed to unmarshall 
-/// objects, besides the payload itself. Currently, only std::shared_ptr<T> is saved/loaded via TransportContext,
+/// objects, besides the payload itself. Currently, only std::shared_ptr<T> is transported via TransportContext,
 /// since their lifecycle are beyond an V8 isolate thus cannot be managed only via payload.
 /// TransportContext is a C++ add-on and only accessed from C++ thus no method is exposed to JavaScript world.
 /// </summary>
-export declare class TransportContext {
-    /// <summary> C++ interface for loading shared_ptr<T> from handleValue. </summary>
-    /// template <typename T>
-    /// std::shared_ptr<T> Load(v8::Local<v8::Value> handleValue);
-    
-    /// <summary> C++ interface for save shared_ptr<T> to a v8::Array (type of HandleValue). </summary>
-    /// template <typename T>
-    /// v8::Local<Array> Save(shared_ptr<T> pointer);
+/// <remarks> Reference: napa::binding::TransportContextWrapImpl. </remarks>
+export interface TransportContext {
+    /// <summary> Save a shared_ptr for later load in another isolate. </summary>
+    saveShared(object: memory.SharedWrap): void;
+
+    /// <summary> Load a shared_ptr from previous save in another isolate. </summary>
+    loadShared(handle: memory.Handle): memory.SharedWrap;
+
+    /// <summary> Number of shared object saved in this TransportContext. </summary> 
+    readonly sharedCount: number;
+}
+
+var addon = require('../../bin/addon');
+
+/// <summary> Create a transport context. </summary>
+export function createTransportContext(): TransportContext {
+    return new addon.TransportContextWrap();
 }
 
 /// <summary> Interface for transportable non-built-in JavaScript types. </summary> 
 export interface Transportable {
-    /// <summary> Constructor ID (cid) for transportable object. </summary>
-    readonly cid: string;
+    /// <summary> Get Constructor ID (cid) for transportable object. </summary>
+    cid(): string;
 
     /// <summary> Marshall object into plain JavaScript object. </summary>
     /// <param name='context'> Transport context for saving shared pointers, only usable for C++ addons implemented SharedWrap. </param>
@@ -52,8 +64,8 @@ export interface Transportable {
 /// </summary>
 export abstract class TransportableObject implements Transportable{
     /// <summary> Get Constructor ID (cid) for this object. </summary>
-    get cid(): string {
-        return Object.getPrototypeOf(this).constructor._cid;
+    cid(): string {
+        return Object.getPrototypeOf(this)._cid;
     }
 
     /// <summary> Subclass to save state to payload. </summary>
@@ -90,7 +102,8 @@ export abstract class TransportableObject implements Transportable{
 export function isTransportable(jsValue: any): boolean {
     return jsValue != null 
         && jsValue instanceof Object
-        && Object.getPrototypeOf(jsValue).hasOwnProperty('cid');
+        && typeof jsValue['cid'] === 'function'
+        && jsValue.cid() !== nontransportable.CID;
 }
 
 /// <summary> Decorator 'cid' to register a transportable class with a 'cid'. </summary>
@@ -108,7 +121,8 @@ export function cid<T extends TransportableObject>(moduleId: string, className?:
     }
 
     return (constructor: new(...args: any[]) => any ) => {
-        transport.register(cid, constructor);
+        constructor['_cid'] = cid;
+        transport.register(constructor);
     }
 }
 

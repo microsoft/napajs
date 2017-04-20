@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include "scheduler/core.h"
+#include "scheduler/worker.h"
 #include "napa-initialization-guard.h"
 
 #include "v8.h"
@@ -32,26 +32,26 @@ private:
 // Make sure V8 it initialized exactly once.
 static NapaInitializationGuard _guard;
 
-TEST_CASE("core runs scheduled task", "[scheduler-core]") {
-    auto core = std::make_unique<Core>(0, Settings(), [](CoreId) {});
+TEST_CASE("worker runs scheduled task", "[scheduler-worker]") {
+    auto worker = std::make_unique<Worker>(0, ZoneSettings(), [](WorkerId) {});
     
     auto task = std::make_shared<TestTask>();
-    core->Schedule(task);
+    worker->Schedule(task);
 
-    core = nullptr; // Wait for core to complete all tasks.
+    worker = nullptr; // Wait for worker to complete all tasks.
 
     REQUIRE(task->numberOfExecutions == 1);
 }
 
-TEST_CASE("core notifies idle condition", "[scheduler-core]") {
+TEST_CASE("worker notifies idle condition", "[scheduler-worker]") {
     std::mutex mutex;
     std::condition_variable cv;
 
-    auto core = std::make_unique<Core>(0, Settings(), [&cv](CoreId) {
+    auto worker = std::make_unique<Worker>(0, ZoneSettings(), [&cv](WorkerId) {
         cv.notify_one();
     });
 
-    core->Schedule(std::make_shared<TestTask>());
+    worker->Schedule(std::make_shared<TestTask>());
 
     std::unique_lock<std::mutex> lock(mutex);
     bool idleNotificationReceived = (cv.wait_for(lock, std::chrono::milliseconds(500)) == std::cv_status::no_timeout);
@@ -59,22 +59,22 @@ TEST_CASE("core notifies idle condition", "[scheduler-core]") {
     REQUIRE(idleNotificationReceived == true);
 }
 
-TEST_CASE("core runs all tasks before shutting down", "[scheduler-core]") {
-    auto core = std::make_unique<Core>(0, Settings(), [](CoreId) {});
+TEST_CASE("worker runs all tasks before shutting down", "[scheduler-worker]") {
+    auto worker = std::make_unique<Worker>(0, ZoneSettings(), [](WorkerId) {});
 
     auto task = std::make_shared<TestTask>();
 
     for (size_t i = 0; i < 100; i++) {
-        core->Schedule(task);
+        worker->Schedule(task);
     }
 
-    core = nullptr; // Wait for core to complete all tasks.
+    worker = nullptr; // Wait for worker to complete all tasks.
 
     REQUIRE(task->numberOfExecutions == 100);
 }
 
-TEST_CASE("core runs javascript task", "[scheduler-core]") {
-    auto core = std::make_unique<Core>(0, Settings(), [](CoreId) {});
+TEST_CASE("worker runs javascript task", "[scheduler-worker]") {
+    auto worker = std::make_unique<Worker>(0, ZoneSettings(), [](WorkerId) {});
 
     auto task = std::make_shared<TestTask>([]() {
         auto isolate = v8::Isolate::GetCurrent();
@@ -92,15 +92,15 @@ TEST_CASE("core runs javascript task", "[scheduler-core]") {
         return std::string(*utf8);
     });
 
-    core->Schedule(task);
+    worker->Schedule(task);
 
-    core = nullptr; // Wait for core to complete all tasks.
+    worker = nullptr; // Wait for worker to complete all tasks.
 
     REQUIRE(task->result == "Hello, World!");
 }
 
-TEST_CASE("core runs javascript with stack overflow", "[scheduler-core]") {
-    auto core = std::make_unique<Core>(0, Settings(), [](CoreId) {});
+TEST_CASE("worker runs javascript with stack overflow", "[scheduler-worker]") {
+    auto worker = std::make_unique<Worker>(0, ZoneSettings(), [](WorkerId) {});
 
     auto task = std::make_shared<TestTask>([]() {
         auto isolate = v8::Isolate::GetCurrent();
@@ -124,9 +124,9 @@ TEST_CASE("core runs javascript with stack overflow", "[scheduler-core]") {
         return std::string();
     });
 
-    core->Schedule(task);
+    worker->Schedule(task);
 
-    core = nullptr; // Wait for core to complete all tasks.
+    worker = nullptr; // Wait for worker to complete all tasks.
 
     REQUIRE(task->result == "RangeError: Maximum call stack size exceeded");
 }

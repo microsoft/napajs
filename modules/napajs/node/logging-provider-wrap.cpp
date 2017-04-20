@@ -23,7 +23,7 @@ void LoggingProviderWrap::NewInstance(const v8::FunctionCallbackInfo<v8::Value>&
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
-    auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(_exportName);
+    auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(_exportName, LoggingProviderWrap);
     auto context = isolate->GetCurrentContext();
     auto instance = constructor->NewInstance(context).ToLocalChecked();
 
