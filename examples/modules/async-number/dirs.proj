@@ -2,10 +2,10 @@
   <Import Project="$(EnvironmentConfig)" />
 
   <ItemGroup>
-    <ProjectFile Include="async-number\dirs.proj" />
-    <ProjectFile Include="hello-world\dirs.proj" />
-    <ProjectFile Include="plus-number\dirs.proj" />
-    <ProjectFile Include="plus-number-transporter\dirs.proj" />
+    <ProjectFile Include="napa\addon.vcxproj" />
+    <ProjectFile Include="node\addon.vcxproj" />
+    <ProjectFile Include="script\script.proj" />
+    <ProjectFile Include="test\async-number-test.njsproj" />
   </ItemGroup>
 
   <Import Project="$(ExtendedTargetsPath)\Traversal.targets" />

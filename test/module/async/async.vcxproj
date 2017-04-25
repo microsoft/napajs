@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(EnvironmentConfig)" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -15,32 +15,29 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
+    <AddonName>async</AddonName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AddonName>addon</AddonName>
-    <TargetName Condition=" '$(AddonType)' != 'Napa' ">$(AddonName)</TargetName>
-    <TargetName Condition=" '$(AddonType)' == 'Napa' ">$(AddonName)_napa</TargetName>
+    <AddonName>async</AddonName>
   </PropertyGroup>
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.props" />
   <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
     <ClCompile>
-      <PreprocessorDefinitions Condition=" '$(AddonType)' != 'Napa' ">BUILDING_NODE_EXTENSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition=" '$(AddonType)' == 'Napa' ">NAPA_MODULE_EXTENSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NAPA_MODULE_EXTENSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)\addon.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\async.cpp" />
   </ItemGroup>
   <Target Name="ChangeExtention" AfterTargets="Build">
-    <Move SourceFiles="$(OutputPath)\$(TargetFileName)" DestinationFiles="$(OutputPath)\$(AddonName).node" Condition=" '$(AddonType)' != 'Napa' " />
-    <Move SourceFiles="$(OutputPath)\$(TargetFileName)" DestinationFiles="$(OutputPath)\$(AddonName).napa" Condition=" '$(AddonType)' == 'Napa' " />
+    <Move SourceFiles="$(OutputPath)\$(TargetFileName)" DestinationFiles="$(OutputPath)\$(AddonName).napa" />
   </Target>
-  <Import Project="$(PACKAGESROOT)\NodeJs.Library\exports.props" Condition=" '$(AddonType)' != 'Napa' " />
-  <Import Project="$(PACKAGESROOT)\V8.Library\exports.props" Condition=" '$(AddonType)' == 'Napa' " />
+  <Import Project="$(PACKAGESROOT)\V8.Library\exports.props" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

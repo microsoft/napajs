@@ -21,7 +21,9 @@ namespace scheduler {
         /// <param name="id"> The task id. </param>
         /// <param name="settings"> A settings object. </param>
         /// <param name="idleNotificationCallback"> Triggers when the worker becomes idle. </param>
-        Worker(WorkerId id, const ZoneSettings &settings, std::function<void(WorkerId)> idleNotificationCallback);
+        Worker(WorkerId id,
+               const ZoneSettings &settings,
+               std::function<void(WorkerId)> idleNotificationCallback);
 
         /// <summary> Destructor. </summary>
         /// <note> This will block until all pending tasks are completed. </note>

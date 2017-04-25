@@ -5,6 +5,8 @@
 #define USING_V8_SHARED 1
 #endif
 
+#include "worker-context.h"
+
 #include <napa/exports.h>
 
 #include <array>
@@ -46,56 +48,6 @@ namespace module {
     struct ConstructorInfo {
         std::unordered_map<std::string, PersistentConstructor> constructorMap;
     };
-
-    /// <summary> Isolate data Id to store Napa specific data for a module to be able to access. </summary>
-    enum class IsolateDataId : uint32_t {
-        /// <summary> Isolate instance. </summary>
-        ISOLATE = 0,
-
-        /// <summary> Module's persistent constructor object. </summary>
-        CONSTRUCTOR,
-
-        /// <summary> Module loader instance. </summary>
-        MODULE_LOADER,
-
-        /// <summary> End of index. </summary>
-        END_OF_ISOLATE_DATA_ID
-    };
-
-    /// <summary> Napa specific isolate data stored at TLS. </summary>
-    class NAPA_API IsolateData {
-    public:
-
-        /// <summary> Returns the single instance of this class. </summary>
-        static IsolateData& GetInstance();
-
-        /// <summary> Initialize isolate data. </summary>
-        static void Init();
-
-        /// <summary> Get stored TLS data. </summary>
-        /// <param name="isolateDataId"> Pre-defined data id for Napa specific data. </param>
-        /// <returns> Stored TLS data. </returns>
-        static void* Get(IsolateDataId isolateDataId);
-
-        /// <summary> Set TLS data into the given slot. </summary>
-        /// <param name="isolateDataId"> Pre-defined data id for Napa specific data. </param>
-        /// <param name="data"> Pointer to stored data. </param>
-        static void Set(IsolateDataId isolateDataId,
-                        void* data);
-
-    private:
-
-        /// <summary> Constructor to assign TLS index to all data. It's done once at process level. </summary>
-        IsolateData();
-
-        /// <summary> Destructor. </summary>
-        ~IsolateData();
-
-        /// <summary> It stores the tls index for all data. </summary>
-        std::array<uint32_t, static_cast<size_t>(IsolateDataId::END_OF_ISOLATE_DATA_ID)> _tlsIndexes;
-    };
-
-    #define INIT_ISOLATE_DATA napa::module::IsolateData::Init
 
     /// <summary> It binds the method name with V8 function. </summary>
     /// <param name="exports"> V8 object to bind with the given callback function. </param>
@@ -154,10 +106,10 @@ namespace module {
         v8::HandleScope scope(isolate);
 
         auto constructorInfo =
-            static_cast<ConstructorInfo*>(IsolateData::Get(IsolateDataId::CONSTRUCTOR));
+            static_cast<ConstructorInfo*>(WorkerContext::Get(WorkerContextItem::CONSTRUCTOR));
         if (constructorInfo == nullptr) {
             constructorInfo = new ConstructorInfo();
-            IsolateData::Set(IsolateDataId::CONSTRUCTOR, constructorInfo);
+            WorkerContext::Set(WorkerContextItem::CONSTRUCTOR, constructorInfo);
         }
 
         constructorInfo->constructorMap.emplace(std::piecewise_construct,
@@ -173,7 +125,7 @@ namespace module {
         v8::EscapableHandleScope scope(isolate);
 
         auto constructorInfo =
-            static_cast<ConstructorInfo*>(IsolateData::Get(IsolateDataId::CONSTRUCTOR));
+            static_cast<ConstructorInfo*>(WorkerContext::Get(WorkerContextItem::CONSTRUCTOR));
         if (constructorInfo == nullptr) {
             return scope.Escape(v8::Local<v8::Function>());
         }

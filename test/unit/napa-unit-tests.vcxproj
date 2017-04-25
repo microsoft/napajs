@@ -28,7 +28,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <DisableSpecificWarnings>4100;4996;4459</DisableSpecificWarnings>
-      <PreprocessorDefinitions>NAPA_LOG_DISABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NAPA_EXPORTS;NAPA_LOG_DISABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -38,7 +38,9 @@
   <ItemGroup>
     <ClCompile Include="$(NapaVanillaRoot)\src\module\core-modules\file-system-helpers.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\module-resolver.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\worker-context.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\platform.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\thread-local-storage.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\simple-thread-pool.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\timeout-service.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\settings\settings-parser.cpp" />

@@ -3,18 +3,18 @@
   <Import Project="$(EnvironmentConfig)" />
   
   <ItemGroup>
-    <QCustomProjectReference Include="$(NapaVanillaRoot)\examples\modules\plus-number\napa\addon.vcxproj" />
-    <QCustomProjectReference Include="$(NapaVanillaRoot)\examples\modules\plus-number\node\addon.vcxproj" />
+    <QCustomProjectReference Include="$(NapaVanillaRoot)\examples\modules\async-number\napa\addon.vcxproj" />
+    <QCustomProjectReference Include="$(NapaVanillaRoot)\examples\modules\async-number\node\addon.vcxproj" />
   </ItemGroup>
   
   <ItemGroup>
-    <QCustomInput Include="src\plus-number.ts" />
+    <QCustomInput Include="src\async-number.ts" />
     <QCustomInput Include="$(NapaBuildRoot)\**\*" />
   </ItemGroup>
   
   <Target Name="BuildScripts" AfterTargets="AfterBuild">
     <Message Text="Compile scripts." />
-    <Exec Command="$(TSCompile) src\plus-number.ts --declaration --typeRoots $(TypesRoot) --outDir $(O)" />
+    <Exec Command="$(TSCompile) src\async-number.ts --declaration --typeRoots $(TypesRoot) --outDir $(O)" />
   </Target>
   
   <Target Name="CreateNpmPackage" DependsOnTargets="BuildScripts" AfterTargets="AfterBuild">
@@ -24,10 +24,8 @@
     <MakeDir Directories="$(O)\dist\types" ContinueOnError="false" Condition="!Exists('$(O)\dist\types')" />
     <Copy SourceFiles="..\node\$(O)\addon.node" DestinationFolder="$(O)\dist\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="..\napa\$(O)\addon.napa" DestinationFolder="$(O)\dist\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(NapaVanillaRoot)\examples\modules\plus-number\src\$(O)\plus-number.dll" DestinationFolder="$(O)\dist\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(NapaVanillaRoot)\src\$(O)\napa.dll" DestinationFolder="$(O)\dist\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(O)\plus-number.js" DestinationFolder="$(O)\dist\lib" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(O)\plus-number.d.ts" DestinationFolder="$(O)\dist\types" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(O)\async-number.js" DestinationFolder="$(O)\dist\lib" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(O)\async-number.d.ts" DestinationFolder="$(O)\dist\types" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="package.json" DestinationFolder="$(O)\dist" ContinueOnError="false" SkipUnchangedFiles="true" />
   </Target>
 

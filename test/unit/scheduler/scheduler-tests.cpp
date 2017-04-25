@@ -38,7 +38,9 @@ template <uint32_t I>
 class TestWorker {
 public:
 
-    TestWorker(WorkerId id, const ZoneSettings &settings, std::function<void(WorkerId)> idleCallback) : _id(id) {
+    TestWorker(WorkerId id,
+               const ZoneSettings &settings,
+               std::function<void(WorkerId)> idleCallback) : _id(id) {
         numberOfWorkers++;
         _idleNotificationCallback = idleCallback;
     }
@@ -75,7 +77,7 @@ TEST_CASE("scheduler creates correct number of worker", "[scheduler]") {
     ZoneSettings settings;
     settings.workers = 3;
 
-    auto scehduler = std::make_unique<SchedulerImpl<TestWorker<1>>>(settings);
+    auto scheduler = std::make_unique<SchedulerImpl<TestWorker<1>>>(settings);
 
     REQUIRE(TestWorker<1>::numberOfWorkers == settings.workers);
 }
@@ -84,27 +86,27 @@ TEST_CASE("scheduler assigns tasks correctly", "[scheduler]") {
     ZoneSettings settings;
     settings.workers = 3;
 
-    auto scehduler = std::make_unique<SchedulerImpl<TestWorker<2>>>(settings);
+    auto scheduler = std::make_unique<SchedulerImpl<TestWorker<2>>>(settings);
     auto task = std::make_shared<TestTask>();
 
     SECTION("schedules on exactly one worker") {
-        scehduler->Schedule(task);
-        scehduler = nullptr; // force draining all scheduled tasks
+        scheduler->Schedule(task);
+        scheduler = nullptr; // force draining all scheduled tasks
 
         REQUIRE(task->numberOfExecutions == 1);
     }
 
     SECTION("schedule on a specific worker") {
-        scehduler->ScheduleOnWorker(2, task);
-        scehduler = nullptr; // force draining all scheduled tasks
+        scheduler->ScheduleOnWorker(2, task);
+        scheduler = nullptr; // force draining all scheduled tasks
 
         REQUIRE(task->numberOfExecutions == 1);
         REQUIRE(task->lastExecutedWorkerId == 2);
     }
 
     SECTION("schedule on all workers") {
-        scehduler->ScheduleOnAllWorkers(task);
-        scehduler = nullptr; // force draining all scheduled tasks
+        scheduler->ScheduleOnAllWorkers(task);
+        scheduler = nullptr; // force draining all scheduled tasks
 
         REQUIRE(task->numberOfExecutions == settings.workers);
     }
@@ -114,16 +116,16 @@ TEST_CASE("scheduler distributes and schedules all tasks", "[scheduler]") {
     ZoneSettings settings;
     settings.workers = 4;
 
-    auto scehduler = std::make_unique<SchedulerImpl<TestWorker<3>>>(settings);
+    auto scheduler = std::make_unique<SchedulerImpl<TestWorker<3>>>(settings);
 
     std::vector<std::shared_ptr<TestTask>> tasks;
     for (size_t i = 0; i < 1000; i++) {
         auto task = std::make_shared<TestTask>();
         tasks.push_back(task);
-        scehduler->Schedule(task);
+        scheduler->Schedule(task);
     }
 
-    scehduler = nullptr; // force draining all scheduled tasks
+    scheduler = nullptr; // force draining all scheduled tasks
 
     std::vector<bool> scheduledWorkersFlags = { false, false, false, false };
     for (size_t i = 0; i < 1000; i++) {

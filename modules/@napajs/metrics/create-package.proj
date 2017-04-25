@@ -17,7 +17,7 @@
     <CallTarget Targets="NpmInstall" />
     
     <Message Text="Compile scripts." />
-    <Exec Command="$(NapaBuildRoot)\node\node.exe $(NapaBuildRoot)\typescript\lib\tsc.js index.ts --declaration --outDir $(O)" />
+    <Exec Command="$(TSCompile) index.ts --declaration --outDir $(O)" />
     
     <CallTarget Targets="NpmCleanup" />
   </Target>

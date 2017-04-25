@@ -2,8 +2,10 @@
 
 #include "module/module-loader.h"
 #include "v8/array-buffer-allocator.h"
+#include "zone/zone-impl.h"
 
 #include <napa-log.h>
+#include <napa/module/worker-context.h>
 
 // Disable third party library warnnings
 #pragma warning(push)
@@ -38,14 +40,16 @@ struct Worker::Impl {
     v8::Isolate* isolate;
 
     /// <summary> A callback function that is called when a worker becomes idle. </summary>
-    std::function<void(WorkerId)> idleNotficationCallback;
+    std::function<void(WorkerId)> idleNotificationCallback;
 };
 
-Worker::Worker(WorkerId id, const ZoneSettings& settings, std::function<void(WorkerId)> idleNotificationCallback)
+Worker::Worker(WorkerId id,
+               const ZoneSettings& settings,
+               std::function<void(WorkerId)> idleNotificationCallback)
     : _impl(std::make_unique<Worker::Impl>()) {
 
     _impl->id = id;
-    _impl->idleNotficationCallback = std::move(idleNotificationCallback);
+    _impl->idleNotificationCallback = std::move(idleNotificationCallback);
     _impl->workerThread = std::thread(&Worker::WorkerThreadFunc, this, settings);
 }
 
@@ -70,6 +74,14 @@ void Worker::Schedule(std::shared_ptr<Task> task) {
 }
 
 void Worker::WorkerThreadFunc(const ZoneSettings& settings) {
+    // Zone instance into TLS.
+    module::WorkerContext::Set(module::WorkerContextItem::ZONE,
+                               reinterpret_cast<void*>(ZoneImpl::Get(settings.id).get()));
+
+    // Worker Id into TLS.
+    module::WorkerContext::Set(module::WorkerContextItem::WORKER_ID,
+                               reinterpret_cast<void*>(static_cast<uintptr_t>(_impl->id)));
+
     _impl->isolate = CreateIsolate(settings);
 
     // If any user of the v8.dll uses a locker on any isolate, all isolates must be locked before use.
@@ -94,7 +106,7 @@ void Worker::WorkerThreadFunc(const ZoneSettings& settings) {
         
         // Retrieve a task to execute. Wait if non exists.
         if (!_impl->tasks.try_dequeue(task)) {
-            _impl->idleNotficationCallback(_impl->id);
+            _impl->idleNotificationCallback(_impl->id);
             _impl->tasks.wait_dequeue(task);
         }
 
