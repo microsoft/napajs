@@ -36,6 +36,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\api-tests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\memory-tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(NapaVanillaRoot)\src\napa.vcxproj" />

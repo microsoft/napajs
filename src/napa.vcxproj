@@ -38,6 +38,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="api\api.cpp" />
+    <ClCompile Include="memory\built-in-allocators.cpp" />
     <ClCompile Include="module\binary-module-loader.cpp" />
     <ClCompile Include="module\core-module-loader.cpp" />
     <ClCompile Include="module\javascript-module-loader.cpp" />

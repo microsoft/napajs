@@ -133,3 +133,35 @@ EXTERN_C NAPA_API napa_response_code napa_shutdown();
 /// <summary> Convert the napa response code to its string representation. </summary>
 /// <param name="code"> The response code. </param>
 EXTERN_C NAPA_API const char* napa_response_code_to_string(napa_response_code code);
+
+/// <summary> Callback for customized memory allocator. </summary>
+typedef void* (*napa_allocate_callback)(size_t);
+typedef void (*napa_deallocate_callback)(void*, size_t);
+
+/// <summary> Set customized allocator, which will be used for napa_allocate and napa_deallocate.
+/// If user doesn't call napa_allocator_set, C runtime malloc/free from napa.dll will be used. </summary>
+/// <param name="allocate_callback"> Function pointer for allocating memory, which should be valid during the entire process. </param>
+/// <param name="deallocate_callback"> Function pointer for deallocating memory, which should be valid during the entire process. </param>
+EXTERN_C NAPA_API void napa_allocator_set(
+    napa_allocate_callback allocate_callback, 
+    napa_deallocate_callback deallocate_callback);
+
+/// <summary> Allocate memory using napa allocator from napa_allocator_set, which is using C runtime ::malloc if not called. </summary>
+/// <param name="size"> Size of memory requested in byte. </param>
+/// <returns> Allocated memory. </returns>
+EXTERN_C NAPA_API void* napa_allocate(size_t size);
+
+/// <summary> Free memory using napa allocator from napa_allocator_set, which is using C runtime ::free if not called. </summary>
+/// <param name="pointer"> Pointer to memory to be freed. </param>
+/// <param name="size_hint"> Hint of size to deallocate. </param>
+EXTERN_C NAPA_API void napa_deallocate(void* pointer, size_t size_hint);
+
+/// <summary> Allocate memory using C runtime ::malloc from napa.dll. </summary>
+/// <param name="size"> Size of memory requested in byte. </param>
+/// <returns> Allocated memory. </returns>
+EXTERN_C NAPA_API void* napa_malloc(size_t size);
+
+/// <summary> Free memory using C runtime ::free from napa.dll. </summary>
+/// <param name="pointer"> Pointer to memory to be freed. </param>
+/// <param name="size_hint"> Hint of size to deallocate. </param>
+EXTERN_C NAPA_API void napa_free(void* pointer, size_t size_hint);

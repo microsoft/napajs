@@ -17,27 +17,28 @@ namespace module {
         static void Init() {
             auto isolate = v8::Isolate::GetCurrent();
             auto constructorTemplate = v8::FunctionTemplate::New(isolate, ConstructorCallback);
-            constructorTemplate->SetClassName(v8_helpers::MakeV8String(isolate, _exportName));
+            constructorTemplate->SetClassName(v8_helpers::MakeV8String(isolate, exportName));
             constructorTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 
-            InitConstructorTemplate(constructorTemplate);
+            InitConstructorTemplate<SharedWrap>(constructorTemplate);
             auto constructor = constructorTemplate->GetFunction();
             InitConstructor("<SharedWrap>", constructor);
-            NAPA_SET_PERSISTENT_CONSTRUCTOR(_exportName, constructor);
+            NAPA_SET_PERSISTENT_CONSTRUCTOR(exportName, constructor);
         }
 
         /// <summary> It initialize constructor template of SharedWrap or sub-class to have SharedWrap methods. </summary>
         /// <param name="constructorTemplate"> Constructor template of wrap class. </param>
         /// <remarks> Should call this method in sub-class Init. </remarks>
+        template <typename WrapType>
         static void InitConstructorTemplate(v8::Local<v8::FunctionTemplate> constructorTemplate) {
             // Blessed with methods from napajs.transport.Transportable.
             TransportableObject::InitConstructorTemplate(constructorTemplate);
 
-            NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "load", LoadCallback);
-            NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "save", SaveCallback);
-            NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "isNull", IsNullCallback);
-            NAPA_SET_ACCESSOR(constructorTemplate, "refCount", RefCountCallback, nullptr);
-            NAPA_SET_ACCESSOR(constructorTemplate, "handle", GetHandleCallback, nullptr);
+            NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "load", WrapType::LoadCallback);
+            NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "save", WrapType::SaveCallback);
+            NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "isNull", WrapType::IsNullCallback);
+            NAPA_SET_ACCESSOR(constructorTemplate, "refCount", WrapType::RefCountCallback, nullptr);
+            NAPA_SET_ACCESSOR(constructorTemplate, "handle", WrapType::GetHandleCallback, nullptr);
         }
 
         /// <summary> It initialize constructor of SharedWrap or sub-class. </summary>
@@ -48,20 +49,28 @@ namespace module {
             TransportableObject::InitConstructor(cid, constructor);
         }
 
-        /// <summary> It creates SharedWrap from C++ world. </summary>
+        /// <summary> It creates a subclass of SharedWrap. </summary>
         /// <param name="object"> shared_ptr of object. </summary>
         /// <returns> V8 object of type SharedWrap. </summary>
-        template <typename T>
+        template <typename T, typename WrapType>
         static v8::Local<v8::Object> Create(std::shared_ptr<T> object) {
             auto isolate = v8::Isolate::GetCurrent();
             v8::EscapableHandleScope scope(isolate);
 
-            auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(_exportName, napa::module::SharedWrap);
+            auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(WrapType::exportName, WrapType);
             auto instance = constructor->NewInstance();
             auto wrap = NAPA_OBJECTWRAP::Unwrap<SharedWrap>(instance);
             wrap->_object = std::static_pointer_cast<void>(std::move(object));
 
             return scope.Escape(instance);
+        }
+
+        /// <summary> It creates SharedWrap from C++ world. </summary>
+        /// <param name="object"> shared_ptr of object. </summary>
+        /// <returns> V8 object of type SharedWrap. </summary>
+        template <typename T>
+        static v8::Local<v8::Object> Create(std::shared_ptr<T> object) {
+            return Create<T, SharedWrap>(object);
         }
 
         /// <summary> Get shared_ptr of T, which is the type of contained native object. </summary>
@@ -79,6 +88,9 @@ namespace module {
         /// <summary> Declare constructor in public, so we can export class constructor in JavaScript world. </summary>
         NAPA_DECLARE_PERSISTENT_CONSTRUCTOR
 
+        /// <summary> Exported class name. </summary>
+        static constexpr const char* exportName = "SharedWrap";
+    
     protected:
         /// <summary> Default constructor. </summary>
         SharedWrap() = default;
@@ -86,10 +98,6 @@ namespace module {
         /// <summary> Constructor. </summary>
         explicit SharedWrap(std::shared_ptr<void> object) : _object(std::move(object)) {}
 
-    private:
-        /// <summary> Exported class name. </summary>
-        static constexpr const char* _exportName = "SharedWrap";
-        
         /// <summary> It creates SharedWrap from Javascript world. </summary>
         static void ConstructorCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
             auto isolate = v8::Isolate::GetCurrent();
@@ -105,7 +113,7 @@ namespace module {
         }
 
         /// <summary> It implements readonly Shareable.handle : Handle </summary>
-        static void GetHandleCallback(v8::Local<v8::String>, const v8::PropertyCallbackInfo<v8::Value>& args){
+        static void GetHandleCallback(v8::Local<v8::String> /*propertyName*/, const v8::PropertyCallbackInfo<v8::Value>& args){
             auto isolate = v8::Isolate::GetCurrent();
             v8::HandleScope scope(isolate);
             auto thisObject = NAPA_OBJECTWRAP::Unwrap<SharedWrap>(args.Holder());
@@ -113,7 +121,7 @@ namespace module {
         }
 
         /// <summary> It implments Shareable.refCount(): boolean </summary>
-        static void RefCountCallback(v8::Local<v8::String>, const v8::PropertyCallbackInfo<v8::Value>& args){
+        static void RefCountCallback(v8::Local<v8::String> /*propertyName*/, const v8::PropertyCallbackInfo<v8::Value>& args){
             auto isolate = v8::Isolate::GetCurrent();
             v8::HandleScope scope(isolate);
             auto thisObject = NAPA_OBJECTWRAP::Unwrap<SharedWrap>(args.Holder());
@@ -182,7 +190,7 @@ namespace module {
 
 /// <summary> It defines the persistent constructor for SharedWrap class. <summary>
 /// <remarks> Any module using ShardWrap must call this macro. </remarks>
-#define NAPA_DEFINE_PERSISTENT_SHARED_WRAP_CONSTRUCTOR NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(napa::module::SharedWrap)
+#define NAPA_DEFINE_PERSISTENT_SHARED_WRAP_CONSTRUCTOR() NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(napa::module::SharedWrap)
 
 /// <summary> It creates and registers the persistent constructor for SharedWrap class. <summary>
 /// <remarks> Any module using ShardWrap must run this macro. </remarks>

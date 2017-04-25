@@ -1,30 +1,12 @@
 #pragma once
 
+#include "napa-assert.h"
 #include <napa/providers/logging.h>
 
-#include <exception> 
-#include <iostream>
 #include <stdarg.h>
 
 /// <summary> The maximum string length of a single log call. Anything over will be truncated. </summary>
 const size_t LOG_MAX_SIZE = 512;
-
-#define NAPA_ASSERT(condition, message) do {            \
-    if (!(condition)) {                                 \
-        std::cerr << "Assertion failed: `"              \
-                  << #condition                         \
-                  << "`, file "                         \
-                  << __FILE__                           \
-                  << ", line "                          \
-                  << __LINE__                           \
-                  << " : "                              \
-                  << message                            \
-                  << "."                                \
-                  << std::endl;                         \
-        std::terminate();                               \
-    }                                                   \
-} while (false)
-
 
 inline void LogFormattedMessage(
     napa::providers::LoggingProvider& logger,

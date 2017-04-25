@@ -42,6 +42,7 @@
     <!-- <ClCompile Include="$(MSBuildThisFileDirectory)\addon-slim.cpp" /> -->
     <ClCompile Include="$(MSBuildThisFileDirectory)\addon.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\logging-provider-wrap.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\simple-allocator-debugger-wrap.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\transport-context-wrap-impl.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\zone-wrap.cpp" Condition=" '$(AddonType)' != 'Napa' " />
   </ItemGroup>
