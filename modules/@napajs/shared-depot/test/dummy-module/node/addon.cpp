@@ -6,7 +6,7 @@
 using namespace napa;
 using namespace napa::module;
 
-NAPA_DEFINE_PERSISTENT_SHARED_WRAP_CONSTRUCTOR
+NAPA_DEFINE_PERSISTENT_SHARED_WRAP_CONSTRUCTOR();
 
 struct SharedString {
 

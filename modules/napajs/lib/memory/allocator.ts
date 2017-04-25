@@ -6,22 +6,34 @@ import { Shareable } from './shareable';
 /// </summary> 
 export interface Allocator extends Shareable {
     /// <summary> Allocate memory of requested size in bytes. </summary>
+    /// <param name="size"> Size in bytes to allocate. </param>
     allocate(size: number): Handle;
 
-    /// <summary> Deallocate memory of requested pointer. </summary>
-    deallocate(pointer: Handle): void;
+    /// <summary> Deallocate memory of requested handle. </summary>
+    /// <param name="handle"> Handle of memory to deallocate. </param>
+    /// <param name="sizeHint"> Hint for the size of memory to deallocate. Pass 0 if unknown. </param>
+    deallocate(handle: Handle, sizeHint: number): void;
+
+    /// <summary> Type of allocator for better debuggability. </summary>
+    readonly type: string;
 }
 
 /// <summary> Javascript interface for allocator debugger. </summary>
 export interface AllocatorDebugger extends Allocator {
     /// <summary> Get debug info. </summary>
-    readonly debugInfo: any;
+    getDebugInfo(): string;
 }
 
-// TODO: @dapeng, export CrtAllocator from addon.
-export let CrtAllocator: Allocator = null;
+var addon = require('../../bin/addon');
 
+/// <summary> Export Crt allocator from napa.dll. </summary>
+export let CrtAllocator: Allocator = addon.getCrtAllocator();
+
+/// <summary> Export default allocator from napa.dll. </summary>
+export let DefaultAllocator: Allocator = addon.getDefaultAllocator();
+
+/// <summary> Create a debug allocator around allocator. </summary>
+/// <param name="allocator"> User allocator. </param>
 export function debugAllocator(allocator: Allocator): AllocatorDebugger {
-    /// TODO: @dapeng, return SimpleDebugAllocator from add-on.
-    return null;
+    return new addon.SimpleAllocatorDebuggerWrap(allocator);
 }

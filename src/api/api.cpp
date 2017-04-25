@@ -202,3 +202,39 @@ const char* napa_response_code_to_string(napa_response_code code) {
 
     return NAPA_REPONSE_CODE_STRINGS[code];
 }
+
+
+///////////////////////////////////////////////////////////////
+/// Implementation of napa.memory C API
+
+void* napa_malloc(size_t size) {
+    return ::malloc(size);
+}
+
+void napa_free(void* pointer, size_t /*size_hint*/) {
+    ::free(pointer);
+}
+
+namespace {
+    napa_allocate_callback _global_allocate = napa_malloc;
+    napa_deallocate_callback _global_deallocate = napa_free;
+} // namespace
+
+void napa_allocator_set(
+    napa_allocate_callback allocate_callback, 
+    napa_deallocate_callback deallocate_callback) {
+    
+    NAPA_ASSERT(allocate_callback != nullptr, "'allocate_callback' should be a valid function.");
+    NAPA_ASSERT(deallocate_callback != nullptr, "'deallocate_callback' should be a valid function.");
+
+    _global_allocate = allocate_callback;
+    _global_deallocate = deallocate_callback;
+}
+
+void* napa_allocate(size_t size) {
+    return _global_allocate(size);
+}
+
+void napa_deallocate(void* pointer, size_t size_hint) {
+    _global_deallocate(pointer, size_hint);
+}
