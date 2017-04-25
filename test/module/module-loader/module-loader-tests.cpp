@@ -4,18 +4,25 @@
 #include <napa/module/platform.h>
 #include <napa/module/module-internal.h>
 #include <napa/v8-helpers.h>
+#include <scheduler/scheduler.h>
+#include <zone/zone-impl.h>
 #include <v8/array-buffer-allocator.h>
 #include <v8/v8-common.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
-#include <future>
 
+#include <chrono>
+#include <condition_variable>
 #include <iostream>
+#include <future>
+#include <mutex>
+#include <thread>
 
 using namespace napa;
 using namespace napa::module;
+using namespace napa::scheduler;
 
 class V8InitializationGuard {
 public:
@@ -57,7 +64,7 @@ bool RunScript(const std::string& input, std::function<bool(v8::Local<v8::Value>
     context->SetSecurityToken(v8::Undefined(isolate));
     v8::Context::Scope contextScope(context);
 
-    INIT_ISOLATE_DATA();
+    INIT_WORKER_CONTEXT();
     CREATE_MODULE_LOADER();
 
     auto source = v8_helpers::MakeV8String(isolate, input);
@@ -300,4 +307,86 @@ TEST_CASE("resolve full path modules", "[module-loader]") {
         return run->BooleanValue();
     });
     REQUIRE(result);
+}
+
+class AsyncTestTask : public Task {
+public:
+    AsyncTestTask(ZoneImpl* zone, std::string filename)
+        : _zone(zone), _filename(std::move(filename)), _succeeded(false) {}
+
+    void Execute() override {
+        // TODO @suchoi: Remove this line after Asi checks in the separation of zone construct and init.
+        WorkerContext::Set(WorkerContextItem::ZONE, reinterpret_cast<void*>(_zone));
+
+        if (_filename.empty()) {
+            return;
+        }
+
+        auto isolate = v8::Isolate::GetCurrent();
+        v8::HandleScope scope(isolate);
+
+        std::ifstream file(_filename);
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+
+        auto source = napa::v8_helpers::MakeV8String(isolate, buffer.str());
+
+        std::unique_ptr<std::condition_variable,
+                        std::function<void(std::condition_variable*)>> deferred(&_cond, [](auto cond) {
+            cond->notify_one();
+        });
+
+        v8::TryCatch tryCatch;
+        auto script = v8::Script::Compile(source);
+        if (tryCatch.HasCaught()) {
+            _succeeded = false;
+            return;
+        }
+
+        auto run = script->Run();
+        if (tryCatch.HasCaught()) {
+            _succeeded = false;
+            return;
+        }
+
+        _succeeded = true;
+    }
+
+    bool ok() {
+        std::unique_lock<std::mutex> lock(_lock);
+        _cond.wait(lock);
+
+        return _succeeded;
+    }
+
+private:
+
+    ZoneImpl* _zone;
+
+    std::string _filename;
+    bool _succeeded = false;
+
+    std::mutex _lock;
+    std::condition_variable _cond;
+};
+
+TEST_CASE("async", "[module-loader]") {
+    ZoneSettings settings;
+    settings.id = "zone";
+    settings.workers = 1;
+
+    auto zone = ZoneImpl::Create(settings);
+
+    auto scheduler = zone->GetScheduler();
+    scheduler->ScheduleOnAllWorkers(std::make_shared<AsyncTestTask>(zone.get(), std::string()));
+
+    auto task = std::make_shared<AsyncTestTask>(zone.get(), "asynctest1.js");
+    scheduler->Schedule(task);
+
+    REQUIRE(task->ok());
+
+    task = std::make_shared<AsyncTestTask>(zone.get(), "asynctest2.js");
+    scheduler->Schedule(task);
+
+    REQUIRE(task->ok());
 }

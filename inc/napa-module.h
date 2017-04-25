@@ -7,8 +7,10 @@
 #ifdef NAPA_MODULE_EXTENSION
 #include "napa/module/module-internal.h"
 #include "napa/module/module-node-compat.h"
+#include "napa/module/napa-async-runner.h"
 #include "napa/module/object-wrap.h"
 #else
+#include "napa/module/node-async-runner.h"
 #include <node.h>
 #include <node_object_wrap.h>
 #endif
@@ -114,3 +116,10 @@
 #define NAPA_EXPORT_OBJECTWRAP(exports, exportName, className) \
     exports->Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), exportName), \
                  NAPA_GET_PERSISTENT_CONSTRUCTOR(exportName, className))
+
+/// <summary> It posts asynchronous work. </summary>
+/// <param name="jsCallback"> Javascript callback. </summary>
+/// <param name="asyncWork"> Function to run asynchronously in separate thread. </param>
+/// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous callback completes. </param>
+#define NAPA_POST_ASYNC_WORK(jsCallback, asyncWork, asyncCompleteCallback) \
+    napa::module::PostAsyncWork(jsCallback, asyncWork, asyncCompleteCallback)

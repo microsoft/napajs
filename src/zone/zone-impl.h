@@ -46,4 +46,5 @@ namespace napa {
         static std::mutex _mutex;
         static std::unordered_map<std::string, std::weak_ptr<ZoneImpl>> _zones;
     };
+
 }

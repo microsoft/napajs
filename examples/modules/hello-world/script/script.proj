@@ -14,8 +14,7 @@
   
   <Target Name="BuildScripts" AfterTargets="AfterBuild">
     <Message Text="Compile scripts." />
-    <Exec Command="$(NapaBuildRoot)\node\node.exe $(NapaBuildRoot)\codegen\tsconfig_gen.js -t $(NapaBuildRoot)\codegen\tsconfig.firstparty.json -v NAPABUILD_TYPES $(NapaBuildRoot)\@types" />
-    <Exec Command="$(NapaBuildRoot)\node\node.exe $(NapaBuildRoot)\typescript\lib\tsc.js --outDir $(O)" />
+    <Exec Command="$(TSCompile) src\hello-world.ts --declaration --typeRoots $(TypesRoot) --outDir $(O)" />
   </Target>
   
   <Target Name="CreateNpmPackage" DependsOnTargets="BuildScripts" AfterTargets="AfterBuild">
@@ -28,9 +27,6 @@
     <Copy SourceFiles="$(O)\hello-world.js" DestinationFolder="$(O)\dist\lib" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(O)\hello-world.d.ts" DestinationFolder="$(O)\dist\types" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="package.json" DestinationFolder="$(O)\dist" ContinueOnError="false" SkipUnchangedFiles="true" />
-
-    <!-- Bypass build cop error ENL31102: Input ...\tsconfig.json is missing on the disk -->
-    <Exec Command="move tsconfig.json $(O)\dist\tsconfig.json" />
   </Target>
 
   <Import Project="$(ExtendedTargetsPath)\NoTarget.targets" />

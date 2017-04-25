@@ -22,8 +22,7 @@
 
   <Target Name="BuildScripts" AfterTargets="AfterBuild">
     <Message Text="Compile scripts." />
-    <Exec Command="$(NapaBuildRoot)\node\node.exe $(NapaBuildRoot)\codegen\tsconfig_gen.js -t $(NapaBuildRoot)\codegen\tsconfig.firstparty.json -v NAPABUILD_TYPES $(NapaBuildRoot)\@types" />
-    <Exec Command="$(NapaBuildRoot)\node\node.exe $(NapaBuildRoot)\typescript\lib\tsc.js --outDir $(O)" />
+    <Exec Command="$(TSCompile) src\shared-depot.ts --declaration --typeRoots $(TypesRoot) --outDir $(O)" />
   </Target>
   
   <Target Name="CreateNpmPackage" DependsOnTargets="BuildScripts" AfterTargets="AfterBuild">
@@ -34,9 +33,6 @@
     <Copy SourceFiles="$(O)\shared-depot.js" DestinationFolder="$(PackageOutPath)\lib" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(O)\shared-depot.d.ts" DestinationFolder="$(PackageOutPath)\types" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="package.json" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
-    
-    <!-- Bypass build cop error ENL31102: Input ...\tsconfig.json is missing on the disk -->
-    <Exec Command="move tsconfig.json $(PackageOutPath)\tsconfig.json" />
 
     <CallTarget Targets="NpmPublish" />
   </Target>

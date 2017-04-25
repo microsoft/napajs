@@ -6,6 +6,7 @@
 #include "task.h"
 
 #include <napa-log.h>
+#include <napa/module/worker-context.h>
 
 #include <atomic>
 #include <list>
@@ -36,10 +37,18 @@ namespace scheduler {
         /// <summary> Schedules the task on a specific worker. </summary>
         /// <param name="workerId"> The id of the worker. </param>
         /// <param name="task"> Task to schedule. </param>
+        /// <remarks>
+        /// By design, it enqueues a task immediately,
+        /// so the task will have higher priority than ones called by Schedule().
+        /// </remarks>
         void ScheduleOnWorker(WorkerId workerId, std::shared_ptr<Task> task);
 
         /// <summary> Schedules the task on all workers. </summary>
         /// <param name="task"> Task to schedule. </param>
+        /// <remarks>
+        /// By design, it enqueues a task immediately,
+        /// so the task will have higher priority than ones called by Schedule().
+        /// </remarks>
         void ScheduleOnAllWorkers(std::shared_ptr<Task> task);
 
     private:

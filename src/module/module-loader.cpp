@@ -106,10 +106,10 @@ private:
 };
 
 void ModuleLoader::CreateModuleLoader() {
-    auto moduleLoader = reinterpret_cast<ModuleLoader*>(IsolateData::Get(IsolateDataId::MODULE_LOADER));
+    auto moduleLoader = reinterpret_cast<ModuleLoader*>(WorkerContext::Get(WorkerContextItem::MODULE_LOADER));
     if (moduleLoader == nullptr) {
         moduleLoader = new ModuleLoader();
-        IsolateData::Set(IsolateDataId::MODULE_LOADER, moduleLoader);
+        WorkerContext::Set(WorkerContextItem::MODULE_LOADER, moduleLoader);
 
         // Now, Javascript core module's 'require' can find module loader instance correctly.
         moduleLoader->_impl->Bootstrap();
@@ -183,7 +183,7 @@ void ModuleLoader::ModuleLoaderImpl::RequireCallback(const v8::FunctionCallbackI
         args.Length() == 1 || args.Length() == 2 || args[0]->IsString(),
         "Invalid arguments");
 
-    auto moduleLoader = reinterpret_cast<ModuleLoader*>(IsolateData::Get(IsolateDataId::MODULE_LOADER));
+    auto moduleLoader = reinterpret_cast<ModuleLoader*>(WorkerContext::Get(WorkerContextItem::MODULE_LOADER));
     JS_ENSURE(isolate, moduleLoader != nullptr, "Module loader is not initialized");
 
     v8::String::Utf8Value path(args[0]);
@@ -196,7 +196,7 @@ void ModuleLoader::ModuleLoaderImpl::ResolveCallback(const v8::FunctionCallbackI
 
     CHECK_ARG(isolate, args.Length() == 1 && args[0]->IsString(), "Invalid arguments");
 
-    auto moduleLoader = reinterpret_cast<ModuleLoader*>(IsolateData::Get(IsolateDataId::MODULE_LOADER));
+    auto moduleLoader = reinterpret_cast<ModuleLoader*>(WorkerContext::Get(WorkerContextItem::MODULE_LOADER));
     JS_ENSURE(isolate, moduleLoader != nullptr, "Module loader is not initialized");
 
     v8::String::Utf8Value path(args[0]);
@@ -212,7 +212,7 @@ void ModuleLoader::ModuleLoaderImpl::BindingCallback(const v8::FunctionCallbackI
 
     CHECK_ARG(isolate, args.Length() == 1 && args[0]->IsString(), "Invalid arguments");
 
-    auto moduleLoader = reinterpret_cast<ModuleLoader*>(IsolateData::Get(IsolateDataId::MODULE_LOADER));
+    auto moduleLoader = reinterpret_cast<ModuleLoader*>(WorkerContext::Get(WorkerContextItem::MODULE_LOADER));
     JS_ENSURE(isolate, moduleLoader != nullptr, "Module loader is not initialized");
 
     v8::String::Utf8Value name(args[0]);

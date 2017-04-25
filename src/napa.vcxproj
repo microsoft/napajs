@@ -38,19 +38,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="api\api.cpp" />
+    <ClCompile Include="module\async-runner.cpp" />
     <ClCompile Include="memory\built-in-allocators.cpp" />
     <ClCompile Include="module\binary-module-loader.cpp" />
     <ClCompile Include="module\core-module-loader.cpp" />
     <ClCompile Include="module\javascript-module-loader.cpp" />
     <ClCompile Include="module\json-module-loader.cpp" />
     <ClCompile Include="module\module-cache.cpp" />
-    <ClCompile Include="module\module-internal.cpp" />
     <ClCompile Include="module\module-loader.cpp" />
     <ClCompile Include="module\module-loader-helpers.cpp" />
     <ClCompile Include="module\module-resolver.cpp" />
+    <ClCompile Include="module\worker-context.cpp" />
     <ClCompile Include="platform\win\platform.cpp" />
     <ClCompile Include="platform\win\thread-local-storage.cpp" />
     <ClCompile Include="providers\providers.cpp" />
+    <ClCompile Include="scheduler\async-complete-task.cpp" />
     <ClCompile Include="scheduler\broadcast-task.cpp" />
     <ClCompile Include="scheduler\execute-task.cpp" />
     <ClCompile Include="scheduler\simple-thread-pool.cpp" />
