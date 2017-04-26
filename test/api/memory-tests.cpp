@@ -1,5 +1,7 @@
 #include "catch.hpp"
 
+#include "napa-initialization-guard.h"
+
 #include <napa-memory.h>
 #include <napa/memory/allocator-debugger.h>
 #include <napa/stl/allocator.h>
@@ -8,6 +10,9 @@
 #include <napa/stl/map.h>
 
 using namespace napa::memory;
+
+// Make sure Napa is initialized exactly once.
+static NapaInitializationGuard _guard;
 
 namespace custom_allocator {
     char buffer[1024];
@@ -132,34 +137,34 @@ struct Foo {
 
 TEST_CASE("Memory helpers", "[memory-helpers]") {
     NAPA_SET_DEFAULT_ALLOCATOR(custom_allocator::malloc, custom_allocator::free);
-    
+
     SECTION("NAPA_MAKE_UNIQUE") {
         constexpr size_t count = 2;
         int elems[count] = {1, 2};
-		{
-			auto pointer = NAPA_MAKE_UNIQUE<Foo>("hello world", count, elems);
-			REQUIRE(pointer != nullptr);
+        {
+            auto pointer = NAPA_MAKE_UNIQUE<Foo>("hello world", count, elems);
+            REQUIRE(pointer != nullptr);
 
-			REQUIRE(pointer->_str == "hello world");
-			REQUIRE(pointer->_vector.size() == 2);
-			REQUIRE(pointer->_map.size() == 2);
-		}
-		REQUIRE(custom_allocator::allocated == 0);
+            REQUIRE(pointer->_str == "hello world");
+            REQUIRE(pointer->_vector.size() == 2);
+            REQUIRE(pointer->_map.size() == 2);
+        }
+        REQUIRE(custom_allocator::allocated == 0);
         custom_allocator::reset();
     }
 
-	SECTION("NAPA_MAKE_SHARED") {
-		constexpr size_t count = 2;
-		int elems[count] = { 1, 2 };
-		{
-			auto pointer = NAPA_MAKE_SHARED<Foo>("hello world", count, elems);
-			REQUIRE(pointer != nullptr);
+    SECTION("NAPA_MAKE_SHARED") {
+        constexpr size_t count = 2;
+        int elems[count] = { 1, 2 };
+        {
+            auto pointer = NAPA_MAKE_SHARED<Foo>("hello world", count, elems);
+            REQUIRE(pointer != nullptr);
 
-			REQUIRE(pointer->_str == "hello world");
-			REQUIRE(pointer->_vector.size() == 2);
-			REQUIRE(pointer->_map.size() == 2);
-		}
-		REQUIRE(custom_allocator::allocated == 0);
+            REQUIRE(pointer->_str == "hello world");
+            REQUIRE(pointer->_vector.size() == 2);
+            REQUIRE(pointer->_map.size() == 2);
+        }
+        REQUIRE(custom_allocator::allocated == 0);
         custom_allocator::reset();
     }
 

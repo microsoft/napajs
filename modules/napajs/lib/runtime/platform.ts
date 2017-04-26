@@ -68,12 +68,10 @@ export function getZone(id: string) : zone.Zone {
 }
 
 /// <summary> Returns the current zone. </summary>
-export let currentZone: zone.Zone = getCurrentZone();
-
-function getCurrentZone() : zone.Zone {
+export function getCurrentZone() : zone.Zone {
     if (typeof __in_napa !== undefined) {
         return new napa.NapaZone(addon.getCurrentZone());
     }
-    
+
     return new node.NodeZone();
 }

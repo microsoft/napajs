@@ -1,16 +1,15 @@
 #include "catch.hpp"
 
-#include "napa.h"
+#include "napa-initialization-guard.h"
+
+#include <napa.h>
 
 #include <future>
 
-std::once_flag flag;
+// Make sure Napa is initialized exactly once.
+static NapaInitializationGuard _guard;
 
 TEST_CASE("zone apis", "[api]") {
-    // Only call napa::Initialize once per process.
-    std::call_once(flag, []() {
-        REQUIRE(napa::Initialize("--loggingProvider console") == NAPA_RESPONSE_SUCCESS);
-    });
 
     SECTION("create zone with bootstrap file") {
         napa::ZoneProxy zone("zone1", "--bootstrapFile bootstrap.js");
@@ -20,7 +19,7 @@ TEST_CASE("zone apis", "[api]") {
         auto response = zone.ExecuteSync(request);
 
         REQUIRE(response.code == NAPA_RESPONSE_SUCCESS);
-        REQUIRE(response.returnValue == "bootstrap");
+        REQUIRE(response.returnValue == "\"bootstrap\"");
     }
 
     SECTION("broadcast valid javascript") {
@@ -81,6 +80,9 @@ TEST_CASE("zone apis", "[api]") {
         std::promise<napa::ExecuteResponse> promise;
         auto future = promise.get_future();
 
+        // Warmup to avoid loading napajs on first call
+        zone.BroadcastSync("require('napajs');");
+
         zone.Broadcast("function func(a, b) { return Number(a) + Number(b); }", [&promise, &zone](NapaResponseCode) {
             napa::ExecuteRequest request;
             request.function = NAPA_STRING_REF("func");
@@ -103,6 +105,9 @@ TEST_CASE("zone apis", "[api]") {
         std::promise<napa::ExecuteResponse> promise;
         auto future = promise.get_future();
 
+        // Warmup to avoid loading napajs on first call
+        zone.BroadcastSync("require('napajs');");
+
         zone.Broadcast("function func() { while(true) {} }", [&promise, &zone](NapaResponseCode) {
             napa::ExecuteRequest request;
             request.function = NAPA_STRING_REF("func");
@@ -120,6 +125,9 @@ TEST_CASE("zone apis", "[api]") {
 
     SECTION("execute 2 javascript functions, one succeeds and one times out") {
         napa::ZoneProxy zone("zone1");
+
+        // Warmup to avoid loading napajs on first call
+        zone.BroadcastSync("require('napajs');");
 
         auto res = zone.BroadcastSync("function f1(a, b) { return Number(a) + Number(b); }");
         REQUIRE(res == NAPA_RESPONSE_SUCCESS);
@@ -169,7 +177,7 @@ TEST_CASE("zone apis", "[api]") {
 
         auto response = zone.ExecuteSync(request);
         REQUIRE(response.code == NAPA_RESPONSE_SUCCESS);
-        REQUIRE(response.returnValue == ".txt");
+        REQUIRE(response.returnValue == "\".txt\"");
     }
 
     SECTION("execute function in a module") {
@@ -178,18 +186,10 @@ TEST_CASE("zone apis", "[api]") {
         napa::ExecuteRequest request;
         request.module = NAPA_STRING_REF("path");
         request.function = NAPA_STRING_REF("extname");
-        request.arguments = { NAPA_STRING_REF("test.txt") };
+        request.arguments = { NAPA_STRING_REF("\"test.txt\"") };
 
         auto response = zone.ExecuteSync(request);
         REQUIRE(response.code == NAPA_RESPONSE_SUCCESS);
-        REQUIRE(response.returnValue == ".txt");
-    }
-
-    /// <note>
-    ///     This must be the last test in this test suite, since napa initialize and shutdown
-    ///     can only run once per process.
-    /// </note>
-    SECTION("shutdown napa") {
-        REQUIRE(napa::Shutdown() == NAPA_RESPONSE_SUCCESS);
+        REQUIRE(response.returnValue == "\".txt\"");
     }
 }

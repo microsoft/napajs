@@ -27,49 +27,49 @@ void ExecuteTask::Execute() {
     v8::HandleScope scope(isolate);
     auto context = isolate->GetCurrentContext();
 
-    v8::Local<v8::Function> function;
+    v8::Local<v8::Function> dispatcher;
     std::vector<v8::Local<v8::Value>> args;
 
     if (_module.empty()) {
-        // Lookup function in global scope
-        auto funcVal = context->Global()->Get(MakeExternalV8String(isolate, _func));
-        if (!funcVal->IsFunction()) {
-            std::string errorMessage = "Function '" + _func + "' not defined";
-            LOG_ERROR("Execute", errorMessage.c_str());
-            _callback({ NAPA_RESPONSE_EXECUTE_FUNC_ERROR, std::move(errorMessage), "", nullptr });
+        auto dispatcherValue = context->Global()->Get(MakeExternalV8String(isolate, "__napa_function_dispatcher__"));
+        NAPA_ASSERT(dispatcherValue->IsFunction(), "dispatcher function must exist in global scope");
+
+        dispatcher = v8::Local<v8::Function>::Cast(dispatcherValue);
+
+        auto funcValue = context->Global()->Get(MakeExternalV8String(isolate, _func));
+        if (!funcValue->IsFunction()) {
+            auto error = "Function '" + _func + "' does not exist in global scope";
+            _callback({ NAPA_RESPONSE_EXECUTE_FUNC_ERROR, std::move(error), "", nullptr });
             return;
         }
 
-        function = v8::Local<v8::Function>::Cast(funcVal);
-
-        // Create the V8 args for the function call.
-        args.reserve(_args.size());
-        for (const auto& arg : _args) {
-            args.emplace_back(MakeExternalV8String(isolate, arg));
-        }
+        args.reserve(3); // (func, args, contextHandle)
+        args.emplace_back(v8::Local<v8::Function>::Cast(funcValue));
     } else {
-        // Use the global dispatcher function
-        auto dispatcherValue = context->Global()->Get(MakeExternalV8String(isolate, "__napa_execute_dispatcher__"));
+        // Get the dispatcher function from global scope.
+        auto dispatcherValue = context->Global()->Get(MakeExternalV8String(isolate, "__napa_module_dispatcher__"));
         NAPA_ASSERT(dispatcherValue->IsFunction(), "dispatcher function must exist in global scope");
 
-        // The dispatcher function.
-        function = v8::Local<v8::Function>::Cast(dispatcherValue);
+        dispatcher = v8::Local<v8::Function>::Cast(dispatcherValue);
 
-        // Prepare args
-        args.reserve(3); // (module, func, args)
+        args.reserve(4); // (moduleName, functionName, args, contextHandle)
         args.emplace_back(MakeExternalV8String(isolate, _module));
         args.emplace_back(MakeExternalV8String(isolate, _func));
-
-        auto arr = v8::Array::New(isolate, static_cast<int>(_args.size()));
-        for (size_t i = 0; i < _args.size(); ++i) {
-            (void)arr->CreateDataProperty(context, static_cast<uint32_t>(i), MakeExternalV8String(isolate, _args[i]));
-        }
-        args.emplace_back(arr);
     }
+    
+    // Prepare function args
+    auto arr = v8::Array::New(isolate, static_cast<int>(_args.size()));
+    for (size_t i = 0; i < _args.size(); ++i) {
+        (void)arr->CreateDataProperty(context, static_cast<uint32_t>(i), MakeExternalV8String(isolate, _args[i]));
+    }
+    args.emplace_back(arr);
+
+    // Transport context handle
+    args.emplace_back(PtrToV8Uint32Array(isolate, _transportContext.get()));
 
     // Execute the function.
     v8::TryCatch tryCatch(isolate);
-    auto res = function->Call(context->Global(), static_cast<int>(args.size()), args.data());
+    auto res = dispatcher->Call(context->Global(), static_cast<int>(args.size()), args.data());
 
     // Terminating an isolate may occur from a different thread, i.e. from timeout service.
     // If the function call already finished successfully when the isolate is terminated it may lead
@@ -92,10 +92,13 @@ void ExecuteTask::Execute() {
 
     if (tryCatch.HasCaught()) {
         auto exception = tryCatch.Exception();
-        v8::String::Utf8Value errorMessage(exception);
+        v8::String::Utf8Value exceptionStr(exception);
+        auto stackTrace = tryCatch.StackTrace();
+        v8::String::Utf8Value stackTraceStr(stackTrace);
 
-        LOG_ERROR("Execute", "Error occured while executing function '%s', error: %s", _func.c_str(), *errorMessage);
-        _callback({ NAPA_RESPONSE_EXECUTE_FUNC_ERROR, *errorMessage, "", nullptr });
+        LOG_ERROR("Execute", "JS exception thrown: %s - %s", *exceptionStr, *stackTraceStr);
+
+        _callback({ NAPA_RESPONSE_EXECUTE_FUNC_ERROR, *exceptionStr, "", nullptr });
         return;
     }
 

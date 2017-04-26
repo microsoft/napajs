@@ -47,6 +47,18 @@ napa_zone_handle napa_zone_get(napa_string_ref id) {
     return new napa_zone { std::move(zoneId), std::move(zone) };
 }
 
+napa_zone_handle napa_zone_get_current() {
+    NAPA_ASSERT(_initialized, "Napa wasn't initialized");
+
+    auto zone = reinterpret_cast<ZoneImpl*>(napa::module::WorkerContext::Get(napa::module::WorkerContextItem::ZONE));
+    if (zone == nullptr) {
+        LOG_WARNING("Api", "Trying to get current zone from a thread that is not associated with a zone");
+        return nullptr;
+    }
+
+    return napa_zone_get(STD_STRING_TO_NAPA_STRING_REF(zone->GetId()));
+}
+
 napa_response_code napa_zone_init(napa_zone_handle handle, napa_string_ref settings) {
     NAPA_ASSERT(_initialized, "Napa wasn't initialized");
     NAPA_ASSERT(handle, "Zone handle is null");

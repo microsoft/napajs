@@ -39,6 +39,7 @@ namespace napa {
 
     private:
         explicit ZoneImpl(const ZoneSettings& settings);
+        void Init();
 
         ZoneSettings _settings;
         std::unique_ptr<scheduler::Scheduler> _scheduler;

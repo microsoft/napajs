@@ -68,6 +68,14 @@ EXTERN_C NAPA_API napa_zone_handle napa_zone_create(napa_string_ref id);
 /// </remarks>
 EXTERN_C NAPA_API napa_zone_handle napa_zone_get(napa_string_ref id);
 
+/// <summary> Retrieves the current zone. </summary>
+/// <returns> The zone handle if this thread is associated with one, null otherwise. </returns>
+/// <remarks>
+///     This function returns a handle that must be release when it's no longer needed.
+///     Napa keeps track of all zone handles and destroys the zone when all handles have been released.
+/// </remarks>
+EXTERN_C NAPA_API napa_zone_handle napa_zone_get_current();
+
 /// <summary> Releases the zone handle. When all handles for a zone are released the zone is destoryed. </summary>
 /// <param name="handle"> The zone handle. </param>
 EXTERN_C NAPA_API napa_response_code napa_zone_release(napa_zone_handle handle);

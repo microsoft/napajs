@@ -4,11 +4,13 @@
   
   <ItemGroup>
     <QCustomProjectReference Include="$(NapaVanillaRoot)\lib\js-core-modules.proj" />
+    <QCustomProjectReference Include="..\lib\scripts.proj" />
     <QCustomProjectReference Include="..\napa\addon.vcxproj" />
     <QCustomProjectReference Include="..\node\addon.vcxproj" />
   </ItemGroup>
 
   <ItemGroup>  
+    <QCustomInput Include="$(NapaBuildRoot)\**\*" />
     <QCustomInput Include="$(NapaVanillaRoot)\inc\**\*" />
     <QCustomInput Include="..\package.json" />
     <QCustomInput Include="..\README.md" />
@@ -21,28 +23,38 @@
   </PropertyGroup>
 
   <Import Project="$(NapaBuildRoot)\node\npm.targets" />
-
+  
   <Target Name="CreateNpmPackage" AfterTargets="AfterBuild">
     <Message Text="Create NPM package." />
 
     <Copy SourceFiles="..\node\$(O)\addon.node" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="..\napa\$(O)\addon.napa" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(NapaVanillaRoot)\src\$(O)\napa.dll" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(NapaVanillaRoot)\src\module\core-modules.json" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="napajs.d.ts" DestinationFolder="$(PackageOutPath)\types" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="napa-cl.js" DestinationFolder="$(PackageOutPath)\tools" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="napa-cl.bat" DestinationFolder="$(PackageOutPath)\tools" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="..\package.json" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="..\README.md" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(NapaVanillaRoot)\src\$(O)\napa.dll" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(NapaVanillaRoot)\src\$(O)\napa.lib" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(NapaVanillaRoot)\src\module\core-modules.json" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
 
     <!-- Core modules -->
     <ItemGroup>  
-      <JsCoreModuleFiles Include="$(NapaVanillaRoot)\lib\$(O)\**\*"/>  
+      <JsCoreModuleFiles Include="$(NapaVanillaRoot)\lib\$(O)\**\*.js"/>  
     </ItemGroup> 
-    <Copy SourceFiles="@(JsCoreModuleFiles)" DestinationFiles="@(JsCoreModuleFiles->'$(PackageOutPath)\lib\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(JsCoreModuleFiles)" DestinationFiles="@(JsCoreModuleFiles->'$(PackageOutPath)\bin\lib\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
 
+    <!-- Compiled scripts -->
     <ItemGroup>  
-      <IncFiles Include="$(NapaVanillaRoot)\inc\**\*.js"/>  
+      <JsFiles Include="..\lib\$(O)\**\*.js"/>  
+    </ItemGroup> 
+    <Copy SourceFiles="@(JsFiles)" DestinationFiles="@(JsFiles->'$(PackageOutPath)\lib\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+    
+    <!-- Declarations -->
+    <ItemGroup>  
+      <DeclarationFiles Include="..\lib\$(O)\**\*.d.ts"/>  
+    </ItemGroup> 
+    <Copy SourceFiles="@(DeclarationFiles)" DestinationFiles="@(DeclarationFiles->'$(PackageOutPath)\types\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+    
+    <!-- Include files -->
+    <ItemGroup>  
+      <IncFiles Include="$(NapaVanillaRoot)\inc\**\*"/>  
     </ItemGroup> 
     <Copy SourceFiles="@(IncFiles)" DestinationFiles="@(IncFiles->'$(PackageOutPath)\inc\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
 

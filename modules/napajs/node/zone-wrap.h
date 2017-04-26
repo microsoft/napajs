@@ -17,8 +17,9 @@ namespace binding {
     public:
 
         enum class ConstructorType : uint32_t {
-            CREATE = 0, // Creates a new zone
-            GET = 1     // Retrieves an existing zone
+            CREATE = 0,  // Creates a new zone
+            GET = 1,     // Retrieves an existing zone
+            CURRENT = 2  // Retrieves the current zone
         };
 
         static void Init(v8::Isolate* isolate);

@@ -18,3 +18,5 @@
         std::terminate();                               \
     }                                                   \
 } while (false)
+
+#define NAPA_FAIL(message) NAPA_ASSERT(false, message)

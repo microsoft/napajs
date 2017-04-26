@@ -112,6 +112,17 @@ namespace napa {
             return std::unique_ptr<ZoneProxy>(new ZoneProxy(id, handle));
         }
 
+        /// <summary> Creates a proxy to the current zone, throws if non is associated with this thread. </summary>
+        static std::unique_ptr<ZoneProxy> GetCurrent() {
+            auto handle = napa_zone_get_current();
+            if (!handle) {
+                throw std::runtime_error("The calling thread is not associated with a zone");
+            }
+
+            auto zoneId = NAPA_STRING_REF_TO_STD_STRING(napa_zone_get_id(handle));
+            return std::unique_ptr<ZoneProxy>(new ZoneProxy(std::move(zoneId), handle));
+        }
+
     private:
 
         /// <summary> Private constructor to create a C++ zone proxy from a C handle. </summary>

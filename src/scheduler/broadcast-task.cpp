@@ -34,7 +34,7 @@ void BroadcastTask::Execute() {
     // Compile the source code.
     auto compileResult = v8::Script::Compile(context, source, &sourceOrigin);
     if (compileResult.IsEmpty()) {
-        LOG_ERROR("Broadcast", "Failed while compiling the provided source code");
+        LOG_ERROR("Broadcast", "Failed while compiling the provided source code. %s", _source.c_str());
         _callback(NAPA_RESPONSE_BROADCAST_SCRIPT_ERROR);
         return;
     }

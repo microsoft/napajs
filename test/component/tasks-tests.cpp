@@ -33,6 +33,9 @@ TEST_CASE("tasks", "[tasks]") {
     v8::Local<v8::Context> context = v8::Context::New(isolate);
     v8::Context::Scope contextScope(context);
 
+    // Set a simple dispatcher function
+    BroadcastTask("function __napa_function_dispatcher__(func, args) { return func.apply(this, args); }").Execute();
+
     SECTION("load valid javascript") {
         NapaResponseCode loadResponseCode;
         BroadcastTask("var i = 3 + 5;", "", [&loadResponseCode](NapaResponseCode code) {
@@ -87,7 +90,6 @@ TEST_CASE("tasks", "[tasks]") {
         }).Execute();
 
         REQUIRE(response.code == NAPA_RESPONSE_EXECUTE_FUNC_ERROR);
-        REQUIRE(response.errorMessage == "Function 'bar' not defined");
     }
 
     SECTION("execute fails when function throws exception") {
