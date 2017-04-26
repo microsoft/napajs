@@ -15,10 +15,10 @@ bool JavascriptModuleLoader::TryGet(const std::string& path, v8::Local<v8::Objec
     v8::EscapableHandleScope scope(isolate);
 
     auto source = module_loader_helpers::ReadModuleFile(path);
-    JS_ENSURE_WITH_RETURN(isolate, !source.IsEmpty(), "Can't read Javascript module: " + path, false);
+    JS_ENSURE_WITH_RETURN(isolate, !source.IsEmpty(), false, "Can't read Javascript module: \"%s\"", path.c_str());
 
     auto context = module_loader_helpers::SetupModuleContext(path);
-    JS_ENSURE_WITH_RETURN(isolate, !context.IsEmpty(), "Can't create module context for: " + path, false);
+    JS_ENSURE_WITH_RETURN(isolate, !context.IsEmpty(), false, "Can't create module context for: \"%s\"", path.c_str());
 
     // We set an empty security token so callee can access caller's context.
     context->SetSecurityToken(v8::Undefined(isolate));

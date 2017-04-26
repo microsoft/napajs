@@ -18,18 +18,21 @@ bool BinaryModuleLoader::TryGet(const std::string& path, v8::Local<v8::Object>& 
     auto napaModule = boost::dll::import<NapaModule>(path, napa::module::NAPA_MODULE_EXPORT);
     JS_ENSURE_WITH_RETURN(isolate,
                           napaModule != nullptr,
-                          "Can't import napa module: " + path,
-                          false);
+                          false,
+                          "Can't import napa module: \"%s\"", 
+                          path.c_str());
+
     JS_ENSURE_WITH_RETURN(isolate,
                           napaModule->version == MODULE_VERSION,
-                          "Module version is not compatible: " + path,
-                          false);
+                          false,
+                          "Module version is not compatible: \"%s\"",
+                          path.c_str());
 
     // Since boost::dll unload dll when a reference object is gone, keep an instance into local store.
     _modules.push_back(napaModule);
 
     auto context = module_loader_helpers::SetupModuleContext(path);
-    JS_ENSURE_WITH_RETURN(isolate, !context.IsEmpty(), "Can't create module context for " + path, false);
+    JS_ENSURE_WITH_RETURN(isolate, !context.IsEmpty(), false, "Can't create module context for \"%s\"", path.c_str());
 
     // We set an empty security token so callee can access caller's context.
     context->SetSecurityToken(v8::Undefined(isolate));

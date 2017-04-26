@@ -101,7 +101,7 @@ namespace {
 
         v8::String::Utf8Value dirname(args[0]);
         boost::filesystem::path dir(*dirname);
-        JS_ENSURE(isolate, boost::filesystem::exists(dir), dir.string() + "doesn't exists");
+        JS_ENSURE(isolate, boost::filesystem::exists(dir), "Directory \"%s\" doesn't exist", dir.string().c_str());
 
         boost::filesystem::current_path(dir);
 

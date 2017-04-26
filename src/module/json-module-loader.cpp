@@ -11,10 +11,10 @@ bool JsonModuleLoader::TryGet(const std::string& path, v8::Local<v8::Object>& mo
     v8::EscapableHandleScope scope(isolate);
 
     auto source = module_loader_helpers::ReadModuleFile(path);
-    JS_ENSURE_WITH_RETURN(isolate, !source.IsEmpty(), "Can't read JSON module: " + path, false);
+    JS_ENSURE_WITH_RETURN(isolate, !source.IsEmpty(), false, "Can't read JSON module: \"%s\"", path.c_str());
 
     auto json = v8::JSON::Parse(isolate, source).ToLocalChecked();
-    JS_ENSURE_WITH_RETURN(isolate, !json.IsEmpty(), "Can't parse JSON from " + path, false);
+    JS_ENSURE_WITH_RETURN(isolate, !json.IsEmpty(), false, "Can't parse JSON from \"%s\"", path.c_str());
 
     module = scope.Escape(json->ToObject(isolate->GetCurrentContext()).ToLocalChecked());
     return true;

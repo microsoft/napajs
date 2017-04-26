@@ -109,8 +109,9 @@ v8::Local<v8::Context> module_loader_helpers::SetupModuleContext(const std::stri
     auto moduleContext = v8::Context::New(isolate, nullptr, exports);
     JS_ENSURE_WITH_RETURN(isolate,
                           !moduleContext.IsEmpty(),
-                          "Can't create module context for: " + path,
-                          scope.Escape(moduleContext));
+                          scope.Escape(moduleContext),
+                          "Can't create module context for: \"%s\"",
+                          path.c_str());
 
     return scope.Escape(moduleContext);
 }
@@ -160,8 +161,9 @@ v8::Local<v8::String> module_loader_helpers::ReadModuleFile(const std::string& p
 
     JS_ENSURE_WITH_RETURN(isolate,
                           !content.empty(),
-                          path + " is empty",
-                          scope.Escape(v8::Local<v8::String>()));
+                          scope.Escape(v8::Local<v8::String>()),
+                          "\"%s\" is empty",
+                          path.c_str());
 
     return scope.Escape(v8_helpers::MakeV8String(isolate, content));
 }
