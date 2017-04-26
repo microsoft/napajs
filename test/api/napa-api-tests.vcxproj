@@ -26,6 +26,7 @@
   <PropertyGroup>
     <V8BinPath>$(PACKAGESROOT)\V8.Library\$(COMPILER_VERSION)\bin\$(BuildType)\$(BuildArchitecture)</V8BinPath>
     <V8MiscPath>$(PACKAGESROOT)\V8.Library\misc\$(BuildType)\$(BuildArchitecture)</V8MiscPath>
+    <TestDir>$(OutDir)api-tests</TestDir>
   </PropertyGroup>
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.props" />
   <ItemDefinitionGroup>
@@ -35,34 +36,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)\api-tests.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\memory-tests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\zone-tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(NapaVanillaRoot)\src\napa.vcxproj" />
   </ItemGroup>
   <!-- Test artifacts binplace -->
   <ItemGroup>
-    <Robocopy Include="$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.dll">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    <Robocopy Include="$(OutputPath)\$(TargetFileName)">
+      <DestinationFolder>$(IntermediateOutputPath)\api-tests\node_modules\napajs\bin</DestinationFolder>
     </Robocopy>
-    <Robocopy Include="$(V8BinPath)\icui18n.dll">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    <Robocopy Include="$(NapaVanillaRoot)\modules\napajs\package\$(IntermediateOutputPath)\node_modules\napajs">
+      <DestinationFolder>$(IntermediateOutputPath)\api-tests\node_modules\napajs</DestinationFolder>
     </Robocopy>
-    <Robocopy Include="$(V8BinPath)\icuuc.dll">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
-    </Robocopy>
-    <Robocopy Include="$(V8BinPath)\v8.dll">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
-    </Robocopy>
-    <Robocopy Include="$(V8MiscPath)\natives_blob.bin">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
-    </Robocopy>
-    <Robocopy Include="$(V8MiscPath)\snapshot_blob.bin">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
-    </Robocopy>
-    <Robocopy Include="$(MSBuildThisFileDirectory)\bootstrap.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+    <Robocopy Include="bootstrap.js">
+      <DestinationFolder>$(IntermediateOutputPath)\api-tests\node_modules\napajs\bin</DestinationFolder>
     </Robocopy>
   </ItemGroup>
   

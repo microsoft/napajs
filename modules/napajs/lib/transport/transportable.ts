@@ -33,8 +33,8 @@ export interface TransportContext {
 var addon = require('../../bin/addon');
 
 /// <summary> Create a transport context. </summary>
-export function createTransportContext(): TransportContext {
-    return new addon.TransportContextWrap();
+export function createTransportContext(handle? : memory.Handle): TransportContext {
+    return new addon.TransportContextWrap(handle);
 }
 
 /// <summary> Interface for transportable non-built-in JavaScript types. </summary> 

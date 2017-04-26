@@ -1,6 +1,6 @@
 /// <summary> Barrel is a container that creates boundary for sharing objects across isolates. </summary>
 /// TODO: @dapeng, implement add-on and connect with this class.
-declare class Barrel {
+export declare class Barrel {
     /// <summary> ID of this barrel. </summary>
     readonly id: number;
 

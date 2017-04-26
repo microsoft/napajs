@@ -3,6 +3,7 @@
 #include "node-async-handler.h"
 
 #include <napa.h>
+#include <napa-assert.h>
 #include <napa/v8-helpers.h>
 
 #include <sstream>
@@ -63,7 +64,9 @@ void ZoneWrap::NewCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
     std::unique_ptr<napa::ZoneProxy> zoneProxy;
     auto constructorType = static_cast<ConstructorType>(args[0]->Uint32Value(context).FromJust());
-    if (constructorType == ConstructorType::CREATE) {
+    
+    switch (constructorType) {
+    case napa::binding::ZoneWrap::ConstructorType::CREATE: {
         CHECK_ARG(isolate, args[1]->IsString(), "first argument to createZone must be a string");
         v8::String::Utf8Value zoneId(args[1]->ToString());
 
@@ -80,11 +83,26 @@ void ZoneWrap::NewCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
         }
 
         zoneProxy = std::make_unique<napa::ZoneProxy>(*zoneId, ss.str());
-    } else { // ConstructorType::GET
+        break;
+    }
+    case napa::binding::ZoneWrap::ConstructorType::GET: {
         CHECK_ARG(isolate, args[1]->IsString(), "first argument to getZone must be a string");
         v8::String::Utf8Value zoneId(args[1]->ToString());
 
-        zoneProxy = napa::ZoneProxy::Get(*zoneId);
+        try {
+            zoneProxy = napa::ZoneProxy::Get(*zoneId);
+        } catch (const std::exception &ex) {
+            JS_ASSERT(isolate, false, ex.what());
+        }
+        
+        break;
+    }
+    case napa::binding::ZoneWrap::ConstructorType::CURRENT: {
+        zoneProxy = napa::ZoneProxy::GetCurrent();
+        break;
+    }
+    default:
+        NAPA_FAIL("Non existing constructor type for ZoneWrap");
     }
 
     auto obj = new ZoneWrap(std::move(zoneProxy));

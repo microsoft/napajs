@@ -66,6 +66,14 @@ void GetZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
 #endif
 }
 
+void GetCurrentZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
+#ifdef NAPA_MODULE_EXTENSION
+    JS_ASSERT(v8::Isolate::GetCurrent(), false, "napa.getCurrentZone cannot be called from inside napa");
+#else
+    ZoneWrap::NewInstance(ZoneWrap::ConstructorType::CURRENT, args);
+#endif
+}
+
 void GetLoggingProvider(const v8::FunctionCallbackInfo<v8::Value>& args) {
     LoggingProviderWrap::NewInstance(args);
 }
@@ -116,6 +124,7 @@ void InitAll(v8::Local<v8::Object> exports) {
 
     NAPA_SET_METHOD(exports, "createZone", CreateZone);
     NAPA_SET_METHOD(exports, "getZone", GetZone);
+    NAPA_SET_METHOD(exports, "getCurrentZone", GetCurrentZone);
 
     NAPA_SET_METHOD(exports, "getLoggingProvider", GetLoggingProvider);
     NAPA_SET_METHOD(exports, "getResponseCodeString", GetResponseCodeString);

@@ -20,9 +20,9 @@ export interface Zone {
     /// <summary> The zone id. </summary>
     readonly id: string;
 
-    /// <summary> Loads the source code into the global scope in all zone workers. </summary>
+    /// <summary> Compiles and run the provided source code on all zone workers. </summary>
     /// <param name="source"> A valid javascript source code. </param>
-    load(source: string) : Promise<ResponseCode>;
+    broadcast(source: string) : Promise<ResponseCode>;
 
     /// <summary> Executes the function on one of the zone workers. </summary>
     /// <param name="module"> The module that contains the function to execute. </param>
@@ -30,14 +30,5 @@ export interface Zone {
     /// <param name="args"> The arguments that will pass to the function. </param>
     /// <param name="timeout"> The timeout of the execution in milliseconds, defaults to infinity. </param>
     execute(module: string, func: string, args: any[], timeout?: number) : Promise<ResponseValue>;
-
-    /// <summary> Executes the function on all zone workers. </summary>
-    /// <param name="module"> The module that contains the function to execute. </param>
-    /// <param name="func"> The function to execute. </param>
-    /// <param name="args"> The arguments that will pass to the function. </param>
-    executeAll(module: string, func: string, args: any[]) : Promise<ResponseCode>;
-
-    /// <summary> Destroys the zone, cleaning all resources associated with it. </summary>
-    destory(): void;
 }
 

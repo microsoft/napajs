@@ -2,9 +2,10 @@
   <Import Project="$(EnvironmentConfig)" />
 
   <ItemGroup>
+    <ProjectFile Include="lib\scripts.proj" />
     <ProjectFile Include="napa\addon.vcxproj" />
     <ProjectFile Include="node\addon.vcxproj" />
-    <ProjectFile Include="package\create-package.proj" />
+    <ProjectFile Include="package\napajs.proj" />
   </ItemGroup>
 
   <Import Project="$(ExtendedTargetsPath)\Traversal.targets" />

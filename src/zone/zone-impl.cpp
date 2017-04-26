@@ -6,6 +6,7 @@
 
 #include <napa-log.h>
 
+#include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
 
 #include <sstream>
@@ -13,16 +14,16 @@
 using namespace napa;
 using namespace napa::scheduler;
 
+// Forward declarations
+static void BroadcastFromFile(const std::string& file, Scheduler& scheduler, bool withOrigin);
+
 // Static members initialization
 std::mutex ZoneImpl::_mutex;
 std::unordered_map<std::string, std::weak_ptr<ZoneImpl>> ZoneImpl::_zones;
 
-static const char* _dispatchFunction =
-    "function __napa_execute_dispatcher__(module, func, args) {\n"
-    "    var f = require(module)[func];\n"
-    "    if (!f) throw new Error(\"Cannot find function '\" + func + \"' in module '\" + module + \"'\");\n"
-    "    return f.apply(this, args);\n"
-    "}";
+// The path to the file containing the execute dispatcher function
+static const std::string DISPATCHER_FILE = (boost::dll::this_line_location().parent_path() /
+    "lib\\napa-dispatcher.js").string();
 
 std::shared_ptr<ZoneImpl> ZoneImpl::Create(const ZoneSettings& settings) {
     std::lock_guard<std::mutex> lock(_mutex);
@@ -38,12 +39,13 @@ std::shared_ptr<ZoneImpl> ZoneImpl::Create(const ZoneSettings& settings) {
         MakeSharedEnabler(const ZoneSettings& settings) : ZoneImpl(settings) {}
     };
 
-    std::shared_ptr<ZoneImpl> zone;
+    std::shared_ptr<ZoneImpl> zone = std::make_shared<MakeSharedEnabler>(settings);
+    _zones[settings.id] = zone;
     try {
-        zone = std::make_shared<MakeSharedEnabler>(settings);
-        _zones[settings.id] = zone;
+        zone->Init();
     } catch (const std::exception& ex) {
-        LOG_ERROR("Zone", "Failed to create zone '%s': %s", settings.id.c_str(), ex.what());
+        LOG_ERROR("Zone", "Failed to initialize zone '%s': %s", settings.id.c_str(), ex.what());
+        return nullptr;
     }
 
     return zone;
@@ -69,36 +71,19 @@ std::shared_ptr<ZoneImpl> ZoneImpl::Get(const std::string& id) {
 }
 
 ZoneImpl::ZoneImpl(const ZoneSettings& settings) : _settings(settings) {
+}
+
+void ZoneImpl::Init() {
     // Create the zone's scheduler.
     _scheduler = std::make_unique<Scheduler>(_settings);
 
-    // Set the dispatcher function on all zone workers.
-    _scheduler->ScheduleOnAllWorkers(std::make_shared<BroadcastTask>(_dispatchFunction));
+    // Read dispatcher file content and broadcast it on all workers.
+    // Do not set origin to avoid changing the global context path.
+    BroadcastFromFile(DISPATCHER_FILE, *_scheduler, false);
 
     // Read bootstrap file content and broadcast it on all workers.
     if (!_settings.bootstrapFile.empty()) {
-        auto filePath = boost::filesystem::path(_settings.bootstrapFile);
-        if (filePath.is_relative()) {
-            filePath = (boost::filesystem::current_path() / filePath).normalize().make_preferred();
-        }
-
-        auto filePathString = filePath.string();
-        std::ifstream ifs;
-        ifs.open(filePathString);
-
-        if (!ifs.is_open()) {
-            throw std::runtime_error("Failed to open bootstrap file: " + filePathString);
-        }
-
-        std::stringstream buffer;
-        buffer << ifs.rdbuf();
-
-        auto fileContent = buffer.str();
-        if (fileContent.empty()) {
-            throw std::runtime_error("Bootstrap file content was empty: " + filePathString);
-        }
-
-        _scheduler->ScheduleOnAllWorkers(std::make_shared<BroadcastTask>(std::move(fileContent), filePath.string()));
+        BroadcastFromFile(_settings.bootstrapFile, *_scheduler, true);
     }
 }
 
@@ -141,4 +126,30 @@ const ZoneSettings& ZoneImpl::GetSettings() const {
 
 Scheduler* ZoneImpl::GetScheduler() {
     return _scheduler.get();
+}
+
+static void BroadcastFromFile(const std::string& file, Scheduler& scheduler, bool withOrigin) {
+    auto filePath = boost::filesystem::path(file);
+    if (filePath.is_relative()) {
+        filePath = (boost::filesystem::current_path() / filePath).normalize().make_preferred();
+    }
+
+    auto filePathString = filePath.string();
+    std::ifstream ifs;
+    ifs.open(filePathString);
+
+    if (!ifs.is_open()) {
+        throw std::runtime_error("Failed to open file: " + filePathString);
+    }
+
+    std::stringstream buffer;
+    buffer << ifs.rdbuf();
+
+    auto fileContent = buffer.str();
+    if (fileContent.empty()) {
+        throw std::runtime_error("File content was empty: " + filePathString);
+    }
+
+    auto scriptOrigin = (withOrigin) ? filePathString : "";
+    scheduler.ScheduleOnAllWorkers(std::make_shared<BroadcastTask>(std::move(fileContent), scriptOrigin));
 }
