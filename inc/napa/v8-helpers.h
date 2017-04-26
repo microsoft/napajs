@@ -1,10 +1,13 @@
 #pragma once
 
+#include <napa-assert.h>
+#include <napa/utils.h>
+
+#include <v8.h>
+
 #include <memory>
 #include <sstream>
 #include <unordered_map>
-
-#include <v8.h>
 
 namespace napa {
 namespace v8_helpers {
@@ -239,23 +242,26 @@ namespace v8_helpers {
 }
 }
 
-#define CHECK_ARG_COMMON(isolate, expression, message, result, function, line)                                \
-if (!(expression)) {                                                                                          \
-    std::stringstream temp;                                                                                   \
-    temp << function << ":" << line << " -- " << message;                                                     \
-    isolate->ThrowException(v8::Exception::TypeError(napa::v8_helpers::MakeV8String(isolate, temp.str())));   \
-    return result;                                                                                            \
+#define CHECK_ARG_COMMON(isolate, expression, result, function, line, format, ...)                                \
+if (!(expression)) {                                                                                              \
+    constexpr int MAX_ERROR_MESSAGE_SIZE = 512;                                                                   \
+    char message[MAX_ERROR_MESSAGE_SIZE];                                                                         \
+    napa::utils::FormatMessageWithTruncation(message, MAX_ERROR_MESSAGE_SIZE, format, __VA_ARGS__);               \
+    std::stringstream temp;                                                                                       \
+    temp << function << ":" << line << " -- " << message;                                                         \
+    isolate->ThrowException(v8::Exception::TypeError(napa::v8_helpers::MakeV8String(isolate, temp.str())));       \
+    return result;                                                                                                \
 }
 
-#define CHECK_ARG(isolate, expression, message)                                         \
-    CHECK_ARG_COMMON(isolate, expression, message, /* empty */, __FUNCTION__, __LINE__)
+#define CHECK_ARG(isolate, expression, format, ...)                                                               \
+    CHECK_ARG_COMMON(isolate, expression, /* empty */, __FUNCTION__, __LINE__, format, __VA_ARGS__)
 
-#define CHECK_ARG_WITH_RETURN(isolate, expression, message, result)                     \
-    CHECK_ARG_COMMON(isolate, expression, message, result, __FUNCTION__, __LINE__)
+#define CHECK_ARG_WITH_RETURN(isolate, expression, result, format, ...)                                           \
+    CHECK_ARG_COMMON(isolate, expression, result, __FUNCTION__, __LINE__, format, __VA_ARGS__)
 
-#define JS_ASSERT(isolate, expression, message) CHECK_ARG(isolate, expression, message)
+#define JS_ASSERT(isolate, expression, format, ...) CHECK_ARG(isolate, expression, format, __VA_ARGS__)
 
-#define JS_ENSURE(isolate, expression, message) CHECK_ARG(isolate, expression, message)
+#define JS_ENSURE(isolate, expression, format, ...) CHECK_ARG(isolate, expression, format, __VA_ARGS__)
 
-#define JS_ENSURE_WITH_RETURN(isolate, expression, message, result)                     \
-    CHECK_ARG_WITH_RETURN(isolate, expression, message, result)
+#define JS_ENSURE_WITH_RETURN(isolate, expression, result, format, ...)                                           \
+    CHECK_ARG_WITH_RETURN(isolate, expression, result, format, __VA_ARGS__)
