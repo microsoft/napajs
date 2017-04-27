@@ -1,6 +1,7 @@
 #include "zone-wrap.h"
 
 #include "node-async-handler.h"
+#include "transport-context-wrap-impl.h"
 
 #include <napa.h>
 #include <napa-assert.h>
@@ -28,6 +29,7 @@ void ZoneWrap::Init(v8::Isolate* isolate) {
     functionTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 
     // Prototypes.
+    NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "getId", GetId);
     NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "broadcast", Broadcast);
     NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "broadcastSync", BroadcastSync);
     NODE_SET_PROTOTYPE_METHOD(functionTemplate, "execute", Execute);
@@ -71,7 +73,7 @@ void ZoneWrap::NewCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
         v8::String::Utf8Value zoneId(args[1]->ToString());
 
         std::stringstream ss;
-        if (args.Length() > 2) {
+        if ((args.Length() > 2) && (!args[2]->IsUndefined())) {
             CHECK_ARG(isolate, args[2]->IsObject(), "second argument to createZone must be an object");
             v8::Local<v8::Object> settingsObj = args[2]->ToObject(context).ToLocalChecked();
 
@@ -109,6 +111,14 @@ void ZoneWrap::NewCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
     obj->Wrap(args.This());
     args.GetReturnValue().Set(args.This());
+}
+
+void ZoneWrap::GetId(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    auto isolate = v8::Isolate::GetCurrent();
+
+    auto wrap = ObjectWrap::Unwrap<ZoneWrap>(args.Holder());
+
+    args.GetReturnValue().Set(MakeV8String(isolate, wrap->_zoneProxy->GetId()));
 }
 
 void ZoneWrap::Broadcast(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -204,23 +214,16 @@ static v8::Local<v8::Object> CreateResponseObject(const napa::ExecuteResponse& r
         MakeV8String(isolate, "errorMessage"),
         MakeV8String(isolate, response.errorMessage));
 
-    v8::Local<v8::Value> returnValue;
-    if (response.returnValue.empty()) {
-        returnValue = v8::String::Empty(isolate);
-    } else {
-        // If parse fails, return the string as is.
-        returnValue = MakeV8String(isolate, response.returnValue);
-
-        v8::TryCatch tryCatch;
-        returnValue = v8::JSON::Parse(isolate, v8::Local<v8::String>::Cast(returnValue)).FromMaybe(returnValue);
-    }
-
     (void)responseObject->CreateDataProperty(
         context,
         MakeV8String(isolate, "returnValue"),
-        returnValue);
+        MakeV8String(isolate, response.returnValue));
 
-    // TODO @asib: Set the transport context to the JS response
+    // Transport context handle
+    (void)responseObject->CreateDataProperty(
+        context,
+        MakeV8String(isolate, "contextHandle"),
+        PtrToV8Uint32Array(isolate, response.transportContext.release()));
 
     return responseObject;
 }
@@ -250,8 +253,9 @@ static void CreateRequestAndExecute(v8::Local<v8::Object> obj, Func&& func) {
 
     // arguments are optional in a request
     maybe = obj->Get(context, MakeV8String(isolate, "arguments"));
+    std::vector<Utf8String> arguments;
     if (!maybe.IsEmpty()) {
-        auto arguments = V8ArrayToVector<Utf8String>(isolate, v8::Local<v8::Array>::Cast(maybe.ToLocalChecked()));
+        arguments = V8ArrayToVector<Utf8String>(isolate, v8::Local<v8::Array>::Cast(maybe.ToLocalChecked()));
 
         request.arguments.reserve(arguments.size());
         for (const auto& arg : arguments) {
@@ -265,7 +269,11 @@ static void CreateRequestAndExecute(v8::Local<v8::Object> obj, Func&& func) {
         request.timeout = maybe.ToLocalChecked()->Uint32Value(context).FromJust();
     }
 
-    // TODO @asib: Get the transport context from JS request object and set in request transport context
+    // transportContext property is mandatory in a request
+    maybe = obj->Get(context, MakeV8String(isolate, "transportContext"));
+    CHECK_ARG(isolate, !maybe.IsEmpty(), "transportContext property is missing in execution request object");
+    auto transportContextWrap = NAPA_OBJECTWRAP::Unwrap<TransportContextWrapImpl>(maybe.ToLocalChecked()->ToObject());
+    request.transportContext.reset(transportContextWrap->Get());
 
     // Execute
     func(request);

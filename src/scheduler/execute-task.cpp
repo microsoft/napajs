@@ -81,10 +81,10 @@ void ExecuteTask::Execute() {
     if (tryCatch.HasTerminated()) {
         if (_terminationReason == TerminationReason::TIMEOUT) {
             LOG_ERROR("Execute", "Task was terminated due to timeout");
-            _callback({ NAPA_RESPONSE_TIMEOUT, "Execute exceeded timeout", "", nullptr });
+            _callback({ NAPA_RESPONSE_TIMEOUT, "Execute exceeded timeout", "", std::move(_transportContext) });
         } else {
             LOG_ERROR("Execute", "Task was terminated for unknown reason");
-            _callback({ NAPA_RESPONSE_INTERNAL_ERROR, "Execute task terminated", "", nullptr });
+            _callback({ NAPA_RESPONSE_INTERNAL_ERROR, "Execute task terminated", "", std::move(_transportContext) });
         }
 
         return;
@@ -98,15 +98,10 @@ void ExecuteTask::Execute() {
 
         LOG_ERROR("Execute", "JS exception thrown: %s - %s", *exceptionStr, *stackTraceStr);
 
-        _callback({ NAPA_RESPONSE_EXECUTE_FUNC_ERROR, *exceptionStr, "", nullptr });
+        _callback({ NAPA_RESPONSE_EXECUTE_FUNC_ERROR, *exceptionStr, "", std::move(_transportContext) });
         return;
     }
 
-    if (res->IsObject()) {
-        res = v8_helpers::JSON::Stringify(isolate, res->ToObject()).ToLocalChecked();
-    }
-
-    // Note that the return value must be copied out if the callback wants to keep it.
-    v8::String::Utf8Value returnValue(res);
-    _callback({ NAPA_RESPONSE_SUCCESS, "", std::string(*returnValue, returnValue.length()), nullptr });
+    v8::String::Utf8Value val(res);
+    _callback({ NAPA_RESPONSE_SUCCESS, "", std::string(*val, val.length()), std::move(_transportContext) });
 }

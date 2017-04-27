@@ -24,7 +24,7 @@ export class NapaZone implements zone.Zone {
     }
 
     public broadcast(source: string) : Promise<zone.ResponseCode> {
-        if (typeof __in_napa !== undefined) {
+        if (typeof __in_napa !== 'undefined') {
             // Napa does not support async yet, we wrap this sync call in a promise
             // to provide a uniform API.
             return Promise.resolve(this._nativeZone.broadcastSync(source));
@@ -44,8 +44,8 @@ export class NapaZone implements zone.Zone {
             timeout: timeout,
             transportContext: transportContext
         };
-
-        if (typeof __in_napa !== undefined) {
+        
+        if (typeof __in_napa !== 'undefined') {
             // Napa does not support async yet, we wrap this sync call in a promise
             // to provide a uniform API.
             let response = this._nativeZone.executeSync(request);
@@ -58,7 +58,7 @@ export class NapaZone implements zone.Zone {
         }
 
         return new Promise<zone.ResponseValue>((resolve, reject) => {
-            this._nativeZone.execute(module, func, args, (response) => {
+            this._nativeZone.execute(request, (response) => {
                 if (response.code === 0) {
                     transportContext = transport.createTransportContext(response.contextHandle);
                     resolve(transport.unmarshall(response.returnValue, transportContext));

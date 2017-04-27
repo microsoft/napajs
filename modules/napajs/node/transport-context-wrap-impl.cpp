@@ -54,10 +54,9 @@ void TransportContextWrapImpl::ConstructorCallback(const v8::FunctionCallbackInf
     // TODO: use replacement new to allocate memory from napa.dll
     TransportContext* context = nullptr;
     
-    if (args.Length() == 0) {
+    if (args.Length() == 0 || args[0]->IsUndefined()) {
         context = new TransportContext();
-    } 
-    else {
+    } else {
         auto result = v8_helpers::V8ValueToPtr<TransportContext>(isolate, args[0]);
         JS_ENSURE(isolate, result.second, 
             "argument 'handle' must be of type [number, number].");
