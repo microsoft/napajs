@@ -140,7 +140,7 @@ void SharedBarrelWrap::Get(const v8::FunctionCallbackInfo<v8::Value>& args) {
         return;
     }
 
-    auto objectWrap = SharedWrap::Create(std::move(object));
+    auto objectWrap = SharedWrap::NewInstance(std::move(object));
     args.GetReturnValue().Set(objectWrap);
 }
 

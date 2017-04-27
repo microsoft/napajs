@@ -92,5 +92,5 @@ void TransportContextWrapImpl::LoadSharedCallback(const v8::FunctionCallbackInfo
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<TransportContextWrap>(args.Holder());
     auto object = thisObject->Get()->LoadShared<void>(result.first);
 
-    args.GetReturnValue().Set(SharedWrap::Create(object));
+    args.GetReturnValue().Set(SharedWrap::NewInstance(object));
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <napa-module.h>
 #include <napa/memory/allocator.h>
+#include <napa/module/common.h>
 #include <napa/module/shared-wrap.h>
 
 namespace napa {
@@ -13,15 +14,15 @@ namespace module {
             return SharedWrap::Get<napa::memory::Allocator>();
         }
 
-        /// <summary> Create an allocator wrap with an allocator. </summary>
-        static v8::Local<v8::Object> Create(std::shared_ptr<napa::memory::Allocator> allocator) {
-            return SharedWrap::Create<napa::memory::Allocator, AllocatorWrap>(allocator);
+        /// <summary> Create a new instance of allocator wrap with an allocator. </summary>
+        static v8::Local<v8::Object> NewInstance(std::shared_ptr<napa::memory::Allocator> allocator) {
+            return SharedWrap::NewInstance<napa::memory::Allocator, AllocatorWrap>(allocator);
         }
         
         /// <summary> It creates a persistent constructor for SharedWrap instance. </summary>
         static void Init() {
             auto isolate = v8::Isolate::GetCurrent();
-            auto constructorTemplate = v8::FunctionTemplate::New(isolate, ConstructorCallback);
+            auto constructorTemplate = v8::FunctionTemplate::New(isolate, DefaultConstructorCallback<AllocatorWrap>);
             constructorTemplate->SetClassName(v8_helpers::MakeV8String(isolate, exportName));
             constructorTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 
@@ -59,21 +60,6 @@ namespace module {
         NAPA_DECLARE_PERSISTENT_CONSTRUCTOR
 
     protected:
-       
-        /// <summary> It creates SharedWrap from Javascript world. </summary>
-        static void ConstructorCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
-            auto isolate = v8::Isolate::GetCurrent();
-            v8::HandleScope scope(isolate);
-
-            CHECK_ARG(isolate, args.Length() == 0, "class \"AllocatorWrap\" doesn't accept any arguments in constructor.'");
-            JS_ENSURE(isolate, args.IsConstructCall(), "class \"AllocatorWrap\" allows constructor call only.");
-
-            // It's deleted when its Javascript object is garbage collected by V8's GC.
-            auto wrap = new AllocatorWrap();
-            wrap->Wrap(args.This());
-            args.GetReturnValue().Set(args.This());
-        }
-
         /// <summary> It implements Allocator.allocate(size: number): napajs.memory.Handle </summary>
         static void AllocateCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
             auto isolate = v8::Isolate::GetCurrent();

@@ -92,13 +92,13 @@ void GetResponseCodeString(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
 void GetCrtAllocator(const v8::FunctionCallbackInfo<v8::Value>& args) {
     args.GetReturnValue().Set(
-        napa::module::AllocatorWrap::Create(
+        napa::module::AllocatorWrap::NewInstance(
             NAPA_MAKE_SHARED<napa::memory::CrtAllocator>()));
 }
 
 void GetDefaultAllocator(const v8::FunctionCallbackInfo<v8::Value>& args) {
     args.GetReturnValue().Set(
-        napa::module::AllocatorWrap::Create(
+        napa::module::AllocatorWrap::NewInstance(
             NAPA_MAKE_SHARED<napa::memory::DefaultAllocator>()));
 }
 

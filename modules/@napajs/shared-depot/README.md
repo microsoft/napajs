@@ -62,7 +62,7 @@ void CreateTestableSharedString(const v8::FunctionCallbackInfo<v8::Value>& args)
     auto isolate = args.GetIsolate();
     v8::HandleScope scope(isolate);
 
-    auto objectWrap = SharedWrap::Create(std::make_shared<SharedString>());
+    auto objectWrap = SharedWrap::NewInstance(std::make_shared<SharedString>());
     args.GetReturnValue().Set(objectWrap);
 }
 
