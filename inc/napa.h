@@ -96,7 +96,7 @@ namespace napa {
 
                 // Assume ownership of transport context
                 res.transportContext.reset(
-                    reinterpret_cast<napa::memory::TransportContext*>(response.transport_context));
+                    reinterpret_cast<napa::transport::TransportContext*>(response.transport_context));
 
                 (*callback)(std::move(res));
             }, context);

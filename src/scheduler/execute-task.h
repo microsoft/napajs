@@ -29,7 +29,7 @@ namespace scheduler {
         std::string _func;
         std::vector<std::string> _args;
         ExecuteCallback _callback;
-        std::unique_ptr<napa::memory::TransportContext> _transportContext;
+        std::unique_ptr<napa::transport::TransportContext> _transportContext;
     };
 }
 }

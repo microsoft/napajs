@@ -130,7 +130,7 @@ void napa_zone_execute(napa_zone_handle handle,
     req.timeout = request.timeout;
     
     // Assume ownership of transport context
-    req.transportContext.reset(reinterpret_cast<napa::memory::TransportContext*>(request.transport_context));
+    req.transportContext.reset(reinterpret_cast<napa::transport::TransportContext*>(request.transport_context));
 
     handle->zone->Execute(req, [callback, context](ExecuteResponse response) {
         napa_zone_response res;

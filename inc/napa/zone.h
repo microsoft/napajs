@@ -1,6 +1,7 @@
 #pragma once
 
-#include "napa/common.h"
+#include <napa/common.h>
+#include <napa/transport/transport-context.h>
 
 #include <functional>
 #include <future>
@@ -10,11 +11,6 @@
 
 
 namespace napa {
-
-    // TODO @asib: remove this when the actual TransportContext is added to napa::memory
-    namespace memory {
-        class TransportContext {};
-    }
 
     /// <summary> Represents an execution request. </summary>
     struct ExecuteRequest {
@@ -32,7 +28,7 @@ namespace napa {
         uint32_t timeout = 0;
 
         /// <summary> Used for transporting shared_ptr and unique_ptr across zones/workers. </summary>
-        mutable std::unique_ptr<napa::memory::TransportContext> transportContext;
+        mutable std::unique_ptr<napa::transport::TransportContext> transportContext;
     };
 
     /// <summary> Represents an execution response. </summary>
@@ -48,7 +44,7 @@ namespace napa {
         std::string returnValue;
 
         /// <summary> Used for transporting shared_ptr and unique_ptr across zones/workers. </summary>
-        mutable std::unique_ptr<napa::memory::TransportContext> transportContext;
+        mutable std::unique_ptr<napa::transport::TransportContext> transportContext;
     };
 
     /// <summary> Callback signature. </summary>

@@ -5,6 +5,7 @@
         "experimentalDecorators": true,
         "noImplicitAny": false,
         "sourceMap": false,
+        "allowJs": true,
         "lib": ["es2015"],
         "outDir": "./objd/amd64"
     },

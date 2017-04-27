@@ -20,7 +20,7 @@ export interface PlatformSettings extends zone.ZoneSettings {
 declare var __in_napa: boolean;
 
 /// <summary> Initialization of napa is only needed if we run in node. </summary>
-let _initializationNeeded: boolean = (typeof __in_napa === undefined);
+let _initializationNeeded: boolean = (typeof __in_napa === 'undefined');
 
 /// <summary> Empty platform settings. </summary>
 let _platformSettings: PlatformSettings = {};
@@ -69,7 +69,7 @@ export function getZone(id: string) : zone.Zone {
 
 /// <summary> Returns the current zone. </summary>
 export function getCurrentZone() : zone.Zone {
-    if (typeof __in_napa !== undefined) {
+    if (typeof __in_napa !== 'undefined') {
         return new napa.NapaZone(addon.getCurrentZone());
     }
 
