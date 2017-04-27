@@ -1,6 +1,7 @@
 #pragma once
 
 #include <napa-module.h>
+#include <napa/module/common.h>
 #include <napa/module/transport.h>
 
 #include <memory>
@@ -16,7 +17,7 @@ namespace module {
         /// <summary> It creates a persistent constructor for SharedWrap instance. </summary>
         static void Init() {
             auto isolate = v8::Isolate::GetCurrent();
-            auto constructorTemplate = v8::FunctionTemplate::New(isolate, ConstructorCallback);
+            auto constructorTemplate = v8::FunctionTemplate::New(isolate, DefaultConstructorCallback<SharedWrap>);
             constructorTemplate->SetClassName(v8_helpers::MakeV8String(isolate, exportName));
             constructorTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 
@@ -49,28 +50,24 @@ namespace module {
             TransportableObject::InitConstructor(cid, constructor);
         }
 
-        /// <summary> It creates a subclass of SharedWrap. </summary>
+        /// <summary> It creates a new instance of WrapType of shared_ptr<T>, WrapType is a sub-class of SharedWrap. </summary>
         /// <param name="object"> shared_ptr of object. </summary>
         /// <returns> V8 object of type SharedWrap. </summary>
         template <typename T, typename WrapType>
-        static v8::Local<v8::Object> Create(std::shared_ptr<T> object) {
-            auto isolate = v8::Isolate::GetCurrent();
-            v8::EscapableHandleScope scope(isolate);
-
-            auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(WrapType::exportName, WrapType);
-            auto instance = constructor->NewInstance();
+        static v8::Local<v8::Object> NewInstance(std::shared_ptr<T> object) {
+            auto instance = napa::module::NewInstance<WrapType>().ToLocalChecked();
             auto wrap = NAPA_OBJECTWRAP::Unwrap<SharedWrap>(instance);
             wrap->_object = std::static_pointer_cast<void>(std::move(object));
 
-            return scope.Escape(instance);
+            return instance;
         }
 
-        /// <summary> It creates SharedWrap from C++ world. </summary>
+        /// <summary> It creates a new instance of SharedWrap with shared_ptr<T>. </summary>
         /// <param name="object"> shared_ptr of object. </summary>
         /// <returns> V8 object of type SharedWrap. </summary>
         template <typename T>
-        static v8::Local<v8::Object> Create(std::shared_ptr<T> object) {
-            return Create<T, SharedWrap>(object);
+        static v8::Local<v8::Object> NewInstance(std::shared_ptr<T> object) {
+            return NewInstance<T, SharedWrap>(object);
         }
 
         /// <summary> Get shared_ptr of T, which is the type of contained native object. </summary>
@@ -92,25 +89,15 @@ namespace module {
         static constexpr const char* exportName = "SharedWrap";
     
     protected:
+        /// <summary> Friend default constructor callback. </summary>
+        template <typename T>
+        friend void napa::module::DefaultConstructorCallback(const v8::FunctionCallbackInfo<v8::Value>&);
+
         /// <summary> Default constructor. </summary>
         SharedWrap() = default;
 
         /// <summary> Constructor. </summary>
         explicit SharedWrap(std::shared_ptr<void> object) : _object(std::move(object)) {}
-
-        /// <summary> It creates SharedWrap from Javascript world. </summary>
-        static void ConstructorCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
-            auto isolate = v8::Isolate::GetCurrent();
-            v8::HandleScope scope(isolate);
-
-            CHECK_ARG(isolate, args.Length() == 0, "class \"SharedWrap\" doesn't accept any arguments in constructor.'");
-            JS_ENSURE(isolate, args.IsConstructCall(), "class \"SharedWrap\" allows constructor call only.");
-
-            // It's deleted when its Javascript object is garbage collected by V8's GC.
-            auto wrap = new SharedWrap();
-            wrap->Wrap(args.This());
-            args.GetReturnValue().Set(args.This());
-        }
 
         /// <summary> It implements readonly Shareable.handle : Handle </summary>
         static void GetHandleCallback(v8::Local<v8::String> /*propertyName*/, const v8::PropertyCallbackInfo<v8::Value>& args){

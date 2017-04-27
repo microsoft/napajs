@@ -103,7 +103,7 @@ void ExecuteTask::Execute() {
     }
 
     if (res->IsObject()) {
-        res = v8_helpers::Stringify(isolate, res->ToObject());
+        res = v8_helpers::JSON::Stringify(isolate, res->ToObject()).ToLocalChecked();
     }
 
     // Note that the return value must be copied out if the callback wants to keep it.
