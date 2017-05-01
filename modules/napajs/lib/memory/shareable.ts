@@ -1,9 +1,9 @@
 import { Handle} from './handle';
-import * as transport from '../transport';
+import { Transportable, isTransportable } from '../transport/transportable';
 
 /// <summary> Interface of native object (wrapped shared_ptr<T>) that can be shared across isolates. </summary>
-/// <remarks> see napa::module::SharedWrap. </remarks>
-export interface Shareable extends transport.Transportable {
+/// <remarks> The counterpart of Shareable is napa::module::SharedWrap, always extend napa::module::SharedWrap for sharable native object. </remarks>
+export interface Shareable extends Transportable {
     /// <summary> Return handle of this object. </summary>
     readonly handle: Handle;
 
@@ -16,7 +16,7 @@ export interface Shareable extends transport.Transportable {
 
 /// <summary> Tells if a JavaScript is value or not. </summary>
 export function isShareable(jsValue: any): boolean {
-    if (transport.isTransportable(jsValue)) {
+    if (isTransportable(jsValue)) {
         let object = <Object>jsValue;
         return object.hasOwnProperty('handle')
             && object.hasOwnProperty('refCount');
