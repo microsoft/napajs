@@ -31,7 +31,7 @@ export class NapaZone implements zone.Zone {
         }
 
         return new Promise<zone.ResponseCode>(resolve => {
-            this._nativeZone.load(source, resolve);
+            this._nativeZone.broadcast(source, resolve);
         });
     }
 
