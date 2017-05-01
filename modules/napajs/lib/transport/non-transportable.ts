@@ -1,11 +1,8 @@
 export const CID = '<non-transportable>';
 
 /// <summary> Class decorator 'nontransportable' that indicates a class cannot be transported between isolates. </summary>
-export function nontransportable<T extends { new(...args: any[]): {}}>(
-    constructor: T) {
-    return class extends constructor {
-        static _cid: string = CID;
-    };
+export function nontransportable<T extends { new(...args: any[]): {}}>(constructor: T) {
+    constructor['_cid'] = CID;
 }
 
 /// <summary> Tell if a jsValue is decorated by @nontransportable. </summary>

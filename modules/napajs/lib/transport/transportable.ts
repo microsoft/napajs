@@ -7,10 +7,12 @@
 /// 
 /// </summary>
 
-/// <summary> export transport.register and TransportContext to avoid multiple import from client side. </summary>
-import * as memory from '../memory';
 import * as nontransportable from './non-transportable';
 import * as transport from './transport'
+
+import { Shareable } from '../memory/shareable';
+import { Handle } from '../memory/handle';
+
 import * as path from 'path';
 
 /// <summary> Transport context carries additional information needed to unmarshall 
@@ -21,20 +23,13 @@ import * as path from 'path';
 /// <remarks> Reference: napa::binding::TransportContextWrapImpl. </remarks>
 export interface TransportContext {
     /// <summary> Save a shared_ptr for later load in another isolate. </summary>
-    saveShared(object: memory.SharedWrap): void;
+    saveShared(object: Shareable): void;
 
     /// <summary> Load a shared_ptr from previous save in another isolate. </summary>
-    loadShared(handle: memory.Handle): memory.SharedWrap;
+    loadShared(handle: Handle): Shareable;
 
     /// <summary> Number of shared object saved in this TransportContext. </summary> 
     readonly sharedCount: number;
-}
-
-var addon = require('../../bin/addon');
-
-/// <summary> Create a transport context. </summary>
-export function createTransportContext(handle? : memory.Handle): TransportContext {
-    return new addon.TransportContextWrap(handle);
 }
 
 /// <summary> Interface for transportable non-built-in JavaScript types. </summary> 
@@ -43,13 +38,13 @@ export interface Transportable {
     cid(): string;
 
     /// <summary> Marshall object into plain JavaScript object. </summary>
-    /// <param name='context'> Transport context for saving shared pointers, only usable for C++ addons implemented SharedWrap. </param>
+    /// <param name='context'> Transport context for saving shared pointers, only usable for C++ addons that extends napa::module::SharedWrap. </param>
     /// <returns> Plain JavaScript value. </returns>
     marshall(context: TransportContext): object;
 
     /// <summary> Unmarshall object from payload, which is a plain JavaScript value, and a transport context. </summary>
     /// <param name='payload'> Payload to read from, which already have inner objects transported. </param>
-    /// <param name='context'> Transport context for loading shared pointers, only needed for C++ addons implemented SharedWrap </param>
+    /// <param name='context'> Transport context for loading shared pointers, only needed for C++ addons that extends napa::module::SharedWrap </param>
     unmarshall(payload: object, context: TransportContext): void
 }
 
@@ -72,12 +67,12 @@ export abstract class TransportableObject implements Transportable{
     /// <param name='payload'> Payload to write to. 
     /// The sub-class should always serialize states into the payload 
     /// if they are required to load the sub-class instance. </param>
-    /// <param name='context'> Transport context for saving shared pointers, only usable for C++ addons implemented SharedWrap. </param>
+    /// <param name='context'> Transport context for saving shared pointers, only usable for C++ addons that extends napa::module::SharedWrap. </param>
     abstract save(payload: object, context: TransportContext): void;
 
     /// <summary> Subclass to load state from payload. </summary>
     /// <param name='payload'> Payload to read from, which already have inner objects transported. </param>
-    /// <param name='context'> Transport context for loading shared pointers, only usable for C++ addons implemented SharedWrap. </param>
+    /// <param name='context'> Transport context for loading shared pointers, only usable for C++ addons that extends napa::module::SharedWrap. </param>
     abstract load(payload: object, context: TransportContext): void;
 
     /// <summary> Marshall object into plain JavaScript object. </summary>
