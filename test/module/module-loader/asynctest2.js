@@ -1,17 +1,13 @@
 now = async.now();
-assert.equal(now, 4);
+assert.equal(now, 6);
 
-promise = new Promise((resolve) => {
-    async.increase(3, (value) => {
-        resolve(value);
-    });
+async.increaseSync(3, (value) => {
+    assert.equal(value, 9);
+
+    now = async.now();
+    assert.equal(now, 12);
 });
 
-promise.then((value) => {
-    assert.equal(value, 8);
-});
-
-now = async.now();
-assert(now == 4 || now == 7);
+async.increaseSync(3, (value) => {});
 
 true;

@@ -11,10 +11,12 @@ var promise = new Promise((resolve) => {
 });
 
 promise.then((value) => {
-    assert.equal(value, 4);
+    assert.equal(value, 3);
+
+    now = async.now();
+    assert.equal(now, 6);
 });
 
-now = async.now();
-assert(now == 0 || now == 3);
+async.increaseSync(3, (value) => {});
 
 true;

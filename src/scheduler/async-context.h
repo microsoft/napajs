@@ -14,7 +14,10 @@ namespace module {
     /// <summary> Class holding asynchonous callbacks. </summary>
     struct AsyncContext {
         /// <summary> Zone instance issueing asynchronous work. </summary>
-        ZoneImpl* zone;
+        ZoneImpl* zone = nullptr;
+
+        /// <summary> Keep scheduler instance referenced until async work completes. </summary>
+        std::shared_ptr<scheduler::Scheduler> scheduler;
 
         /// <summary> Worker Id issueing asynchronous work. </summary>
         scheduler::WorkerId workerId;
@@ -27,6 +30,9 @@ namespace module {
 
         /// <summary> Function to run asynchronously in separate thread. </summary>
         AsyncWork asyncWork;
+
+        /// <summary> Return value from asynchronous work. </summary>
+        void* result = nullptr;
 
         /// <summary> Callback running in V8 isolate after asynchronous callback completes. </summary>
         AsyncCompleteCallback asyncCompleteCallback;

@@ -1,7 +1,11 @@
 var addon = require('../bin/addon');
 
-export function increase(extra: number, callback: (now: number) => void) {
-    return addon.increase(extra, callback);
+export function increase(value: number, callback: (now: number) => void) {
+    return addon.increase(value, callback);
+}
+
+export function increaseSync(value: number, callback: (now: number) => void) {
+    return addon.increaseSync(value, callback);
 }
 
 export function now(): string {

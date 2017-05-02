@@ -124,8 +124,8 @@ const ZoneSettings& ZoneImpl::GetSettings() const {
     return _settings;
 }
 
-Scheduler* ZoneImpl::GetScheduler() {
-    return _scheduler.get();
+std::shared_ptr<Scheduler> ZoneImpl::GetScheduler() {
+    return _scheduler;
 }
 
 static void BroadcastFromFile(const std::string& file, Scheduler& scheduler, bool withOrigin) {

@@ -35,14 +35,15 @@ namespace napa {
         const ZoneSettings& GetSettings() const;
 
         /// <summary> Retrieves the zone scheduler. </summary>
-        scheduler::Scheduler* GetScheduler();
+        /// <remark> Asynchronous works keep the reference on scheduler, so they can finish up safely. </remarks>
+        std::shared_ptr<scheduler::Scheduler> GetScheduler();
 
     private:
         explicit ZoneImpl(const ZoneSettings& settings);
         void Init();
 
         ZoneSettings _settings;
-        std::unique_ptr<scheduler::Scheduler> _scheduler;
+        std::shared_ptr<scheduler::Scheduler> _scheduler;
 
         static std::mutex _mutex;
         static std::unordered_map<std::string, std::weak_ptr<ZoneImpl>> _zones;
