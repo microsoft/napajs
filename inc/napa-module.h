@@ -116,10 +116,3 @@
 #define NAPA_EXPORT_OBJECTWRAP(exports, exportName, className) \
     exports->Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), exportName), \
                  NAPA_GET_PERSISTENT_CONSTRUCTOR(exportName, className))
-
-/// <summary> It posts asynchronous work. </summary>
-/// <param name="jsCallback"> Javascript callback. </summary>
-/// <param name="asyncWork"> Function to run asynchronously in separate thread. </param>
-/// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous callback completes. </param>
-#define NAPA_POST_ASYNC_WORK(jsCallback, asyncWork, asyncCompleteCallback) \
-    napa::module::PostAsyncWork(jsCallback, asyncWork, asyncCompleteCallback)

@@ -2,18 +2,41 @@ var assert = require('assert');
 var asyncNumber = require('async-number');
 
 describe('Test suite for async-number', function() {
-    it('change number asynchronously', function(done) {
+    it('change number asynchronously on separate thread', function(done) {
         let now = asyncNumber.now();
         assert.equal(now, 0);
 
         asyncNumber.increase(3, (value: number) => {
             // This must be called after the last statement of *it* block is executed.
-            assert.equal(value, 4);
+            assert(value == 3 || value == 6);
+
+            now = asyncNumber.now();
+            assert.equal(now, 6);
+
+            done();
+        });
+
+        asyncNumber.increaseSync(3, (value) => {} );
+    });
+
+    it('change number synchronously on current thread', function(done) {
+        let now = asyncNumber.now();
+        assert.equal(now, 0);
+
+        asyncNumber.increaseSync(3, (value: number) => {
+            // This must be called after the last statement of *it* block is executed.
+            assert.equal(value, 3);
+
+            now = asyncNumber.now();
+            assert.equal(now, 6);
+
             done();
         });
 
         now = asyncNumber.now();
-        // 'now' should not 4.
-        assert(now == 0 || now == 3);
+        // 'now' should be 3.
+        assert.equal(now, 3);
+
+        asyncNumber.increaseSync(3, (value) => {} );
     });
 })

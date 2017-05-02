@@ -1,10 +1,10 @@
 #include "zone-wrap.h"
 
-#include "node-async-handler.h"
 #include "transport-context-wrap-impl.h"
 
 #include <napa.h>
 #include <napa-assert.h>
+#include <napa-module.h>
 #include <napa/v8-helpers.h>
 
 #include <sstream>
@@ -128,22 +128,28 @@ void ZoneWrap::Broadcast(const v8::FunctionCallbackInfo<v8::Value>& args) {
     CHECK_ARG(isolate, args[1]->IsFunction(), "second argument to zone.broadcast must be the callback");
     
     v8::String::Utf8Value source(args[0]->ToString());
-    auto callback = v8::Local<v8::Function>::Cast(args[1]);
 
-    auto handler = NodeAsyncHandler<NapaResponseCode>::New(
-        isolate,
-        callback,
-        [isolate](const auto& responseCode) {
-            std::vector<v8::Local<v8::Value>> res;
-            res.push_back(v8::Uint32::NewFromUnsigned(isolate, responseCode));
-            return res;
+    napa::module::DoAsyncWork(v8::Local<v8::Function>::Cast(args[1]),
+        [&args, &source](std::function<void(void*)> complete) {
+            auto wrap = ObjectWrap::Unwrap<ZoneWrap>(args.Holder());
+
+            wrap->_zoneProxy->Broadcast(*source, [complete = std::move(complete)](NapaResponseCode responseCode) {
+                complete(reinterpret_cast<void*>(static_cast<uintptr_t>(responseCode)));
+            });
+        },
+        [](auto jsCallback, void* result) {
+            auto isolate = v8::Isolate::GetCurrent();
+            auto context = isolate->GetCurrentContext();
+
+            v8::HandleScope scope(isolate);
+
+            std::vector<v8::Local<v8::Value>> argv;
+            auto responseCode = static_cast<NapaResponseCode>(reinterpret_cast<uintptr_t>(result));
+            argv.push_back(v8::Uint32::NewFromUnsigned(isolate, responseCode));
+
+            (void)jsCallback->Call(context, context->Global(), static_cast<int>(argv.size()), argv.data());
         }
     );
-
-    auto wrap = ObjectWrap::Unwrap<ZoneWrap>(args.Holder());
-    wrap->_zoneProxy->Broadcast(*source, [handler](NapaResponseCode responseCode) {
-        handler->DispatchCallback(responseCode);
-    });
 }
 
 void ZoneWrap::BroadcastSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -166,21 +172,32 @@ void ZoneWrap::Execute(const v8::FunctionCallbackInfo<v8::Value>& args) {
     CHECK_ARG(isolate, args[0]->IsObject(), "first argument to zone.execute must be the execution request object");
     CHECK_ARG(isolate, args[1]->IsFunction(), "second argument to zone.execute must be the callback");
 
-    auto callback = v8::Local<v8::Function>::Cast(args[1]);
+    napa::module::DoAsyncWork(v8::Local<v8::Function>::Cast(args[1]),
+        [&args](std::function<void(void*)> complete) {
+            CreateRequestAndExecute(args[0]->ToObject(), [&args, &complete](const napa::ExecuteRequest& request) {
+                auto wrap = ObjectWrap::Unwrap<ZoneWrap>(args.Holder());
 
-    auto handler = NodeAsyncHandler<napa::ExecuteResponse>::New(isolate, callback, [](const auto& response) {
-        std::vector<v8::Local<v8::Value>> res;
-        res.push_back(CreateResponseObject(response));
-        return res;
-    });
+                wrap->_zoneProxy->Execute(request, [complete = std::move(complete)](napa::ExecuteResponse response) {
+                    complete(new napa::ExecuteResponse(std::move(response)));
+                });
+            });
+        },
+        [](auto jsCallback, void* result) {
+            auto isolate = v8::Isolate::GetCurrent();
+            auto context = isolate->GetCurrentContext();
 
-    auto wrap = ObjectWrap::Unwrap<ZoneWrap>(args.Holder());
+            auto response = static_cast<napa::ExecuteResponse*>(result);
 
-    CreateRequestAndExecute(args[0]->ToObject(), [wrap, handler](const napa::ExecuteRequest& request) {
-        wrap->_zoneProxy->Execute(request, [handler](napa::ExecuteResponse response) {
-            handler->DispatchCallback(std::move(response));
-        });
-    });
+            v8::HandleScope scope(isolate);
+
+            std::vector<v8::Local<v8::Value>> argv;
+            argv.push_back(CreateResponseObject(*response));
+
+            (void)jsCallback->Call(context, context->Global(), static_cast<int>(argv.size()), argv.data());
+
+            delete response;
+        }
+    );
 }
 
 void ZoneWrap::ExecuteSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -189,11 +206,10 @@ void ZoneWrap::ExecuteSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
     CHECK_ARG(isolate, args[0]->IsObject(), "first argument to zone.execute must be the execution request object");
 
-    auto wrap = ObjectWrap::Unwrap<ZoneWrap>(args.Holder());
+    CreateRequestAndExecute(args[0]->ToObject(), [&args](const napa::ExecuteRequest& request) {
+        auto wrap = ObjectWrap::Unwrap<ZoneWrap>(args.Holder());
 
-    napa::ExecuteResponse response;
-    CreateRequestAndExecute(args[0]->ToObject(), [wrap, &response, &args](const napa::ExecuteRequest& request) {
-        response = wrap->_zoneProxy->ExecuteSync(request);
+        napa::ExecuteResponse response = wrap->_zoneProxy->ExecuteSync(request);
         args.GetReturnValue().Set(CreateResponseObject(response));
     });
 }
@@ -232,9 +248,9 @@ template <typename Func>
 static void CreateRequestAndExecute(v8::Local<v8::Object> obj, Func&& func) {
     auto isolate = v8::Isolate::GetCurrent();
     auto context = isolate->GetCurrentContext();
-    
-    napa::ExecuteRequest request;
 
+    napa::ExecuteRequest request;
+    
     // module property is optional in a request
     Utf8String module;
     auto maybe = obj->Get(context, MakeV8String(isolate, "module"));
@@ -246,8 +262,10 @@ static void CreateRequestAndExecute(v8::Local<v8::Object> obj, Func&& func) {
     // function property is mandatory in a request
     maybe = obj->Get(context, MakeV8String(isolate, "function"));
     CHECK_ARG(isolate, !maybe.IsEmpty(), "function property is missing in execution request object");
+
     auto functionValue = maybe.ToLocalChecked();
     CHECK_ARG(isolate, functionValue->IsString(), "function property in execution request object must be a string");
+
     v8::String::Utf8Value function(functionValue->ToString());
     request.function = NAPA_STRING_REF_WITH_SIZE(*function, static_cast<size_t>(function.length()));
 
@@ -272,6 +290,7 @@ static void CreateRequestAndExecute(v8::Local<v8::Object> obj, Func&& func) {
     // transportContext property is mandatory in a request
     maybe = obj->Get(context, MakeV8String(isolate, "transportContext"));
     CHECK_ARG(isolate, !maybe.IsEmpty(), "transportContext property is missing in execution request object");
+
     auto transportContextWrap = NAPA_OBJECTWRAP::Unwrap<TransportContextWrapImpl>(maybe.ToLocalChecked()->ToObject());
     request.transportContext.reset(transportContextWrap->Get());
 
