@@ -147,7 +147,7 @@ namespace module {
 
         uv_async_init(uv_default_loop(), &context->work, RunCompletionCallback);
 
-        asyncWork([&](void* result) {
+        asyncWork([context](void* result) {
             context->result = result;
 
             uv_async_send(&context->work);

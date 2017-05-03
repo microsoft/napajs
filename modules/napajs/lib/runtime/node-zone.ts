@@ -7,12 +7,12 @@ export class NodeZone implements zone.Zone {
         return "node";
     }
 
-    public broadcast(source: string) : Promise<zone.ResponseCode> {
+    public broadcast(arg1: any, arg2?: any) : Promise<zone.ResponseCode> {
         // TODO @asib: add implementation
         return undefined;
     }
 
-    public execute(module: string, func: string, args: string[], timeout?: number) : Promise<zone.ResponseValue> {
+    public execute(arg1: any, arg2: any, arg3?: any, arg4?: any) : Promise<zone.ExecuteResult> {
         // TODO @asib: add implementation
         return undefined;
     }
