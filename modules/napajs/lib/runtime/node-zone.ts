@@ -12,7 +12,17 @@ export class NodeZone implements zone.Zone {
         return undefined;
     }
 
+    public broadcastSync(arg1: any, arg2?: any) : zone.ResponseCode {
+        // TODO @asib: add implementation
+        return undefined;
+    }
+
     public execute(arg1: any, arg2: any, arg3?: any, arg4?: any) : Promise<zone.ExecuteResult> {
+        // TODO @asib: add implementation
+        return undefined;
+    }
+
+    public executeSync(arg1: any, arg2: any, arg3?: any, arg4?: any) : zone.ExecuteResult {
         // TODO @asib: add implementation
         return undefined;
     }
