@@ -52,6 +52,45 @@ export class NapaZone implements zone.Zone {
     }
 
     public broadcast(arg1: any, arg2?: any) : Promise<zone.ResponseCode> {
+        let source: string = this.createBroadcastSource(arg1, arg2);
+
+        return new Promise<zone.ResponseCode>(resolve => {
+            this._nativeZone.broadcast(source, resolve);
+        });
+    }
+
+    public broadcastSync(arg1: any, arg2?: any) : zone.ResponseCode {
+        let source: string = this.createBroadcastSource(arg1, arg2);
+
+        return this._nativeZone.broadcastSync(source);
+    }
+
+    public execute(arg1: any, arg2: any, arg3?: any, arg4?: any) : Promise<zone.ExecuteResult> {
+        let request : ExecuteRequest = this.createExecuteRequest(arg1, arg2, arg3, arg4);
+        
+        return new Promise<zone.ExecuteResult>((resolve, reject) => {
+            this._nativeZone.execute(request, (response) => {
+                if (response.code === 0) {
+                    resolve(new NapaExecuteResult(response.returnValue, transport.createTransportContext(response.contextHandle)));
+                } else {
+                    reject(response.errorMessage);
+                }
+            });
+        });
+    }
+
+    public executeSync(arg1: any, arg2: any, arg3?: any, arg4?: any) : zone.ExecuteResult {
+        let request : ExecuteRequest = this.createExecuteRequest(arg1, arg2, arg3, arg4);
+
+        let response = this._nativeZone.executeSync(request);
+        if (response.code === 0) {
+            return new NapaExecuteResult(response.returnValue, transport.createTransportContext(response.contextHandle));
+        } else {
+            throw new Error(response.errorMessage);
+        }
+    }
+
+    private createBroadcastSource(arg1: any, arg2?: any) : string {
         let source: string;
         if (typeof arg1 === "string") {
             // broadcast with source
@@ -78,12 +117,10 @@ export class NapaZone implements zone.Zone {
             source = `(${ functionString })(${ argumentsString })`;
         }
 
-        return new Promise<zone.ResponseCode>(resolve => {
-            this._nativeZone.broadcast(source, resolve);
-        });
+        return source;
     }
 
-    public execute(arg1: any, arg2: any, arg3?: any, arg4?: any) : Promise<zone.ExecuteResult> {
+    private createExecuteRequest(arg1: any, arg2: any, arg3?: any, arg4?: any) : ExecuteRequest {
         if (arg1 instanceof Function) {
             throw new Error("Execute with function is not implemented");
         }
@@ -96,18 +133,8 @@ export class NapaZone implements zone.Zone {
             timeout: arg4,
             transportContext: transportContext
         };
-        
-        return new Promise<zone.ExecuteResult>((resolve, reject) => {
-            this._nativeZone.execute(request, (response) => {
-                if (response.code === 0) {
-                    transportContext = transport.createTransportContext(response.contextHandle);
-                    resolve(new NapaExecuteResult(response.returnValue, transportContext));
-                } else {
-                    reject(response.errorMessage);
-                }
-            });
-        });
-    }
 
+        return request;
+    }
 }
 
