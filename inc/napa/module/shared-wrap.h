@@ -1,8 +1,10 @@
 #pragma once
 
 #include <napa-module.h>
+#include <napa-transport.h>
+
 #include <napa/module/common.h>
-#include <napa/module/transport.h>
+#include <napa/module/transport-context-wrap.h>
 
 #include <memory>
 #include <string>
@@ -33,7 +35,7 @@ namespace module {
         template <typename WrapType>
         static void InitConstructorTemplate(v8::Local<v8::FunctionTemplate> constructorTemplate) {
             // Blessed with methods from napajs.transport.Transportable.
-            TransportableObject::InitConstructorTemplate(constructorTemplate);
+            napa::transport::TransportableObject::InitConstructorTemplate(constructorTemplate);
 
             NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "load", WrapType::LoadCallback);
             NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "save", WrapType::SaveCallback);
@@ -47,7 +49,7 @@ namespace module {
         /// <param name="cid"> Cid used for transporting the wrap. </param>
         /// <param name='constructor'> Constructor of wrap class. </param>
         static void InitConstructor(const char* cid, v8::Local<v8::Function> constructor) {
-            TransportableObject::InitConstructor(cid, constructor);
+            napa::transport::TransportableObject::InitConstructor(cid, constructor);
         }
 
         /// <summary> It creates a new instance of WrapType of shared_ptr<T>, WrapType is a sub-class of SharedWrap. </summary>

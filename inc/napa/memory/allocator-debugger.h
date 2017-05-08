@@ -79,6 +79,12 @@ namespace memory {
             return stream.str();
         }
 
+        /// <summary> Tell if another allocator equals to this allocator. </summary>
+        bool operator==(const Allocator& other) const override {
+            return strcmp(other.GetType(), GetType()) == 0
+                && (_allocator == dynamic_cast<const SimpleAllocatorDebugger*>(&other)->_allocator);
+        }
+
     private:
         /// <summary> No copy, no assignment. </summary>
         SimpleAllocatorDebugger(const SimpleAllocatorDebugger&) = delete;

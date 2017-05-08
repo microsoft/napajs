@@ -9,7 +9,7 @@ namespace napa {
             typename Key, 
             typename T, 
             typename Hash = std::hash<Key>,
-            typename KeyEqual = std::equal_to<Key>,
+            typename KeyEqual = std::equal_to<Key>
         >
         using UnorderedMap = std::unordered_map<
             Key, 
@@ -22,7 +22,7 @@ namespace napa {
             typename Key, 
             typename T, 
             typename Hash = std::hash<Key>,
-            typename KeyEqual = std::equal_to<Key>,
+            typename KeyEqual = std::equal_to<Key>
         >
         using UnorderedMultiMap = std::unordered_multimap<
             Key, 

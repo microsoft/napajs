@@ -12,5 +12,14 @@ namespace v8_helpers {
         }
         return v8::Local<T>::Cast(handle.ToLocalChecked());
     }
+
+    /// <summary> Cast MaybeLocal to Local from source type to target type with default value. </summary>
+    template <typename T, typename S>
+    v8::Local<T> LocalCast(v8::MaybeLocal<S> handle, v8::Local<T> defaultValue = v8::Local<T>()) {
+        if (handle.IsEmpty()) {
+            return defaultValue;
+        }
+        return v8::Local<T>::Cast(handle.ToLocalChecked());
+    }
 }
 }

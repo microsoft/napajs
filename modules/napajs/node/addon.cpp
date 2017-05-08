@@ -1,12 +1,14 @@
 #include <napa.h>
 #include <napa-memory.h>
 #include <napa-module.h>
+#include <napa/memory/store.h>
 #include <napa/module/shared-wrap.h>
 
 #include "zone-wrap.h"
 #include "logging-provider-wrap.h"
 #include "transport-context-wrap-impl.h"
 #include "simple-allocator-debugger-wrap.h"
+#include "store-wrap.h"
 
 #include <algorithm>
 
@@ -102,6 +104,38 @@ void GetDefaultAllocator(const v8::FunctionCallbackInfo<v8::Value>& args) {
             NAPA_MAKE_SHARED<napa::memory::DefaultAllocator>()));
 }
 
+void FindOrCreateStore(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
+
+    CHECK_ARG(isolate, args.Length() == 1, "1 arguments are required for \"findOrCreateStore\".");
+    CHECK_ARG(isolate, args[0]->IsString(), "Argument 'key' must be string.");
+
+    auto key = napa::v8_helpers::V8ValueTo<std::string>(args[0]);
+    auto store = napa::memory::FindOrCreateStore(key.c_str());
+    
+    args.GetReturnValue().Set(StoreWrap::NewInstance(store));
+}
+
+void FindStore(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
+
+    CHECK_ARG(isolate, args.Length() == 1, "1 arguments are required for \"findStore\".");
+    CHECK_ARG(isolate, args[0]->IsString(), "Argument 'key' must be string.");
+
+    auto key = napa::v8_helpers::V8ValueTo<std::string>(args[0]);
+    auto store = napa::memory::FindStore(key.c_str());
+    
+    if (store != nullptr) {
+        args.GetReturnValue().Set(StoreWrap::NewInstance(store));
+    }
+}
+
+void GetStoreCount(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    args.GetReturnValue().Set(static_cast<uint32_t>(napa::memory::GetStoreCount()));
+}
+
 void InitAll(v8::Local<v8::Object> exports) {
     NAPA_SHARED_WRAP_INIT();
     NAPA_ALLOCATOR_WRAP_INIT();
@@ -113,6 +147,7 @@ void InitAll(v8::Local<v8::Object> exports) {
     napa::binding::LoggingProviderWrap::Init(v8::Isolate::GetCurrent());
     napa::binding::TransportContextWrapImpl::Init();
     napa::binding::SimpleAllocatorDebuggerWrap::Init();
+    napa::binding::StoreWrap::Init();
 
     NAPA_EXPORT_OBJECTWRAP(exports, "SharedWrap", napa::module::SharedWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "AllocatorWrap", napa::module::AllocatorWrap);
@@ -131,6 +166,10 @@ void InitAll(v8::Local<v8::Object> exports) {
 
     NAPA_SET_METHOD(exports, "getCrtAllocator", GetCrtAllocator);
     NAPA_SET_METHOD(exports, "getDefaultAllocator", GetDefaultAllocator);
+
+    NAPA_SET_METHOD(exports, "findOrCreateStore", FindOrCreateStore);
+    NAPA_SET_METHOD(exports, "findStore", FindStore);
+    NAPA_SET_METHOD(exports, "getStoreCount", GetStoreCount);
 }
 
 NAPA_MODULE(addon, InitAll)

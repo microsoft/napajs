@@ -1,6 +1,6 @@
 #pragma once
 
-#include <unordered_map>
+#include <napa/stl/unordered_map.h>
 #include <memory>
 
 namespace napa {
@@ -20,6 +20,16 @@ namespace transport {
     public:
         /// <summary> Default constructor. </summary>
         TransportContext() = default;
+
+        /// <summary> Move constructor. </summary>
+        TransportContext(TransportContext&& other) 
+            : _sharedDepot(std::move(other._sharedDepot)) {
+        }
+
+        /// <summary> Move assignment. </summary>
+        TransportContext& operator=(TransportContext&& other) {
+            _sharedDepot = std::move(other._sharedDepot);
+        }
 
         /// <summary> It saves a shared pointer that can be loaded later. </summary>
         /// <param name="pointer"> Shared pointer to transfer owership to another isolate. </param>
@@ -51,7 +61,7 @@ namespace transport {
         TransportContext& operator=(TransportContext&) = delete;
 
         /// <summary> shared_ptr depot. </summary>
-        std::unordered_map<uintptr_t, std::shared_ptr<void>> _sharedDepot;
+        napa::stl::UnorderedMap<uintptr_t, std::shared_ptr<void>> _sharedDepot;
     };
 }
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <napa-module.h>
-#include <napa/module/transport.h>
+#include <napa/module/transport-context-wrap.h>
 
 namespace napa {
 namespace binding {
