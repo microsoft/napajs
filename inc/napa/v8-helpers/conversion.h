@@ -1,6 +1,7 @@
 #pragma once
 
 #include <napa/v8-helpers/string.h>
+#include <napa/stl/string.h>
 #include <utility>
 
 namespace napa {
@@ -15,7 +16,14 @@ namespace v8_helpers {
     template <>
     inline std::string V8ValueTo(const v8::Local<v8::Value>& value) {
         v8::String::Utf8Value utf8Value(value);
-        return *utf8Value;
+        return std::string(*utf8Value);
+    }
+
+    /// <summary> Convert a v8 value to napa::stl::String. </summary>
+    template <>
+    inline napa::stl::String V8ValueTo(const v8::Local<v8::Value>& value) {
+        v8::String::Utf8Value utf8Value(value);
+        return napa::stl::String(*utf8Value);
     }
 
     /// <summary> Convert a v8 value to a Utf8String. </summary>

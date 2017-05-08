@@ -27,3 +27,14 @@ if (!(expression)) {                                                            
 
 #define JS_ENSURE_WITH_RETURN(isolate, expression, result, format, ...)                                           \
     CHECK_ARG_WITH_RETURN(isolate, expression, result, format, __VA_ARGS__)
+
+#define SHORT_CIRCUIT_ON_PENDING_EXCEPTION(maybe, result)                                                         \
+    if (maybe.IsEmpty()) {                                                                                        \
+        return result;                                                                                            \
+    }
+
+#define RETURN_ON_PENDING_EXCEPTION(maybe)                                                                        \
+    SHORT_CIRCUIT_ON_PENDING_EXCEPTION(maybe, /* empty */)
+
+#define RETURN_VALUE_ON_PENDING_EXCEPTION(maybe, result)                                                          \
+    SHORT_CIRCUIT_ON_PENDING_EXCEPTION(maybe, result)

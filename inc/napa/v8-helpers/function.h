@@ -1,7 +1,8 @@
 #pragma once
 
-#include <napa/v8-helpers/string.h>
 #include <napa/v8-helpers/flow.h>
+#include <napa/v8-helpers/maybe.h>
+#include <napa/v8-helpers/string.h>
 
 #include <v8.h>
 
@@ -19,6 +20,8 @@ namespace v8_helpers {
 
         auto isolate = v8::Isolate::GetCurrent();
         auto context = isolate->GetCurrentContext();
+        v8::EscapableHandleScope scope(isolate);
+        
         auto function = v8::Local<v8::Function>::Cast(context->Global()->Get(v8_helpers::MakeV8String(isolate, functionName)));
 
         JS_ENSURE_WITH_RETURN(
@@ -28,7 +31,9 @@ namespace v8_helpers {
             "Function \"%s\" is not found in current context.",
             functionName);
 
-        return function->Call(context, context->Global(), argc, argv);
+        return scope.Escape(
+            function->Call(context, context->Global(), argc, argv)
+                .FromMaybe(v8::Local<v8::Value>()));
     }
 
     /// <summary> It imports a module. </summary> 
@@ -36,24 +41,11 @@ namespace v8_helpers {
     /// <returns> Object if success, or an empty handle with exception thrown. </summary>
     inline v8::MaybeLocal<v8::Object> Require(const char* moduleName) {
         auto isolate = v8::Isolate::GetCurrent();
+        v8::EscapableHandleScope scope(isolate);
 
         constexpr int argc = 1;
         v8::Local<v8::Value> argv[argc] = { v8_helpers::MakeV8String(isolate, moduleName)};
-        auto returnValue = Call("require", argc, argv);
-
-        if (returnValue.IsEmpty()) {
-            return v8::MaybeLocal<v8::Object>();
-        }
-
-        auto module = returnValue.ToLocalChecked();
-        JS_ENSURE_WITH_RETURN(
-            isolate, 
-            module->IsObject(),
-            v8::MaybeLocal<v8::Object>(),
-            "Module \"%s\" is not a valid object.",
-            moduleName);
-        
-        return v8::Local<v8::Object>::Cast(module);
+        return scope.Escape(LocalCast<v8::Object>(Call("require", argc, argv)));
     }
 
     /// <summary> Call a function from a module under current context </summary>
@@ -70,13 +62,11 @@ namespace v8_helpers {
 
         auto isolate = v8::Isolate::GetCurrent();
         auto context = isolate->GetCurrentContext();
-        v8::HandleScope scope(isolate);
+        v8::EscapableHandleScope scope(isolate);
 
         auto moduleHandle = Require(moduleName);
-        if (moduleHandle.IsEmpty()) {
-            // Simple return an empty handle when exception is pending.
-            return v8::MaybeLocal<v8::Value>();
-        }
+        RETURN_VALUE_ON_PENDING_EXCEPTION(moduleHandle, v8::MaybeLocal<v8::Value>());
+
         auto module = moduleHandle.ToLocalChecked();
         auto function = v8::Local<v8::Function>::Cast(
             module->Get(v8_helpers::MakeV8String(isolate, functionName)));
@@ -89,7 +79,10 @@ namespace v8_helpers {
             functionName,
             moduleName);
 
-        return function->Call(context, module, argc, argv);
+        return scope.Escape(
+            function->Call(context, module, argc, argv)
+                .FromMaybe(v8::Local<v8::Value>()));
+
     }
 
     /// <summary> Call a member function of an object </summary>
@@ -106,7 +99,7 @@ namespace v8_helpers {
 
         auto isolate = v8::Isolate::GetCurrent();
         auto context = isolate->GetCurrentContext();
-        v8::HandleScope scope(isolate);
+        v8::EscapableHandleScope scope(isolate);
 
         auto function = v8::Local<v8::Function>::Cast(
             object->Get(v8_helpers::MakeV8String(isolate, functionName)));
@@ -118,7 +111,9 @@ namespace v8_helpers {
             "Function \"%s\" is not found in object.",
             functionName);
 
-        return function->Call(context, object, argc, argv);
+        return scope.Escape(
+            function->Call(context, object, argc, argv)
+                .FromMaybe(v8::Local<v8::Value>()));
     }
 }
 }

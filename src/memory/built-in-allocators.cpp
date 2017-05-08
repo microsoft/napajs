@@ -2,15 +2,17 @@
 
 namespace napa {
     namespace memory {
-        CrtAllocator crtAllocator;
-        DefaultAllocator defaultAllocator;
+        namespace {
+            CrtAllocator _crtAllocator;
+            DefaultAllocator _defaultAllocator;
+        } // namespace
 
         Allocator& GetCrtAllocator() {
-            return crtAllocator;
+            return _crtAllocator;
         }
 
         Allocator& GetDefaultAllocator() {
-            return defaultAllocator;
+            return _defaultAllocator;
         }
     } // namespace memory
 } // namespace napa

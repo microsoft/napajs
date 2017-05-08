@@ -40,6 +40,7 @@
     <ClCompile Include="api\api.cpp" />
     <ClCompile Include="module\async-runner.cpp" />
     <ClCompile Include="memory\built-in-allocators.cpp" />
+    <ClCompile Include="memory\store.cpp" />
     <ClCompile Include="module\binary-module-loader.cpp" />
     <ClCompile Include="module\core-module-loader.cpp" />
     <ClCompile Include="module\javascript-module-loader.cpp" />
@@ -69,11 +70,13 @@
   
   <Import Project="$(PACKAGESROOT)\V8.Library\exports.props" />
   <Import Project="$(Pkgboost)\build\native\boost.targets" />
+  <Import Project="$(Pkgboost_chrono_vc140)\build\native\boost_chrono-vc140.targets" />
   <Import Project="$(Pkgboost_date_time_vc140)\build\native\boost_date_time-vc140.targets" />
   <Import Project="$(Pkgboost_filesystem_vc140)\build\native\boost_filesystem-vc140.targets" />
   <Import Project="$(Pkgboost_program_options_vc140)\build\native\boost_program_options-vc140.targets" />
   <Import Project="$(Pkgboost_regex_vc140)\build\native\boost_regex-vc140.targets" />
   <Import Project="$(Pkgboost_system_vc140)\build\native\boost_system-vc140.targets" />
+  <Import Project="$(Pkgboost_thread_vc140)\build\native\boost_thread-vc140.targets" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(NapaVanillaRoot)\tools\clang-tools\napa-checks.targets" />
 </Project>

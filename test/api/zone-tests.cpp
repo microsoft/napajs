@@ -87,7 +87,7 @@ TEST_CASE("zone apis", "[api]") {
             napa::ExecuteRequest request;
             request.function = NAPA_STRING_REF("func");
             request.arguments = { NAPA_STRING_REF("2"), NAPA_STRING_REF("3") };
-            request.timeout = 30;
+            request.timeout = 100;
 
             zone.Execute(request, [&promise](napa::ExecuteResponse response) {
                 promise.set_value(std::move(response));
@@ -111,7 +111,7 @@ TEST_CASE("zone apis", "[api]") {
         zone.Broadcast("function func() { while(true) {} }", [&promise, &zone](NapaResponseCode) {
             napa::ExecuteRequest request;
             request.function = NAPA_STRING_REF("func");
-            request.timeout = 30;
+            request.timeout = 200;
 
             zone.Execute(request, [&promise](napa::ExecuteResponse response) {
                 promise.set_value(std::move(response));
@@ -143,11 +143,11 @@ TEST_CASE("zone apis", "[api]") {
         napa::ExecuteRequest request1;
         request1.function = NAPA_STRING_REF("f1");
         request1.arguments = { NAPA_STRING_REF("2"), NAPA_STRING_REF("3") };
-        request1.timeout = 30;
+        request1.timeout = 100;
 
         napa::ExecuteRequest request2;
         request2.function = NAPA_STRING_REF("f2");
-        request2.timeout = 30;
+        request2.timeout = 100;
 
         zone.Execute(request1, [&promise1](napa::ExecuteResponse response) {
             promise1.set_value(std::move(response));

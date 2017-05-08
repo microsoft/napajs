@@ -29,7 +29,7 @@ namespace v8_helpers {
     /// <param name="isolate"> V8 Isolate instance. </summary>
     /// <param name="source"> Void pointer. </summary>
     /// <returns> V8 uint32 array </returns>
-    inline v8::Local<v8::Array> PtrToV8Uint32Array(v8::Isolate* isolate, void* pointer) {
+    inline v8::Local<v8::Array> PtrToV8Uint32Array(v8::Isolate* isolate, const void* pointer) {
         return UintptrToV8Uint32Array(isolate, reinterpret_cast<uintptr_t>(pointer));
     }
 

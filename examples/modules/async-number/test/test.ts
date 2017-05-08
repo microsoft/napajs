@@ -2,7 +2,7 @@ var assert = require('assert');
 var asyncNumber = require('async-number');
 
 describe('Test suite for async-number', function() {
-    it('change number asynchronously on separate thread', function(done) {
+    it('change number asynchronously on separate thread', (done: () => void) => {
         let now = asyncNumber.now();
         assert.equal(now, 0);
 
@@ -16,10 +16,10 @@ describe('Test suite for async-number', function() {
             done();
         });
 
-        asyncNumber.increaseSync(3, (value) => {} );
+        asyncNumber.increaseSync(3, (value: number) => {} );
     });
 
-    it('change number synchronously on current thread', function(done) {
+    it('change number synchronously on current thread', (done: () => void) => {
         let now = asyncNumber.now();
         assert.equal(now, 0);
 
@@ -37,6 +37,6 @@ describe('Test suite for async-number', function() {
         // 'now' should be 3.
         assert.equal(now, 3);
 
-        asyncNumber.increaseSync(3, (value) => {} );
+        asyncNumber.increaseSync(3, (value: number) => {} );
     });
 })

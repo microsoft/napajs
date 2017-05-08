@@ -1,6 +1,7 @@
 #pragma once
 
 #include <v8.h>
+#include <napa/stl/string.h>
 
 namespace napa {
 namespace v8_helpers {
@@ -15,6 +16,18 @@ namespace v8_helpers {
         return MakeV8String(isolate, str.c_str(), static_cast<int>(str.length()));
     }
 
+    /// <summary> Make a V8 string from std::string. </summary>
+    inline v8::Local<v8::String> MakeV8String(v8::Isolate *isolate, const napa::stl::String& str) {
+        return MakeV8String(isolate, str.c_str(), static_cast<int>(str.length()));
+    }
+
+    /// <summary> Make a V8 string from external const char*. </summary>
+    inline v8::Local<v8::String> MakeExternalV8String(v8::Isolate *isolate, const char* data) {
+        // V8 garbage collection frees ExternalOneByteStringResourceImpl.
+        auto externalResource = new v8::ExternalOneByteStringResourceImpl(data, strlen(data));
+        return v8::String::NewExternalOneByte(isolate, externalResource).ToLocalChecked();
+    }
+
     /// <summary> Make a V8 string from external const char*. </summary>
     inline v8::Local<v8::String> MakeExternalV8String(v8::Isolate *isolate, const char* data, size_t length) {
         // V8 garbage collection frees ExternalOneByteStringResourceImpl.
@@ -24,6 +37,11 @@ namespace v8_helpers {
 
     /// <summary> Make a V8 string from external std::string. </sumary>
     inline v8::Local<v8::String> MakeExternalV8String(v8::Isolate *isolate, const std::string& str) {
+        return MakeExternalV8String(isolate, str.data(), str.length());
+    }
+
+     /// <summary> Make a V8 string from external napa::stl::String. </sumary>
+    inline v8::Local<v8::String> MakeExternalV8String(v8::Isolate *isolate, const napa::stl::String& str) {
         return MakeExternalV8String(isolate, str.data(), str.length());
     }
 

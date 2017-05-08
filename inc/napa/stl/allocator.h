@@ -59,8 +59,8 @@ namespace stl {
         void construct(pointer p, const_reference val);
         void destroy(pointer p);
 
-        bool operator==(const Allocator&);
-        bool operator!=(const Allocator&);
+        bool operator==(const Allocator&) const;
+        bool operator!=(const Allocator&) const;
 
     private:
         template <typename T>
@@ -132,13 +132,13 @@ namespace stl {
 #pragma warning(pop)
 
     template <typename T>
-    bool Allocator<T>::operator==(const Allocator&) {
-        return true;
+    bool Allocator<T>::operator==(const Allocator& other) const {
+        return _allocator == other._allocator;
     }
 
     template <typename T>
-    bool Allocator<T>::operator!=(const Allocator&) {
-        return false;
+    bool Allocator<T>::operator!=(const Allocator& other) const {
+        return !(_allocator == other._allocator);
     }
 }
 }

@@ -23,6 +23,9 @@ namespace memory {
         /// <summary> Get allocator type for better debuggability. </summary>
         virtual const char* GetType() const = 0;
 
+        /// <summary> Tell if another allocator equals to this allocator. </summary>
+        virtual bool operator==(const Allocator& other) const = 0;
+
         /// <summary> Can only be destructed by child class. </summary>
         virtual ~Allocator() = default;
     };
@@ -48,6 +51,11 @@ namespace memory {
         /// <summary> Get allocator type for better debuggability. </summary>
         const char* CrtAllocator::GetType() const override {
             return "CrtAllocator";
+        }
+
+        /// <summary> Tell if another allocator equals to this allocator. </summary>
+        bool operator==(const Allocator& other) const override {
+            return strcmp(other.GetType(), GetType()) == 0;
         }
     };
 
@@ -76,6 +84,11 @@ namespace memory {
         /// <summary> Get allocator type for better debuggability. </summary>
         const char* GetType() const override {
             return "DefaultAllocator";
+        }
+
+        /// <summary> Tell if another allocator equals to this allocator. </summary>
+        bool operator==(const Allocator& other) const override {
+            return strcmp(other.GetType(), GetType()) == 0;
         }
     };
 
