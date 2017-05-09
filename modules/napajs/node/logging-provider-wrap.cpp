@@ -6,7 +6,9 @@ using namespace napa::binding;
 
 NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(LoggingProviderWrap);
 
-void LoggingProviderWrap::Init(v8::Isolate* isolate) {
+void LoggingProviderWrap::Init() {
+    auto isolate = v8::Isolate::GetCurrent();
+
     // Prepare constructor template.
     auto functionTemplate = v8::FunctionTemplate::New(isolate, NewCallback);
     functionTemplate->SetClassName(v8_helpers::MakeV8String(isolate, _exportName));

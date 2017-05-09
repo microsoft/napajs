@@ -10,7 +10,7 @@ namespace binding {
     public:
 
         /// <summary> It registers this class into V8. </summary>
-        static void Init(v8::Isolate* isolate);
+        static void Init();
 
         /// <summary> It creates V8 object at native land. </summary>
         static void NewInstance(const v8::FunctionCallbackInfo<v8::Value>& args);

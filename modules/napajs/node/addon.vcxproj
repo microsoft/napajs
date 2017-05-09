@@ -45,7 +45,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)\simple-allocator-debugger-wrap.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\store-wrap.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\transport-context-wrap-impl.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)\zone-wrap.cpp" Condition=" '$(AddonType)' != 'Napa' " />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\zone-wrap.cpp" />
   </ItemGroup>
   <Target Name="ChangeExtention" AfterTargets="Build">
     <Move SourceFiles="$(OutputPath)\$(TargetFileName)" DestinationFiles="$(OutputPath)\$(AddonName).node" Condition=" '$(AddonType)' != 'Napa' " />
