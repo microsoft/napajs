@@ -198,6 +198,9 @@ namespace {
         (void)exports->Set(v8_helpers::MakeV8String(isolate, "module"), module);
         (void)exports->Set(v8_helpers::MakeV8String(isolate, "exports"),
                            module->Get(v8_helpers::MakeV8String(isolate, "exports"))->ToObject());
+
+        // Set '__in_napa' variable in all modules context to distinguish node and napa runtime.
+        (void)exports->Set(v8_helpers::MakeV8String(isolate, "__in_napa"), v8::Boolean::New(isolate, true));
     }
 
 }   // End of anonymous namespace.

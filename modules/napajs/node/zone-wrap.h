@@ -22,7 +22,7 @@ namespace binding {
             CURRENT = 2  // Retrieves the current zone
         };
 
-        static void Init(v8::Isolate* isolate);
+        static void Init();
         static void NewInstance(ConstructorType type, const v8::FunctionCallbackInfo<v8::Value>& args);
 
     private:

@@ -53,27 +53,15 @@ void Shutdown(const v8::FunctionCallbackInfo<v8::Value>&) {
 }
 
 void CreateZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
-#ifdef NAPA_MODULE_EXTENSION
-    JS_ASSERT(v8::Isolate::GetCurrent(), false, "napa.createZone cannot be called from inside napa");
-#else
     ZoneWrap::NewInstance(ZoneWrap::ConstructorType::CREATE, args);
-#endif
 }
 
 void GetZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
-#ifdef NAPA_MODULE_EXTENSION
-    JS_ASSERT(v8::Isolate::GetCurrent(), false, "napa.getZone cannot be called from inside napa");
-#else
     ZoneWrap::NewInstance(ZoneWrap::ConstructorType::GET, args);
-#endif
 }
 
 void GetCurrentZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
-#ifdef NAPA_MODULE_EXTENSION
-    JS_ASSERT(v8::Isolate::GetCurrent(), false, "napa.getCurrentZone cannot be called from inside napa");
-#else
     ZoneWrap::NewInstance(ZoneWrap::ConstructorType::CURRENT, args);
-#endif
 }
 
 void GetLoggingProvider(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -140,11 +128,8 @@ void InitAll(v8::Local<v8::Object> exports) {
     NAPA_SHARED_WRAP_INIT();
     NAPA_ALLOCATOR_WRAP_INIT();
 
-#ifndef NAPA_MODULE_EXTENSION
-    napa::binding::ZoneWrap::Init(v8::Isolate::GetCurrent());
-#endif
-
-    napa::binding::LoggingProviderWrap::Init(v8::Isolate::GetCurrent());
+    napa::binding::ZoneWrap::Init();
+    napa::binding::LoggingProviderWrap::Init();
     napa::binding::TransportContextWrapImpl::Init();
     napa::binding::SimpleAllocatorDebuggerWrap::Init();
     napa::binding::StoreWrap::Init();

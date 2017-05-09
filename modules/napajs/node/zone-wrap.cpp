@@ -22,7 +22,9 @@ static void CreateRequestAndExecute(v8::Local<v8::Object> obj, Func&& func);
 
 ZoneWrap::ZoneWrap(std::unique_ptr<napa::ZoneProxy> zoneProxy) : _zoneProxy(std::move(zoneProxy)) {}
 
-void ZoneWrap::Init(v8::Isolate* isolate) {
+void ZoneWrap::Init() {
+    auto isolate = v8::Isolate::GetCurrent();
+
     // Prepare constructor template.
     v8::Local<v8::FunctionTemplate> functionTemplate = v8::FunctionTemplate::New(isolate, NewCallback);
     functionTemplate->SetClassName(MakeV8String(isolate, _exportName));
