@@ -37,6 +37,9 @@ namespace module_loader_helpers {
     /// <summary> It returns the process current working directory. </summary>
     const std::string& GetCurrentWorkingDirectory();
 
+    /// <summary> It returns the root directory of napa lib files. </summary>
+    const std::string& GetLibDirectory();
+
     /// <summary> It sets globals and the root module path of global context as the script path. </summary>
     void SetupTopLevelContext();
 

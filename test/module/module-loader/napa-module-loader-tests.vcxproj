@@ -12,6 +12,9 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{718EC282-8C1B-44FB-BD98-97F2E09E0389}</ProjectGuid>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -23,6 +26,7 @@
   <PropertyGroup>
     <V8BinPath>$(PACKAGESROOT)\V8.Library\$(COMPILER_VERSION)\bin\$(BuildType)\$(BuildArchitecture)</V8BinPath>
     <V8MiscPath>$(PACKAGESROOT)\V8.Library\misc\$(BuildType)\$(BuildArchitecture)</V8MiscPath>
+    <TestDir>$(OutDir)module-tests</TestDir>
   </PropertyGroup>
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.props" />
   <ItemDefinitionGroup>
@@ -32,7 +36,7 @@
     </Link>
     <ClCompile>
       <DisableSpecificWarnings>4100;4996</DisableSpecificWarnings>
-      <PreprocessorDefinitions>NAPA_EXPORTS;USING_V8_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BUILDING_NAPA_EXTENSION;NAPA_EXPORTS;USING_V8_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -72,137 +76,137 @@
   </ItemGroup>
   <!-- Test artifacts binplace -->
   <ItemGroup>
+    <Robocopy Include="$(OutputPath)\$(TargetFileName)">
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
+    </Robocopy>
     <Robocopy Include="$(NapaVanillaRoot)\lib\$(IntermediateOutputPath)">
-      <DestinationFolder>$(IntermediateOutputPath)\lib</DestinationFolder>
-      <FileMatch>*.js</FileMatch>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\lib</DestinationFolder>
+      <FileMatch>*.j*</FileMatch>
       <IsRecursive>true</IsRecursive>
     </Robocopy>
     <Robocopy Include="$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.dll">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="$(NapaVanillaRoot)\test\module\async\$(IntermediateOutputPath)\async.napa">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="$(NapaVanillaRoot)\test\module\sample\$(IntermediateOutputPath)\sample.napa">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="$(V8BinPath)\icui18n.dll">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="$(V8BinPath)\icuuc.dll">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="$(V8BinPath)\v8.dll">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="$(V8MiscPath)\natives_blob.bin">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="$(V8MiscPath)\snapshot_blob.bin">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="asserttest.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="asynctest1.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="asynctest2.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="core-module-tests.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="core-modules.json">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\lib\core</DestinationFolder>
     </Robocopy>
     <Robocopy Include="cycle-a.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="cycle-b.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="cycle-main.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="jsmodule.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="jsontest.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="fstest.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="fstest.json">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="globaltest.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="globaltest-module.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="module-resolution-test.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="ostest.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="pathtest.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="processtest.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="sample-test.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="ttytest.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="utiltest.js">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="toproxy.js">
-      <DestinationFolder>$(IntermediateOutputPath)\test</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin\test</DestinationFolder>
     </Robocopy>
     <Robocopy Include="toupper.js">
-      <DestinationFolder>$(IntermediateOutputPath)\test</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin\test</DestinationFolder>
     </Robocopy>
     <Robocopy Include="lib\tconsole.js">
-      <DestinationFolder>$(IntermediateOutputPath)\lib</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\lib\core</DestinationFolder>
     </Robocopy>
     <Robocopy Include="lib\tfs.js">
-      <DestinationFolder>$(IntermediateOutputPath)\lib</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\lib\core</DestinationFolder>
     </Robocopy>
     <Robocopy Include="tests\node_modules\file2.js">
-      <DestinationFolder>$(IntermediateOutputPath)\tests\node_modules</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin\tests\node_modules</DestinationFolder>
     </Robocopy>
     <Robocopy Include="tests\sub\module-resolution-test-root.js">
-      <DestinationFolder>$(IntermediateOutputPath)\tests\sub</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin\tests\sub</DestinationFolder>
     </Robocopy>
     <Robocopy Include="tests\sub\fstestsub.js">
-      <DestinationFolder>$(IntermediateOutputPath)\tests\sub</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin\tests\sub</DestinationFolder>
     </Robocopy>
     <Robocopy Include="tests\sub\fstestsub.json">
-      <DestinationFolder>$(IntermediateOutputPath)\tests\sub</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin\tests\sub</DestinationFolder>
     </Robocopy>
     <Robocopy Include="tests\sub\sub1\file1.js">
-      <DestinationFolder>$(IntermediateOutputPath)\tests\sub\sub1</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin\tests\sub\sub1</DestinationFolder>
     </Robocopy>
     <Robocopy Include="tests\sub\sub1\file2.js">
-      <DestinationFolder>$(IntermediateOutputPath)\tests\sub\sub1</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin\tests\sub\sub1</DestinationFolder>
     </Robocopy>
   </ItemGroup>
-
   <!-- Use napa catch adapter -->
   <Import Project="$(NapaVanillaRoot)\tools\catch-adapter\napa-catch.targets" />
-
   <Import Project="$(PACKAGESROOT)\V8.Library\exports.props" />
   <Import Project="$(Pkgboost)\build\native\boost.targets" />
   <Import Project="$(Pkgboost_filesystem_vc140)\build\native\boost_filesystem-vc140.targets" />
   <Import Project="$(Pkgboost_system_vc140)\build\native\boost_system-vc140.targets" />
-
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

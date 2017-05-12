@@ -2,11 +2,7 @@
   <Import Project="$(EnvironmentConfig)" />
 
   <ItemGroup>
-    <ProjectFile Include="examples\dirs.proj" />
-    <ProjectFile Include="lib\scripts.proj" />
-    <ProjectFile Include="package\napajs.proj" />
-    <ProjectFile Include="src\napa.vcxproj" />
-    <ProjectFile Include="test\dirs.proj" />
+    <ProjectFile Include="node\addon.vcxproj" />
   </ItemGroup>
 
   <Import Project="$(ExtendedTargetsPath)\Traversal.targets" />

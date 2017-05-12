@@ -47,7 +47,7 @@
     <Robocopy Include="$(OutputPath)\$(TargetFileName)">
       <DestinationFolder>$(IntermediateOutputPath)\api-tests\node_modules\napajs\bin</DestinationFolder>
     </Robocopy>
-    <Robocopy Include="$(NapaVanillaRoot)\modules\napajs\package\$(IntermediateOutputPath)\node_modules\napajs">
+    <Robocopy Include="$(NapaVanillaRoot)\package\$(IntermediateOutputPath)\node_modules\napajs">
       <DestinationFolder>$(IntermediateOutputPath)\api-tests\node_modules\napajs</DestinationFolder>
     </Robocopy>
     <Robocopy Include="bootstrap.js">

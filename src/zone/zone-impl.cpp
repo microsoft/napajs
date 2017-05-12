@@ -22,8 +22,8 @@ std::mutex ZoneImpl::_mutex;
 std::unordered_map<std::string, std::weak_ptr<ZoneImpl>> ZoneImpl::_zones;
 
 // The path to the file containing the execute dispatcher function
-static const std::string DISPATCHER_FILE = (boost::dll::this_line_location().parent_path() /
-    "lib\\napa-dispatcher.js").string();
+static const std::string DISPATCHER_FILE = (boost::dll::this_line_location().parent_path().parent_path() /
+    "lib\\core\\napa-dispatcher.js").string();
 
 std::shared_ptr<ZoneImpl> ZoneImpl::Create(const ZoneSettings& settings) {
     std::lock_guard<std::mutex> lock(_mutex);

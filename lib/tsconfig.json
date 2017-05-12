@@ -1,11 +1,13 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "allowJs": true,
-        "baseUrl": ".",
-        "paths": {
-            "*": ["*"]
-        }
+        "target": "es5",
+        "experimentalDecorators": true,
+        "noImplicitAny": false,
+        "declaration": true,
+        "sourceMap": false,
+        "lib": ["es2015"],
+        "outDir": "./objd/amd64"
     },
     "exclude": [
         "objd",
