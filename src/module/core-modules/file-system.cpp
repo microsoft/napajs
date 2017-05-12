@@ -1,8 +1,6 @@
 #include "file-system.h"
 #include "file-system-helpers.h"
 
-// This is not a module extension, so define this macro to use V8 common macros.
-#define NAPA_MODULE_EXTENSION
 #include <napa-module.h>
 
 using namespace napa;

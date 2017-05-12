@@ -12,8 +12,7 @@ assert(process.umask() == process.umask(0));
 assert(process.umask() == process.umask("0"));
 
 try {
-    process.chdir('./lib');
-    fs.existsSync('fs.js');
+    process.chdir('./test');
     process.chdir(process.cwd());
     process.chdir('..');
     fs.existsSync('napa.dll');

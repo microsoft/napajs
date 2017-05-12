@@ -72,6 +72,11 @@ const std::string& module_loader_helpers::GetCurrentWorkingDirectory() {
     return currentWorkingDirectory;
 }
 
+const std::string& module_loader_helpers::GetLibDirectory() {
+    static std::string libDirectory = (boost::dll::this_line_location().parent_path().parent_path() / "lib").string();
+    return libDirectory;
+}
+
 void module_loader_helpers::SetupTopLevelContext() {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
@@ -118,7 +123,7 @@ v8::Local<v8::Context> module_loader_helpers::SetupModuleContext(const std::stri
 
 std::vector<module_loader_helpers::CoreModuleInfo> module_loader_helpers::ReadCoreModulesJson() {
     static const std::string CORE_MODULES_JSON_PATH =
-        (boost::filesystem::path(GetModuleRootDirectory()) / "core-modules.json").string();
+        (boost::filesystem::path(GetLibDirectory()) / "core\\core-modules.json").string();
 
     if (!boost::filesystem::exists(CORE_MODULES_JSON_PATH)) {
         return std::vector<CoreModuleInfo>();

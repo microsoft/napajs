@@ -3,9 +3,13 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)\console.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\file-system.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\file-system-helpers.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\napa-binding.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\os.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\path.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\process.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\tty-wrap.cpp" />
   </ItemGroup>
+  
+  <!-- Napa object wraps -->
+  <Import Project="$(MSBuildThisFileDirectory)\napa-wraps\napa-wraps.proj" />
 </Project>

@@ -26,7 +26,7 @@ namespace transport {
         static void InitConstructor(const char* cid, v8::Local<v8::Function> constructor) {
             auto isolate = v8::Isolate::GetCurrent();
             constructor->Set(v8_helpers::MakeV8String(isolate, "_cid"), v8_helpers::MakeV8String(isolate, cid));
-            napa::transport::Register(constructor);
+            //napa::transport::Register(constructor);
         }
 
         /// <summary> It implements Transportable.cid() : string </summary>

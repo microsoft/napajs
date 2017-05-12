@@ -1,0 +1,11 @@
+{
+    "name": "napajs",
+    "version": "0.2.0",
+    "author": "napajs",
+    "main": "./lib/index.js",
+    "types": "./types/index.d.ts",
+    "devDependencies": {
+        "@types/node": ">= 7.0.8",
+        "@types/mocha": ">= 2.2.0"
+    }
+}

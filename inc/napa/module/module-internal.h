@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef NAPA_MODULE_EXTENSION
+#ifdef BUILDING_NAPA_EXTENSION
 #undef BUILDING_V8_SHARED
 #define USING_V8_SHARED 1
 #endif

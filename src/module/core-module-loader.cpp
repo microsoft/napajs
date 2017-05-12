@@ -13,7 +13,7 @@ using namespace napa::module;
 namespace {
 
     const std::string CORE_MODULE_EXTENSION = ".js";
-    const std::string CORE_MODULE_DIRECTORY = "lib";
+    const std::string CORE_MODULE_DIRECTORY = "lib\\core";
 
 }   // End of anonymous namespace.
 

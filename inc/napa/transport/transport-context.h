@@ -31,6 +31,10 @@ namespace transport {
             _sharedDepot = std::move(other._sharedDepot);
         }
 
+        /// <summary> Non-copyable. </summary>
+        TransportContext(const TransportContext&) = delete;
+        TransportContext& operator=(const TransportContext&) = delete;
+
         /// <summary> It saves a shared pointer that can be loaded later. </summary>
         /// <param name="pointer"> Shared pointer to transfer owership to another isolate. </param>
         template <typename T>
@@ -56,9 +60,6 @@ namespace transport {
         }
 
     private:
-        /// <summary> Non-copyable. </summary>
-        TransportContext(TransportContext&) = delete;
-        TransportContext& operator=(TransportContext&) = delete;
 
         /// <summary> shared_ptr depot. </summary>
         napa::stl::UnorderedMap<uintptr_t, std::shared_ptr<void>> _sharedDepot;

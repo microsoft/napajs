@@ -114,7 +114,7 @@ namespace module {
             auto isolate = v8::Isolate::GetCurrent();
             v8::HandleScope scope(isolate);
             auto thisObject = NAPA_OBJECTWRAP::Unwrap<SharedWrap>(args.Holder());
-            args.GetReturnValue().Set(thisObject->_object.use_count());
+            args.GetReturnValue().Set(static_cast<int32_t>(thisObject->_object.use_count()));
         }
 
         /// <summary> It implements Shareable.isNull(): boolean </summary>
@@ -178,11 +178,11 @@ namespace module {
     };
 
 /// <summary> It defines the persistent constructor for SharedWrap class. <summary>
-/// <remarks> Any module using ShardWrap must call this macro. </remarks>
+/// <remarks> Any module using SharedWrap must call this macro. </remarks>
 #define NAPA_DEFINE_PERSISTENT_SHARED_WRAP_CONSTRUCTOR() NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(napa::module::SharedWrap)
 
 /// <summary> It creates and registers the persistent constructor for SharedWrap class. <summary>
-/// <remarks> Any module using ShardWrap must run this macro. </remarks>
+/// <remarks> Any module using SharedWrap must run this macro. </remarks>
 #define NAPA_SHARED_WRAP_INIT() napa::module::SharedWrap::Init()
 
 }
