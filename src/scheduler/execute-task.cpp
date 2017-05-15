@@ -27,14 +27,15 @@ void ExecuteTask::Execute() {
     v8::HandleScope scope(isolate);
     auto context = isolate->GetCurrentContext();
 
-    v8::Local<v8::Function> dispatcher;
+    v8::Local<v8::Function> zoneMainFunction;
     std::vector<v8::Local<v8::Value>> args;
 
     if (_module.empty()) {
-        auto dispatcherValue = context->Global()->Get(MakeExternalV8String(isolate, "__napa_function_dispatcher__"));
-        NAPA_ASSERT(dispatcherValue->IsFunction(), "dispatcher function must exist in global scope");
+        // Get the zone main function from global scope.
+        auto mainFunctionValue = context->Global()->Get(MakeExternalV8String(isolate, "__zone_function_main__"));
+        NAPA_ASSERT(mainFunctionValue->IsFunction(), "__zone_function_main__ function must exist in global scope");
 
-        dispatcher = v8::Local<v8::Function>::Cast(dispatcherValue);
+        zoneMainFunction = v8::Local<v8::Function>::Cast(mainFunctionValue);
 
         auto funcValue = context->Global()->Get(MakeExternalV8String(isolate, _func));
         if (!funcValue->IsFunction()) {
@@ -46,11 +47,11 @@ void ExecuteTask::Execute() {
         args.reserve(3); // (func, args, contextHandle)
         args.emplace_back(v8::Local<v8::Function>::Cast(funcValue));
     } else {
-        // Get the dispatcher function from global scope.
-        auto dispatcherValue = context->Global()->Get(MakeExternalV8String(isolate, "__napa_module_dispatcher__"));
-        NAPA_ASSERT(dispatcherValue->IsFunction(), "dispatcher function must exist in global scope");
+        // Get the module based main function from global scope.
+        auto mainFunctionValue = context->Global()->Get(MakeExternalV8String(isolate, "__zone_module_main__"));
+        NAPA_ASSERT(mainFunctionValue->IsFunction(), "__zone_module_main__ function must exist in global scope");
 
-        dispatcher = v8::Local<v8::Function>::Cast(dispatcherValue);
+        zoneMainFunction = v8::Local<v8::Function>::Cast(mainFunctionValue);
 
         args.reserve(4); // (moduleName, functionName, args, contextHandle)
         args.emplace_back(MakeExternalV8String(isolate, _module));
@@ -69,7 +70,7 @@ void ExecuteTask::Execute() {
 
     // Execute the function.
     v8::TryCatch tryCatch(isolate);
-    auto res = dispatcher->Call(context->Global(), static_cast<int>(args.size()), args.data());
+    auto res = zoneMainFunction->Call(context->Global(), static_cast<int>(args.size()), args.data());
 
     // Terminating an isolate may occur from a different thread, i.e. from timeout service.
     // If the function call already finished successfully when the isolate is terminated it may lead

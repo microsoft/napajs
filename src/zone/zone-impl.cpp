@@ -21,9 +21,9 @@ static void BroadcastFromFile(const std::string& file, Scheduler& scheduler, boo
 std::mutex ZoneImpl::_mutex;
 std::unordered_map<std::string, std::weak_ptr<ZoneImpl>> ZoneImpl::_zones;
 
-// The path to the file containing the execute dispatcher function
-static const std::string DISPATCHER_FILE = (boost::dll::this_line_location().parent_path().parent_path() /
-    "lib\\core\\napa-dispatcher.js").string();
+// The path to the file containing the execute main function
+static const std::string ZONE_MAIN_FILE = (boost::dll::this_line_location().parent_path().parent_path() /
+    "lib\\runtime\\zone-main.js").string();
 
 std::shared_ptr<ZoneImpl> ZoneImpl::Create(const ZoneSettings& settings) {
     std::lock_guard<std::mutex> lock(_mutex);
@@ -77,9 +77,9 @@ void ZoneImpl::Init() {
     // Create the zone's scheduler.
     _scheduler = std::make_unique<Scheduler>(_settings);
 
-    // Read dispatcher file content and broadcast it on all workers.
+    // Read zone main file content and broadcast it on all workers.
     // Do not set origin to avoid changing the global context path.
-    BroadcastFromFile(DISPATCHER_FILE, *_scheduler, false);
+    BroadcastFromFile(ZONE_MAIN_FILE, *_scheduler, false);
 
     // Read bootstrap file content and broadcast it on all workers.
     if (!_settings.bootstrapFile.empty()) {
