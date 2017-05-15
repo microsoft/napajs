@@ -3,7 +3,7 @@
         "module": "commonjs",
         "target": "es5",
         "experimentalDecorators": true,
-        "noImplicitAny": false,
+        "noImplicitAny": true,
         "declaration": true,
         "sourceMap": false,
         "lib": ["es2015"],

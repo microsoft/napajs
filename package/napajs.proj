@@ -4,17 +4,17 @@
 
   <!-- These targets must be built before the package -->
   <ItemGroup>
-    <QCustomProjectReference Include="..\lib\scripts.proj" />
-    <QCustomProjectReference Include="..\src\napa.vcxproj" />
-    <QCustomProjectReference Include="..\binding\node\addon.vcxproj" />
+    <QCustomProjectReference Include="$(NapaVanillaRoot)\lib\scripts.proj" />
+    <QCustomProjectReference Include="$(NapaVanillaRoot)\src\napa.vcxproj" />
+    <QCustomProjectReference Include="$(NapaVanillaRoot)\binding\node\addon.vcxproj" />
   </ItemGroup>
 
   <ItemGroup>  
     <QCustomInput Include="$(NapaBuildRoot)\**\*" />
     <QCustomInput Include="$(NapaVanillaRoot)\inc\**\*" />
     <QCustomInput Include="$(NapaVanillaRoot)\lib\core\core-modules.json" />
-    <QCustomInput Include="..\package.json" />
-    <QCustomInput Include="..\README.md" />
+    <QCustomInput Include="$(NapaVanillaRoot)\package.json" />
+    <QCustomInput Include="$(NapaVanillaRoot)\README.md" />
   </ItemGroup> 
 
   <PropertyGroup>
@@ -28,43 +28,50 @@
   <Target Name="CreateNpmPackage" AfterTargets="AfterBuild">
     <Message Text="Create NPM package." />
 
-    <Copy SourceFiles="..\binding\node\$(IntermediateOutputPath)\napa-binding.node" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="..\package.json" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="..\src\$(O)\napa.dll" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="..\src\$(O)\napa.lib" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <!-- Setup package root directory -->
+    <Copy SourceFiles="$(NapaVanillaRoot)\package.json" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(NapaVanillaRoot)\README.md" DestinationFolder="$(PackageOutPath)" ContinueOnError="false" SkipUnchangedFiles="true" />
 
-    <!-- Scripts -->
+    <!-- Setup ./lib directory -->
+    <!-- ./lib/*.js -->
     <ItemGroup>
-      <JsFiles Include="..\lib\$(IntermediateOutputPath)\**\*.js"/>  
+      <LibJsFiles Include="$(NapaVanillaRoot)\lib\$(IntermediateOutputPath)\**\*.js"/>  
     </ItemGroup>
-    <Copy SourceFiles="@(JsFiles)" DestinationFiles="@(JsFiles->'$(PackageOutPath)\lib\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(LibJsFiles)" DestinationFiles="@(LibJsFiles->'$(PackageOutPath)\lib\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
     
-    <!-- Json files -->
+    <!-- ./lib/*.json -->
     <ItemGroup>
-      <JsonFiles Include="..\lib\$(IntermediateOutputPath)\**\*.json"/>
+      <LibJsonFiles Include="$(NapaVanillaRoot)\lib\$(IntermediateOutputPath)\**\*.json"/>
     </ItemGroup>
-    <Copy SourceFiles="@(JsonFiles)" DestinationFiles="@(JsonFiles->'$(PackageOutPath)\lib\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(LibJsonFiles)" DestinationFiles="@(LibJsonFiles->'$(PackageOutPath)\lib\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
     
-    <!-- Type declarations -->
+    <!-- Setup ./types directory -->
+    <!-- ./types/*.d.ts -->
     <ItemGroup>
-      <DeclarationFiles Include="..\lib\$(IntermediateOutputPath)\**\*.d.ts"/>
+      <DeclarationFiles Include="$(NapaVanillaRoot)\lib\$(IntermediateOutputPath)\**\*.d.ts"/>
     </ItemGroup>
     <Copy SourceFiles="@(DeclarationFiles)" DestinationFiles="@(DeclarationFiles->'$(PackageOutPath)\types\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
     
-    <!-- Include files -->
+    <!-- Setup ./inc directory -->
     <ItemGroup>
       <IncFiles Include="$(NapaVanillaRoot)\inc\**\*"/>
     </ItemGroup>
     <Copy SourceFiles="@(IncFiles)" DestinationFiles="@(IncFiles->'$(PackageOutPath)\inc\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
 
+    <!-- Setup ./bin directory-->
+    <!-- Binplace napa binaries -->
+    <Copy SourceFiles="$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.dll" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.lib" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.pdb" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(NapaVanillaRoot)\binding\node\$(IntermediateOutputPath)\napa-binding.node" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(NapaVanillaRoot)\binding\node\$(IntermediateOutputPath)\napa-binding.pdb" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    
     <!-- Binplace v8 files -->
     <Copy SourceFiles="$(V8BinPath)\icui18n.dll" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(V8BinPath)\icuuc.dll" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(V8BinPath)\v8.dll" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(V8MiscPath)\natives_blob.bin" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(V8MiscPath)\snapshot_blob.bin" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-
-    <CallTarget Targets="NpmPublish" />
   </Target>
 
   <Import Project="$(ExtendedTargetsPath)\NoTarget.targets" />

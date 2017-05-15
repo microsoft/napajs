@@ -4,6 +4,7 @@
   <ItemGroup>
     <ProjectFile Include="api\napa-api-tests.vcxproj" />
     <ProjectFile Include="component\napa-component-tests.vcxproj" />
+    <ProjectFile Include="js-api\napajs-tests.proj" />
     <ProjectFile Include="module\dirs.proj" />
     <ProjectFile Include="unit\napa-unit-tests.vcxproj" />
   </ItemGroup>

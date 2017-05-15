@@ -5,6 +5,7 @@
     <ProjectFile Include="examples\dirs.proj" />
     <ProjectFile Include="lib\scripts.proj" />
     <ProjectFile Include="package\napajs.proj" />
+    <ProjectFile Include="publish\npm-publish.proj" />
     <ProjectFile Include="src\napa.vcxproj" />
     <ProjectFile Include="test\dirs.proj" />
   </ItemGroup>

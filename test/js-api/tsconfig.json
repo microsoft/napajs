@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "noImplicitAny": true,
+        "removeComments": false,
+        "preserveConstEnums": true,
+        "baseUrl": ".",
+        "paths": {
+            "napajs": [
+                "../../package/objd/amd64/node_modules/napajs/types/index.d.ts",
+                "../../package/obj/amd64/node_modules/napajs/types/index.d.ts"
+            ]
+        },
+        "declaration": false,
+        "lib": [
+            "es2015"
+        ],
+        "outDir": "objd/amd64/node_modules/napajs"
+    },
+    "exclude": [
+        "objd",
+        "obj",
+        "**/.vscode"
+    ]
+}

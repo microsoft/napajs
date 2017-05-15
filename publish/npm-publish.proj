@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(EnvironmentConfig)" />
+
+  <!-- These targets must be built before the package -->
+  <ItemGroup>
+    <QCustomProjectReference Include="$(NapaVanillaRoot)\package\napajs.proj" />
+    <QCustomProjectReference Include="$(NapaVanillaRoot)\test\js-api\napajs-tests.proj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PackageOutPath>$(IntermediateOutputPath)\node_modules\napajs</PackageOutPath>
+  </PropertyGroup>
+
+  <Import Project="$(NapaBuildRoot)\node\npm.targets" />
+  
+  <Target Name="PublishNPMPackage" AfterTargets="AfterBuild">
+    <Message Text="Publish 'napajs' package to NPM." />
+    
+    <!-- 'napajs' runtime files -->
+    <ItemGroup>
+      <RuntimeFiles Include="$(NapaVanillaRoot)\package\$(IntermediateOutputPath)\node_modules\napajs\**\*.*"/>  
+    </ItemGroup>
+    <Copy SourceFiles="@(RuntimeFiles)" DestinationFiles="@(RuntimeFiles->'$(PackageOutPath)\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+    
+    <!-- 'napajs' test files -->
+    <ItemGroup>
+      <TestFiles Include="$(NapaVanillaRoot)\test\js-api\$(IntermediateOutputPath)\node_modules\napajs\test\**\*.*"/>
+    </ItemGroup>
+    <Copy SourceFiles="@(TestFiles)" DestinationFiles="@(TestFiles->'$(PackageOutPath)\test\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+    
+    <CallTarget Targets="NpmPublish" />
+  </Target>
+
+  <Import Project="$(ExtendedTargetsPath)\NoTarget.targets" />
+</Project>

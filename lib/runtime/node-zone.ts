@@ -7,6 +7,10 @@ export class NodeZone implements zone.Zone {
         return "node";
     }
 
+    public toJSON(): any {
+        return { id: this.id, type: "node" };
+    }
+
     public broadcast(arg1: any, arg2?: any) : Promise<zone.ResponseCode> {
         // TODO @asib: add implementation
         return undefined;
