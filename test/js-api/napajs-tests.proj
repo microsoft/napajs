@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(EnvironmentConfig)" />
+  
+  <PropertyGroup>
+    <AssemblyName>napajs-tests</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <QCustomProjectReference Include="$(NapaVanillaRoot)\package\napajs.proj" />
+  </ItemGroup>
+  <ItemGroup>
+    <QCustomInput Include="$(NapaBuildRoot)\**\*" />
+    <QCustomInput Include="$(NapaVanillaRoot)\package.json" />
+    <QCustomInput Include="$(NapaVanillaRoot)\README.md" />
+    <QCustomInput Include="$(NapaVanillaRoot)\node_modules\**\*" />
+    <QCustomInput Include="$(NapaVanillaRoot)\package\$(IntermediateOutputPath)\*" />
+    <QCustomInput Include="**\*" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PackageJsonDirectory>$(NapaVanillaRoot)</PackageJsonDirectory>
+    <PackageOutPath>$(IntermediateOutputPath)\node_modules\napajs</PackageOutPath>
+  </PropertyGroup>
+
+  <Import Project="$(NapaBuildRoot)\node\npm.targets" />
+
+  <!-- Build scripts-->
+  <Target Name="BuildScripts" AfterTargets="AfterBuild">
+    <CallTarget Targets="NpmInstall" />
+
+    <Message Text="Compile test scripts." />
+    <Exec Command="$(TSCompile) --outDir $(PackageOutPath)\test" />
+
+    <Message Text="Prepare 'napajs'' runtime files." />
+    <ItemGroup>  
+      <RuntimeFiles Include="$(NapaVanillaRoot)\package\$(IntermediateOutputPath)\node_modules\napajs\**\*.*"/>  
+    </ItemGroup> 
+    <Copy SourceFiles="@(RuntimeFiles)" DestinationFiles="@(RuntimeFiles->'$(PackageOutPath)\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+
+  </Target>
+  <Import Project="$(ExtendedTargetsPath)\NoTarget.targets" />
+</Project>

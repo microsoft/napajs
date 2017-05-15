@@ -41,14 +41,18 @@ export class NapaExecuteResult implements zone.ExecuteResult{
 
 /// <summary> Zone consists of Napa isolates. </summary>
 export class NapaZone implements zone.Zone {
-    private _nativeZone;
+    private _nativeZone: any;
 
-    constructor(nativeZone) {
+    constructor(nativeZone: any) {
         this._nativeZone = nativeZone;
     }
 
     public get id(): string {
         return this._nativeZone.getId();
+    }
+
+    public toJSON(): any {
+        return { id: this.id, type: "napa" };
     }
 
     public broadcast(arg1: any, arg2?: any) : Promise<zone.ResponseCode> {
@@ -69,9 +73,11 @@ export class NapaZone implements zone.Zone {
         let request : ExecuteRequest = this.createExecuteRequest(arg1, arg2, arg3, arg4);
         
         return new Promise<zone.ExecuteResult>((resolve, reject) => {
-            this._nativeZone.execute(request, (response) => {
+            this._nativeZone.execute(request, (response: any) => {
                 if (response.code === 0) {
-                    resolve(new NapaExecuteResult(response.returnValue, transport.createTransportContext(response.contextHandle)));
+                    resolve(new NapaExecuteResult(
+                        response.returnValue,
+                        transport.createTransportContext(response.contextHandle)));
                 } else {
                     reject(response.errorMessage);
                 }
@@ -97,7 +103,7 @@ export class NapaZone implements zone.Zone {
             source = arg1;
         } else {
             // broadcast with function
-            if (!(arg1 instanceof Function)) {
+            if (typeof arg1 != 'function') {
                 throw new TypeError("Expected a Function type argument");
             }
             
@@ -106,7 +112,7 @@ export class NapaZone implements zone.Zone {
             // Prepare arguments as a string
             let argumentsString: string = "";
             if (arg2 != undefined) {
-                if (!(arg2 instanceof Array)) {
+                if (!Array.isArray(arg2)) {
                     throw new TypeError("Expected an Array type argument");
                 }
                 argumentsString = JSON.stringify(arg2);

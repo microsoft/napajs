@@ -116,7 +116,7 @@ export function cid<T extends TransportableObject>(moduleId: string, className?:
     }
 
     return (constructor: new(...args: any[]) => any ) => {
-        constructor['_cid'] = cid;
+        (<any>constructor)['_cid'] = cid;
         transport.register(constructor);
     }
 }

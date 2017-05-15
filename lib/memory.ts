@@ -8,10 +8,10 @@ import { Allocator, AllocatorDebugger } from './memory/allocator';
 let binding = require('./binding');
 
 /// <summary> Export Crt allocator from napa.dll. </summary>
-export let CrtAllocator: Allocator = binding.getCrtAllocator();
+export let crtAllocator: Allocator = binding.getCrtAllocator();
 
 /// <summary> Export default allocator from napa.dll. </summary>
-export let DefaultAllocator: Allocator = binding.getDefaultAllocator();
+export let defaultAllocator: Allocator = binding.getDefaultAllocator();
 
 /// <summary> Create a debug allocator around allocator. </summary>
 /// <param name="allocator"> User allocator. </param>

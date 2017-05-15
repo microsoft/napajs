@@ -4,14 +4,14 @@ import * as nontransportable from './non-transportable';
 import * as path from 'path';
 
 /// <summary> Per-isolate cid => constructor registry. </summary>
-let _registry: Map<string, new(...args) => transportable.Transportable> 
-    = new Map<string, new(...args) => transportable.Transportable>(); 
+let _registry: Map<string, new(...args: any[]) => transportable.Transportable> 
+    = new Map<string, new(...args: any[]) => transportable.Transportable>(); 
 
 /// <summary> Register a TransportableObject sub-class with a Constructor ID (cid). </summary>
 export function register(subClass: new(...args: any[]) => any) {
     // Check cid from constructor first, which is for TransportableObject. 
     // Thus we don't need to construct the object to get cid according to Transportable interface. 
-    let cid: string = subClass['_cid'];
+    let cid: string = (<any>subClass)['_cid'];
     if (cid == null) {
         cid = new subClass().cid();
     }
