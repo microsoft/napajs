@@ -50,9 +50,6 @@
     <Robocopy Include="$(NapaVanillaRoot)\package\$(IntermediateOutputPath)\node_modules\napajs">
       <DestinationFolder>$(IntermediateOutputPath)\api-tests\node_modules\napajs</DestinationFolder>
     </Robocopy>
-    <Robocopy Include="bootstrap.js">
-      <DestinationFolder>$(IntermediateOutputPath)\api-tests\node_modules\napajs\bin</DestinationFolder>
-    </Robocopy>
   </ItemGroup>
   
     <!-- Use napa catch adapter -->

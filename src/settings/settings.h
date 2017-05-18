@@ -17,9 +17,6 @@ namespace napa {
         /// <summary> The number of zone workers. </summary>
         uint32_t workers = std::max(1u, std::thread::hardware_concurrency() / 2);
 
-        /// <summary> A file that will be loaded on all zone workers in global scope. </summary>
-        std::string bootstrapFile;
-
         /// <summary> Isolate memory constraint - The maximum old space size in megabytes. </summary>
         uint32_t maxOldSpaceSize = 0u;
 

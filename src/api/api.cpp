@@ -74,6 +74,10 @@ napa_response_code napa_zone_init(napa_zone_handle handle, napa_string_ref setti
 
     // Create the actual zone.
     handle->zone = ZoneImpl::Create(zoneSettings);
+    if (handle->zone == nullptr) {
+        LOG_ERROR("Api", "Failed to initialize zone: %s", handle->id.c_str());
+        return NAPA_RESPONSE_ZONE_INIT_ERROR;
+    }
 
     LOG_INFO("Api", "Napa zone '%s' initialized successfully", handle->id.c_str());
 

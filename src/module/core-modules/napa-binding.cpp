@@ -36,9 +36,12 @@ static void CreateZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
         }
     }
 
-    auto zoneProxy = std::make_unique<napa::ZoneProxy>(*zoneId, ss.str());
-
-    args.GetReturnValue().Set(ZoneWrap::NewInstance(std::move(zoneProxy)));
+    try {
+        auto zoneProxy = std::make_unique<napa::ZoneProxy>(*zoneId, ss.str());
+        args.GetReturnValue().Set(ZoneWrap::NewInstance(std::move(zoneProxy)));
+    } catch (const std::exception& ex) {
+        JS_FAIL(isolate, ex.what());
+    }
 }
 
 static void GetZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
