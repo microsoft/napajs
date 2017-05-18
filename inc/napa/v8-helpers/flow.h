@@ -25,6 +25,8 @@ if (!(expression)) {                                                            
 
 #define JS_ENSURE(isolate, expression, format, ...) CHECK_ARG(isolate, expression, format, __VA_ARGS__)
 
+#define JS_FAIL(isolate, format, ...) CHECK_ARG(isolate, false, format, __VA_ARGS__)
+
 #define JS_ENSURE_WITH_RETURN(isolate, expression, result, format, ...)                                           \
     CHECK_ARG_WITH_RETURN(isolate, expression, result, format, __VA_ARGS__)
 

@@ -15,7 +15,7 @@ using namespace napa;
 using namespace napa::scheduler;
 
 // Forward declarations
-static void BroadcastFromFile(const std::string& file, Scheduler& scheduler, bool withOrigin);
+static void BroadcastFromFile(const std::string& file, Scheduler& scheduler);
 
 // Static members initialization
 std::mutex ZoneImpl::_mutex;
@@ -78,13 +78,7 @@ void ZoneImpl::Init() {
     _scheduler = std::make_unique<Scheduler>(_settings);
 
     // Read zone main file content and broadcast it on all workers.
-    // Do not set origin to avoid changing the global context path.
-    BroadcastFromFile(ZONE_MAIN_FILE, *_scheduler, false);
-
-    // Read bootstrap file content and broadcast it on all workers.
-    if (!_settings.bootstrapFile.empty()) {
-        BroadcastFromFile(_settings.bootstrapFile, *_scheduler, true);
-    }
+    BroadcastFromFile(ZONE_MAIN_FILE, *_scheduler);
 }
 
 const std::string& ZoneImpl::GetId() const {
@@ -128,7 +122,7 @@ std::shared_ptr<Scheduler> ZoneImpl::GetScheduler() {
     return _scheduler;
 }
 
-static void BroadcastFromFile(const std::string& file, Scheduler& scheduler, bool withOrigin) {
+static void BroadcastFromFile(const std::string& file, Scheduler& scheduler) {
     auto filePath = boost::filesystem::path(file);
     if (filePath.is_relative()) {
         filePath = (boost::filesystem::current_path() / filePath).normalize().make_preferred();
@@ -150,6 +144,5 @@ static void BroadcastFromFile(const std::string& file, Scheduler& scheduler, boo
         throw std::runtime_error("File content was empty: " + filePathString);
     }
 
-    auto scriptOrigin = (withOrigin) ? filePathString : "";
-    scheduler.ScheduleOnAllWorkers(std::make_shared<BroadcastTask>(std::move(fileContent), scriptOrigin));
+    scheduler.ScheduleOnAllWorkers(std::make_shared<BroadcastTask>(std::move(fileContent)));
 }

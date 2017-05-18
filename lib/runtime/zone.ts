@@ -5,9 +5,6 @@ export interface ZoneSettings {
 
     /// <summary> The number of workers that will serve zone requests. </summary>
     workers?: number;
-
-    /// <summary> A file that will be loaded on all zone workers in global scope. </summary>
-    bootstrapFile?: string;
 }
 
 /// <summary> The type of the response code. </summary>

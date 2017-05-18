@@ -11,7 +11,6 @@ static void AddZoneOptions(options_description& desc, ZoneSettings& settings) {
     // Zone parsing options should be added here.
     desc.add_options()
         ("workers", value(&settings.workers), "number of workers")
-        ("bootstrapFile", value(&settings.bootstrapFile), "bootstrap file")
         ("maxOldSpaceSize", value(&settings.maxOldSpaceSize), "max old space size in MB")
         ("maxSemiSpaceSize", value(&settings.maxSemiSpaceSize), "max semi space size in MB")
         ("maxExecutableSize", value(&settings.maxExecutableSize), "max executable size in MB")

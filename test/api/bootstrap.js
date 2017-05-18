@@ -1,4 +1,0 @@
-
-function func() {
-    return "bootstrap";
-}

@@ -11,15 +11,10 @@ static NapaInitializationGuard _guard;
 
 TEST_CASE("zone apis", "[api]") {
 
-    SECTION("create zone with bootstrap file") {
-        napa::ZoneProxy zone("zone1", "--bootstrapFile bootstrap.js");
+    SECTION("create zone") {
+        napa::ZoneProxy zone("zone1");
 
-        napa::ExecuteRequest request;
-        request.function = NAPA_STRING_REF("func");
-        auto response = zone.ExecuteSync(request);
-
-        REQUIRE(response.code == NAPA_RESPONSE_SUCCESS);
-        REQUIRE(response.returnValue == "\"bootstrap\"");
+        REQUIRE(zone.GetId() == "zone1");
     }
 
     SECTION("broadcast valid javascript") {
