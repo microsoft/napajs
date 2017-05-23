@@ -55,18 +55,27 @@ export class NapaZone implements zone.Zone {
         return { id: this.id, type: "napa" };
     }
 
-    public broadcast(arg1: any, arg2?: any) : Promise<zone.ResponseCode> {
+    public broadcast(arg1: any, arg2?: any) : Promise<void> {
         let source: string = this.createBroadcastSource(arg1, arg2);
 
-        return new Promise<zone.ResponseCode>(resolve => {
-            this._nativeZone.broadcast(source, resolve);
+        return new Promise<void>((resolve, reject) => {
+            this._nativeZone.broadcast(source, (responseCode: number) => {
+                if (responseCode === 0) {
+                    resolve();
+                } else {
+                    reject("broadcast failed with response code: " + responseCode);
+                }
+            });
         });
     }
 
-    public broadcastSync(arg1: any, arg2?: any) : zone.ResponseCode {
+    public broadcastSync(arg1: any, arg2?: any) : void {
         let source: string = this.createBroadcastSource(arg1, arg2);
 
-        return this._nativeZone.broadcastSync(source);
+        let responseCode: number = this._nativeZone.broadcastSync(source);
+        if (responseCode !== 0) {
+            throw new Error("broadcast failed with response code: " + responseCode);
+        }
     }
 
     public execute(arg1: any, arg2: any, arg3?: any, arg4?: any) : Promise<zone.ExecuteResult> {
