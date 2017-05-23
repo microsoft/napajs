@@ -1,10 +1,5 @@
 #pragma once
 
-#ifdef BUILDING_NAPA_EXTENSION
-#undef BUILDING_V8_SHARED
-#define USING_V8_SHARED 1
-#endif
-
 #include "worker-context.h"
 
 #include <napa/exports.h>
@@ -79,13 +74,9 @@ namespace module {
         v8::HandleScope handleScope(isolate);
 
         auto signature = v8::Signature::New(isolate, functionTemplate);
-        auto signaturedFunctionTemplate = v8::FunctionTemplate::New(isolate, callback, v8::Local<v8::Value>(), signature);
-        auto function = signaturedFunctionTemplate->GetFunction();
-
-        functionTemplate->PrototypeTemplate()->Set(v8::String::NewFromUtf8(isolate, name), function);
-
-        auto functionName = v8::String::NewFromUtf8(isolate, name);
-        function->SetName(functionName);
+        functionTemplate->PrototypeTemplate()->Set(
+            v8::String::NewFromUtf8(isolate, name, v8::NewStringType::kNormal).ToLocalChecked(),
+            v8::FunctionTemplate::New(isolate, callback, v8::Local<v8::Value>(), signature));
     }
 
     #define NAPA_REGISTER_MODULE(name, function) \

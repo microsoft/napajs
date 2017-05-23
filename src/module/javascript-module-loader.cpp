@@ -17,17 +17,21 @@ bool JavascriptModuleLoader::TryGet(const std::string& path, v8::Local<v8::Objec
     auto source = module_loader_helpers::ReadModuleFile(path);
     JS_ENSURE_WITH_RETURN(isolate, !source.IsEmpty(), false, "Can't read Javascript module: \"%s\"", path.c_str());
 
-    auto context = module_loader_helpers::SetupModuleContext(path);
-    JS_ENSURE_WITH_RETURN(isolate, !context.IsEmpty(), false, "Can't create module context for: \"%s\"", path.c_str());
+    auto context = isolate->GetCurrentContext();
+
+    auto moduleContext = v8::Context::New(isolate);
+    JS_ENSURE_WITH_RETURN(isolate, !moduleContext.IsEmpty(), false, "Can't create module context for: \"%s\"", path.c_str());
 
     // We set an empty security token so callee can access caller's context.
-    context->SetSecurityToken(v8::Undefined(isolate));
-    v8::Context::Scope contextScope(context);
+    moduleContext->SetSecurityToken(v8::Undefined(isolate));
+    v8::Context::Scope contextScope(moduleContext);
 
-    _builtInModulesSetter(context);
+    module_loader_helpers::SetupModuleContext(context, moduleContext, path);
+
+    _builtInModulesSetter(moduleContext);
 
     // To prevent cycle, cache unloaded module first.
-    _moduleCache.Upsert(path, module_loader_helpers::ExportModule(context->Global(), nullptr));
+    _moduleCache.Upsert(path, module_loader_helpers::ExportModule(moduleContext->Global(), nullptr));
 
     v8::TryCatch tryCatch;
     {
@@ -46,6 +50,6 @@ bool JavascriptModuleLoader::TryGet(const std::string& path, v8::Local<v8::Objec
     }
 
     // Export a loaded module.
-    module = scope.Escape(module_loader_helpers::ExportModule(context->Global(), nullptr));
+    module = scope.Escape(module_loader_helpers::ExportModule(moduleContext->Global(), nullptr));
     return true;
 }

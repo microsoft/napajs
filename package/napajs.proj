@@ -19,8 +19,6 @@
 
   <PropertyGroup>
     <PackageOutPath>$(IntermediateOutputPath)\node_modules\napajs</PackageOutPath>
-    <V8BinPath>$(PACKAGESROOT)\V8.Library\$(COMPILER_VERSION)\bin\$(BuildType)\$(BuildArchitecture)</V8BinPath>
-    <V8MiscPath>$(PACKAGESROOT)\V8.Library\misc\$(BuildType)\$(BuildArchitecture)</V8MiscPath>
   </PropertyGroup>
 
   <Import Project="$(NapaBuildRoot)\node\npm.targets" />
@@ -65,13 +63,6 @@
     <Copy SourceFiles="$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.pdb" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(NapaVanillaRoot)\binding\node\$(IntermediateOutputPath)\napa-binding.node" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(NapaVanillaRoot)\binding\node\$(IntermediateOutputPath)\napa-binding.pdb" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    
-    <!-- Binplace v8 files -->
-    <Copy SourceFiles="$(V8BinPath)\icui18n.dll" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(V8BinPath)\icuuc.dll" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(V8BinPath)\v8.dll" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(V8MiscPath)\natives_blob.bin" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(V8MiscPath)\snapshot_blob.bin" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
   </Target>
 
   <Import Project="$(ExtendedTargetsPath)\NoTarget.targets" />

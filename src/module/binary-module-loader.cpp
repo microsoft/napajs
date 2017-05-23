@@ -31,15 +31,19 @@ bool BinaryModuleLoader::TryGet(const std::string& path, v8::Local<v8::Object>& 
     // Since boost::dll unload dll when a reference object is gone, keep an instance into local store.
     _modules.push_back(napaModule);
 
-    auto context = module_loader_helpers::SetupModuleContext(path);
-    JS_ENSURE_WITH_RETURN(isolate, !context.IsEmpty(), false, "Can't create module context for \"%s\"", path.c_str());
+    auto context = isolate->GetCurrentContext();
+
+    auto moduleContext = v8::Context::New(isolate);
+    JS_ENSURE_WITH_RETURN(isolate, !moduleContext.IsEmpty(), false, "Can't create module context for \"%s\"", path.c_str());
 
     // We set an empty security token so callee can access caller's context.
-    context->SetSecurityToken(v8::Undefined(isolate));
-    v8::Context::Scope contextScope(context);
+    moduleContext->SetSecurityToken(v8::Undefined(isolate));
+    v8::Context::Scope contextScope(moduleContext);
 
-    _builtInModulesSetter(context);
+    module_loader_helpers::SetupModuleContext(context, moduleContext, path);
 
-    module = scope.Escape(module_loader_helpers::ExportModule(context->Global(), napaModule->initializer));
+    _builtInModulesSetter(moduleContext);
+
+    module = scope.Escape(module_loader_helpers::ExportModule(moduleContext->Global(), napaModule->initializer));
     return true;
 }
