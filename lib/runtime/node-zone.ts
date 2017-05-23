@@ -11,14 +11,13 @@ export class NodeZone implements zone.Zone {
         return { id: this.id, type: "node" };
     }
 
-    public broadcast(arg1: any, arg2?: any) : Promise<zone.ResponseCode> {
+    public broadcast(arg1: any, arg2?: any) : Promise<void> {
         // TODO @asib: add implementation
         return undefined;
     }
 
-    public broadcastSync(arg1: any, arg2?: any) : zone.ResponseCode {
+    public broadcastSync(arg1: any, arg2?: any) : void {
         // TODO @asib: add implementation
-        return undefined;
     }
 
     public execute(arg1: any, arg2: any, arg3?: any, arg4?: any) : Promise<zone.ExecuteResult> {

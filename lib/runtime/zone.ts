@@ -7,9 +7,6 @@ export interface ZoneSettings {
     workers?: number;
 }
 
-/// <summary> The type of the response code. </summary>
-export type ResponseCode = number;
-
 /// <summary> Represent the result of an execute call. </summary>
 export interface ExecuteResult {
 
@@ -31,14 +28,14 @@ export interface Zone {
 
     /// <summary> Compiles and run the provided source code on all zone workers. </summary>
     /// <param name="source"> A valid javascript source code. </param>
-    broadcast(source: string) : Promise<ResponseCode>;
-    broadcastSync(source: string) : ResponseCode;
+    broadcast(source: string) : Promise<void>;
+    broadcastSync(source: string) : void;
 
     /// <summary> Compiles the function on all workers and runs it with the given arguments. </summary>
     /// <param name="func"> The JS function. </param>
     /// <param name="args"> The arguments that will pass to the function. </param>
-    broadcast(func: Function, args: any[]) : Promise<ResponseCode>;
-    broadcastSync(func: Function, args: any[]) : ResponseCode;
+    broadcast(func: Function, args: any[]) : Promise<void>;
+    broadcastSync(func: Function, args: any[]) : void;
 
     /// <summary> Executes the function on one of the zone workers. </summary>
     /// <param name="module"> The module name that contains the function to execute. </param>
