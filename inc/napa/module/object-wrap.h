@@ -60,7 +60,7 @@ namespace module {
         }
 
         void MakeWeak(void) {
-            persistent().SetWeak(this, WeakCallback);
+            persistent().SetWeak(this, WeakCallback, v8::WeakCallbackType::kParameter);
             persistent().MarkIndependent();
         }
 
@@ -97,13 +97,9 @@ namespace module {
 
     private:
 
-        static void WeakCallback(const v8::WeakCallbackData<v8::Object, ObjectWrap>& data) {
-            v8::Isolate* isolate = data.GetIsolate();
-            v8::HandleScope scope(isolate);
+        static void WeakCallback(const v8::WeakCallbackInfo<ObjectWrap>& data) {
             ObjectWrap* wrap = data.GetParameter();
             assert(wrap->_refs == 0);
-            assert(wrap->_handle.IsNearDeath());
-            assert(data.GetValue() == v8::Local<v8::Object>::New(isolate, wrap->_handle));
             wrap->_handle.Reset();
             delete wrap;
         }

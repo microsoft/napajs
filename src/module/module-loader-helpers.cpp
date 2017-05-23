@@ -19,14 +19,12 @@ namespace {
     /// <param name="exports"> Object to set module paths. </param>
     /// <param name="dirname"> Module directory name. </param>
     /// <param name="filename"> Module file name. </param>
-    template <typename T>
-    void SetupModulePath(T& exports, const std::string& dirname, const std::string& filename);
+    void SetupModulePath(v8::Local<v8::Object> exports, const std::string& dirname, const std::string& filename);
 
     /// <summary> Set up module objects at V8 context. </summary>
     /// <param name="exports"> Object to set module objects. </param>
     /// <param name="id"> Module id. </param>
-    template <typename T>
-    void SetupModuleObjects(T& exports, const std::string& id);
+    void SetupModuleObjects(v8::Local<v8::Object> exports, const std::string& id);
 
 }   // End of anonymous namespace.
 
@@ -90,14 +88,15 @@ void module_loader_helpers::SetupTopLevelContext() {
     (void)exports->Set(v8_helpers::MakeV8String(isolate, "global"), exports);
 }
 
-v8::Local<v8::Context> module_loader_helpers::SetupModuleContext(const std::string& path) {
+void module_loader_helpers::SetupModuleContext(v8::Local<v8::Context> parentContext,
+                                               v8::Local<v8::Context> moduleContext,
+                                               const std::string& path) {
     auto isolate = v8::Isolate::GetCurrent();
-    v8::EscapableHandleScope scope(isolate);
+    v8::HandleScope scope(isolate);
 
-    // Create module object following the node module algorithm.
-    auto exports = v8::ObjectTemplate::New(isolate);
+    auto exports = moduleContext->Global();
+
     SetupModuleObjects(exports, path);
-
     if (path.empty()) {
         SetupModulePath(exports, GetCurrentWorkingDirectory(), std::string());
     } else {
@@ -105,20 +104,8 @@ v8::Local<v8::Context> module_loader_helpers::SetupModuleContext(const std::stri
         SetupModulePath(exports, current.parent_path().string(), path);
     }
 
-    auto context = isolate->GetCurrentContext();
-    auto global = context->Global()->Get(context,
-                                         v8_helpers::MakeV8String(isolate, "global")).ToLocalChecked()->ToObject();
+    auto global = parentContext->Global()->Get(parentContext, v8_helpers::MakeV8String(isolate, "global")).ToLocalChecked()->ToObject();
     (void)exports->Set(v8_helpers::MakeV8String(isolate, "global"), global);
-
-    // Create a sandbox to load javascript module.
-    auto moduleContext = v8::Context::New(isolate, nullptr, exports);
-    JS_ENSURE_WITH_RETURN(isolate,
-                          !moduleContext.IsEmpty(),
-                          scope.Escape(moduleContext),
-                          "Can't create module context for: \"%s\"",
-                          path.c_str());
-
-    return scope.Escape(moduleContext);
 }
 
 std::vector<module_loader_helpers::CoreModuleInfo> module_loader_helpers::ReadCoreModulesJson() {
@@ -175,8 +162,7 @@ v8::Local<v8::String> module_loader_helpers::ReadModuleFile(const std::string& p
 
 namespace {
 
-    template <typename T>
-    void SetupModulePath(T& exports, const std::string& dirname, const std::string& filename) {
+    void SetupModulePath(v8::Local<v8::Object> exports, const std::string& dirname, const std::string& filename) {
         auto isolate = v8::Isolate::GetCurrent();
         v8::HandleScope scope(isolate);
 
@@ -188,8 +174,7 @@ namespace {
         }
     }
 
-    template <typename T>
-    void SetupModuleObjects(T& exports, const std::string& id) {
+    void SetupModuleObjects(v8::Local<v8::Object> exports, const std::string& id) {
         auto isolate = v8::Isolate::GetCurrent();
         v8::HandleScope scope(isolate);
 
@@ -200,9 +185,9 @@ namespace {
         (void)module->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "paths"), v8::Array::New(isolate));
         (void)module->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "id"), v8_helpers::MakeV8String(isolate, id));
 
-        (void)exports->Set(v8_helpers::MakeV8String(isolate, "module"), module);
-        (void)exports->Set(v8_helpers::MakeV8String(isolate, "exports"),
-                           module->Get(v8_helpers::MakeV8String(isolate, "exports"))->ToObject());
+        (void)exports->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "module"), module);
+        (void)exports->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "exports"),
+                                          module->Get(v8_helpers::MakeV8String(isolate, "exports"))->ToObject());
 
         // Set '__in_napa' variable in all modules context to distinguish node and napa runtime.
         (void)exports->Set(v8_helpers::MakeV8String(isolate, "__in_napa"), v8::Boolean::New(isolate, true));

@@ -84,7 +84,7 @@ void Worker::WorkerThreadFunc(const ZoneSettings& settings) {
 
     _impl->isolate = CreateIsolate(settings);
 
-    // If any user of the v8.dll uses a locker on any isolate, all isolates must be locked before use.
+    // If any user of v8 library uses a locker on any isolate, all isolates must be locked before use.
     // Since we are 1-1 with threads and isolates, a top level lock that is never released is ok.
     v8::Locker locker(_impl->isolate);
 

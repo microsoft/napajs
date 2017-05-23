@@ -266,17 +266,21 @@ void ModuleLoader::ModuleLoaderImpl::LoadBinaryCoreModule(
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
-    auto context = module_loader_helpers::SetupModuleContext(std::string());
-    NAPA_ASSERT(!context.IsEmpty(), "Can't set up context for core modules");
+    auto context = isolate->GetCurrentContext();
+
+    auto moduleContext = v8::Context::New(isolate);
+    NAPA_ASSERT(!moduleContext.IsEmpty(), "Can't set up context for core modules");
 
     // We set an empty security token so callee can access caller's context.
-    context->SetSecurityToken(v8::Undefined(isolate));
-    v8::Context::Scope contextScope(context);
+    moduleContext->SetSecurityToken(v8::Undefined(isolate));
+    v8::Context::Scope contextScope(moduleContext);
+
+    module_loader_helpers::SetupModuleContext(context, moduleContext, std::string());
 
     // Put it into module resolver to prevent from resolving as user module.
     _resolver.SetAsCoreModule(name);
 
-    auto module = module_loader_helpers::ExportModule(context->Global(), initializer);
+    auto module = module_loader_helpers::ExportModule(moduleContext->Global(), initializer);
 
     if (isBuiltInModule) {
         _builtInNames.emplace(name);

@@ -46,6 +46,8 @@ public:
 
 private:
 
+    friend class SampleContainer;
+
     static constexpr const char* _exportName = "SampleNode";
 
     explicit SampleNode(uint32_t score = 0) : _score(score) {}
@@ -115,8 +117,9 @@ public:
         functionTemplate->SetClassName(v8_helpers::MakeV8String(isolate, _exportName));
         functionTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 
-        auto sampleNode = SampleNode::NewInstance(0);
-        functionTemplate->InstanceTemplate()->Set(v8_helpers::MakeV8String(isolate, "node"), sampleNode);
+        functionTemplate->InstanceTemplate()->Set(
+            v8_helpers::MakeV8String(isolate, "node"),
+            v8::FunctionTemplate::New(isolate, SampleNode::NewCallback));
 
         NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "setNode", SetNodeCallback);
         NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "getNode", GetNodeCallback);

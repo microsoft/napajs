@@ -24,21 +24,24 @@
     <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup>
-    <V8BinPath>$(PACKAGESROOT)\V8.Library\$(COMPILER_VERSION)\bin\$(BuildType)\$(BuildArchitecture)</V8BinPath>
-    <V8MiscPath>$(PACKAGESROOT)\V8.Library\misc\$(BuildType)\$(BuildArchitecture)</V8MiscPath>
     <TestDir>$(OutDir)module-tests</TestDir>
   </PropertyGroup>
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.props" />
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalDependencies>Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Winmm.lib;Dbghelp.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalDependencies>$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.lib;%(AdditionalDependencies)</AdditionalDependencies>
+
+      <!-- This is for testing only since V8 can export platform APIs at the latest version. -->
+      <AdditionalDependencies>$(PkgNapa_V8_Library)\lib\$(BuildType)\$(BuildTarget)\v8_libbase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(PkgNapa_V8_Library)\lib\$(BuildType)\$(BuildTarget)\v8_libplatform.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
-      <DisableSpecificWarnings>4100;4996</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100;4251;4996</DisableSpecificWarnings>
       <PreprocessorDefinitions>BUILDING_NAPA_EXTENSION;NAPA_EXPORTS;USING_V8_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PkgNapa_V8_Library)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -91,21 +94,6 @@
       <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="$(NapaVanillaRoot)\test\module\sample\$(IntermediateOutputPath)\sample.napa">
-      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
-    </Robocopy>
-    <Robocopy Include="$(V8BinPath)\icui18n.dll">
-      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
-    </Robocopy>
-    <Robocopy Include="$(V8BinPath)\icuuc.dll">
-      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
-    </Robocopy>
-    <Robocopy Include="$(V8BinPath)\v8.dll">
-      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
-    </Robocopy>
-    <Robocopy Include="$(V8MiscPath)\natives_blob.bin">
-      <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
-    </Robocopy>
-    <Robocopy Include="$(V8MiscPath)\snapshot_blob.bin">
       <DestinationFolder>$(IntermediateOutputPath)\module-tests\bin</DestinationFolder>
     </Robocopy>
     <Robocopy Include="asserttest.js">
@@ -204,7 +192,6 @@
   </ItemGroup>
   <!-- Use napa catch adapter -->
   <Import Project="$(NapaVanillaRoot)\tools\catch-adapter\napa-catch.targets" />
-  <Import Project="$(PACKAGESROOT)\V8.Library\exports.props" />
   <Import Project="$(Pkgboost)\build\native\boost.targets" />
   <Import Project="$(Pkgboost_filesystem_vc140)\build\native\boost_filesystem-vc140.targets" />
   <Import Project="$(Pkgboost_system_vc140)\build\native\boost_system-vc140.targets" />

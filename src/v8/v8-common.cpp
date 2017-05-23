@@ -13,12 +13,6 @@ static v8::Platform* _platform = nullptr;
 bool napa::v8_common::Initialize() {
     NAPA_ASSERT(!_platform, "V8 was already initialized");
 
-    v8::V8::InitializeICU();
-
-    // Assumes 'natives_blob.bin' and 'snapshot_blob.bin' files reside in the napa.dll directory.
-    auto thisDllPath = boost::dll::this_line_location().string();
-    v8::V8::InitializeExternalStartupData(thisDllPath.c_str());
-
     _platform = v8::platform::CreateDefaultPlatform();
     v8::V8::InitializePlatform(_platform);
     v8::V8::Initialize();
