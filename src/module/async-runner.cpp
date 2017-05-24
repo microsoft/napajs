@@ -51,7 +51,7 @@ void napa::module::DoAsyncWork(v8::Local<v8::Function> jsCallback,
         return;
     }
 
-    asyncWork([&](void* result) {
+    asyncWork([context](void* result) {
         context->result = result;
 
         auto asyncCompleteTask = std::make_shared<AsyncCompleteTask>(context);
