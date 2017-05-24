@@ -23,7 +23,7 @@ std::unordered_map<std::string, std::weak_ptr<ZoneImpl>> ZoneImpl::_zones;
 
 // The path to the file containing the execute main function
 static const std::string ZONE_MAIN_FILE = (boost::dll::this_line_location().parent_path().parent_path() /
-    "lib\\runtime\\zone-main.js").string();
+    "lib\\zone\\zone-main.js").string();
 
 std::shared_ptr<ZoneImpl> ZoneImpl::Create(const ZoneSettings& settings) {
     std::lock_guard<std::mutex> lock(_mutex);
