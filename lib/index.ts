@@ -1,5 +1,6 @@
-import * as transport from './transport';
 import * as memory from './memory';
+import * as runtime from './runtime';
+import * as transport from './transport';
+import * as zone from './zone';
 
-export * from './runtime';
-export { memory, transport };
+export { memory, runtime, transport, zone };
