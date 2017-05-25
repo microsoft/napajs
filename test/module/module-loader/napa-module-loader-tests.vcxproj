@@ -193,7 +193,11 @@
   <!-- Use napa catch adapter -->
   <Import Project="$(NapaVanillaRoot)\tools\catch-adapter\napa-catch.targets" />
   <Import Project="$(Pkgboost)\build\native\boost.targets" />
-  <Import Project="$(Pkgboost_filesystem_vc140)\build\native\boost_filesystem-vc140.targets" />
+  <Import Project="$(Pkgboost_chrono_vc140)\build\native\boost_chrono-vc140.targets" />
+  <Import Project="$(Pkgboost_date_time_vc140)\build\native\boost_date_time-vc140.targets" />
   <Import Project="$(Pkgboost_system_vc140)\build\native\boost_system-vc140.targets" />
+  <Import Project="$(Pkgboost_thread_vc140)\build\native\boost_thread-vc140.targets" />
+  <Import Project="$(Pkgboost_filesystem_vc140)\build\native\boost_filesystem-vc140.targets" />
+ 
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

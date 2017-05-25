@@ -22,9 +22,10 @@ namespace {
     void SetupModulePath(v8::Local<v8::Object> exports, const std::string& dirname, const std::string& filename);
 
     /// <summary> Set up module objects at V8 context. </summary>
+    /// <param name="parentContext"> Parent context. </param>
     /// <param name="exports"> Object to set module objects. </param>
     /// <param name="id"> Module id. </param>
-    void SetupModuleObjects(v8::Local<v8::Object> exports, const std::string& id);
+    void SetupModuleObjects(v8::Local<v8::Context> parentContext, v8::Local<v8::Object> exports, const std::string& id);
 
 }   // End of anonymous namespace.
 
@@ -36,7 +37,7 @@ v8::Local<v8::Object> module_loader_helpers::ExportModule(v8::Local<v8::Object> 
     auto module = object->Get(v8_helpers::MakeV8String(isolate, "module"))->ToObject();
     auto exports = module->Get(v8_helpers::MakeV8String(isolate, "exports"))->ToObject();
     if (initializer != nullptr) {
-        initializer(exports, object);
+        initializer(exports, module);
     }
 
     return scope.Escape(exports);
@@ -82,7 +83,7 @@ void module_loader_helpers::SetupTopLevelContext() {
     auto exports = isolate->GetCurrentContext()->Global();
 
     SetupModulePath(exports, GetCurrentWorkingDirectory(), std::string());
-    SetupModuleObjects(exports, ".");
+    SetupModuleObjects(v8::Local<v8::Context>(), exports, ".");
 
     // Set 'global' variable shared by top-level context and module contexts.
     (void)exports->Set(v8_helpers::MakeV8String(isolate, "global"), exports);
@@ -96,7 +97,7 @@ void module_loader_helpers::SetupModuleContext(v8::Local<v8::Context> parentCont
 
     auto exports = moduleContext->Global();
 
-    SetupModuleObjects(exports, path);
+    SetupModuleObjects(parentContext, exports, path);
     if (path.empty()) {
         SetupModulePath(exports, GetCurrentWorkingDirectory(), std::string());
     } else {
@@ -174,7 +175,7 @@ namespace {
         }
     }
 
-    void SetupModuleObjects(v8::Local<v8::Object> exports, const std::string& id) {
+    void SetupModuleObjects(v8::Local<v8::Context> parentContext, v8::Local<v8::Object> exports, const std::string& id) {
         auto isolate = v8::Isolate::GetCurrent();
         v8::HandleScope scope(isolate);
 
@@ -184,6 +185,12 @@ namespace {
         (void)module->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "exports"), v8::Object::New(isolate));
         (void)module->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "paths"), v8::Array::New(isolate));
         (void)module->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "id"), v8_helpers::MakeV8String(isolate, id));
+        
+        // Setup 'module.require'.
+        if (!parentContext.IsEmpty()) {
+            auto requireKey = v8_helpers::MakeV8String(isolate, "require");
+            (void)module->CreateDataProperty(context, requireKey, parentContext->Global()->Get(requireKey));
+        }
 
         (void)exports->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "module"), module);
         (void)exports->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "exports"),

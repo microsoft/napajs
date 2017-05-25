@@ -29,6 +29,7 @@ namespace transport {
         /// <summary> Move assignment. </summary>
         TransportContext& operator=(TransportContext&& other) {
             _sharedDepot = std::move(other._sharedDepot);
+            return *this;
         }
 
         /// <summary> Non-copyable. </summary>

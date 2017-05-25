@@ -1,13 +1,12 @@
 /// <summary> In Napa.JS, transporting objects across isolates is required for multi-thread collaborations.
 /// 
 /// A JavaScript value is transportable, if
-/// 1) it is a built-in JavaScript types, which includes primitive types, plain object and arrays.
-/// 2) it extends TransportableObject.
-/// 3) it is a container (array of object) that only contain built-in JavaScript types or objects that implemented Transportable interface.
+/// 1) it is a built-in JavaScript types, which includes primitive types, plain objects (whose constructor name is 'Object') and arrays.
+/// 2) or a class implements Transportable.
+/// 3) or it is a composite of #1 and #2.
 /// 
 /// </summary>
 
-import * as nontransportable from './non-transportable';
 import * as transport from './transport'
 
 import { Shareable } from '../memory/shareable';
@@ -93,12 +92,30 @@ export abstract class TransportableObject implements Transportable{
     }
 }
 
-/// <summary> Tell if a jsValue is a TransportableObject. </summary>
+/// <summary> Tell if a jsValue is transportable. </summary>
 export function isTransportable(jsValue: any): boolean {
-    return jsValue != null 
-        && jsValue instanceof Object
-        && typeof jsValue['cid'] === 'function'
-        && jsValue.cid() !== nontransportable.CID;
+    if (Array.isArray(jsValue)) {
+        // Traverse array.
+        for (let element of jsValue) {
+            if (!isTransportable(element)) {
+                return false;
+            }
+        }
+    } else if (typeof jsValue === 'object') {
+        let constructor = Object.getPrototypeOf(jsValue).constructor;
+        if (constructor.name === 'Object') {
+            // Traverse object.
+            for (let property in jsValue) {
+                if (!isTransportable(jsValue[property])) {
+                    return false;
+                }
+            }
+        }
+        else if (typeof jsValue['cid'] !== 'function') {
+            return false;
+        }
+    }
+    return true;
 }
 
 /// <summary> Decorator 'cid' to register a transportable class with a 'cid'. </summary>

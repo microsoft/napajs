@@ -15,7 +15,7 @@ namespace v8_helpers {
 
     /// <summary> Cast MaybeLocal to Local from source type to target type with default value. </summary>
     template <typename T, typename S>
-    v8::Local<T> LocalCast(v8::MaybeLocal<S> handle, v8::Local<T> defaultValue = v8::Local<T>()) {
+    v8::Local<T> ToLocal(v8::MaybeLocal<S> handle, v8::Local<T> defaultValue = v8::Local<T>()) {
         if (handle.IsEmpty()) {
             return defaultValue;
         }

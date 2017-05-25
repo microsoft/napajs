@@ -8,6 +8,7 @@
 #include <napa.h>
 #include <napa-memory.h>
 #include <napa/module/shared-wrap.h>
+#include <napa/module/worker-context.h>
 
 
 using namespace napa;
@@ -15,6 +16,14 @@ using namespace napa::module;
 
 NAPA_DEFINE_PERSISTENT_SHARED_WRAP_CONSTRUCTOR();
 NAPA_DEFINE_PERSISTENT_ALLOCATOR_WRAP_CONSTRUCTOR();
+
+static void RegisterBinding(v8::Local<v8::Object> module) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
+
+    auto persistentModule = new v8::Persistent<v8::Object>(isolate, module);
+    WorkerContext::Set(WorkerContextItem::NAPA_BINDING, persistentModule);
+}
 
 static void CreateZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
@@ -107,7 +116,10 @@ static void GetDefaultAllocator(const v8::FunctionCallbackInfo<v8::Value>& args)
     args.GetReturnValue().Set(AllocatorWrap::NewInstance(NAPA_MAKE_SHARED<napa::memory::DefaultAllocator>()));
 }
 
-void binding::Init(v8::Local<v8::Object> exports) {
+void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) {
+    // Register napa binding in worker context.
+    RegisterBinding(module);
+
     // SharedWrap must be initialized before all it's derived classes.
     SharedWrap::Init();
     

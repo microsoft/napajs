@@ -1,4 +1,4 @@
-#include <napa/memory/store.h>
+#include "store.h"
 
 #include <napa-memory.h>
 #include <napa/stl/unordered_map.h>
@@ -24,15 +24,18 @@ public:
     /// <param name="key"> Case-sensitive key to set. </param>
     /// <param name="value"> Pair of payload and transport context. </returns>
     void Set(const char* key, Store::ValueType value) override {
-        boost::unique_lock<boost::shared_mutex> lockWrite(_storeAccess);
-        _valueMap.emplace(napa::stl::String(key), std::move(value));
+        auto it = _valueMap.find(key);
+        if (it != _valueMap.end()) {
+            it->second = std::move(value);
+        } else {
+            _valueMap.emplace(napa::stl::String(key), std::move(value));
+        }
     }
 
     /// <summary> Get value by a key. </summary>
     /// <param name="key"> Case-sensitive key to get. </param>
     /// <returns> ValueType pointer, null if not found. </returns>
     const ValueType* Get(const char* key) const override {
-        boost::shared_lock<boost::shared_mutex> lockRead(_storeAccess);
         auto it = _valueMap.find(key);
         if (it != _valueMap.end()) {
             return &(it->second);
@@ -44,19 +47,16 @@ public:
     /// <param name="key"> Case-sensitive key. </param>
     /// <returns> True if the key exists in store. </returns>
     bool Has(const char* key) const override {
-        boost::shared_lock<boost::shared_mutex> lockRead(_storeAccess);
         return _valueMap.find(key) != _valueMap.end();
     }
 
     /// <summary> Delete a key. No-op if key is not found in store. </summary>
     void Delete(const char* key) override {
-        boost::unique_lock<boost::shared_mutex> lockWrite(_storeAccess);
         _valueMap.erase(key);
     }
 
     /// <summary> Return size of the store. </summary>
     size_t Size() const override {
-        boost::shared_lock<boost::shared_mutex> lockRead(_storeAccess);
         return _valueMap.size();
     }
 
@@ -66,9 +66,6 @@ private:
 
     /// <summary> Key to value map. </summary>
     napa::stl::UnorderedMap<napa::stl::String, Store::ValueType> _valueMap;
-
-    /// <summary> Shared mutex to value map access. </summary>
-    mutable boost::shared_mutex _storeAccess;
 };
 
 namespace napa {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <napa/module/binding.h>
 #include <napa/transport/transport-context.h>
 #include <napa/v8-helpers.h>
 
@@ -12,7 +13,7 @@ namespace transport {
     inline void Register(v8::Local<v8::Function> constructor) {
         constexpr int argc = 1;
         v8::Local<v8::Value> argv[argc] = { constructor };
-        (void)v8_helpers::Call("napajs/lib/transport/transport", "register", argc, argv);
+        (void)napa::module::binding::Call("../lib/transport/transport", "register", argc, argv);
     }
 
     /// <summary> Marshall an object with transport context. C++ modules can use this helper function to marshall its members. </summary>
@@ -23,7 +24,7 @@ namespace transport {
     inline v8::MaybeLocal<v8::String> Marshall(v8::Local<v8::Value> object, v8::Local<v8::Object> transportContextWrap) {
         constexpr int argc = 2;
         v8::Local<v8::Value> argv[argc] = { object, transportContextWrap };
-        return v8_helpers::MaybeCast<v8::String>(v8_helpers::Call("napajs/lib/transport/transport", "marshall", argc, argv));
+        return v8_helpers::MaybeCast<v8::String>(napa::module::binding::Call("../lib/transport/transport", "marshall", argc, argv));
     }
 
     /// <summary> Marshall an object with transport context. C++ modules can use this helper function to marshall its members. </summary>
@@ -34,7 +35,7 @@ namespace transport {
     inline v8::MaybeLocal<v8::String> Marshall(v8::Local<v8::Value> object, napa::transport::TransportContext* transportContext) {
         constexpr int argc = 1;
         v8::Local<v8::Value> argv[argc] = { v8_helpers::PtrToV8Uint32Array(v8::Isolate::GetCurrent(), transportContext) };
-        auto transportContextWrap = v8_helpers::NewInstance("napajs/bin/addon", "TransportContextWrap", argc, argv).ToLocalChecked();
+        auto transportContextWrap = napa::module::binding::NewInstance("TransportContextWrap", argc, argv).ToLocalChecked();
         return Marshall(object, transportContextWrap);
     }
 
@@ -46,7 +47,7 @@ namespace transport {
     inline v8::MaybeLocal<v8::Value> Unmarshall(v8::Local<v8::Value> payload, v8::Local<v8::Object> transportContextWrap) {
         constexpr int argc = 2;
         v8::Local<v8::Value> argv[argc] = { payload, transportContextWrap };
-        return v8_helpers::Call("napajs/lib/transport/transport", "unmarshall", argc, argv);
+        return napa::module::binding::Call("../lib/transport/transport", "unmarshall", argc, argv);
     }
 
     /// <summary> Unmarshall a payload with transport context. C++ modules can use this helper function to unmarshall its members. </summary>
@@ -57,7 +58,7 @@ namespace transport {
     inline v8::MaybeLocal<v8::Value> Unmarshall(v8::Local<v8::Value> payload, const napa::transport::TransportContext* transportContext) {
         constexpr int argc = 1;
         v8::Local<v8::Value> argv[argc] = { v8_helpers::PtrToV8Uint32Array(v8::Isolate::GetCurrent(), transportContext) };
-        auto transportContextWrap = v8_helpers::NewInstance("napajs/bin/addon", "TransportContextWrap", argc, argv).ToLocalChecked();
+        auto transportContextWrap = napa::module::binding::NewInstance("TransportContextWrap", argc, argv).ToLocalChecked();
         return Unmarshall(payload, transportContextWrap);
     }
 }

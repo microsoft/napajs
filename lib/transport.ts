@@ -6,11 +6,6 @@ export {
     cid 
 } from './transport/transportable';
 
-export { 
-    isNonTransportable, 
-    nontransportable
-} from './transport/non-transportable';
-
 export * from './transport/transport';
 
 import { Handle } from './memory/handle';

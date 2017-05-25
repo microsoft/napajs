@@ -1,4 +1,5 @@
 import * as napa from 'napajs';
+import * as assert from 'assert';
 
 export function bar(input: any) {
     return input;
@@ -48,4 +49,146 @@ export function executeTestFunction(id: string): any {
     return zone.executeSync((input: string) => {
             return input;
         }, ['hello world']);
+}
+
+/// <summary> Memory test helpers. </summary>
+export function crtAllocatorTest(): void {
+    let handle = napa.memory.crtAllocator.allocate(10);
+    assert(!napa.memory.isEmpty(handle));
+    napa.memory.crtAllocator.deallocate(handle, 10);
+}
+
+export function defaultAllocatorTest(): void {
+    let handle = napa.memory.defaultAllocator.allocate(10);
+    assert(!napa.memory.isEmpty(handle));
+    napa.memory.defaultAllocator.deallocate(handle, 10);
+}
+
+export function debugAllocatorTest(): void {
+    let allocator = napa.memory.debugAllocator(napa.memory.defaultAllocator);
+    let handle = allocator.allocate(10);
+    assert(!napa.memory.isEmpty(handle));
+    allocator.deallocate(handle, 10);
+    let debugInfo = JSON.parse(allocator.getDebugInfo());
+    assert.deepEqual(debugInfo, {
+            allocate: 1,
+            allocatedSize: 10,
+            deallocate: 1,
+            deallocatedSize: 10
+        });
+}
+
+let store2: napa.memory.Store = null;
+export function findOrCreateStoreTest() {
+    store2 = napa.memory.findOrCreateStore('store2');
+    assert(store2 != null);
+    assert.equal(store2.id, 'store2');
+    assert.equal(store2.size, 0);
+}
+
+export function findStoreTest() {
+    let store = napa.memory.findStore('store2');
+    assert.equal(store.id, 'store2');
+
+    // Store created from node zone.
+    let store1 = napa.memory.findStore('store1');
+    assert.equal(store1.id, 'store1');
+}
+
+export function storeVerifyGet(storeId: string, key: string, expectedValue: any) {
+    let store = napa.memory.findStore(storeId);
+    assert.deepEqual(store.get(key), expectedValue);
+}
+
+export function storeGetCompareHandle(storeId: string, key: string, expectedHandle: napa.memory.Handle) {
+    let store = napa.memory.findStore(storeId);
+    assert.deepEqual(store.get(key).handle, expectedHandle);
+}
+
+export function storeSet(storeId: string, key: string, expectedValue: any) {
+    let store = napa.memory.findStore(storeId);
+    store.set(key, expectedValue);
+}
+
+export function storeDelete(storeId: string, key: string) {
+    let store = napa.memory.findStore(storeId);
+    store.delete(key);
+}
+
+export function storeVerifyNotExist(storeId: string, key: string) {
+    let store = napa.memory.findStore(storeId);
+    assert(!store.has(key));
+    assert(store.get(key) === undefined);
+}
+
+/// <summary> Transport test helpers. </summary>
+export class CannotPass {
+    field1: string;
+    field2: number;
+}
+
+@napa.transport.cid(module.id)
+export class CanPass extends napa.transport.TransportableObject {
+    constructor(allocator: napa.memory.Allocator) {
+        super();
+        this._allocator = allocator;
+    }
+    
+    save(payload: any, tc: napa.transport.TransportContext): void {
+        payload['_allocator'] = this._allocator.marshall(tc) 
+    }
+
+    load(payload: any, tc: napa.transport.TransportContext): void {
+        // Do nothing, as all members are transportable, which will be restored automatically.
+    }
+
+    _allocator: napa.memory.Allocator;
+}
+
+function testMarshallUnmarshall(input: any) {
+    let tc = napa.transport.createTransportContext();
+    let payload = napa.transport.marshall(input, tc);
+    let expected = napa.transport.unmarshall(payload, tc);
+    assert.deepEqual(input, expected);
+}
+
+export function simpleTypeTransportTest() {
+    testMarshallUnmarshall({ 
+        a: 'hello',
+        b: {
+            c: [0, 1]
+        }
+    });
+}
+
+export function jsTransportableTest() {
+    testMarshallUnmarshall(new CanPass(napa.memory.crtAllocator));
+}
+
+export function addonTransportTest() {
+    testMarshallUnmarshall(napa.memory.debugAllocator(napa.memory.crtAllocator));
+}
+
+export function compositeTransportTest() {
+    testMarshallUnmarshall({
+        a: napa.memory.debugAllocator(napa.memory.crtAllocator),
+        b: [1, 2],
+        c: {
+            d: napa.memory.defaultAllocator,
+            e: 1
+        }
+    });
+}
+
+export function nontransportableTest() {
+    let tc = napa.transport.createTransportContext();
+    let input = new CannotPass();
+    let success = false;
+    try {
+        napa.transport.marshall(input, tc);
+        success = true;
+    }
+    catch(error) {
+    }
+    assert(!success);
 }
