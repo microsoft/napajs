@@ -25,9 +25,7 @@ void TransportContextWrapImpl::Init() {
     NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "loadShared", LoadSharedCallback);
     NAPA_SET_ACCESSOR(constructorTemplate, "sharedCount", GetSharedCountCallback, nullptr);
 
-    auto constructor = constructorTemplate->GetFunction();
-    NonTransportable::InitConstructor(constructor);
-    NAPA_SET_PERSISTENT_CONSTRUCTOR(_exportName, constructor);
+    NAPA_SET_PERSISTENT_CONSTRUCTOR(_exportName, constructorTemplate->GetFunction());
 }
 
 void TransportContextWrapImpl::GetSharedCountCallback(v8::Local<v8::String>, const v8::PropertyCallbackInfo<v8::Value>& args){

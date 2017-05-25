@@ -20,7 +20,7 @@ namespace v8_helpers {
 
             constexpr int argc = 1;
             v8::Local<v8::Value> argv[] = { value };
-            return scope.Escape(LocalCast<v8::String>(Call(json, "stringify", argc, argv)));
+            return scope.Escape(ToLocal<v8::String>(Call(json, "stringify", argc, argv)));
         }
 
         /// <summary> JSON.parse </summary>

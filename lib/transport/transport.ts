@@ -1,5 +1,4 @@
 import * as transportable from './transportable';
-import * as nontransportable from './non-transportable';
 
 import * as path from 'path';
 
@@ -16,10 +15,7 @@ export function register(subClass: new(...args: any[]) => any) {
         cid = new subClass().cid();
     }
     if (cid == null) {
-        throw new Error(`Class "${subClass.name}" doesn't have cid property, did you forget put @cid decorator before class declaration?`);
-    }
-    if (nontransportable.CID === cid) {
-        throw new Error(`Class "${subClass.name}" is not transportable.`);
+        throw new Error(`Class "${subClass.name}" doesn't implement cid(), did you forget put @cid decorator before class declaration?`);
     }
     if (_registry.has(cid)) {
         throw new Error(`Constructor ID (cid) "${cid}" is already registered.`);
@@ -29,8 +25,15 @@ export function register(subClass: new(...args: any[]) => any) {
 
 /// <summary> Marshall a single JS value. </summary> 
 function marshallSingle(jsValue: any, context: transportable.TransportContext): any {
-    if (transportable.isTransportable(jsValue)) {
-        return <transportable.Transportable>(jsValue).marshall(context);
+    if (typeof jsValue === 'object' && !Array.isArray(jsValue)) {
+        let constructorName = Object.getPrototypeOf(jsValue).constructor.name;
+        if (constructorName !== 'Object') {
+            if (typeof jsValue['cid'] === 'function') {
+                return <transportable.Transportable>(jsValue).marshall(context);
+            } else {
+                throw new Error(`Object type \"${constructorName}\" is not transportable.`);
+            }
+        }
     }
     return jsValue;
 }

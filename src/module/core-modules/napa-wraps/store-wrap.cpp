@@ -1,5 +1,6 @@
 #include "store-wrap.h"
 #include <napa-transport.h>
+#include <boost/thread/locks.hpp>
 
 using namespace napa::module;
 
@@ -18,9 +19,7 @@ void StoreWrap::Init() {
     NAPA_SET_ACCESSOR(constructorTemplate, "id", GetIdCallback, nullptr);
     NAPA_SET_ACCESSOR(constructorTemplate, "size", GetSizeCallback, nullptr);
 
-    auto constructor = constructorTemplate->GetFunction();
-    napa::transport::NonTransportable::InitConstructor(constructor);
-    NAPA_SET_PERSISTENT_CONSTRUCTOR(exportName, constructor);
+    NAPA_SET_PERSISTENT_CONSTRUCTOR(exportName, constructorTemplate->GetFunction());
 }
 
 v8::Local<v8::Object> StoreWrap::NewInstance(std::shared_ptr<napa::memory::Store> store) {
@@ -43,6 +42,8 @@ void StoreWrap::SetCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<StoreWrap>(args.Holder());
     auto& store = thisObject->Get();
+
+    boost::unique_lock<boost::shared_mutex> lockWrite(thisObject->_storeAccess);
 
     // Marshall value object into payload.
     napa::transport::TransportContext transportContext;
@@ -68,6 +69,8 @@ void StoreWrap::GetCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<StoreWrap>(args.Holder());
     auto& store = thisObject->Get();
 
+    boost::shared_lock<boost::shared_mutex> lockRead(thisObject->_storeAccess);
+
     // Marshall value object into payload.
     auto key = v8_helpers::V8ValueTo<std::string>(args[0]);
     auto storeValue = store.Get(key.c_str());
@@ -91,6 +94,7 @@ void StoreWrap::HasCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<StoreWrap>(args.Holder());
     auto& store = thisObject->Get();
 
+    boost::shared_lock<boost::shared_mutex> lockRead(thisObject->_storeAccess);
     args.GetReturnValue().Set(store.Has(v8_helpers::V8ValueTo<std::string>(args[0]).c_str()));
 }
 
@@ -104,6 +108,7 @@ void StoreWrap::DeleteCallback(const v8::FunctionCallbackInfo<v8::Value>& args) 
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<StoreWrap>(args.Holder());
     auto& store = thisObject->Get();
 
+    boost::unique_lock<boost::shared_mutex> lockWrite(thisObject->_storeAccess);
     store.Delete(v8_helpers::V8ValueTo<std::string>(args[0]).c_str());
 }
 
@@ -124,6 +129,7 @@ void StoreWrap::GetSizeCallback(v8::Local<v8::String>, const v8::PropertyCallbac
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<StoreWrap>(args.Holder());
     auto& store = thisObject->Get();
 
+    boost::shared_lock<boost::shared_mutex> lockRead(thisObject->_storeAccess);
     args.GetReturnValue().Set(static_cast<uint32_t>(store.Size()));
 }
 

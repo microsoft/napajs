@@ -4,6 +4,7 @@
         "noImplicitAny": true,
         "removeComments": false,
         "preserveConstEnums": true,
+        "experimentalDecorators": true,
         "baseUrl": ".",
         "paths": {
             "napajs": [
@@ -15,7 +16,7 @@
         "lib": [
             "es2015"
         ],
-        "outDir": "objd/amd64/node_modules/napajs"
+        "outDir": "objd/amd64/node_modules/napajs/test"
     },
     "exclude": [
         "objd",

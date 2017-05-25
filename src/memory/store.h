@@ -9,6 +9,8 @@ namespace napa {
 namespace memory {
 
     /// <summary> Class for memory store, which stores transportable JS objects across isolates. </summary>
+    /// <remarks> Store is not thread-safe, and is intended to be used by StoreWrap. 
+    /// We expose Store in napa.dll instead of napa-binding for sharing memory between Napa and Node.JS. </remarks>
     class Store {
     public:
         /// Meta-data that is necessary to marshall/unmarshall JS values.

@@ -40,7 +40,7 @@
     <ClCompile Include="api\api.cpp" />
     <ClCompile Include="module\async-runner.cpp" />
     <ClCompile Include="memory\built-in-allocators.cpp" />
-    <ClCompile Include="memory\store-impl.cpp" />
+    <ClCompile Include="memory\store.cpp" />
     <ClCompile Include="module\binary-module-loader.cpp" />
     <ClCompile Include="module\core-module-loader.cpp" />
     <ClCompile Include="module\javascript-module-loader.cpp" />

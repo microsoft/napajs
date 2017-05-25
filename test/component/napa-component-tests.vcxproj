@@ -23,6 +23,9 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
+  <PropertyGroup>
+    <TestDir>$(OutDir)component-tests</TestDir>
+  </PropertyGroup>
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.props" />
   <ItemDefinitionGroup>
     <ClCompile>
@@ -47,7 +50,7 @@
   <ItemGroup>
     <ClCompile Include="$(NapaVanillaRoot)\src\api\api.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\memory\built-in-allocators.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\memory\store-impl.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\memory\store.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\async-runner.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\binary-module-loader.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\core-module-loader.cpp" />
@@ -86,8 +89,16 @@
 
   <!-- Test artifacts binplace -->
   <ItemGroup>
+    <Robocopy Include="$(OutputPath)\$(TargetFileName)">
+      <DestinationFolder>$(IntermediateOutputPath)\component-tests\bin</DestinationFolder>
+    </Robocopy>
+    <Robocopy Include="$(NapaVanillaRoot)\lib\$(IntermediateOutputPath)">
+      <DestinationFolder>$(IntermediateOutputPath)\component-tests\lib</DestinationFolder>
+      <FileMatch>*.j*</FileMatch>
+      <IsRecursive>true</IsRecursive>
+    </Robocopy>
     <Robocopy Include="$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.dll">
-      <DestinationFolder>$(IntermediateOutputPath)</DestinationFolder>
+      <DestinationFolder>$(IntermediateOutputPath)\component-tests\bin</DestinationFolder>
     </Robocopy>
   </ItemGroup>
 

@@ -120,6 +120,7 @@ ModuleLoader::~ModuleLoader() = default;
 
 ModuleLoader::ModuleLoaderImpl::ModuleLoaderImpl() {
     auto builtInModulesSetter = [this](v8::Local<v8::Context> context) {
+        SetupRequire(context);
         SetupBuiltInModules(context);
     };
 
@@ -131,19 +132,21 @@ ModuleLoader::ModuleLoaderImpl::ModuleLoaderImpl() {
         std::make_unique<JsonModuleLoader>(),
         std::make_unique<BinaryModuleLoader>(builtInModulesSetter)
     }};
-
-    // Set up top-level context.
-    module_loader_helpers::SetupTopLevelContext();
-
-    // Initialize core modules listed in core-modules.h.
-    INITIALIZE_CORE_MODULES(LoadBinaryCoreModule)
 }
 
 void ModuleLoader::ModuleLoaderImpl::Bootstrap() {
+    // Set up top-level context.
+    module_loader_helpers::SetupTopLevelContext();
+
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
-
     auto context = isolate->GetCurrentContext();
+
+    // 'require' needs to be available in top-level context before core-module is loaded.
+    SetupRequire(context);
+
+    // Initialize core modules listed in core-modules.h.
+    INITIALIZE_CORE_MODULES(LoadBinaryCoreModule)
 
     // Set up built-in modules from binaries.
     SetupBuiltInModules(context);
@@ -298,8 +301,6 @@ void ModuleLoader::ModuleLoaderImpl::LoadBinaryCoreModule(
 void ModuleLoader::ModuleLoaderImpl::SetupBuiltInModules(v8::Local<v8::Context> context) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
-
-    SetupRequire(context);
 
     // Assume that built-in modules are already cached.
     for (const auto& name : _builtInNames) {

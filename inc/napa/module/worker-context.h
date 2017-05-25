@@ -18,6 +18,9 @@ namespace module {
         /// <summary> Module loader instance. </summary>
         MODULE_LOADER,
 
+        /// <summary> Module object for Napa binding. It will be filled under both Napa and Node isolate. </summary>
+        NAPA_BINDING,
+
         /// <summary> Zone instance. </summary>
         ZONE,
 
