@@ -32,7 +32,6 @@
       <PreprocessorDefinitions Condition=" '$(AddonType)' == 'Napa' ">BUILDING_NAPA_EXTENSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\examples\modules\plus-number\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition=" '$(AddonType)' == 'Napa' ">$(PkgNapa_V8_Library)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies Condition=" '$(AddonType)' == 'Napa' ">$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -48,6 +47,7 @@
     <Move SourceFiles="$(OutputPath)\$(TargetFileName)" DestinationFiles="$(OutputPath)\$(AddonName).node" Condition=" '$(AddonType)' != 'Napa' " />
     <Move SourceFiles="$(OutputPath)\$(TargetFileName)" DestinationFiles="$(OutputPath)\$(AddonName).napa" Condition=" '$(AddonType)' == 'Napa' " />
   </Target>
-  <Import Project="$(PACKAGESROOT)\NodeJs.Library\exports.props" Condition=" '$(AddonType)' != 'Napa' " />
+  <Import Project="$(Pkgnapa_nodelib_vc140)\exports_node.props" Condition=" '$(AddonType)' != 'Napa' " />
+  <Import Project="$(Pkgnapa_nodelib_vc140)\exports_v8_includes.props" Condition=" '$(AddonType)' == 'Napa' " />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
