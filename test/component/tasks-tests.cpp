@@ -116,7 +116,7 @@ TEST_CASE("tasks", "[tasks]") {
         request.arguments = { NAPA_STRING_REF("3"), NAPA_STRING_REF("5") };
 
         ExecuteResponse response;
-        TimeoutTaskDecorator<ExecuteTask>(30ms, request, [&](ExecuteResponse res) {
+        TimeoutTaskDecorator<ExecuteTask>(100ms, request, [&](ExecuteResponse res) {
             response = std::move(res);
         }).Execute();
 
@@ -159,7 +159,7 @@ TEST_CASE("tasks", "[tasks]") {
         request2.arguments = { NAPA_STRING_REF("3"), NAPA_STRING_REF("5") };
 
         ExecuteResponse response2;
-        TimeoutTaskDecorator<ExecuteTask>(30ms, request2, [&](ExecuteResponse res) {
+        TimeoutTaskDecorator<ExecuteTask>(100ms, request2, [&](ExecuteResponse res) {
             response2 = std::move(res);
         }).Execute();
 

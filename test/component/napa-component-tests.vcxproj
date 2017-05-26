@@ -84,7 +84,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\worker-tests.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\tasks-tests.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)\object-transport-v8-helpers-tests.cpp" />
   </ItemGroup>
 
   <!-- Test artifacts binplace -->
