@@ -76,7 +76,6 @@ namespace binding {
                 .FromMaybe(v8::Local<v8::Object>()));
     }
 
-    
     /// <summary> Call a function from a module under current context </summary>
     /// <param name="moduleName"> Module name. </param>
     /// <param name="functionName"> Function from module. </param>

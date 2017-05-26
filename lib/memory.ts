@@ -16,7 +16,7 @@ export let defaultAllocator: Allocator = binding.getDefaultAllocator();
 /// <summary> Create a debug allocator around allocator. </summary>
 /// <param name="allocator"> User allocator. </param>
 export function debugAllocator(allocator: Allocator): AllocatorDebugger {
-    return new binding.SimpleAllocatorDebuggerWrap(allocator);
+    return new binding.AllocatorDebuggerWrap(allocator);
 }
 
 import { Store } from './memory/store';

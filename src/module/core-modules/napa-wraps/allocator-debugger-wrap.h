@@ -1,14 +1,15 @@
 #pragma once
 
 #include <napa-module.h>
-#include <napa/module/allocator-wrap.h>
+#include <napa/memory/allocator-debugger.h>
+#include "allocator-wrap.h"
 
 namespace napa {
 namespace module {
     
-    /// <summary> It wraps napa::memory::SimpleAllocatorDebugger. </summary>
+    /// <summary> It wraps napa::memory::AllocatorDebugger. </summary>
     /// <remarks> Reference: napajs/lib/memory/allocator.ts#AllocatorDebugger </remarks>
-    class SimpleAllocatorDebuggerWrap: public AllocatorWrap {
+    class AllocatorDebuggerWrap: public AllocatorWrap {
     public:
         /// <summary> Init this wrap. </summary>
         static void Init();
@@ -17,17 +18,17 @@ namespace module {
         NAPA_DECLARE_PERSISTENT_CONSTRUCTOR
 
         /// <summary> Exported class name. </summary>
-        static constexpr const char* exportName = "SimpleAllocatorDebuggerWrap";
+        static constexpr const char* exportName = "AllocatorDebuggerWrap";
 
     private:
         /// <summary> Constructor. </summary>
-        explicit SimpleAllocatorDebuggerWrap(std::shared_ptr<napa::memory::Allocator> allocator);
+        explicit AllocatorDebuggerWrap(std::shared_ptr<napa::memory::AllocatorDebugger> allocatorDebugger);
 
         /// <summary> No copy allowed. </summary>
-        SimpleAllocatorDebuggerWrap(const SimpleAllocatorDebuggerWrap&) = delete;
-        SimpleAllocatorDebuggerWrap& operator=(const SimpleAllocatorDebuggerWrap&) = delete;
+        AllocatorDebuggerWrap(const AllocatorDebuggerWrap&) = delete;
+        AllocatorDebuggerWrap& operator=(const AllocatorDebuggerWrap&) = delete;
 
-        /// <summary> SimpleAllocatorDebuggerWrap.constructor </summary>
+        /// <summary> AllocatorDebuggerWrap.constructor </summary>
         static void ConstructorCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 
         /// <summary> It implements AllocatorDebugger.debugInfo </summary>

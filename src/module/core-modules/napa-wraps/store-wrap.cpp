@@ -8,7 +8,7 @@ NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(StoreWrap)
     
 void StoreWrap::Init() {
     auto isolate = v8::Isolate::GetCurrent();
-    auto constructorTemplate = v8::FunctionTemplate::New(isolate, napa::module::DefaultConstructorCallback<StoreWrap>);
+    auto constructorTemplate = v8::FunctionTemplate::New(isolate, DefaultConstructorCallback<StoreWrap>);
     constructorTemplate->SetClassName(v8_helpers::MakeV8String(isolate, exportName));
     constructorTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 

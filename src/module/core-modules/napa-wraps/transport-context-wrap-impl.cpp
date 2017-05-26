@@ -1,5 +1,6 @@
 #include "transport-context-wrap-impl.h"
-#include <napa/module/shared-wrap.h>
+#include <napa/module/shareable-wrap.h>
+#include <napa/module/binding/wraps.h>
 
 using namespace napa::transport;
 using namespace napa::module;
@@ -69,10 +70,10 @@ void TransportContextWrapImpl::SaveSharedCallback(const v8::FunctionCallbackInfo
     v8::HandleScope scope(isolate);
 
     CHECK_ARG(isolate, args.Length() == 1, "1 arguments are required for \"saveShared\".");
-    CHECK_ARG(isolate, args[0]->IsObject(), "Argument \"object\" shall be 'SharedWrap' type.");
+    CHECK_ARG(isolate, args[0]->IsObject(), "Argument \"object\" shall be 'ShareableWrap' type.");
 
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<TransportContextWrap>(args.Holder());
-    auto sharedWrap = NAPA_OBJECTWRAP::Unwrap<SharedWrap>(v8::Local<v8::Object>::Cast(args[0]));
+    auto sharedWrap = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(v8::Local<v8::Object>::Cast(args[0]));
     thisObject->Get()->SaveShared(sharedWrap->Get<void>());
 }
 
@@ -88,5 +89,5 @@ void TransportContextWrapImpl::LoadSharedCallback(const v8::FunctionCallbackInfo
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<TransportContextWrap>(args.Holder());
     auto object = thisObject->Get()->LoadShared<void>(result.first);
 
-    args.GetReturnValue().Set(SharedWrap::NewInstance(object));
+    args.GetReturnValue().Set(binding::CreateShareableWrap(object));
 }
