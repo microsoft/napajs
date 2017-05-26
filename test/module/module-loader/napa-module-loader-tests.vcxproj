@@ -33,15 +33,14 @@
       <AdditionalDependencies>$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.lib;%(AdditionalDependencies)</AdditionalDependencies>
 
       <!-- This is for testing only since V8 can export platform APIs at the latest version. -->
-      <AdditionalDependencies>$(PkgNapa_V8_Library)\lib\$(BuildType)\$(BuildTarget)\v8_libbase.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalDependencies>$(PkgNapa_V8_Library)\lib\$(BuildType)\$(BuildTarget)\v8_libplatform.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(Pkgnapa_nodelib_vc140)\lib\$(BuildType)\$(BuildTarget)\v8_libbase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(Pkgnapa_nodelib_vc140)\lib\$(BuildType)\$(BuildTarget)\v8_libplatform.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
       <DisableSpecificWarnings>4100;4251;4996</DisableSpecificWarnings>
       <PreprocessorDefinitions>BUILDING_NAPA_EXTENSION;NAPA_EXPORTS;USING_V8_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories>$(PkgNapa_V8_Library)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -198,6 +197,7 @@
   <Import Project="$(Pkgboost_system_vc140)\build\native\boost_system-vc140.targets" />
   <Import Project="$(Pkgboost_thread_vc140)\build\native\boost_thread-vc140.targets" />
   <Import Project="$(Pkgboost_filesystem_vc140)\build\native\boost_filesystem-vc140.targets" />
+  <Import Project="$(Pkgnapa_nodelib_vc140)\exports_v8_includes.props" />
  
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

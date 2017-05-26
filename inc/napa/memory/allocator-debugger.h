@@ -1,8 +1,10 @@
 #pragma once
 
 #include <napa/memory/allocator.h>
-#include <sstream>
+
 #include <atomic>
+#include <memory>
+#include <sstream>
 
 namespace napa {
 namespace memory {

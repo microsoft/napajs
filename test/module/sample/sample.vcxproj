@@ -30,7 +30,6 @@
     <ClCompile>
       <PreprocessorDefinitions>BUILDING_NAPA_EXTENSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories>$(PkgNapa_V8_Library)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -39,5 +38,6 @@
   <Target Name="ChangeExtention" AfterTargets="Build">
     <Move SourceFiles="$(OutputPath)\$(TargetFileName)" DestinationFiles="$(OutputPath)\$(AddonName).napa" />
   </Target>
+  <Import Project="$(Pkgnapa_nodelib_vc140)\exports_v8_includes.props" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

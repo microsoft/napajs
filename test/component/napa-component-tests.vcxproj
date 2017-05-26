@@ -34,15 +34,14 @@
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\test\component;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories>$(PkgNapa_V8_Library)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>Winmm.lib;Dbghelp.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalDependencies>$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.lib;%(AdditionalDependencies)</AdditionalDependencies>
 
       <!-- This is for testing only since V8 can export platform APIs at the latest version. -->
-      <AdditionalDependencies>$(PkgNapa_V8_Library)\lib\$(BuildType)\$(BuildTarget)\v8_libbase.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalDependencies>$(PkgNapa_V8_Library)\lib\$(BuildType)\$(BuildTarget)\v8_libplatform.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(Pkgnapa_nodelib_vc140)\lib\$(BuildType)\$(BuildTarget)\v8_libbase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(Pkgnapa_nodelib_vc140)\lib\$(BuildType)\$(BuildTarget)\v8_libplatform.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   
@@ -113,6 +112,7 @@
   <Import Project="$(Pkgboost_regex_vc140)\build\native\boost_regex-vc140.targets" />
   <Import Project="$(Pkgboost_system_vc140)\build\native\boost_system-vc140.targets" />
   <Import Project="$(Pkgboost_thread_vc140)\build\native\boost_thread-vc140.targets" />
+  <Import Project="$(Pkgnapa_nodelib_vc140)\exports_v8_includes.props" />
 
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

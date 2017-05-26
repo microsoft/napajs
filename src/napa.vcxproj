@@ -76,7 +76,7 @@
   <Import Project="$(Pkgboost_regex_vc140)\build\native\boost_regex-vc140.targets" />
   <Import Project="$(Pkgboost_system_vc140)\build\native\boost_system-vc140.targets" />
   <Import Project="$(Pkgboost_thread_vc140)\build\native\boost_thread-vc140.targets" />
-  <Import Project="$(PkgNapa_V8_Library)\exports.props" />
+  <Import Project="$(Pkgnapa_nodelib_vc140)\exports_v8.props" />
   <Import Project="$(ExtendedTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(NapaVanillaRoot)\tools\clang-tools\napa-checks.targets" />
 </Project>
