@@ -33,10 +33,10 @@ namespace module {
         /// <summary> It implements TransportContext.sharedCount </summary>
         static void GetSharedCountCallback(v8::Local<v8::String>, const v8::PropertyCallbackInfo<v8::Value>& args);
 
-        /// <summary> It implements TransportContext.saveShared(handle: Handle, object: napajs.memory.SharedWrap) </summary>
+        /// <summary> It implements TransportContext.saveShared(handle: Handle, object: napajs.memory.ShareableWrap) </summary>
         static void SaveSharedCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-        /// <summary> It implements TransportContext.loadShared(handle: Handle): napajs.memory.SharedWrap) </summary>
+        /// <summary> It implements TransportContext.loadShared(handle: Handle): napajs.memory.ShareableWrap) </summary>
         static void LoadSharedCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 
         /// <summary> Exported class name. </summary>

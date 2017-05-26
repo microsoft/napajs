@@ -1,21 +1,20 @@
 #include "napa-binding.h"
 
-#include "napa-wraps/simple-allocator-debugger-wrap.h"
+#include "napa-wraps/allocator-debugger-wrap.h"
+#include "napa-wraps/allocator-wrap.h"
+#include "napa-wraps/shared-ptr-wrap.h"
 #include "napa-wraps/store-wrap.h"
 #include "napa-wraps/transport-context-wrap-impl.h"
 #include "napa-wraps/zone-wrap.h"
 
 #include <napa.h>
 #include <napa-memory.h>
-#include <napa/module/shared-wrap.h>
+#include <napa/module/binding/wraps.h>
 #include <napa/module/worker-context.h>
 
 
 using namespace napa;
 using namespace napa::module;
-
-NAPA_DEFINE_PERSISTENT_SHARED_WRAP_CONSTRUCTOR();
-NAPA_DEFINE_PERSISTENT_ALLOCATOR_WRAP_CONSTRUCTOR();
 
 static void RegisterBinding(v8::Local<v8::Object> module) {
     auto isolate = v8::Isolate::GetCurrent();
@@ -109,29 +108,27 @@ static void GetStoreCount(const v8::FunctionCallbackInfo<v8::Value>& args) {
 }
 
 static void GetCrtAllocator(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    args.GetReturnValue().Set(AllocatorWrap::NewInstance(NAPA_MAKE_SHARED<napa::memory::CrtAllocator>()));
+    args.GetReturnValue().Set(binding::CreateAllocatorWrap(NAPA_MAKE_SHARED<napa::memory::CrtAllocator>()));
 }
 
 static void GetDefaultAllocator(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    args.GetReturnValue().Set(AllocatorWrap::NewInstance(NAPA_MAKE_SHARED<napa::memory::DefaultAllocator>()));
+    args.GetReturnValue().Set(binding::CreateAllocatorWrap(NAPA_MAKE_SHARED<napa::memory::DefaultAllocator>()));
 }
 
 void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) {
     // Register napa binding in worker context.
     RegisterBinding(module);
 
-    // SharedWrap must be initialized before all it's derived classes.
-    SharedWrap::Init();
-    
+    AllocatorDebuggerWrap::Init();
     AllocatorWrap::Init();
-    SimpleAllocatorDebuggerWrap::Init();
+    SharedPtrWrap::Init();
     StoreWrap::Init();
     TransportContextWrapImpl::Init();
     ZoneWrap::Init();
 
+    NAPA_EXPORT_OBJECTWRAP(exports, "AllocatorDebuggerWrap", AllocatorDebuggerWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "AllocatorWrap", AllocatorWrap);
-    NAPA_EXPORT_OBJECTWRAP(exports, "SharedWrap", SharedWrap);
-    NAPA_EXPORT_OBJECTWRAP(exports, "SimpleAllocatorDebuggerWrap", SimpleAllocatorDebuggerWrap);
+    NAPA_EXPORT_OBJECTWRAP(exports, "SharedPtrWrap", SharedPtrWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "TransportContextWrap", TransportContextWrapImpl);
 
     NAPA_SET_METHOD(exports, "createZone", CreateZone);

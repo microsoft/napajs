@@ -1,37 +1,39 @@
-#include "simple-allocator-debugger-wrap.h"
+#include "allocator-debugger-wrap.h"
 
 #include <napa-memory.h>
-#include <napa/memory/allocator-debugger.h>
 
 using namespace napa::module;
 
-NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(SimpleAllocatorDebuggerWrap);
+NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(AllocatorDebuggerWrap);
 
-SimpleAllocatorDebuggerWrap::SimpleAllocatorDebuggerWrap(std::shared_ptr<napa::memory::Allocator> allocator) {
-    this->_object = NAPA_MAKE_SHARED<napa::memory::SimpleAllocatorDebugger>(std::move(allocator));
+AllocatorDebuggerWrap::AllocatorDebuggerWrap(std::shared_ptr<napa::memory::AllocatorDebugger> allocatorDebugger) {
+    this->_object = std::move(allocatorDebugger);
 }
 
-void SimpleAllocatorDebuggerWrap::Init(){
+void AllocatorDebuggerWrap::Init(){
     auto isolate = v8::Isolate::GetCurrent();
     auto constructorTemplate = v8::FunctionTemplate::New(isolate, ConstructorCallback);
     constructorTemplate->SetClassName(v8_helpers::MakeV8String(isolate, exportName));
     constructorTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 
-    AllocatorWrap::InitConstructorTemplate<SimpleAllocatorDebuggerWrap>(constructorTemplate);
+    InitConstructorTemplate<AllocatorDebuggerWrap>(constructorTemplate);
 
+    NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "allocate", AllocatorWrap::AllocateCallback);
+    NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "deallocate", AllocatorWrap::DeallocateCallback);
     NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "getDebugInfo", GetDebugInfoCallback);
+    NAPA_SET_ACCESSOR(constructorTemplate, "type", AllocatorWrap::GetTypeCallback, nullptr);
 
     auto constructor = constructorTemplate->GetFunction();
-    AllocatorWrap::InitConstructor("<SimpleAllocatorDebugger>", constructor);
+    InitConstructor("<AllocatorDebugger>", constructor);
     NAPA_SET_PERSISTENT_CONSTRUCTOR(exportName, constructor);
 }
 
-void SimpleAllocatorDebuggerWrap::ConstructorCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void AllocatorDebuggerWrap::ConstructorCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
-    JS_ENSURE(isolate, args.IsConstructCall(), "Class \"SimpleAllocatorDebuggerWraporWrap\" allows constructor call only.");
-    CHECK_ARG(isolate, args.Length() <= 1, "Class \"SimpleAllocatorDebuggerWrap\" requires 1 argument of \"allocator\" in constructor.'");
+    JS_ENSURE(isolate, args.IsConstructCall(), "Class \"AllocatorDebuggerWrap\" allows constructor call only.");
+    CHECK_ARG(isolate, args.Length() <= 1, "Class \"AllocatorDebuggerWrap\" requires 1 argument of \"allocator\" in constructor.'");
 
     std::shared_ptr<napa::memory::Allocator> allocator;
     if (args.Length() == 0) {
@@ -45,14 +47,14 @@ void SimpleAllocatorDebuggerWrap::ConstructorCallback(const v8::FunctionCallback
     }
 
     // It's deleted when its Javascript object is garbage collected by V8's GC.
-    auto wrap = new SimpleAllocatorDebuggerWrap(allocator);
+    auto wrap = new AllocatorDebuggerWrap(NAPA_MAKE_SHARED<napa::memory::SimpleAllocatorDebugger>(allocator));
     wrap->Wrap(args.This());
     args.GetReturnValue().Set(args.This());
 }
 
-void SimpleAllocatorDebuggerWrap::GetDebugInfoCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void AllocatorDebuggerWrap::GetDebugInfoCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
-    auto thisObject = NAPA_OBJECTWRAP::Unwrap<SharedWrap>(args.Holder());
+    auto thisObject = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(args.Holder());
     args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, thisObject->Get<napa::memory::AllocatorDebugger>()->GetDebugInfo()));
 }
