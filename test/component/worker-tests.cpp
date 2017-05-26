@@ -54,7 +54,7 @@ TEST_CASE("worker notifies idle condition", "[scheduler-worker]") {
     worker->Schedule(std::make_shared<TestTask>());
 
     std::unique_lock<std::mutex> lock(mutex);
-    bool idleNotificationReceived = (cv.wait_for(lock, std::chrono::milliseconds(500)) == std::cv_status::no_timeout);
+    bool idleNotificationReceived = (cv.wait_for(lock, std::chrono::milliseconds(1000)) == std::cv_status::no_timeout);
 
     REQUIRE(idleNotificationReceived == true);
 }

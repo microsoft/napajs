@@ -51,7 +51,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="module\file-system-helpers-tests.cpp" />
     <ClCompile Include="module\module-resolver-tests.cpp" />
-    <ClCompile Include="object-transport\object-transport-tests.cpp" />
     <ClCompile Include="scheduler\scheduler-tests.cpp" />
     <ClCompile Include="scheduler\timeout-service-tests.cpp" />
     <ClCompile Include="settings\parser-tests.cpp" />
