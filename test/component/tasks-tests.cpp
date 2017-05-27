@@ -34,7 +34,7 @@ TEST_CASE("tasks", "[tasks]") {
     v8::Context::Scope contextScope(context);
 
     // Set a simple zone main function
-    BroadcastTask("function __zone_function_main__(func, args) { return func.apply(this, args); }").Execute();
+    BroadcastTask("function __zone_execute__(module, func, args) { return this[func].apply(this, args); }").Execute();
 
     SECTION("load valid javascript") {
         NapaResponseCode loadResponseCode;

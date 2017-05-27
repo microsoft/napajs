@@ -23,3 +23,17 @@ export interface AllocatorDebugger extends Allocator {
     /// <summary> Get debug info. </summary>
     getDebugInfo(): string;
 }
+
+let binding = require('../binding');
+
+/// <summary> Export Crt allocator from napa.dll. </summary>
+export let crtAllocator: Allocator = binding.getCrtAllocator();
+
+/// <summary> Export default allocator from napa.dll. </summary>
+export let defaultAllocator: Allocator = binding.getDefaultAllocator();
+
+/// <summary> Create a debug allocator around allocator. </summary>
+/// <param name="allocator"> User allocator. </param>
+export function debugAllocator(allocator: Allocator): AllocatorDebugger {
+    return new binding.AllocatorDebuggerWrap(allocator);
+}

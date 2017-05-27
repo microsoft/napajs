@@ -61,28 +61,39 @@ describe('napajs/memory', () => {
     });
 
     describe('Store', () => {
-        let store1 = napa.memory.findOrCreateStore('store1');
-        it('@node: findOrCreateStore', () => {
+        let store1 = napa.memory.store.create('store1');
+        it('@node: store.create - succeed', () => {
             assert(store1 != null);
             assert.equal(store1.id, 'store1');
             assert.equal(store1.size, 0);
         });
 
-        it('@napa: findOrCreateStore', () => {
-            napaZone.executeSync('./napa-zone/test', "findOrCreateStoreTest", []);
+        it('@node: store.create - already exists', () => {
+            let succeed = false;
+            try {
+                let store = napa.memory.store.create('store1');
+                succeed = true;
+            }
+            catch (error) {
+            }
+            assert(!succeed);
         });
 
-        it('@node: findStore', () => {
-            let store = napa.memory.findStore('store1');
+        it('@napa: store.getOrCreate', () => {
+            napaZone.executeSync('./napa-zone/test', "getOrCreateStoreTest", []);
+        });
+
+        it('@node: store.get', () => {
+            let store = napa.memory.store.get('store1');
             assert.equal(store.id, store1.id);
 
             // Store created from napa zone.
-            let store2 = napa.memory.findStore('store2');
+            let store2 = napa.memory.store.get('store2');
             assert.equal(store2.id, 'store2');
         });
 
-        it('@napa: findStore', () => {
-            napaZone.executeSync('./napa-zone/test', "findStoreTest", []);
+        it('@napa: store.get', () => {
+            napaZone.executeSync('./napa-zone/test', "getStoreTest", []);
         });
 
         it('simple types: set in node, get in node', () => {

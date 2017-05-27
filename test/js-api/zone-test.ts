@@ -310,6 +310,19 @@ describe('napajs/zone', function () {
 
     describe('execute', () => {
         napaZone1.broadcastSync('function foo(input) { return input; }');
+        napaZone1.broadcastSync(`
+            var ns1;
+            (function (ns1) {
+                var ns2;
+                (function (ns2) {
+                    function foo(input) {
+                        return input;
+                    }
+                    ns2.foo = foo;
+                })(ns2 = ns1.ns2 || (ns1.ns2 = {}));
+            })(ns1 = exports.ns1 || (exports.ns1 = {}));
+        `);
+
         napaZone2.broadcastSync('function foo(input) { return input; }');
 
         // Blocked by TODO #1.
@@ -337,6 +350,13 @@ describe('napajs/zone', function () {
         // Blocked by TODO #1.
         it.skip('@napa: -> node zone with global function name', () => {
             return napaZone1.execute(napaZoneTestModule, 'execute', ["node", "", "foo", ['hello world']])
+                .then((result: napa.zone.ExecuteResult) => {
+                    assert.equal(result.value, 'hello world');
+                });
+        });
+
+        it('@node: -> napa zone with global function name: function with namespaces', () => {
+            return napaZone1.execute("", "ns1.ns2.foo", ['hello world'])
                 .then((result: napa.zone.ExecuteResult) => {
                     assert.equal(result.value, 'hello world');
                 });
@@ -398,6 +418,20 @@ describe('napajs/zone', function () {
                 });
         });
 
+        it('@node: -> napa zone with module function name: function with namespaces', () => {
+            return napaZone1.execute(napaZoneTestModule, "ns1.ns2.foo", ['hello world'])
+                .then((result: napa.zone.ExecuteResult) => {
+                    assert.equal(result.value, 'hello world');
+                });
+        });
+
+        it('@node: -> napa zone with module function name: module is a function', () => {
+            return napaZone1.execute("./napa-zone/function-as-module", "", ['hello world'])
+                .then((result: napa.zone.ExecuteResult) => {
+                    assert.equal(result.value, 'hello world');
+                });
+        });
+
         // Blocked by TODO #1.
         it.skip('@node: -> node zone with module not exists', () => {
             return shouldFail(() => {
@@ -413,14 +447,14 @@ describe('napajs/zone', function () {
 
         it('@napa: -> napa zone with module not exists', () => {
             return shouldFail(() => {
-                return napaZone1.execute(napaZoneTestModule, 'execute', ["napa-zone2", "abc", "foo1", []]);
+                return napaZone1.execute(napaZoneTestModule, 'execute', ["napa-zone2", "abc", ".foo", []]);
             });
         });
 
         // Blocked by TODO #1.
         it.skip('@napa: -> node zone with module not exists', () => {
             return shouldFail(() => {
-                return napaZone1.execute(napaZoneTestModule, 'execute', ["node", "abc", "foo1", []]);
+                return napaZone1.execute(napaZoneTestModule, 'execute', ["node", "abc", "foo.", []]);
             });
         });
 

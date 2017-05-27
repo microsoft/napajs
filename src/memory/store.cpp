@@ -76,24 +76,31 @@ namespace memory {
         boost::shared_mutex _registryAccess;
     } // namespace
 
-    std::shared_ptr<Store> FindOrCreateStore(const char* id) {
-        auto store = FindStore(id);
+    std::shared_ptr<Store> CreateStore(const char* id) {
+        boost::unique_lock<boost::shared_mutex> lockWrite(_registryAccess);
+        
+        std::shared_ptr<Store> store;
+        auto it = _storeRegistry.find(id);
+        if (it == _storeRegistry.end()) {
+            store = NAPA_MAKE_SHARED<StoreImpl>(id);
+            _storeRegistry.insert(std::make_pair(napa::stl::String(id), store));
+        }
+        return store;
+    }
+
+    std::shared_ptr<Store> GetOrCreateStore(const char* id) {
+        auto store = GetStore(id);
         if (store == nullptr) {
-            boost::unique_lock<boost::shared_mutex> lockWrite(_registryAccess);
-            // Do another lookup to avoid race condition.
-            auto it = _storeRegistry.find(id);
-            if (it != _storeRegistry.end()) {
-                store = it->second.lock();
-            }
+            store = CreateStore(id);
             if (store == nullptr) {
-                store = NAPA_MAKE_SHARED<StoreImpl>(id);
-                _storeRegistry.insert(std::make_pair(napa::stl::String(id), store));
+                // Already created just now. Lookup again.
+                store = GetStore(id);
             }
         }
         return store;
     }
 
-    std::shared_ptr<Store> FindStore(const char* id) {
+    std::shared_ptr<Store> GetStore(const char* id) {
         boost::shared_lock<boost::shared_mutex> lockRead(_registryAccess);
         auto it = _storeRegistry.find(id);
         if (it != _storeRegistry.end()) {
