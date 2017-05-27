@@ -75,28 +75,46 @@ static void GetCurrentZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
     args.GetReturnValue().Set(ZoneWrap::NewInstance(napa::ZoneProxy::GetCurrent()));
 }
 
-static void FindOrCreateStore(const v8::FunctionCallbackInfo<v8::Value>& args) {
+/////////////////////////////////////////////////////////////////////
+/// Store APIs
+
+static void CreateStore(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
-    CHECK_ARG(isolate, args.Length() == 1, "1 arguments are required for \"findOrCreateStore\".");
+    CHECK_ARG(isolate, args.Length() == 1, "1 argument of 'id' is required.");
     CHECK_ARG(isolate, args[0]->IsString(), "Argument 'id' must be string.");
 
     auto id = napa::v8_helpers::V8ValueTo<std::string>(args[0]);
-    auto store = napa::memory::FindOrCreateStore(id.c_str());
+    auto store = napa::memory::CreateStore(id.c_str());
+
+    JS_ENSURE(isolate, store != nullptr, "Store with id \"%s\" already exists.", id.c_str());
 
     args.GetReturnValue().Set(StoreWrap::NewInstance(store));
 }
 
-static void FindStore(const v8::FunctionCallbackInfo<v8::Value>& args) {
+static void GetOrCreateStore(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
-    CHECK_ARG(isolate, args.Length() == 1, "1 arguments are required for \"findStore\".");
+    CHECK_ARG(isolate, args.Length() == 1, "1 argument of 'id' is required.");
     CHECK_ARG(isolate, args[0]->IsString(), "Argument 'id' must be string.");
 
     auto id = napa::v8_helpers::V8ValueTo<std::string>(args[0]);
-    auto store = napa::memory::FindStore(id.c_str());
+    auto store = napa::memory::GetOrCreateStore(id.c_str());
+
+    args.GetReturnValue().Set(StoreWrap::NewInstance(store));
+}
+
+static void GetStore(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
+
+    CHECK_ARG(isolate, args.Length() == 1, "1 argument of 'id' is required.");
+    CHECK_ARG(isolate, args[0]->IsString(), "Argument 'id' must be string.");
+
+    auto id = napa::v8_helpers::V8ValueTo<std::string>(args[0]);
+    auto store = napa::memory::GetStore(id.c_str());
 
     if (store != nullptr) {
         args.GetReturnValue().Set(StoreWrap::NewInstance(store));
@@ -135,8 +153,9 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
     NAPA_SET_METHOD(exports, "getZone", GetZone);
     NAPA_SET_METHOD(exports, "getCurrentZone", GetCurrentZone);
 
-    NAPA_SET_METHOD(exports, "findOrCreateStore", FindOrCreateStore);
-    NAPA_SET_METHOD(exports, "findStore", FindStore);
+    NAPA_SET_METHOD(exports, "createStore", CreateStore);
+    NAPA_SET_METHOD(exports, "getOrCreateStore", GetOrCreateStore);
+    NAPA_SET_METHOD(exports, "getStore", GetStore);
     NAPA_SET_METHOD(exports, "getStoreCount", GetStoreCount);
 
     NAPA_SET_METHOD(exports, "getCrtAllocator", GetCrtAllocator);

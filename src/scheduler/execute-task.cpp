@@ -24,53 +24,29 @@ napa::scheduler::ExecuteTask::ExecuteTask(const ExecuteRequest& request, Execute
 
 void ExecuteTask::Execute() {
     auto isolate = v8::Isolate::GetCurrent();
-    v8::HandleScope scope(isolate);
     auto context = isolate->GetCurrentContext();
+    v8::HandleScope scope(isolate);
 
-    v8::Local<v8::Function> zoneMainFunction;
-    std::vector<v8::Local<v8::Value>> args;
+    // Get the module based main function from global scope.
+    auto executeFunction = context->Global()->Get(MakeExternalV8String(isolate, "__zone_execute__"));
+    NAPA_ASSERT(executeFunction->IsFunction(), "__zone_execute__ function must exist in global scope");
 
-    if (_module.empty()) {
-        // Get the zone main function from global scope.
-        auto mainFunctionValue = context->Global()->Get(MakeExternalV8String(isolate, "__zone_function_main__"));
-        NAPA_ASSERT(mainFunctionValue->IsFunction(), "__zone_function_main__ function must exist in global scope");
-
-        zoneMainFunction = v8::Local<v8::Function>::Cast(mainFunctionValue);
-
-        auto funcValue = context->Global()->Get(MakeExternalV8String(isolate, _func));
-        if (!funcValue->IsFunction()) {
-            auto error = "Function '" + _func + "' does not exist in global scope";
-            _callback({ NAPA_RESPONSE_EXECUTE_FUNC_ERROR, std::move(error), "", nullptr });
-            return;
-        }
-
-        args.reserve(3); // (func, args, contextHandle)
-        args.emplace_back(v8::Local<v8::Function>::Cast(funcValue));
-    } else {
-        // Get the module based main function from global scope.
-        auto mainFunctionValue = context->Global()->Get(MakeExternalV8String(isolate, "__zone_module_main__"));
-        NAPA_ASSERT(mainFunctionValue->IsFunction(), "__zone_module_main__ function must exist in global scope");
-
-        zoneMainFunction = v8::Local<v8::Function>::Cast(mainFunctionValue);
-
-        args.reserve(4); // (moduleName, functionName, args, contextHandle)
-        args.emplace_back(MakeExternalV8String(isolate, _module));
-        args.emplace_back(MakeExternalV8String(isolate, _func));
-    }
-    
     // Prepare function args
-    auto arr = v8::Array::New(isolate, static_cast<int>(_args.size()));
+    auto args = v8::Array::New(isolate, static_cast<int>(_args.size()));
     for (size_t i = 0; i < _args.size(); ++i) {
-        (void)arr->CreateDataProperty(context, static_cast<uint32_t>(i), MakeExternalV8String(isolate, _args[i]));
+        (void)args->CreateDataProperty(context, static_cast<uint32_t>(i), MakeExternalV8String(isolate, _args[i]));
     }
-    args.emplace_back(arr);
 
-    // Transport context handle
-    args.emplace_back(PtrToV8Uint32Array(isolate, _transportContext.get()));
+    v8::Local<v8::Value> argv[] = {
+        MakeExternalV8String(isolate, _module),
+        MakeExternalV8String(isolate, _func),
+        args,
+        PtrToV8Uint32Array(isolate, _transportContext.get())
+    };
 
     // Execute the function.
     v8::TryCatch tryCatch(isolate);
-    auto res = zoneMainFunction->Call(context->Global(), static_cast<int>(args.size()), args.data());
+    auto res = v8::Local<v8::Function>::Cast(executeFunction)->Call(context->Global(), 4, argv);
 
     // Terminating an isolate may occur from a different thread, i.e. from timeout service.
     // If the function call already finished successfully when the isolate is terminated it may lead
