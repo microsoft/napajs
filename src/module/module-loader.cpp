@@ -236,7 +236,16 @@ void ModuleLoader::ModuleLoaderImpl::RequireModule(const char* path, const v8::F
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
-    auto contextDir = module_loader_helpers::GetCurrentContextDirectory();
+    // If require is called with a module receiver, use module.filename to deduce context directory.
+    std::string contextDir;
+    if (!args.Holder().IsEmpty()) {
+        contextDir = module_loader_helpers::GetModuleDirectory(args.Holder());
+    }
+
+    if (contextDir.empty()) {
+        contextDir = module_loader_helpers::GetCurrentContextDirectory();
+    }
+
     auto moduleInfo = _resolver.Resolve(path, contextDir.c_str());
     if (moduleInfo.type == ModuleType::NONE) {
         args.GetReturnValue().SetUndefined();
@@ -278,7 +287,7 @@ void ModuleLoader::ModuleLoaderImpl::LoadBinaryCoreModule(
     moduleContext->SetSecurityToken(v8::Undefined(isolate));
     v8::Context::Scope contextScope(moduleContext);
 
-    module_loader_helpers::SetupModuleContext(context, moduleContext, std::string());
+    module_loader_helpers::SetupModuleContext(context, moduleContext, module_loader_helpers::GetNapaDllPath());
 
     // Put it into module resolver to prevent from resolving as user module.
     _resolver.SetAsCoreModule(name);
