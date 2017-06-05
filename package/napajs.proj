@@ -52,9 +52,11 @@
     
     <!-- Setup ./inc directory -->
     <ItemGroup>
-      <IncFiles Include="$(NapaVanillaRoot)\inc\**\*"/>
+      <NapaIncFiles Include="$(NapaVanillaRoot)\inc\**\*"/>
+      <V8IncFiles Include="$(Pkgnapa_nodelib_vc140)\include\v8\**\*"/>
     </ItemGroup>
-    <Copy SourceFiles="@(IncFiles)" DestinationFiles="@(IncFiles->'$(PackageOutPath)\inc\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(NapaIncFiles)" DestinationFiles="@(NapaIncFiles->'$(PackageOutPath)\inc\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(V8IncFiles)" DestinationFiles="@(V8IncFiles->'$(PackageOutPath)\inc\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
 
     <!-- Setup ./bin directory-->
     <!-- Binplace napa binaries -->
