@@ -1,0 +1,10 @@
+{
+    "name": "test-provider",
+    "version": "0.1.0",
+    "author": "napajs",
+    "main": "./bin/addon",
+    "providers": {
+        "logging": "./bin/test-provider.dll",
+        "metric": "./bin/test-provider.dll"
+    }
+}

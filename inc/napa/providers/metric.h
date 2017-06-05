@@ -1,5 +1,7 @@
 #pragma once
 
+#include <napa/exports.h>
+
 #include <stdint.h>
 
 namespace napa {
@@ -7,7 +9,7 @@ namespace providers {
 
     /// <summary> Enumeration of metric type. </summary>
     enum class MetricType {
-        Number,
+        Number = 0,
         Rate,
         Percentile,
     };
@@ -94,7 +96,8 @@ namespace providers {
         ///     The IMetric class returned is owned and cached by this class.
         ///     Callers are not required to call destroy() on the Metric.
         /// </remarks>
-        virtual Metric* GetMetric(const char* section,
+        virtual Metric* GetMetric(
+            const char* section,
             const char* name,
             MetricType type,
             size_t dimensions,
@@ -108,6 +111,9 @@ namespace providers {
         ///<summary> Prevent calling delete on the interface. Must use Destroy! </summary>
         virtual ~MetricProvider() = default;
     };
+
+    /// <summary> Exports a getter function for retrieves the configured metric provider. </summary>
+    NAPA_API MetricProvider& GetMetricProvider();
 
     typedef MetricProvider* (*CreateMetricProvider)();
 }

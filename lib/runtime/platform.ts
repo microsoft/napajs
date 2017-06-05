@@ -29,6 +29,7 @@ export function setPlatformSettings(settings: PlatformSettings) {
     }
 
     _platformSettings = settings;
+    initialize();
 }
 
 export function initialize() {

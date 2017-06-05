@@ -4,11 +4,13 @@
 #include "nop-logging-provider.h"
 #include "nop-metric-provider.h"
 
+#include "module/module-resolver.h"
+
 #include <napa-log.h>
 
 #include <boost/dll.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
-#include <iostream>
 #include <string>
 
 
@@ -18,19 +20,14 @@ using namespace napa::providers;
 static LoggingProvider* LoadLoggingProvider(const std::string& providerName);
 static MetricProvider* LoadMetricProvider(const std::string& providerName);
 
-// Providers.
-static LoggingProvider* _loggingProvider = nullptr;
-static MetricProvider* _metricProvider = nullptr;
+// Providers - Initilally assigned to defaults.
+static LoggingProvider* _loggingProvider = LoadLoggingProvider("");
+static MetricProvider* _metricProvider = LoadMetricProvider("");
 
 
 bool napa::providers::Initialize(const napa::PlatformSettings& settings) {
-    try {
-        _loggingProvider = LoadLoggingProvider(settings.loggingProvider);
-        _metricProvider = LoadMetricProvider(settings.metricProvider);
-    } catch (std::exception& ex) {
-        std::cerr << "Error occurred while loading providers: " << ex.what() << "\n";
-        return false;
-    }
+    _loggingProvider = LoadLoggingProvider(settings.loggingProvider);
+    _metricProvider = LoadMetricProvider(settings.metricProvider);
 
     return true;
 }
@@ -46,38 +43,67 @@ void napa::providers::Shutdown() {
 }
 
 LoggingProvider& napa::providers::GetLoggingProvider() {
-    NAPA_ASSERT(_loggingProvider, "logging provider not set");
     return *_loggingProvider;
 }
 
 MetricProvider& napa::providers::GetMetricProvider() {
-    NAPA_ASSERT(_metricProvider, "metric provider not set");
     return *_metricProvider;
 }
 
 template <typename ProviderType>
-static ProviderType* LoadProvider(const std::string& providerName, const std::string& functionName) {
-    // TODO @asib: resolve path to shared library given the provider name, need to use module loader APIs.
-    auto createProviderFunc = boost::dll::import<ProviderType*()>(providerName, functionName);
+static ProviderType* LoadProvider(
+    const std::string& providerName,
+    const std::string& jsonProperyPath,
+    const std::string& functionName) {
+
+    napa::module::ModuleResolver moduleResolver;
+
+    // Resolve the provider module information
+    auto moduleInfo = moduleResolver.Resolve(providerName.c_str());
+    NAPA_ASSERT(!moduleInfo.packageJsonPath.empty(), "missing package.json in provider '%s'", providerName.c_str());
+
+    // Full path to the root of the provider module
+    auto modulePath = boost::filesystem::path(moduleInfo.packageJsonPath).parent_path();
+
+    // Extract relative path to provider dll from package.json
+    boost::property_tree::ptree package;
+    boost::property_tree::json_parser::read_json(moduleInfo.packageJsonPath, package);
+    auto providerRelativePath = package.get_optional<std::string>(jsonProperyPath);
+    NAPA_ASSERT(
+        providerRelativePath.is_initialized(),
+        "missing property '%s' in '%s'",
+        jsonProperyPath.c_str(),
+        moduleInfo.packageJsonPath.c_str());
+
+    // Full path to provider dll
+    auto providerPath = (modulePath / providerRelativePath.get()).normalize().make_preferred();
+
+    // boost::dll unloads dll when a reference object is gone.
+    // Keep a static instance for each provider type (each template type will have its own static variable).
+    static auto createProviderFunc = boost::dll::import<ProviderType*()>(providerPath, functionName);
+
     return createProviderFunc();
 }
 
 static LoggingProvider* LoadLoggingProvider(const std::string& providerName) {
-    if (providerName.empty() || providerName == "nop") {
-        return new NopLoggingProvider();
+    if (providerName.empty() || providerName == "console") {
+        static auto consoleLoggingProvider = std::make_unique<ConsoleLoggingProvider>();
+        return consoleLoggingProvider.get();
     }
 
-    if (providerName == "console") {
-        return new ConsoleLoggingProvider();
+    if (providerName == "nop") {
+        static auto nopLoggingProvider = std::make_unique<NopLoggingProvider>();
+        return nopLoggingProvider.get();
     }
 
-    return LoadProvider<LoggingProvider>(providerName, "CreateLoggingProvider");
+    return LoadProvider<LoggingProvider>(providerName, "providers.logging", "CreateLoggingProvider");
 }
 
 static MetricProvider* LoadMetricProvider(const std::string& providerName) {
     if (providerName.empty()) {
-        return new NopMetricProvider();
+        static auto nopMetricProvider = std::make_unique<NopMetricProvider>();
+        return nopMetricProvider.get();
     }
 
-    return LoadProvider<MetricProvider>(providerName, "CreateMetricProvider");;
+    return LoadProvider<MetricProvider>(providerName, "providers.metric", "CreateMetricProvider");;
 }

@@ -6,7 +6,7 @@ namespace napa {
 namespace providers {
 
     ///<summary> A no-operation instance of a Metric. </summary>
-    class NoOpMetric : public Metric {
+    class NopMetric : public Metric {
     public:
 
         bool Set(int64_t, size_t, const char*[]) override {
@@ -31,7 +31,7 @@ namespace providers {
     {
     public:
 
-        NopMetricProvider() : _defaultMetric(new NoOpMetric()) {}
+        NopMetricProvider() : _defaultMetric(new NopMetric()) {}
 
         Metric* GetMetric(const char*, const char*, MetricType, size_t, const char**) override {
             return _defaultMetric;
