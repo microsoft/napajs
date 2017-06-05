@@ -61,9 +61,27 @@ std::string module_loader_helpers::GetCurrentContextDirectory() {
     return std::string(*callingPath);
 }
 
-const std::string& module_loader_helpers::GetModuleRootDirectory() {
-    static std::string moduleRootDirectory = boost::dll::this_line_location().parent_path().string();
-    return moduleRootDirectory;
+std::string module_loader_helpers::GetModuleDirectory(v8::Local<v8::Object> module) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
+
+    auto filename = module->Get(v8_helpers::MakeV8String(isolate, "filename"));
+    if (filename.IsEmpty() || !filename->IsString()) {
+        return "";
+    }
+
+    boost::filesystem::path moduleFile(v8_helpers::V8ValueTo<std::string>(filename));
+    return moduleFile.parent_path().string();
+}
+
+const std::string& module_loader_helpers::GetNapaDllPath() {
+    static std::string dllPath = boost::dll::this_line_location().string();
+    return dllPath;
+}
+
+const std::string& module_loader_helpers::GetNapaRuntimeDirectory() {
+    static std::string runtimeDirectory = boost::dll::this_line_location().parent_path().string();
+    return runtimeDirectory;
 }
 
 const std::string& module_loader_helpers::GetCurrentWorkingDirectory() {
@@ -185,6 +203,7 @@ namespace {
         (void)module->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "exports"), v8::Object::New(isolate));
         (void)module->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "paths"), v8::Array::New(isolate));
         (void)module->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "id"), v8_helpers::MakeV8String(isolate, id));
+        (void)module->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "filename"), v8_helpers::MakeV8String(isolate, id));
         
         // Setup 'module.require'.
         if (!parentContext.IsEmpty()) {

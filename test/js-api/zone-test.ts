@@ -426,7 +426,7 @@ describe('napajs/zone', function () {
         });
 
         it('@node: -> napa zone with module function name: module is a function', () => {
-            return napaZone1.execute("./napa-zone/function-as-module", "", ['hello world'])
+            return napaZone1.execute(path.resolve(__dirname, "./napa-zone/function-as-module"), "", ['hello world'])
                 .then((result: napa.zone.ExecuteResult) => {
                     assert.equal(result.value, 'hello world');
                 });

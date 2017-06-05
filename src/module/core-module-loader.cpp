@@ -23,7 +23,7 @@ CoreModuleLoader::CoreModuleLoader(BuiltInModulesSetter builtInModulesSetter,
     : JavascriptModuleLoader(std::move(builtInModulesSetter), moduleCache), _bindingCache(bindingCache) {}
                                 
 bool CoreModuleLoader::TryGet(const std::string& name, v8::Local<v8::Object>& module) {
-    boost::filesystem::path basePath(module_loader_helpers::GetModuleRootDirectory());
+    boost::filesystem::path basePath(module_loader_helpers::GetNapaRuntimeDirectory());
     auto fileName = name + CORE_MODULE_EXTENSION;
 
     // Check ./lib or ../lib directory only

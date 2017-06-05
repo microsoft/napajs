@@ -30,9 +30,17 @@ namespace module_loader_helpers {
     /// <returns> Directory of context. If called from external string, module root directory will be returned. </returns>
     std::string GetCurrentContextDirectory();
 
+    /// <summary> It returns parent directory of module.filename. </summary>
+    /// <returns> Parent directory of module.filename. </summary>
+    std::string GetModuleDirectory(v8::Local<v8::Object> module);
+
     /// <summary> It returns the directory of napa runtime. </summary>
     /// <returns> Directory of napa runtime. </returns>
-    const std::string& GetModuleRootDirectory();
+    const std::string& GetNapaRuntimeDirectory();
+
+    /// <summary> It returns napa.dll path. </summary>
+    /// <returns> Path of napa.dll. </summary>
+    const std::string& GetNapaDllPath();
 
     /// <summary> It returns the process current working directory. </summary>
     const std::string& GetCurrentWorkingDirectory();
