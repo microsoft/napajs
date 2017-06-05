@@ -19,6 +19,7 @@ export function create(id: string, settings?: zone.ZoneSettings) : zone.Zone {
 
 /// <summary> Returns the zone associated with the provided id. </summary>
 export function get(id: string) : zone.Zone {
+    platform.initialize();
     if (id === "node") {
         return new node.NodeZone();
     }
@@ -30,6 +31,7 @@ export function get(id: string) : zone.Zone {
 export declare let current: zone.Zone;
 Object.defineProperty(exports, "current", {
     get: function () : zone.Zone {
+        platform.initialize();
         if (typeof __in_napa !== 'undefined') {
             return new napa.NapaZone(binding.getCurrentZone());
         }

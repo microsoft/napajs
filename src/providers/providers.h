@@ -14,11 +14,5 @@ namespace providers {
 
     /// <summary> Clean up and destroy all loaded providers. </summary>
     void Shutdown();
-
-    /// <summary> Returns the logging provider. </summary>
-    LoggingProvider& GetLoggingProvider();
-
-    /// <summary> Returns the metric provider. </summary>
-    MetricProvider& GetMetricProvider();
 }
 }

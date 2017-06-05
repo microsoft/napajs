@@ -18,7 +18,11 @@ namespace providers {
             const char* file,
             int line,
             const char* message) override {
-            printf("[%s] %s [%s:%d]\n", section, message, file, line);
+            if (section == nullptr || section[0] == '\0') {
+                printf("%s [%s:%d]\n", message, file, line);
+            } else {
+                printf("[%s] %s [%s:%d]\n", section, message, file, line);
+            }
         }
 
         virtual bool IsLogEnabled(const char* section, Verboseness level) override {

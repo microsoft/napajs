@@ -1,5 +1,6 @@
 #include "napa-binding.h"
 
+#include "napa-wraps/metric-wrap.h"
 #include "napa-wraps/allocator-debugger-wrap.h"
 #include "napa-wraps/allocator-wrap.h"
 #include "napa-wraps/shared-ptr-wrap.h"
@@ -11,7 +12,8 @@
 #include <napa-memory.h>
 #include <napa/module/binding/wraps.h>
 #include <napa/module/worker-context.h>
-
+#include <napa/providers/logging.h>
+#include <napa/providers/metric.h>
 
 using namespace napa;
 using namespace napa::module;
@@ -133,12 +135,59 @@ static void GetDefaultAllocator(const v8::FunctionCallbackInfo<v8::Value>& args)
     args.GetReturnValue().Set(binding::CreateAllocatorWrap(NAPA_MAKE_SHARED<napa::memory::DefaultAllocator>()));
 }
 
+static void Log(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
+
+    CHECK_ARG(isolate, args.Length() == 4, "log accepts exactly 4 arguments (level, section, traceId, message)");
+    CHECK_ARG(isolate, args[0]->IsUint32(), "'level' must be a uint32 type that represents the native enum");
+    CHECK_ARG(isolate, args[1]->IsString() || args[1]->IsUndefined(), "'section' must be a valid string or undefined");
+
+    auto level = static_cast<napa::providers::LoggingProvider::Verboseness>(args[0]->Uint32Value());
+
+    napa::v8_helpers::Utf8String sectionValue;
+    const char* section = "";
+    if (!args[1]->IsUndefined()) {
+        sectionValue = napa::v8_helpers::V8ValueTo<napa::v8_helpers::Utf8String>(args[1]);
+        section = sectionValue.Length() > 0 ? sectionValue.Data() : "";
+    }
+
+    auto& logger = napa::providers::GetLoggingProvider();
+
+    // If log is not enabled we can return early.
+    if (!logger.IsLogEnabled(section, level)) {
+        return;
+    }
+
+    CHECK_ARG(isolate, args[2]->IsString() || args[2]->IsUndefined(), "'traceId' must be a valid string or undefined");
+    CHECK_ARG(isolate, args[3]->IsString(), "'message' must be a valid string");
+
+    napa::v8_helpers::Utf8String traceIdValue;
+    const char* traceId = "";
+    if (!args[2]->IsUndefined()) {
+        traceIdValue = napa::v8_helpers::V8ValueTo<napa::v8_helpers::Utf8String>(args[2]);
+        traceId = traceIdValue.Length() > 0 ? traceIdValue.Data() : "";
+    }
+
+    v8::String::Utf8Value message(args[3]->ToString());
+
+    // Get the first frame in user code.
+    // The first 2 frames are part of the log.js file.
+    auto stackFrame = v8::StackTrace::CurrentStackTrace(isolate, 3)->GetFrame(2);
+
+    v8::String::Utf8Value file(stackFrame->GetScriptName());
+    int line = stackFrame->GetLineNumber();
+
+    logger.LogMessage(section, level, traceId, *file, line, *message);
+}
+
 void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) {
     // Register napa binding in worker context.
     RegisterBinding(module);
 
     AllocatorDebuggerWrap::Init();
     AllocatorWrap::Init();
+    MetricWrap::Init();
     SharedPtrWrap::Init();
     StoreWrap::Init();
     TransportContextWrapImpl::Init();
@@ -146,6 +195,7 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
 
     NAPA_EXPORT_OBJECTWRAP(exports, "AllocatorDebuggerWrap", AllocatorDebuggerWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "AllocatorWrap", AllocatorWrap);
+    NAPA_EXPORT_OBJECTWRAP(exports, "MetricWrap", MetricWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "SharedPtrWrap", SharedPtrWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "TransportContextWrap", TransportContextWrapImpl);
 
@@ -160,4 +210,6 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
 
     NAPA_SET_METHOD(exports, "getCrtAllocator", GetCrtAllocator);
     NAPA_SET_METHOD(exports, "getDefaultAllocator", GetDefaultAllocator);
+
+    NAPA_SET_METHOD(exports, "log", Log);
 }

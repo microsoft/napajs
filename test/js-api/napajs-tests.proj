@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <QCustomProjectReference Include="$(NapaVanillaRoot)\package\napajs.proj" />
+    <QCustomProjectReference Include="test-provider\package\test-provider.proj" />
   </ItemGroup>
   <ItemGroup>
     <QCustomInput Include="$(NapaBuildRoot)\**\*" />
@@ -38,6 +39,12 @@
     </ItemGroup> 
     <Copy SourceFiles="@(RuntimeFiles)" DestinationFiles="@(RuntimeFiles->'$(PackageOutPath)\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
 
+    <Message Text="Prepare 'test-provider'' runtime files." />
+    <ItemGroup>  
+      <TestProviderFiles Include="test-provider\package\$(IntermediateOutputPath)\node_modules\test-provider\**\*.*"/>
+    </ItemGroup> 
+    <Copy SourceFiles="@(TestProviderFiles)" DestinationFiles="@(TestProviderFiles->'$(IntermediateOutputPath)\node_modules\test-provider\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+    
   </Target>
   <Import Project="$(ExtendedTargetsPath)\NoTarget.targets" />
 </Project>
