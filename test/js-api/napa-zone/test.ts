@@ -86,45 +86,45 @@ export function debugAllocatorTest(): void {
         });
 }
 
-let store2: napa.memory.store.Store = null;
+let store2: napa.store.Store = null;
 export function getOrCreateStoreTest() {
-    store2 = napa.memory.store.getOrCreate('store2');
+    store2 = napa.store.getOrCreate('store2');
     assert(store2 != null);
     assert.equal(store2.id, 'store2');
     assert.equal(store2.size, 0);
 }
 
 export function getStoreTest() {
-    let store = napa.memory.store.get('store2');
+    let store = napa.store.get('store2');
     assert.equal(store.id, 'store2');
 
     // Store created from node zone.
-    let store1 = napa.memory.store.get('store1');
+    let store1 = napa.store.get('store1');
     assert.equal(store1.id, 'store1');
 }
 
 export function storeVerifyGet(storeId: string, key: string, expectedValue: any) {
-    let store = napa.memory.store.get(storeId);
+    let store = napa.store.get(storeId);
     assert.deepEqual(store.get(key), expectedValue);
 }
 
 export function storeGetCompareHandle(storeId: string, key: string, expectedHandle: napa.memory.Handle) {
-    let store = napa.memory.store.get(storeId);
+    let store = napa.store.get(storeId);
     assert.deepEqual(store.get(key).handle, expectedHandle);
 }
 
 export function storeSet(storeId: string, key: string, expectedValue: any) {
-    let store = napa.memory.store.get(storeId);
+    let store = napa.store.get(storeId);
     store.set(key, expectedValue);
 }
 
 export function storeDelete(storeId: string, key: string) {
-    let store = napa.memory.store.get(storeId);
+    let store = napa.store.get(storeId);
     store.delete(key);
 }
 
 export function storeVerifyNotExist(storeId: string, key: string) {
-    let store = napa.memory.store.get(storeId);
+    let store = napa.store.get(storeId);
     assert(!store.has(key));
     assert(store.get(key) === undefined);
 }

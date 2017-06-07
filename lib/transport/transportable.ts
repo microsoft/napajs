@@ -92,6 +92,30 @@ export abstract class TransportableObject implements Transportable{
     }
 }
 
+/// <summary> Base class for JavaScript class that is auto transportable. 
+/// A JavaScript class can be auto transportable when 
+/// 1) it has a default constructor.
+/// 2) members are transportable types.
+/// 3) register via class decorator @cid or transport.register.
+/// </summary>
+export class AutoTransportable extends TransportableObject {
+    /// <summary> Automatically save own properties to payload. </summary>
+    /// <param name='payload'> Plain JS object to write to. </param>
+    /// <param name='context'> Transport context for saving shared pointers, only usable for C++ addons that extends napa::module::ShareableWrap. </param>
+    save(payload: object, context: TransportContext) {
+        for (let property of Object.getOwnPropertyNames(this)) {
+            (<any>(payload))[property] = transport.marshallTransform((<any>(this))[property], context);
+        }
+    }
+
+    /// <summary> Automatically load own properties from payload. </summary>
+    /// <param name='payload'> Payload to read from, which already have inner objects transported. </param>
+    /// <param name='context'> Transport context for loading shared pointers, only usable for C++ addons that extends napa::module::ShareableWrap. </param>
+    load(payload: object, context: TransportContext) {
+        // Members have already been unmarshalled. Do nothing.
+    }
+}
+
 /// <summary> Tell if a jsValue is transportable. </summary>
 export function isTransportable(jsValue: any): boolean {
     if (Array.isArray(jsValue)) {

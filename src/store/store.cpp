@@ -6,7 +6,7 @@
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/thread/locks.hpp>
 
-using namespace napa::memory;
+using namespace napa::store;
 
 class StoreImpl: public Store {
 public:
@@ -69,7 +69,7 @@ private:
 };
 
 namespace napa {
-namespace memory {
+namespace store {
 
     namespace {
         napa::stl::UnorderedMap<napa::stl::String, std::weak_ptr<Store>> _storeRegistry;
@@ -120,5 +120,5 @@ namespace memory {
         }
         return _storeRegistry.size();
     }
-} // namespace memory
+} // namespace store
 } // namespace napa
