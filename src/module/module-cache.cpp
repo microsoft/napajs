@@ -17,6 +17,16 @@ ModuleCache::ModuleCache() : _impl(std::make_unique<ModuleCache::ModuleCacheImpl
 
 ModuleCache::~ModuleCache() = default;
 
+std::string NormalizeCacheKey(const std::string& path) {
+    #ifdef _WIN32
+    // Remove UNC prefix if present.
+    if (path.substr(0, 4) == "\\\\?\\") {
+        return path.substr(4);
+    }
+    #endif
+    return path;
+}
+
 void ModuleCache::Upsert(const std::string& path, v8::Local<v8::Object> module) {
     if (module.IsEmpty()) {
         return;
@@ -25,14 +35,15 @@ void ModuleCache::Upsert(const std::string& path, v8::Local<v8::Object> module) 
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
-    auto iter = _impl->moduleCache.find(path);
+    auto key = NormalizeCacheKey(path);
+    auto iter = _impl->moduleCache.find(key);
     if (iter != _impl->moduleCache.end()) {
         // If exists, reset it and override with new module.
         iter->second.Reset();
         iter->second = PersistentModule(isolate, module);
     } else {
         _impl->moduleCache.emplace(std::piecewise_construct,
-                                   std::forward_as_tuple(path),
+                                   std::forward_as_tuple(key),
                                    std::forward_as_tuple(isolate, module));
     }
 }
@@ -40,7 +51,8 @@ void ModuleCache::Upsert(const std::string& path, v8::Local<v8::Object> module) 
 bool ModuleCache::TryGet(const std::string& path, v8::Local<v8::Object>& module) const {
     auto isolate = v8::Isolate::GetCurrent();
 
-    auto iter = _impl->moduleCache.find(path);
+    auto key = NormalizeCacheKey(path);
+    auto iter = _impl->moduleCache.find(key);
     if (iter == _impl->moduleCache.end()) {
         return false;
     }

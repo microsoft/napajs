@@ -12,7 +12,7 @@ declare var __in_napa: boolean;
 /// <summary> Creates a new zone. </summary>
 /// <summary> A unique id to identify the zone. </summary>
 /// <param name="settings"> The settings of the new zone. </param>
-export function create(id: string, settings?: zone.ZoneSettings) : zone.Zone {
+export function create(id: string, settings: zone.ZoneSettings = zone.DEFAULT_SETTINGS) : zone.Zone {
     platform.initialize();
     return new napa.NapaZone(binding.createZone(id, settings));
 }
@@ -26,6 +26,8 @@ export function get(id: string) : zone.Zone {
 
     return new napa.NapaZone(binding.getZone(id));
 }
+
+/// TODO: add function getOrCreate(id: string, settings: zone.ZoneSettings): Zone.
 
 /// <summary> Define a getter property 'current' to retrieves the current zone. </summary>
 export declare let current: zone.Zone;

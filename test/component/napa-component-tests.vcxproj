@@ -49,7 +49,6 @@
   <ItemGroup>
     <ClCompile Include="$(NapaVanillaRoot)\src\api\api.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\memory\built-in-allocators.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\memory\store.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\async-runner.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\binary-module-loader.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\module\core-module-loader.cpp" />
@@ -71,6 +70,7 @@
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\terminable-task.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\timeout-service.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\settings\settings-parser.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\store\store.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\zone\zone-impl.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\v8\v8-common.cpp" />
   </ItemGroup>

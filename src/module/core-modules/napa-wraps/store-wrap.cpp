@@ -22,14 +22,14 @@ void StoreWrap::Init() {
     NAPA_SET_PERSISTENT_CONSTRUCTOR(exportName, constructorTemplate->GetFunction());
 }
 
-v8::Local<v8::Object> StoreWrap::NewInstance(std::shared_ptr<napa::memory::Store> store) {
+v8::Local<v8::Object> StoreWrap::NewInstance(std::shared_ptr<napa::store::Store> store) {
     auto object = napa::module::NewInstance<StoreWrap>().ToLocalChecked();
     auto wrap = NAPA_OBJECTWRAP::Unwrap<StoreWrap>(object);
     wrap->_store = std::move(store);
     return object;
 }
 
-napa::memory::Store& StoreWrap::Get() {
+napa::store::Store& StoreWrap::Get() {
     return *_store;
 }
 
@@ -53,7 +53,7 @@ void StoreWrap::SetCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     
     store.Set(
         v8_helpers::V8ValueTo<std::string>(args[0]).c_str(),
-        napa::memory::Store::ValueType { 
+        napa::store::Store::ValueType { 
             v8_helpers::V8ValueTo<napa::stl::String>(payload.ToLocalChecked()), 
             std::move(transportContext)
         });

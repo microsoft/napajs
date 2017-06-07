@@ -23,8 +23,8 @@ export function register(subClass: new(...args: any[]) => any) {
     _registry.set(cid, subClass);
 }
 
-/// <summary> Marshall a single JS value. </summary> 
-function marshallSingle(jsValue: any, context: transportable.TransportContext): any {
+/// <summary> Marshall transform a JS value to a plain JS value that will be stringified. </summary> 
+export function marshallTransform(jsValue: any, context: transportable.TransportContext): any {
     if (typeof jsValue === 'object' && !Array.isArray(jsValue)) {
         let constructorName = Object.getPrototypeOf(jsValue).constructor.name;
         if (constructorName !== 'Object') {
@@ -38,16 +38,16 @@ function marshallSingle(jsValue: any, context: transportable.TransportContext): 
     return jsValue;
 }
 
-/// <summary> Unmarshall a single JavaScript value. </summary>
+/// <summary> Unmarshall transform a plain JS value to a transportable class instance. </summary>
 /// <param name="payload"> Plain Javascript value. </param> 
 /// <param name="context"> Transport context. </param>
 /// <returns> Transported value. </returns>
-function unmarshallSingle(payload: any, context: transportable.TransportContext): any {
+function unmarshallTransform(payload: any, context: transportable.TransportContext): any {
     if (payload != null && payload._cid !== undefined) {
         let cid = payload._cid;
         let subClass = _registry.get(cid);
         if (subClass == null) {
-            throw new Error(`Unrecognized Constructor ID (cid) "${cid}". Please ensure AutoTransfer.register is called on this cid.`);
+            throw new Error(`Unrecognized Constructor ID (cid) "${cid}". Please ensure @cid is applied on the class or transport.register is called on the class.`);
         }
         let object = new subClass();
         object.unmarshall(payload, context);
@@ -67,7 +67,7 @@ export function unmarshall(
     
     return JSON.parse(json, 
         (key: any, value: any): any => {
-            value = unmarshallSingle(value, context);
+            value = unmarshallTransform(value, context);
             if (reviver != null) {
                 value = reviver(key, value);
             }
@@ -88,7 +88,7 @@ export function marshall(
     
     return JSON.stringify(jsValue,
         (key: string, value: any) => {
-            value = marshallSingle(value, context);
+            value = marshallTransform(value, context);
             if (replacer) {
                 value = replacer(key, value);
             }

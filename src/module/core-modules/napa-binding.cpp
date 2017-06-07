@@ -88,7 +88,7 @@ static void CreateStore(const v8::FunctionCallbackInfo<v8::Value>& args) {
     CHECK_ARG(isolate, args[0]->IsString(), "Argument 'id' must be string.");
 
     auto id = napa::v8_helpers::V8ValueTo<std::string>(args[0]);
-    auto store = napa::memory::CreateStore(id.c_str());
+    auto store = napa::store::CreateStore(id.c_str());
 
     JS_ENSURE(isolate, store != nullptr, "Store with id \"%s\" already exists.", id.c_str());
 
@@ -103,7 +103,7 @@ static void GetOrCreateStore(const v8::FunctionCallbackInfo<v8::Value>& args) {
     CHECK_ARG(isolate, args[0]->IsString(), "Argument 'id' must be string.");
 
     auto id = napa::v8_helpers::V8ValueTo<std::string>(args[0]);
-    auto store = napa::memory::GetOrCreateStore(id.c_str());
+    auto store = napa::store::GetOrCreateStore(id.c_str());
 
     args.GetReturnValue().Set(StoreWrap::NewInstance(store));
 }
@@ -116,7 +116,7 @@ static void GetStore(const v8::FunctionCallbackInfo<v8::Value>& args) {
     CHECK_ARG(isolate, args[0]->IsString(), "Argument 'id' must be string.");
 
     auto id = napa::v8_helpers::V8ValueTo<std::string>(args[0]);
-    auto store = napa::memory::GetStore(id.c_str());
+    auto store = napa::store::GetStore(id.c_str());
 
     if (store != nullptr) {
         args.GetReturnValue().Set(StoreWrap::NewInstance(store));
@@ -124,7 +124,7 @@ static void GetStore(const v8::FunctionCallbackInfo<v8::Value>& args) {
 }
 
 static void GetStoreCount(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    args.GetReturnValue().Set(static_cast<uint32_t>(napa::memory::GetStoreCount()));
+    args.GetReturnValue().Set(static_cast<uint32_t>(napa::store::GetStoreCount()));
 }
 
 static void GetCrtAllocator(const v8::FunctionCallbackInfo<v8::Value>& args) {

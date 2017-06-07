@@ -6,7 +6,7 @@
 #include <memory>
 
 namespace napa {
-namespace memory {
+namespace store {
 
     /// <summary> Class for memory store, which stores transportable JS objects across isolates. </summary>
     /// <remarks> Store is not thread-safe, and is intended to be used by StoreWrap. 

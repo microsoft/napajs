@@ -26,7 +26,7 @@ export interface Store {
     delete(key: string): void;
 }
 
-let binding = require('../binding');
+let binding = require('./binding');
 
 /// <summary> Create a store with an id. </summary>
 /// <param name="id"> String identifier which can be used to get the store from all isolates. </summary>

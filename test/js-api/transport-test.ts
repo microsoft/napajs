@@ -1,7 +1,9 @@
 import * as napa from "napajs";
 import * as assert from 'assert';
-
+import * as path from 'path';
 import * as t from './napa-zone/test';
+
+let NAPA_ZONE_TEST_MODULE = path.resolve(__dirname, 'napa-zone/test');
 
 describe('napajs/transport', () => {
     let napaZone = napa.zone.create('zone5');
@@ -44,15 +46,15 @@ describe('napajs/transport', () => {
         });
         
         it('@napa: simple types', () => {
-            napaZone.executeSync('./napa-zone/test', "simpleTypeTransportTest", []);
-        });
+            napaZone.executeSync(NAPA_ZONE_TEST_MODULE, "simpleTypeTransportTest", []);
+        }).timeout(3000);
 
         it('@node: JS transportable', () => {
             t.jsTransportableTest();
         });
 
         it('@napa: JS transportable', () => {
-            napaZone.executeSync('./napa-zone/test', "jsTransportableTest", []);
+            napaZone.executeSync(NAPA_ZONE_TEST_MODULE, "jsTransportableTest", []);
         });
 
         it('@node: addon transportable', () => {
@@ -60,7 +62,7 @@ describe('napajs/transport', () => {
         });
 
         it('@napa: addon transportable', () => {
-            napaZone.executeSync('./napa-zone/test', "addonTransportTest", []);
+            napaZone.executeSync(NAPA_ZONE_TEST_MODULE, "addonTransportTest", []);
         });
 
         it('@node: composite transportable', () => {
@@ -68,7 +70,7 @@ describe('napajs/transport', () => {
         });
 
         it('@napa: composite transportable', () => {
-            napaZone.executeSync('./napa-zone/test', "compositeTransportTest", []);
+            napaZone.executeSync(NAPA_ZONE_TEST_MODULE, "compositeTransportTest", []);
         });
 
         it('@node: non-transportable', () => {
@@ -76,7 +78,7 @@ describe('napajs/transport', () => {
         });
 
         it('@napa: non-transportable', () => {
-            napaZone.executeSync('./napa-zone/test', "nontransportableTest", []);
+            napaZone.executeSync(NAPA_ZONE_TEST_MODULE, "nontransportableTest", []);
         });
     });
 });

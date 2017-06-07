@@ -2,25 +2,25 @@
 
 #include <napa-module.h>
 #include <napa/module/common.h>
-#include "../../../memory/store.h"
+#include "../../../store/store.h"
 
 #include <boost/thread/shared_mutex.hpp>
 
 namespace napa {
 namespace module {
     
-    /// <summary> It wraps napa::memory::Store. </summary>
-    /// <remarks> Reference: napajs/lib/memory/store.ts#Store </remarks>
+    /// <summary> It wraps napa::store::Store. </summary>
+    /// <remarks> Reference: napajs/lib/store.ts#Store </remarks>
     class StoreWrap: public NAPA_OBJECTWRAP {
     public:
         /// <summary> Init this wrap. </summary>
         static void Init();
 
-        /// <summary> It creates an instance of StoreWrap with a napa::memory::Store pointer. </summary>
-        static v8::Local<v8::Object> NewInstance(std::shared_ptr<napa::memory::Store> store);
+        /// <summary> It creates an instance of StoreWrap with a napa::store::Store pointer. </summary>
+        static v8::Local<v8::Object> NewInstance(std::shared_ptr<napa::store::Store> store);
 
-        /// <summary> Get napa::memory::store from wrap. </summary>
-        napa::memory::Store& Get();
+        /// <summary> Get napa::store::Store from wrap. </summary>
+        napa::store::Store& Get();
 
     private:
         /// <summary> Default constructor. </summary>
@@ -62,7 +62,7 @@ namespace module {
         NAPA_DECLARE_PERSISTENT_CONSTRUCTOR
 
         /// <summary> Store. </summary>
-        std::shared_ptr<napa::memory::Store> _store;
+        std::shared_ptr<napa::store::Store> _store;
 
         /// <summary> Shared mutex to value map access. </summary>
         boost::shared_mutex _storeAccess;

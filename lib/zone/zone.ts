@@ -7,6 +7,13 @@ export interface ZoneSettings {
     workers?: number;
 }
 
+/// <summary> Default ZoneSettings </summary>
+export let DEFAULT_SETTINGS: ZoneSettings = {
+
+    /// <summary> Set default workers to 2. </summary>
+    workers: 2
+};
+
 /// <summary> Represent the result of an execute call. </summary>
 export interface ExecuteResult {
 
