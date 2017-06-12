@@ -1,0 +1,10 @@
+{
+    "name": "napajs-benchmark",
+    "version": "0.1.0",
+    "author": "napajs",
+    "main": "./index.js",
+    "dependencies": {
+        "napajs": ">= 0.2.0",
+        "markdown-table": "1.1.0"
+    }
+}
