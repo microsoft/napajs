@@ -25,7 +25,7 @@ export function register(subClass: new(...args: any[]) => any) {
 
 /// <summary> Marshall transform a JS value to a plain JS value that will be stringified. </summary> 
 export function marshallTransform(jsValue: any, context: transportable.TransportContext): any {
-    if (typeof jsValue === 'object' && !Array.isArray(jsValue)) {
+    if (jsValue != null && typeof jsValue === 'object' && !Array.isArray(jsValue)) {
         let constructorName = Object.getPrototypeOf(jsValue).constructor.name;
         if (constructorName !== 'Object') {
             if (typeof jsValue['cid'] === 'function') {
