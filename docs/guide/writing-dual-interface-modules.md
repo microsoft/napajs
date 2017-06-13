@@ -1,7 +1,7 @@
 # Best practices writing dual-interface modules.
 
 Dual-interface modules are Napa modules that expose both JavaScript and C++ interfaces. The major purpose of introducing a dual-interface module can be one of the following, or both:
-1) Sharing C++ objects between host process and Napa add-ons without marshalling/unmarshalling.
+1) Sharing C++ objects between host process and Napa add-ons without extensive marshalling/unmarshalling.
 2) Provide 2 implementations - Javascript for agility, and C++ for performance. Developers can quickly iterate ideas in JavaScript, once logic is finalized, we can use C++ interfaces to hook up pretty easily.
 
 ## Pitfalls in dual-interface modules.

@@ -20,6 +20,12 @@ zone.execute(
         console.log(result.value);
     });
 ```
+## Features
+- Multi-threaded JavaScript runtime
+- Node.JS compatible module architecture with NPM support
+- API for object transportation, object sharing and synchronization across JavaScript threads
+- API for pluggable logging, metric and memory allocator
+- Distributed as a Node.JS module, as well as supporting embed scenarios
 
 ## Architecture
 In Napa.JS, all works related to multi-threading are around the concept of `Zone`,
@@ -34,20 +40,10 @@ Workers across different zones are asymmetrical: they may load different code, o
 
 Napa.JS provides API to access current or other zones in JavaScript, thus a parallelizable workflow can be easily described by `zone.execute` across workers or zones. Node.JS event loop is exposed as a single-worker 'virtual' zone. Thus code running in Napa.JS isolates can call to Node.JS world via `zone.node.execute`.
 
-## Features
-- Multi-threaded JavaScript execution
-- Node.JS compatible module architecture with NPM support
-- JavaScript API for synchronization across JavaScript threads
-- JavaScript API for object transportation and sharing across JavaScript threads
-- C++ API for customizable memory allocation for native objects
-- C++ API for pluggable logging and metrics
-- C/C++ API for embedders
-
 ## Documentation
 - [API reference](docs/api/index.md)
+- [Benchmarks](benchmark/README.md)
 - [Embedder's guide](docs/embedder/index.md)
-- [Examples](docs/examples/index.md)
-- [Benchmarks](docs/benchmarks/index.md)
 - [Design docs](docs/design/index.md)
 
 ## Contribute
