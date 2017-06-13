@@ -7,28 +7,28 @@ export enum MetricType {
 }
 
 export interface Metric {
-    section: string;
-    name: string;
+    readonly section: string;
+    readonly name: string;
 
     set(value: number, dimensions?: string[]): void;
-    increment(value: number, dimensions?: string[]): void;
-    decrement(value: number, dimensions?: string[]): void;
+    increment(dimensions?: string[]): void;
+    decrement(dimensions?: string[]): void;
 }
 
 /// <summary> A cache for metric wraps. </summary>
 var _metricsCache: { [key: string]: Metric } = {};
 
 export function get(section: string, name: string, type: MetricType, dimensions: string[] = []) : Metric {
-    let key: string = (section ? section : "") + "_" + (name ? name : "");
+    let key: string = (section ? section : "") + "\\" + (name ? name : "");
 
     // Check cache first
-    let metricWrap: Metric = _metricsCache[key];
-    if (metricWrap) {
-        return metricWrap;
+    let metric: Metric = _metricsCache[key];
+    if (metric) {
+        return metric;
     }
 
     // Add to cache
-    metricWrap = new binding.MetricWrap(section, name, type, dimensions);
+    let metricWrap: any = new binding.MetricWrap(section, name, type, dimensions);
     metricWrap.section = section;
     metricWrap.name = name;
     _metricsCache[key] = metricWrap;
