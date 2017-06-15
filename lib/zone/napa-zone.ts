@@ -1,5 +1,5 @@
-import * as zone from "./zone";
-import * as transport from "../transport";
+import * as zone from './zone';
+import * as transport from '../transport';
 
 declare var __in_napa: boolean;
 
@@ -136,20 +136,32 @@ export class NapaZone implements zone.Zone {
     }
 
     private createExecuteRequest(arg1: any, arg2: any, arg3?: any, arg4?: any) : ExecuteRequest {
-        if (arg1 instanceof Function) {
-            throw new Error("Execute with function is not implemented");
+
+        let moduleName: string = null;
+        let functionName: string = null;
+        let args: any[] = null;
+        let timeout: number = 0;
+
+        if (typeof arg1 === 'function') {
+            moduleName = "__function";
+            functionName = transport.saveFunction(arg1);
+            args = arg2;
+            timeout = arg3;
+        }
+        else {
+            moduleName = arg1;
+            functionName = arg2;
+            args = arg3;
+            timeout = arg4;
         }
 
         let transportContext: transport.TransportContext = transport.createTransportContext();
-        let request : ExecuteRequest = {
-            module: arg1,
-            function: arg2,
-            arguments: (<Array<any>>arg3).map(arg => { return transport.marshall(arg, transportContext); }),
-            timeout: arg4,
+        return {
+            module: moduleName,
+            function: functionName,
+            arguments: (<Array<any>>args).map(arg => { return transport.marshall(arg, transportContext); }),
+            timeout: timeout,
             transportContext: transportContext
         };
-
-        return request;
     }
 }
-

@@ -15,6 +15,7 @@
     <QCustomInput Include="$(NapaVanillaRoot)\lib\core\core-modules.json" />
     <QCustomInput Include="$(NapaVanillaRoot)\package.json" />
     <QCustomInput Include="$(NapaVanillaRoot)\README.md" />
+    <QCustomInput Include="$(NapaVanillaRoot)\docs\**\*" />
   </ItemGroup> 
 
   <PropertyGroup>
@@ -49,7 +50,13 @@
       <DeclarationFiles Include="$(NapaVanillaRoot)\lib\$(IntermediateOutputPath)\**\*.d.ts"/>
     </ItemGroup>
     <Copy SourceFiles="@(DeclarationFiles)" DestinationFiles="@(DeclarationFiles->'$(PackageOutPath)\types\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
-    
+
+    <!-- ./docs/*.* -->
+    <ItemGroup>
+      <DocFiles Include="$(NapaVanillaRoot)\docs\**\*.*"/>
+    </ItemGroup>
+    <Copy SourceFiles="@(DocFiles)" DestinationFiles="@(DocFiles->'$(PackageOutPath)\doc\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="false" SkipUnchangedFiles="true" />
+
     <!-- Setup ./inc directory -->
     <ItemGroup>
       <NapaIncFiles Include="$(NapaVanillaRoot)\inc\**\*"/>

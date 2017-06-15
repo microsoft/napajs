@@ -86,6 +86,26 @@ describe('napajs/store', () => {
         assert.deepEqual(store1.get('f'), debugAllocator);
     });
 
+    it('function type: set in node, get in node', () => {
+        store1.set('g', () => { return 0; });
+        assert.equal(store1.get('g').toString(), (() => { return 0; }).toString());
+    });
+
+    it('function type: set in node, get in napa', () => {
+        store1.set('h', () => { return 0; });
+        napaZone.executeSync(NAPA_ZONE_TEST_MODULE, "storeVerifyGet", ['store1', 'h', () => { return 0; }]);
+    });
+
+    it('function type: set in napa, get in napa', () => {
+        napaZone.executeSync(NAPA_ZONE_TEST_MODULE, "storeSet", ['store1', 'i', () => { return 0; }]);
+        napaZone.executeSync(NAPA_ZONE_TEST_MODULE, "storeVerifyGet", ['store1', 'i', () => { return 0; }]);
+    });
+
+    it('function type: set in napa, get in node', () => {
+        napaZone.executeSync(NAPA_ZONE_TEST_MODULE, "storeSet", ['store1', 'j', () => { return 0; }]);
+        assert.deepEqual(store1.get('j').toString(), (() => { return 0; }).toString());
+    });
+
     it('delete in node, check in node', () => {
         assert(store1.has('a'));
         store1.delete('a');
@@ -112,9 +132,9 @@ describe('napajs/store', () => {
     });
 
     it('size', () => {
-        // set 'a', 'b', 'c', 'd', 'a', 'b', 'e', 'f'.
+        // set 'a', 'b', 'c', 'd', 'a', 'b', 'e', 'f', 'g', 'h', 'i', 'j'.
         // delete 'a', 'b', 'c', 'd'
-        assert.equal(store1.size, 2);
+        assert.equal(store1.size, 6);
     });
 
 });

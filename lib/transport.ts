@@ -10,6 +10,7 @@ export * from './transport/transport';
 
 import { Handle } from './memory/handle';
 import { TransportContext } from './transport/transportable';
+import * as functionTransporter from './transport/function-transporter';
 
 let binding = require('./binding');
 
@@ -17,3 +18,6 @@ let binding = require('./binding');
 export function createTransportContext(handle? : Handle): TransportContext {
     return new binding.TransportContextWrap(handle);
 }
+
+export let saveFunction = functionTransporter.save;
+export let loadFunction = functionTransporter.load;

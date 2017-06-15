@@ -1,9 +1,9 @@
 # Benchmark
 
-## Summary:
+## Summary
 - JavaScript execution in napajs is on par with node, using the same version of V8, which is expected.
 - `zone.execute` scales linearly on number of workers, which is expected.
-- The overhead of calling `zone.execute` from node is around 0.1ms after warm-up, `zone.executeSync` is around 0.2ms. 
+- The overhead of calling `zone.execute` from node is around 0.1ms after warm-up, `zone.executeSync` is around 0.2ms. The cost of using anonymous function is neglectable.
 - `transport.marshall` cost on small plain JavaScript values is about 3x of JSON.stringify.
 - The overhead of `store.set` and `store.get` is around 0.06ms plus transport overhead on the objecs.
 
@@ -41,7 +41,7 @@ Transport overhead (#1, #3, #4, #7) varies by size and complexity of payload, wi
 Please refer to [execute-overhead.ts](./execute-overhead.ts) for test details.
 
 ### Overhead after warm-up
-Average overhead is around 0.06ms to 0.12ms for `zone.execute`, and around 0.16ms for `zone.executeSync`
+Average overhead is around 0.06ms to 0.12ms for `zone.execute`, and around 0.16ms for `zone.executeSync`.
 
 | repeat   | zone.execute (ms) | zone.executeSync (ms) |
 |----------|-------------------|-----------------------|
@@ -49,6 +49,8 @@ Average overhead is around 0.06ms to 0.12ms for `zone.execute`, and around 0.16m
 | 5000     | 456.893           | 905.972               |
 | 10000    | 810.687           | 1799.866              |
 | 50000    | 3387.361          | 8169.023              |
+
+*10000 times of zone.executeSync on anonymouse function is 1780.241ms. The gap is within range of bench noise.
 
 ### Overhead during warm-up:
 

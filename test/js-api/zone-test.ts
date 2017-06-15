@@ -484,7 +484,7 @@ describe('napajs/zone', function () {
             });
         });
 
-        // Blocked by TODO #1 and TODO #5.
+        // Blocked by TODO #1.
         it.skip('@node: -> node zone with anonymous function', () => {
             return napa.zone.current.execute((input: string) => {
                 return input;
@@ -494,8 +494,7 @@ describe('napajs/zone', function () {
                 });
         });
 
-        // TODO #5: implment anonymous function in execute/executeSync.
-        it.skip('@node: -> napa zone with anonymous function', () => {
+        it('@node: -> napa zone with anonymous function', () => {
             return napaZone1.execute((input: string) => {
                 return input;
             }, ['hello world'])
@@ -504,8 +503,7 @@ describe('napajs/zone', function () {
                 });
         });
 
-        // Blocked by TODO #5.
-        it.skip('@napa: -> napa zone with anonymous function', () => {
+        it('@napa: -> napa zone with anonymous function', () => {
             return napaZone1.execute(napaZoneTestModule, 'executeTestFunction', ["napa-zone2"])
                 .then((result: napa.zone.ExecuteResult) => {
                     assert.equal(result.value, 'hello world');
@@ -524,14 +522,23 @@ describe('napajs/zone', function () {
         it.skip('@node: -> node zone with anonymous function having closure (should fail)', () => {
         });
 
-        it.skip('@node: -> napa zone with anonymous function having closure (should fail)', () => {
+        it('@node: -> napa zone with anonymous function having closure (should fail)', () => {
+            return shouldFail(() => {
+                return napaZone1.execute(() => { return napaZone1; }, ['hello world'])
+            });
         });
 
-        it.skip('@napa: -> napa zone with anonymous function having closure (should fail)', () => {
+        it('@napa: -> napa zone with anonymous function having closure (should fail)', () => {
+            return shouldFail(() => {
+                return napaZone1.execute(napaZoneTestModule, 'executeTestFunctionWithClosure', ["napa-zone2"]);
+            });
         });
 
         // Blocked by TODO #1.
         it.skip('@napa: -> node zone with anonymous function having closure (should fail)', () => {
+            return shouldFail(() => {
+                return napaZone1.execute(napaZoneTestModule, 'executeTestFunctionWithClosure', ["node"]);
+            });
         });
 
         // Blocked by TODO #1.

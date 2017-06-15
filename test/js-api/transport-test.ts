@@ -34,6 +34,7 @@ describe('napajs/transport', () => {
             assert(napa.transport.isTransportable([1, 2, new t.CanPass(napa.memory.crtAllocator)]));
             assert(napa.transport.isTransportable({ a: 1}));
             assert(napa.transport.isTransportable({ a: 1, b: new t.CanPass(napa.memory.crtAllocator)}));
+            assert(napa.transport.isTransportable(() => { return 0; }));
             assert(!napa.transport.isTransportable(new t.CannotPass()));
             assert(!napa.transport.isTransportable([1, new t.CannotPass()]));
             assert(!napa.transport.isTransportable({ a: 1, b: new t.CannotPass()}));
@@ -50,11 +51,11 @@ describe('napajs/transport', () => {
         }).timeout(3000);
 
         it('@node: JS transportable', () => {
-            t.jsTransportableTest();
+            t.jsTransportTest();
         });
 
         it('@napa: JS transportable', () => {
-            napaZone.executeSync(NAPA_ZONE_TEST_MODULE, "jsTransportableTest", []);
+            napaZone.executeSync(NAPA_ZONE_TEST_MODULE, "jsTransportTest", []);
         });
 
         it('@node: addon transportable', () => {
@@ -63,6 +64,14 @@ describe('napajs/transport', () => {
 
         it('@napa: addon transportable', () => {
             napaZone.executeSync(NAPA_ZONE_TEST_MODULE, "addonTransportTest", []);
+        });
+
+        it('@node: function transportable', () => {
+           t.functionTransportTest();
+        });
+
+        it('@napa: function transportable', () => {
+            napaZone.executeSync(NAPA_ZONE_TEST_MODULE, "functionTransportTest", []);
         });
 
         it('@node: composite transportable', () => {

@@ -56,7 +56,13 @@ export function executeTestFunction(id: string): any {
     // TODO: replace with execute when TODO:#3 is done.
     return zone.executeSync((input: string) => {
             return input;
-        }, ['hello world']);
+        }, ['hello world']).value;
+}
+
+export function executeTestFunctionWithClosure(id: string): any {
+    let zone = napa.zone.get(id);
+    // TODO: replace with execute when TODO:#3 is done.
+    return zone.executeSync(() => { return zone; }, []).value;
 }
 
 /// <summary> Memory test helpers. </summary>
@@ -169,8 +175,12 @@ export function simpleTypeTransportTest() {
     });
 }
 
-export function jsTransportableTest() {
+export function jsTransportTest() {
     testMarshallUnmarshall(new CanPass(napa.memory.crtAllocator));
+}
+
+export function functionTransportTest() {
+    testMarshallUnmarshall(() => { return 0; });
 }
 
 export function addonTransportTest() {
