@@ -6,7 +6,7 @@
   <ItemGroup>
     <QCustomProjectReference Include="$(NapaVanillaRoot)\lib\scripts.proj" />
     <QCustomProjectReference Include="$(NapaVanillaRoot)\src\napa.vcxproj" />
-    <QCustomProjectReference Include="$(NapaVanillaRoot)\binding\node\addon.vcxproj" />
+    <QCustomProjectReference Include="$(NapaVanillaRoot)\node\addon.vcxproj" />
   </ItemGroup>
 
   <ItemGroup>  
@@ -70,8 +70,8 @@
     <Copy SourceFiles="$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.dll" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.lib" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(NapaVanillaRoot)\src\$(IntermediateOutputPath)\napa.pdb" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(NapaVanillaRoot)\binding\node\$(IntermediateOutputPath)\napa-binding.node" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(NapaVanillaRoot)\binding\node\$(IntermediateOutputPath)\napa-binding.pdb" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(NapaVanillaRoot)\node\$(IntermediateOutputPath)\napa-binding.node" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(NapaVanillaRoot)\node\$(IntermediateOutputPath)\napa-binding.pdb" DestinationFolder="$(PackageOutPath)\bin" ContinueOnError="false" SkipUnchangedFiles="true" />
   </Target>
 
   <Import Project="$(ExtendedTargetsPath)\NoTarget.targets" />

@@ -1,8 +1,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
- <ItemGroup>
+  <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)\allocator-debugger-wrap.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\allocator-wrap.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\metric-wrap.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\napa-binding.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\shared-ptr-wrap.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\store-wrap.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\transport-context-wrap-impl.cpp" />

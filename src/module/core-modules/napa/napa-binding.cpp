@@ -1,12 +1,12 @@
 #include "napa-binding.h"
 
-#include "napa-wraps/metric-wrap.h"
-#include "napa-wraps/allocator-debugger-wrap.h"
-#include "napa-wraps/allocator-wrap.h"
-#include "napa-wraps/shared-ptr-wrap.h"
-#include "napa-wraps/store-wrap.h"
-#include "napa-wraps/transport-context-wrap-impl.h"
-#include "napa-wraps/zone-wrap.h"
+#include "metric-wrap.h"
+#include "allocator-debugger-wrap.h"
+#include "allocator-wrap.h"
+#include "shared-ptr-wrap.h"
+#include "store-wrap.h"
+#include "transport-context-wrap-impl.h"
+#include "zone-wrap.h"
 
 #include <napa.h>
 #include <napa-memory.h>
