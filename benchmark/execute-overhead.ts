@@ -31,6 +31,13 @@ export function bench(zone: napa.zone.Zone): Promise<void> {
     }
     console.log(`Elapse of running empty function for ${REPEAT} times: ${formatTimeDiff(process.hrtime(start), true)}\n`);
 
+    console.log("## `zone.executeSync` overhead calling anonymous function\n");
+    start = process.hrtime();
+    for (let i = 0; i < REPEAT; ++i) {
+        zone.executeSync(() => {}, ARGS);
+    }
+    console.log(`Elapse of running empty anonymous function for ${REPEAT} times: ${formatTimeDiff(process.hrtime(start), true)}\n`);
+
     // execute after warm-up
     return new Promise<void>((resolve, reject) => {
         let finished = 0;

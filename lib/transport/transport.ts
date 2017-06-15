@@ -1,5 +1,5 @@
 import * as transportable from './transportable';
-
+import * as functionTransporter from './function-transporter';
 import * as path from 'path';
 
 /// <summary> Per-isolate cid => constructor registry. </summary>
@@ -25,7 +25,7 @@ export function register(subClass: new(...args: any[]) => any) {
 
 /// <summary> Marshall transform a JS value to a plain JS value that will be stringified. </summary> 
 export function marshallTransform(jsValue: any, context: transportable.TransportContext): any {
-    if (jsValue != null && typeof jsValue === 'object' && !Array.isArray(jsValue)) {
+     if (jsValue != null && typeof jsValue === 'object' && !Array.isArray(jsValue)) {
         let constructorName = Object.getPrototypeOf(jsValue).constructor.name;
         if (constructorName !== 'Object') {
             if (typeof jsValue['cid'] === 'function') {
@@ -45,6 +45,9 @@ export function marshallTransform(jsValue: any, context: transportable.Transport
 function unmarshallTransform(payload: any, context: transportable.TransportContext): any {
     if (payload != null && payload._cid !== undefined) {
         let cid = payload._cid;
+        if (cid === 'function') {
+            return functionTransporter.load(payload.hash);
+        }
         let subClass = _registry.get(cid);
         if (subClass == null) {
             throw new Error(`Unrecognized Constructor ID (cid) "${cid}". Please ensure @cid is applied on the class or transport.register is called on the class.`);
@@ -58,41 +61,33 @@ function unmarshallTransform(payload: any, context: transportable.TransportConte
 
 /// <summary> Unmarshall from JSON string to a JavaScript value, which could contain complex/native objects. </summary>
 /// <param name="json"> JSON string. </summary>
-/// <param name="reviver"> Reviver that transform parsed values into new values. </param>
+/// <param name="context"> Transport context to save shared pointers. </param>
 /// <returns> Parsed JavaScript value, which could be built-in JavaScript types or deserialized Transportable objects. </returns>
 export function unmarshall(
     json: string, 
-    context: transportable.TransportContext, 
-    reviver?: (key: any, value: any) => any): any {
+    context: transportable.TransportContext): any {
     
     return JSON.parse(json, 
         (key: any, value: any): any => {
-            value = unmarshallTransform(value, context);
-            if (reviver != null) {
-                value = reviver(key, value);
-            }
-            return value;
+            return unmarshallTransform(value, context);
         });
 }
 
 /// <summary> Marshall a JavaScript value to JSON. </summary>
 /// <param name="jsValue"> JavaScript value to stringify, which maybe built-in JavaScript types or transportable objects. </param>
-/// <param name="replacer"> Replace JS value with transformed value before writing to string. </param>
-/// <param name="space"> Space used to format JSON. </param>
+/// <param name="context"> Transport context to save shared pointers. </param>
 /// <returns> JSON string. </returns>
 export function marshall(
     jsValue: any, 
-    context: transportable.TransportContext, 
-    replacer?: (key: string, value: any) => any, 
-    space?: string | number): string {
-    
+    context: transportable.TransportContext): string {
+
+    // Function is transportable only as root object. 
+    // This is to avoid unexpected marshalling on member functions.
+    if (typeof jsValue === 'function') {
+        return `{"_cid": "function", "hash": "${functionTransporter.save(jsValue)}"}`;
+    }
     return JSON.stringify(jsValue,
         (key: string, value: any) => {
-            value = marshallTransform(value, context);
-            if (replacer) {
-                value = replacer(key, value);
-            }
-            return value;
-        },
-        space);
-} 
+            return marshallTransform(value, context);
+        });
+}
