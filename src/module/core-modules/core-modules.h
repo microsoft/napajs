@@ -1,12 +1,13 @@
 #pragma once
 
-#include "console.h"
-#include "file-system.h"
-#include "napa-binding.h"
-#include "os.h"
-#include "path.h"
-#include "process.h"
-#include "tty-wrap.h"
+#include "napa/napa-binding.h"
+
+#include "node/console.h"
+#include "node/file-system.h"
+#include "node/os.h"
+#include "node/path.h"
+#include "node/process.h"
+#include "node/tty-wrap.h"
 
 
 #define INITIALIZE_CORE_MODULE(registerer, name, built_in, init)                                        \

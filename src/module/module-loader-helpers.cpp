@@ -1,5 +1,5 @@
 #include "module-loader-helpers.h" 
-#include "core-modules/file-system-helpers.h"
+#include "core-modules/node/file-system-helpers.h"
 
 #include <napa-log.h>
 #include <napa/v8-helpers.h>

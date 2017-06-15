@@ -29,7 +29,7 @@
       <DisableSpecificWarnings>4100</DisableSpecificWarnings>
       <PreprocessorDefinitions>BUILDING_NODE_EXTENSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src\module\core-modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src\module\core-modules\napa;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -37,11 +37,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="addon.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\module\core-modules\napa-binding.cpp" />
   </ItemGroup>
   
   <!-- Object wraps -->
-  <Import Project="$(NapaVanillaRoot)\src\module\core-modules\napa-wraps\napa-wraps.proj" />
+  <Import Project="$(NapaVanillaRoot)\src\module\core-modules\napa\napa-core-modules.proj" />
   
   <Target Name="ChangeExtention" AfterTargets="Build">
     <Move SourceFiles="$(OutputPath)\$(TargetFileName)" DestinationFiles="$(OutputPath)\$(TargetName).node" />

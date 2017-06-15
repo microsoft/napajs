@@ -76,7 +76,8 @@
   </ItemGroup>
 
   <!-- Core modules -->
-  <Import Project="$(NapaVanillaRoot)\src\module\core-modules\core-modules.proj" />
+  <Import Project="$(NapaVanillaRoot)\src\module\core-modules\napa\napa-core-modules.proj" />
+  <Import Project="$(NapaVanillaRoot)\src\module\core-modules\node\node-core-modules.proj" />
 
   <!-- Test code -->
   <ItemGroup>

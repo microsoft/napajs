@@ -1,7 +1,7 @@
 #include "catch.hpp"
 
 #include "napa/module/platform.h"
-#include "module/core-modules/file-system-helpers.h"
+#include "module/core-modules/node/file-system-helpers.h"
 
 using namespace napa::module;
 

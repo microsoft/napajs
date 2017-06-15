@@ -70,7 +70,8 @@
     <ClCompile Include="$(NapaVanillaRoot)\src\zone\zone-impl.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\v8\v8-common.cpp" />
   </ItemGroup>
-  <Import Project="$(NapaVanillaRoot)\src\module\core-modules\core-modules.proj" />
+  <Import Project="$(NapaVanillaRoot)\src\module\core-modules\napa\napa-core-modules.proj" />
+  <Import Project="$(NapaVanillaRoot)\src\module\core-modules\node\node-core-modules.proj" />
   <ItemGroup>
     <ProjectReference Include="$(NapaVanillaRoot)\src\napa.vcxproj" />
     <ProjectReference Include="$(NapaVanillaRoot)\test\module\async\async.vcxproj" />
