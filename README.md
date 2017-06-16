@@ -42,6 +42,7 @@ Napa.JS provides API to access current or other zones in JavaScript, thus a para
 
 ## Documentation
 - [API reference](docs/api/index.md)
+- [Modules](docs/api/module.md)
 - [Benchmarks](benchmark/README.md)
 - [Embedder's guide](docs/embedder/index.md)
 - [Design docs](docs/design/index.md)
