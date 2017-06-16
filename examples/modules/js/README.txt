@@ -1,1 +1,0 @@
-An example of JS module. mostly as today.
