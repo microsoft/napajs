@@ -38,7 +38,7 @@ void ZoneWrap::Init() {
     NAPA_SET_PERSISTENT_CONSTRUCTOR(exportName, functionTemplate->GetFunction());
 }
 
-v8::Local<v8::Object> ZoneWrap::NewInstance(std::unique_ptr<napa::ZoneProxy> zoneProxy) {
+v8::Local<v8::Object> ZoneWrap::NewInstance(std::unique_ptr<napa::Zone> zoneProxy) {
     auto isolate = v8::Isolate::GetCurrent();
     auto context = isolate->GetCurrentContext();
 
@@ -70,7 +70,7 @@ void ZoneWrap::Broadcast(const v8::FunctionCallbackInfo<v8::Value>& args) {
         [&args, &source](std::function<void(void*)> complete) {
             auto wrap = ObjectWrap::Unwrap<ZoneWrap>(args.Holder());
 
-            wrap->_zoneProxy->Broadcast(*source, [complete = std::move(complete)](NapaResponseCode responseCode) {
+            wrap->_zoneProxy->Broadcast(*source, [complete = std::move(complete)](ResponseCode responseCode) {
                 complete(reinterpret_cast<void*>(static_cast<uintptr_t>(responseCode)));
             });
         },
@@ -81,7 +81,7 @@ void ZoneWrap::Broadcast(const v8::FunctionCallbackInfo<v8::Value>& args) {
             v8::HandleScope scope(isolate);
 
             std::vector<v8::Local<v8::Value>> argv;
-            auto responseCode = static_cast<NapaResponseCode>(reinterpret_cast<uintptr_t>(result));
+            auto responseCode = static_cast<ResponseCode>(reinterpret_cast<uintptr_t>(result));
             argv.emplace_back(v8::Uint32::NewFromUnsigned(isolate, responseCode));
 
             (void)jsCallback->Call(context, context->Global(), static_cast<int>(argv.size()), argv.data());
@@ -216,10 +216,24 @@ static void CreateRequestAndExecute(v8::Local<v8::Object> obj, Func&& func) {
         }
     }
 
-    // timeout argument is optional
-    maybe = obj->Get(context, MakeV8String(isolate, "timeout"));
+    // options argument is optional.
+    maybe = obj->Get(context, MakeV8String(isolate, "options"));
     if (!maybe.IsEmpty()) {
-        request.timeout = maybe.ToLocalChecked()->Uint32Value(context).FromJust();
+        auto optionsValue = maybe.ToLocalChecked();
+        JS_ENSURE(isolate, optionsValue->IsObject(), "argument 'options' must be an object.");
+        auto options = v8::Local<v8::Object>::Cast(optionsValue);
+
+        // timeout is optional.
+        maybe = options->Get(context, MakeV8String(isolate, "timeout"));
+        if (!maybe.IsEmpty()) {
+            request.options.timeout = maybe.ToLocalChecked()->Uint32Value(context).FromJust();
+        }
+
+        // transport option is optional.
+        maybe = options->Get(context, MakeV8String(isolate, "transport"));
+        if (!maybe.IsEmpty()) {
+            request.options.transport = static_cast<napa::TransportOption>(maybe.ToLocalChecked()->Uint32Value(context).FromJust());
+        }
     }
 
     // transportContext property is mandatory in a request

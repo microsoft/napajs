@@ -2,8 +2,7 @@
 
 #include "terminable-task.h"
 
-#include <napa/common.h>
-#include <napa/zone.h>
+#include <napa/types.h>
 
 #include <functional>
 #include <string>
@@ -28,6 +27,7 @@ namespace scheduler {
         std::string _module;
         std::string _func;
         std::vector<std::string> _args;
+        ExecuteOptions _options;
         ExecuteCallback _callback;
         std::unique_ptr<napa::transport::TransportContext> _transportContext;
     };

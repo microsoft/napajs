@@ -12,13 +12,13 @@ static NapaInitializationGuard _guard;
 TEST_CASE("zone apis", "[api]") {
 
     SECTION("create zone") {
-        napa::ZoneProxy zone("zone1");
+        napa::Zone zone("zone1");
 
         REQUIRE(zone.GetId() == "zone1");
     }
 
     SECTION("broadcast valid javascript") {
-        napa::ZoneProxy zone("zone1");
+        napa::Zone zone("zone1");
 
         auto response = zone.BroadcastSync("var i = 3 + 5;");
 
@@ -26,7 +26,7 @@ TEST_CASE("zone apis", "[api]") {
     }
 
     SECTION("broadcast illegal javascript") {
-        napa::ZoneProxy zone("zone1");
+        napa::Zone zone("zone1");
 
         auto response = zone.BroadcastSync("var i = 3 +");
 
@@ -34,7 +34,7 @@ TEST_CASE("zone apis", "[api]") {
     }
 
     SECTION("broadcast and execute javascript") {
-        napa::ZoneProxy zone("zone1");
+        napa::Zone zone("zone1");
 
         auto responseCode = zone.BroadcastSync("function func(a, b) { return Number(a) + Number(b); }");
         REQUIRE(responseCode == NAPA_RESPONSE_SUCCESS);
@@ -49,12 +49,12 @@ TEST_CASE("zone apis", "[api]") {
     }
 
     SECTION("broadcast and execute javascript async") {
-        napa::ZoneProxy zone("zone1");
+        napa::Zone zone("zone1");
 
         std::promise<napa::ExecuteResponse> promise;
         auto future = promise.get_future();
 
-        zone.Broadcast("function func(a, b) { return Number(a) + Number(b); }", [&promise, &zone](NapaResponseCode) {
+        zone.Broadcast("function func(a, b) { return Number(a) + Number(b); }", [&promise, &zone](napa::ResponseCode) {
             napa::ExecuteRequest request;
             request.function = NAPA_STRING_REF("func");
             request.arguments = { NAPA_STRING_REF("2"), NAPA_STRING_REF("3") };
@@ -70,7 +70,7 @@ TEST_CASE("zone apis", "[api]") {
     }
 
     SECTION("broadcast and execute javascript without timing out") {
-        napa::ZoneProxy zone("zone1");
+        napa::Zone zone("zone1");
 
         std::promise<napa::ExecuteResponse> promise;
         auto future = promise.get_future();
@@ -78,11 +78,11 @@ TEST_CASE("zone apis", "[api]") {
         // Warmup to avoid loading napajs on first call
         zone.BroadcastSync("require('napajs');");
 
-        zone.Broadcast("function func(a, b) { return Number(a) + Number(b); }", [&promise, &zone](NapaResponseCode) {
+        zone.Broadcast("function func(a, b) { return Number(a) + Number(b); }", [&promise, &zone](napa::ResponseCode) {
             napa::ExecuteRequest request;
             request.function = NAPA_STRING_REF("func");
             request.arguments = { NAPA_STRING_REF("2"), NAPA_STRING_REF("3") };
-            request.timeout = 100;
+            request.options.timeout = 100;
 
             zone.Execute(request, [&promise](napa::ExecuteResponse response) {
                 promise.set_value(std::move(response));
@@ -95,7 +95,7 @@ TEST_CASE("zone apis", "[api]") {
     }
 
     SECTION("broadcast and execute javascript with exceeded timeout") {
-        napa::ZoneProxy zone("zone1");
+        napa::Zone zone("zone1");
 
         std::promise<napa::ExecuteResponse> promise;
         auto future = promise.get_future();
@@ -103,10 +103,10 @@ TEST_CASE("zone apis", "[api]") {
         // Warmup to avoid loading napajs on first call
         zone.BroadcastSync("require('napajs');");
 
-        zone.Broadcast("function func() { while(true) {} }", [&promise, &zone](NapaResponseCode) {
+        zone.Broadcast("function func() { while(true) {} }", [&promise, &zone](napa::ResponseCode) {
             napa::ExecuteRequest request;
             request.function = NAPA_STRING_REF("func");
-            request.timeout = 200;
+            request.options.timeout = 200;
 
             zone.Execute(request, [&promise](napa::ExecuteResponse response) {
                 promise.set_value(std::move(response));
@@ -119,7 +119,7 @@ TEST_CASE("zone apis", "[api]") {
     }
 
     SECTION("execute 2 javascript functions, one succeeds and one times out") {
-        napa::ZoneProxy zone("zone1");
+        napa::Zone zone("zone1");
 
         // Warmup to avoid loading napajs on first call
         zone.BroadcastSync("require('napajs');");
@@ -138,11 +138,11 @@ TEST_CASE("zone apis", "[api]") {
         napa::ExecuteRequest request1;
         request1.function = NAPA_STRING_REF("f1");
         request1.arguments = { NAPA_STRING_REF("2"), NAPA_STRING_REF("3") };
-        request1.timeout = 100;
+        request1.options.timeout = 100;
 
         napa::ExecuteRequest request2;
         request2.function = NAPA_STRING_REF("f2");
-        request2.timeout = 100;
+        request2.options.timeout = 100;
 
         zone.Execute(request1, [&promise1](napa::ExecuteResponse response) {
             promise1.set_value(std::move(response));
@@ -162,7 +162,7 @@ TEST_CASE("zone apis", "[api]") {
     }
 
     SECTION("broadcast javascript requiring a module") {
-        napa::ZoneProxy zone("zone1");
+        napa::Zone zone("zone1");
 
         auto responseCode = zone.BroadcastSync("var path = require('path'); function func() { return path.extname('test.txt'); }");
         REQUIRE(responseCode == NAPA_RESPONSE_SUCCESS);
@@ -176,7 +176,7 @@ TEST_CASE("zone apis", "[api]") {
     }
 
     SECTION("execute function in a module") {
-        napa::ZoneProxy zone("zone1");
+        napa::Zone zone("zone1");
 
         napa::ExecuteRequest request;
         request.module = NAPA_STRING_REF("path");

@@ -47,7 +47,6 @@ std::shared_ptr<ZoneImpl> ZoneImpl::Create(const ZoneSettings& settings) {
         LOG_ERROR("Zone", "Failed to initialize zone '%s': %s", settings.id.c_str(), ex.what());
         return nullptr;
     }
-
     return zone;
 }
 
@@ -102,9 +101,9 @@ void ZoneImpl::Broadcast(const std::string& source, BroadcastCallback callback) 
 void ZoneImpl::Execute(const ExecuteRequest& request, ExecuteCallback callback) {
     std::shared_ptr<Task> task;
 
-    if (request.timeout > 0) {
+    if (request.options.timeout > 0) {
         task = std::make_shared<TimeoutTaskDecorator<ExecuteTask>>(
-            std::chrono::milliseconds(request.timeout),
+            std::chrono::milliseconds(request.options.timeout),
             request,
             std::move(callback));
     } else {

@@ -7,12 +7,12 @@ interface ExecuteRequest {
     module: string;
     function: string;
     arguments: any[];
-    timeout: number;
+    options: zone.ExecuteOptions;
     transportContext: transport.TransportContext;
 }
 
 export class NapaExecuteResult implements zone.ExecuteResult{
-     
+
      constructor(payload: string, transportContext: transport.TransportContext) {
           this._payload = payload;
           this._transportContext = transportContext; 
@@ -140,19 +140,19 @@ export class NapaZone implements zone.Zone {
         let moduleName: string = null;
         let functionName: string = null;
         let args: any[] = null;
-        let timeout: number = 0;
+        let options: zone.ExecuteOptions = undefined;
 
         if (typeof arg1 === 'function') {
             moduleName = "__function";
             functionName = transport.saveFunction(arg1);
             args = arg2;
-            timeout = arg3;
+            options = arg3;
         }
         else {
             moduleName = arg1;
             functionName = arg2;
             args = arg3;
-            timeout = arg4;
+            options = arg4;
         }
 
         let transportContext: transport.TransportContext = transport.createTransportContext();
@@ -160,7 +160,7 @@ export class NapaZone implements zone.Zone {
             module: moduleName,
             function: functionName,
             arguments: (<Array<any>>args).map(arg => { return transport.marshall(arg, transportContext); }),
-            timeout: timeout,
+            options: options != null? options: zone.DEFAULT_EXECUTE_OPTIONS,
             transportContext: transportContext
         };
     }

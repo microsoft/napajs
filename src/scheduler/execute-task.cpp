@@ -17,6 +17,7 @@ napa::scheduler::ExecuteTask::ExecuteTask(const ExecuteRequest& request, Execute
     for (auto& arg : request.arguments) {
         _args.emplace_back(NAPA_STRING_REF_TO_STD_STRING(arg));
     }
+    _options = request.options;
 
     // Pass ownership of the transport context to the execute task.
     _transportContext = std::move(request.transportContext);
@@ -37,16 +38,21 @@ void ExecuteTask::Execute() {
         (void)args->CreateDataProperty(context, static_cast<uint32_t>(i), MakeExternalV8String(isolate, _args[i]));
     }
 
+    // Prepare execute options.
+    // NOTE: export necessary fields from _options to options object here. Now it's empty.
+    auto options = v8::ObjectTemplate::New(isolate)->NewInstance();
+
     v8::Local<v8::Value> argv[] = {
         MakeExternalV8String(isolate, _module),
         MakeExternalV8String(isolate, _func),
         args,
-        PtrToV8Uint32Array(isolate, _transportContext.get())
+        PtrToV8Uint32Array(isolate, _transportContext.get()),
+        options
     };
 
     // Execute the function.
     v8::TryCatch tryCatch(isolate);
-    auto res = v8::Local<v8::Function>::Cast(executeFunction)->Call(context->Global(), 4, argv);
+    auto res = v8::Local<v8::Function>::Cast(executeFunction)->Call(context->Global(), 5, argv);
 
     // Terminating an isolate may occur from a different thread, i.e. from timeout service.
     // If the function call already finished successfully when the isolate is terminated it may lead

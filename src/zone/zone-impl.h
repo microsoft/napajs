@@ -1,6 +1,6 @@
 #pragma once
 
-#include <napa/zone.h>
+#include "zone.h"
 
 #include "scheduler/scheduler.h"
 #include "settings/settings.h"
@@ -13,7 +13,7 @@
 namespace napa {
 
     /// <summary> Concrete implementation of a zone. </summary>
-    class ZoneImpl : public Zone {
+    class ZoneImpl : public internal::Zone {
     public:
 
         /// <summary> Creates a new zone with the provided id and settings. </summary>

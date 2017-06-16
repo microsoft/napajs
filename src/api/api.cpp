@@ -25,7 +25,7 @@ static PlatformSettings _platformSettings;
 /// <summary> a simple wrapper around Zone for managing lifetime using shared_ptr. </summary>
 struct napa_zone {
     std::string id;
-    std::shared_ptr<Zone> zone;
+    std::shared_ptr<internal::Zone> zone;
 };
 
 napa_zone_handle napa_zone_create(napa_string_ref id) {
@@ -115,7 +115,7 @@ void napa_zone_broadcast(napa_zone_handle handle,
 }
 
 void napa_zone_execute(napa_zone_handle handle,
-                       napa_zone_request request,
+                       napa_zone_execute_request request,
                        napa_zone_execute_callback callback,
                        void* context) {
     NAPA_ASSERT(_initialized, "Napa wasn't initialized");
@@ -131,13 +131,13 @@ void napa_zone_execute(napa_zone_handle handle,
         req.arguments.emplace_back(request.arguments[i]);
     }
 
-    req.timeout = request.timeout;
+    req.options = request.options;
     
     // Assume ownership of transport context
     req.transportContext.reset(reinterpret_cast<napa::transport::TransportContext*>(request.transport_context));
 
     handle->zone->Execute(req, [callback, context](ExecuteResponse response) {
-        napa_zone_response res;
+        napa_zone_execute_response res;
         res.code = response.code;
         res.error_message = STD_STRING_TO_NAPA_STRING_REF(response.errorMessage);
         res.return_value = STD_STRING_TO_NAPA_STRING_REF(response.returnValue);

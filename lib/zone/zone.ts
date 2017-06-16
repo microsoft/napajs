@@ -14,6 +14,39 @@ export let DEFAULT_SETTINGS: ZoneSettings = {
     workers: 2
 };
 
+/// <summary> Represent option to transport arguments in zone.execute. </summary>
+export enum TransportOption {
+
+    /// <summary> transport.marshall/unmarshall will be done by `napajs` automatically.
+    /// This is the most common way, but may not be performance optimal with objects
+    /// that will be shared in multiple zone.execute.
+    /// </summary>
+    AUTO,
+
+    /// <summary> transport.marshall/unmarshall will be done by user manually. </summary>
+    MANUAL,
+}
+
+/// <summary> Represent the options of an execute call. </summary>
+export interface ExecuteOptions {
+
+    /// <summary> Timeout in milliseconds. By default set to 0 if timeout is not needed. </summary>
+    timeout?: number,
+
+    /// <summary> Transport option on passing arguments. By default set to TransportOption.AUTO </summary>
+    transport?: TransportOption
+}
+
+/// <summary> Default execution options. </summary>
+export let DEFAULT_EXECUTE_OPTIONS: ExecuteOptions = {
+
+    /// <summary> No timeout. </summary>
+    timeout: 0,
+
+    /// <summary> Set argument transport option to automatic. </summary>
+    transport: TransportOption.AUTO
+}
+
 /// <summary> Represent the result of an execute call. </summary>
 export interface ExecuteResult {
 
@@ -48,14 +81,14 @@ export interface Zone {
     /// <param name="module"> The module name that contains the function to execute. </param>
     /// <param name="func"> The function name to execute. </param>
     /// <param name="args"> The arguments that will pass to the function. </param>
-    /// <param name="timeout"> The timeout of the execution in milliseconds, defaults to infinity. </param>
-    execute(module: string, func: string, args: any[], timeout?: number) : Promise<ExecuteResult>;
-    executeSync(module: string, func: string, args: any[], timeout?: number) : ExecuteResult;
+    /// <param name="options"> Execute options, defaults to DEFAULT_EXECUTE_OPTIONS. </param>
+    execute(module: string, func: string, args: any[], options?: ExecuteOptions) : Promise<ExecuteResult>;
+    executeSync(module: string, func: string, args: any[], options?: ExecuteOptions) : ExecuteResult;
 
     /// <summary> Executes the function on one of the zone workers. </summary>
     /// <param name="func"> The JS function to execute. </param>
     /// <param name="args"> The arguments that will pass to the function. </param>
-    /// <param name="timeout"> The timeout of the execution in milliseconds, defaults to infinity. </param>
+    /// <param name="options"> Execute options, defaults to DEFAULT_EXECUTE_OPTIONS. </param>
     execute(func: Function, args: any[], timeout?: number) : Promise<ExecuteResult>;
     executeSync(func: Function, args: any[], timeout?: number) : ExecuteResult;
 }
