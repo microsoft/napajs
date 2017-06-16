@@ -47,7 +47,7 @@ static void CreateZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
     }
 
     try {
-        auto zoneProxy = std::make_unique<napa::ZoneProxy>(*zoneId, ss.str());
+        auto zoneProxy = std::make_unique<napa::Zone>(*zoneId, ss.str());
         args.GetReturnValue().Set(ZoneWrap::NewInstance(std::move(zoneProxy)));
     } catch (const std::exception& ex) {
         JS_FAIL(isolate, ex.what());
@@ -62,7 +62,7 @@ static void GetZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
     v8::String::Utf8Value zoneId(args[0]->ToString());
 
     try {
-        auto zoneProxy = napa::ZoneProxy::Get(*zoneId);
+        auto zoneProxy = napa::Zone::Get(*zoneId);
         args.GetReturnValue().Set(ZoneWrap::NewInstance(std::move(zoneProxy)));
     }
     catch (const std::exception &ex) {
@@ -74,7 +74,7 @@ static void GetCurrentZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
-    args.GetReturnValue().Set(ZoneWrap::NewInstance(napa::ZoneProxy::GetCurrent()));
+    args.GetReturnValue().Set(ZoneWrap::NewInstance(napa::Zone::GetCurrent()));
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -128,11 +128,17 @@ static void GetStoreCount(const v8::FunctionCallbackInfo<v8::Value>& args) {
 }
 
 static void GetCrtAllocator(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    args.GetReturnValue().Set(binding::CreateAllocatorWrap(NAPA_MAKE_SHARED<napa::memory::CrtAllocator>()));
+    args.GetReturnValue().Set(binding::CreateAllocatorWrap(
+        std::shared_ptr<napa::memory::Allocator>(
+            &napa::memory::GetCrtAllocator(),
+            [](napa::memory::Allocator*){})));
 }
 
 static void GetDefaultAllocator(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    args.GetReturnValue().Set(binding::CreateAllocatorWrap(NAPA_MAKE_SHARED<napa::memory::DefaultAllocator>()));
+    args.GetReturnValue().Set(binding::CreateAllocatorWrap(
+        std::shared_ptr<napa::memory::Allocator>(
+            &napa::memory::GetDefaultAllocator(),
+            [](napa::memory::Allocator*){})));
 }
 
 static void Log(const v8::FunctionCallbackInfo<v8::Value>& args) {

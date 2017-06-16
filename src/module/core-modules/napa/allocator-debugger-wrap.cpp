@@ -37,7 +37,9 @@ void AllocatorDebuggerWrap::ConstructorCallback(const v8::FunctionCallbackInfo<v
 
     std::shared_ptr<napa::memory::Allocator> allocator;
     if (args.Length() == 0) {
-        allocator = NAPA_MAKE_SHARED<napa::memory::DefaultAllocator>();
+        allocator = std::shared_ptr<napa::memory::Allocator>(
+            &napa::memory::GetDefaultAllocator(),
+            [](napa::memory::Allocator*){});
     } 
     else {
         CHECK_ARG(isolate, args[0]->IsObject(), "Argument \"allocator\" should be \"AllocatorWrap\" type.'");

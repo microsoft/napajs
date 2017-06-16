@@ -1,55 +1,7 @@
 #pragma once
 
 #include "napa/exports.h"
-#include "napa/common.h"
-
-
-/// <summary> Represents an execution request for a zone. </summary>
-typedef struct {
-
-    /// <summary> The module that exports the function to execute. </summary>
-    napa_string_ref module;
-
-    /// <summary> The function to execute. </summary>
-    napa_string_ref function;
-
-    /// <summary> The function arguments. </summary>
-    const napa_string_ref* arguments;
-
-    /// <summary> The number of arguments. </summary>
-    size_t arguments_count;
-
-    /// <summary> Timeout in milliseconds - Use 0 for inifinite. </summary>
-    uint32_t timeout;
-
-    /// <summary> A context used for transporting handles across zones/workers. </summary>
-    void* transport_context;
-} napa_zone_request;
-
-/// <summary> Represents a response from executing in a zone. </summary>
-typedef struct {
-
-    /// <summary> A response code. </summary>
-    napa_response_code code;
-
-    /// <summary> The error message in case of an error. </summary>
-    napa_string_ref error_message;
-
-    /// <summary> The return value in case of success. </summary>
-    napa_string_ref return_value;
-
-    /// <summary> A context used for transporting handles across zones/workers. </summary>
-    void* transport_context;
-} napa_zone_response;
-
-/// <summary> Callback signatures. </summary>
-typedef void(*napa_zone_broadcast_callback)(napa_response_code code, void* context);
-typedef void(*napa_zone_execute_callback)(napa_zone_response response, void* context);
-
-/// <summary>
-///     Zone handle type.
-/// </summary>
-typedef struct napa_zone *napa_zone_handle;
+#include "napa/types.h"
 
 /// <summary> Creates a napa zone. </summary>
 /// <param name="id"> A unique id for the zone. </param>
@@ -113,7 +65,7 @@ EXTERN_C NAPA_API void napa_zone_broadcast(
 /// <param name="context"> An opaque pointer that is passed back in the callback. </param>
 EXTERN_C NAPA_API void napa_zone_execute(
     napa_zone_handle handle,
-    napa_zone_request request,
+    napa_zone_execute_request request,
     napa_zone_execute_callback callback,
     void* context);
 
@@ -141,10 +93,6 @@ EXTERN_C NAPA_API napa_response_code napa_shutdown();
 /// <summary> Convert the napa response code to its string representation. </summary>
 /// <param name="code"> The response code. </param>
 EXTERN_C NAPA_API const char* napa_response_code_to_string(napa_response_code code);
-
-/// <summary> Callback for customized memory allocator. </summary>
-typedef void* (*napa_allocate_callback)(size_t);
-typedef void (*napa_deallocate_callback)(void*, size_t);
 
 /// <summary> Set customized allocator, which will be used for napa_allocate and napa_deallocate.
 /// If user doesn't call napa_allocator_set, C runtime malloc/free from napa.dll will be used. </summary>

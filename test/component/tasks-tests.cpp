@@ -37,8 +37,8 @@ TEST_CASE("tasks", "[tasks]") {
     BroadcastTask("function __zone_execute__(module, func, args) { return this[func].apply(this, args); }").Execute();
 
     SECTION("load valid javascript") {
-        NapaResponseCode loadResponseCode;
-        BroadcastTask("var i = 3 + 5;", "", [&loadResponseCode](NapaResponseCode code) {
+        ResponseCode loadResponseCode;
+        BroadcastTask("var i = 3 + 5;", "", [&loadResponseCode](ResponseCode code) {
             loadResponseCode = code;
         }).Execute();
 
@@ -46,8 +46,8 @@ TEST_CASE("tasks", "[tasks]") {
     }
 
     SECTION("load fails when javascript is malformed") {
-        NapaResponseCode loadResponseCode;
-        BroadcastTask("var j = 3 +", "", [&loadResponseCode](NapaResponseCode code) {
+        ResponseCode loadResponseCode;
+        BroadcastTask("var j = 3 +", "", [&loadResponseCode](ResponseCode code) {
             loadResponseCode = code;
         }).Execute();
 
@@ -55,8 +55,8 @@ TEST_CASE("tasks", "[tasks]") {
     }
 
     SECTION("load fails when javascript exception is thrown") {
-        NapaResponseCode loadResponseCode;
-        BroadcastTask("throw Error('error');", "", [&loadResponseCode](NapaResponseCode code) {
+        ResponseCode loadResponseCode;
+        BroadcastTask("throw Error('error');", "", [&loadResponseCode](ResponseCode code) {
             loadResponseCode = code;
         }).Execute();
 

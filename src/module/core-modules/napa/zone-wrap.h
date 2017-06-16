@@ -7,7 +7,7 @@
 
 // Forward declare zone.
 namespace napa {
-    class ZoneProxy;
+    class Zone;
 }
 
 namespace napa {
@@ -24,14 +24,14 @@ namespace module {
         static void Init();
 
         /// <summary> Create a new ZoneWrap instance that wraps the provided proxy. </summary>
-        static v8::Local<v8::Object> NewInstance(std::unique_ptr<napa::ZoneProxy> zoneProxy);
+        static v8::Local<v8::Object> NewInstance(std::unique_ptr<napa::Zone> zoneProxy);
 
     private:
 
         /// <summary> Declare persistent constructor to create Zone Javascript wrapper instance. </summary>
         NAPA_DECLARE_PERSISTENT_CONSTRUCTOR;
 
-        std::unique_ptr<napa::ZoneProxy> _zoneProxy;
+        std::unique_ptr<napa::Zone> _zoneProxy;
 
         // ZoneWrap methods
         static void GetId(const v8::FunctionCallbackInfo<v8::Value>& args);

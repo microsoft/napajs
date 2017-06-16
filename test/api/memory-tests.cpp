@@ -104,7 +104,7 @@ TEST_CASE("Napa memory allocator tests", "[memory-allocators]") {
     SECTION("Test CreateSimpleAllocatorDebugger") {
         NAPA_SET_DEFAULT_ALLOCATOR(custom_allocator::malloc, custom_allocator::free);
 
-        SimpleAllocatorDebugger debugger(std::make_shared<DefaultAllocator>());
+        SimpleAllocatorDebugger debugger(std::shared_ptr<Allocator>(&GetDefaultAllocator(), [](Allocator*){}));
         REQUIRE(std::string(debugger.GetType()) == "SimpleAllocatorDebugger<DefaultAllocator>");
 
         size_t size = 5;
