@@ -1,5 +1,8 @@
+bin
+build
 node_modules
-.npmrc
+
 package-lock.json
+.npmrc
 
 !tsconfig.json
