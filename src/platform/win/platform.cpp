@@ -43,7 +43,11 @@ std::string platform::GetExecPath() {
 }
 
 int32_t platform::Umask(int32_t mode) {
-    return _umask(mode);
+    int32_t oldMask;
+    if (_umask_s(mode, &oldMask)) {
+        throw std::runtime_error("Error setting umask");
+    }
+    return oldMask;
 }
 
 int32_t platform::Getpid() {

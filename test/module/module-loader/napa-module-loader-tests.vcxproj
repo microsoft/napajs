@@ -38,7 +38,7 @@
     </Link>
     <ClCompile>
       <DisableSpecificWarnings>4100;4251;4996</DisableSpecificWarnings>
-      <PreprocessorDefinitions>BUILDING_NAPA_EXTENSION;NAPA_EXPORTS;USING_V8_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BUILDING_NAPA_EXTENSION;NAPA_EXPORTS;BUILDING_V8_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
