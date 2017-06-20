@@ -1,11 +1,20 @@
 {
     "name": "napajs",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "author": "napajs",
     "main": "./lib/index.js",
     "types": "./types/index.d.ts",
+    "dependencies": {
+        "cmake-js": ">= 3.4.1",
+        "boost-lib": ">= 0.11.3"
+    },
     "devDependencies": {
         "@types/node": ">= 7.0.8",
         "@types/mocha": ">= 2.2.0"
+    },
+    "scripts": {
+        "install": "cmake-js compile",
+        "postinstall": "cmake-js clean",
+        "prepublishOnly": "tsc -p lib"
     }
 }
