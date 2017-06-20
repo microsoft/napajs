@@ -14,7 +14,11 @@ set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 if (CMAKE_JS_VERSION)
     # Include BoostLib module
-    set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/node_modules/boost-lib/cmake")
+
+    LIST(APPEND CMAKE_MODULE_PATH
+        "${PROJECT_SOURCE_DIR}/node_modules/boost-lib/cmake"
+        "${PROJECT_SOURCE_DIR}/../boost-lib/cmake")
+    
     include(BoostLib)
     
     require_boost_libs(">= 1.62.0" "${REQUIRED_BOOST_COMPONENTS}")

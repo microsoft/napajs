@@ -1,6 +1,13 @@
 bin
 build
 node_modules
+types
+
+# ignore all js files under lib except explicit ones specified here
+lib/**/*.js
+!lib/core/*.js
+!lib/zone/zone-main.js
+!lib/binding.js
 
 package-lock.json
 .npmrc
