@@ -52,4 +52,7 @@ endif()
 
 if (WIN32)
     target_link_libraries(${TARGET_NAME} PRIVATE winmm.lib)
+    
+    # Define this to fix boost asio related warning ('Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately')
+    target_compile_definitions(${TARGET_NAME} PRIVATE _WIN32_WINNT=0x0501)
 endif()
