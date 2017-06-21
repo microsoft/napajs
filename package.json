@@ -5,7 +5,7 @@
     "main": "./lib/index.js",
     "types": "./types/index.d.ts",
     "dependencies": {
-        "cmake-js": ">= 3.4.1",
+        "cmake-js": ">= 3.5.0",
         "boost-lib": ">= 0.11.3"
     },
     "devDependencies": {
