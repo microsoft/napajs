@@ -15,7 +15,6 @@
     "scripts": {
         "install": "cmake-js compile",
         "postinstall": "cmake-js clean",
-        "prepublish": "tsc -p lib",
-        "postversion": "git push --follow-tags"
+        "prepublish": "tsc -p lib"
     }
 }
