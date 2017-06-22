@@ -16,6 +16,6 @@
     "scripts": {
         "install": "cmake-js compile",
         "postinstall": "cmake-js clean",
-        "prepublish": "node_modules/typescript/lib/tsc.js -p lib"
+        "prepublish": "node node_modules/typescript/lib/tsc.js -p lib"
     }
 }
