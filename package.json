@@ -1,6 +1,6 @@
 {
     "name": "napajs",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "author": "napajs",
     "main": "./lib/index.js",
     "types": "./types/index.d.ts",
@@ -15,6 +15,7 @@
     "scripts": {
         "install": "cmake-js compile",
         "postinstall": "cmake-js clean",
-        "prepublishOnly": "tsc -p lib"
+        "prepublish": "tsc -p lib",
+        "postversion": "git push --follow-tags"
     }
 }
