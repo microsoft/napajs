@@ -15,10 +15,12 @@ set(Boost_USE_STATIC_RUNTIME OFF)
 if (CMAKE_JS_VERSION)
     # Include BoostLib module
 
-    LIST(APPEND CMAKE_MODULE_PATH
-        "${PROJECT_SOURCE_DIR}/node_modules/boost-lib/cmake"
-        "${PROJECT_SOURCE_DIR}/../boost-lib/cmake")
-    
+    execute_process(COMMAND npm config get prefix RESULT_VARIABLE ERR OUTPUT_VARIABLE NPM_GLOBAL_PATH)
+    if(ERR)
+        message(FATAL_ERROR "Failed to get npm global installation path.")
+    endif(ERR)
+    set(CMAKE_MODULE_PATH "${NPM_GLOBAL_PATH}/node_modules/boost-lib/cmake")
+
     include(BoostLib)
     
     require_boost_libs(">= 1.62.0" "${REQUIRED_BOOST_COMPONENTS}")
