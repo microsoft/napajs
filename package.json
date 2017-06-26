@@ -4,10 +4,6 @@
   "author": "napajs",
   "main": "./lib/index.js",
   "types": "./types/index.d.ts",
-  "dependencies": {
-    "cmake-js": ">= 3.5.0",
-    "boost-lib": ">= 0.11.3"
-  },
   "devDependencies": {
     "typescript": ">= 2.2.1",
     "@types/node": ">= 7.0.8",
