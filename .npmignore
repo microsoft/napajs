@@ -1,5 +1,6 @@
 bin
 build
+tools
 
 .npmrc
 .npmignore
