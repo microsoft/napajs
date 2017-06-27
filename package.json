@@ -1,10 +1,11 @@
 {
   "name": "napajs",
-  "version": "0.4.4",
+  "version": "0.4.6",
   "author": "napajs",
   "main": "./lib/index.js",
   "types": "./types/index.d.ts",
   "devDependencies": {
+    "mocha": ">= 3.4.2",
     "typescript": ">= 2.2.1",
     "@types/node": ">= 7.0.8",
     "@types/mocha": ">= 2.2.0"
@@ -12,6 +13,8 @@
   "scripts": {
     "install": "cmake-js compile",
     "postinstall": "cmake-js clean",
-    "prepublish": "node node_modules/typescript/lib/tsc.js -p lib"
+    "prepublish": "tsc -p lib",
+    "pretest": "tsc -p test",
+    "test": "mocha test --recursive"
   }
 }
