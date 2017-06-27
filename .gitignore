@@ -9,6 +9,9 @@ lib/**/*.js
 !lib/zone/zone-main.js
 !lib/binding.js
 
+# ignore all js files under test
+test/**/*.js
+
 package-lock.json
 
 !tsconfig.json
