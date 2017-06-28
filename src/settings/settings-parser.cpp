@@ -6,6 +6,7 @@
 
 using namespace boost::program_options;
 using namespace napa;
+using namespace napa::settings;
 
 static void AddZoneOptions(options_description& desc, ZoneSettings& settings) {
     // Zone parsing options should be added here.
@@ -26,7 +27,7 @@ static void AddPlatformOptions(options_description& desc, PlatformSettings& sett
         ("initV8", value(&settings.initV8), "specify whether v8 should be initialized");
 }
 
-bool settings_parser::Parse(const std::vector<std::string>& args, ZoneSettings& settings) {
+bool settings::Parse(const std::vector<std::string>& args, ZoneSettings& settings) {
     options_description desc;
     AddZoneOptions(desc, settings);
 
@@ -45,7 +46,7 @@ bool settings_parser::Parse(const std::vector<std::string>& args, ZoneSettings& 
     return true;
 }
 
-bool settings_parser::Parse(const std::vector<std::string>& args, PlatformSettings& settings) {
+bool settings::Parse(const std::vector<std::string>& args, PlatformSettings& settings) {
     options_description desc;
     AddZoneOptions(desc, settings);
     AddPlatformOptions(desc, settings);

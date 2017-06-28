@@ -30,7 +30,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <DisableSpecificWarnings>4100;4251;4459;4996</DisableSpecificWarnings>
-      <PreprocessorDefinitions>BUILDING_NAPA_EXTENSION;NAPA_EXPORTS;BUILDING_V8_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NAPA_EXPORTS;NAPA_BINDING_EXPORTS;BUILDING_NAPA_EXTENSION;BUILDING_V8_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\test\component;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -49,30 +49,32 @@
   <ItemGroup>
     <ClCompile Include="$(NapaVanillaRoot)\src\api\api.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\memory\built-in-allocators.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\module\async-runner.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\module\binary-module-loader.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\module\core-module-loader.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\module\javascript-module-loader.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\module\json-module-loader.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\module\module-cache.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\module\module-loader.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\module\module-loader-helpers.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\module\module-resolver.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\module\worker-context.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\loader\binary-module-loader.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\loader\core-module-loader.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\loader\javascript-module-loader.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\loader\json-module-loader.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\loader\module-cache.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\loader\module-loader.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\loader\module-loader-helpers.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\loader\module-resolver.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\module.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\platform.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\thread-local-storage.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\providers\providers.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\async-complete-task.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\worker.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\broadcast-task.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\execute-task.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\simple-thread-pool.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\terminable-task.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\timeout-service.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\settings\settings-parser.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\store\store.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\zone\zone-impl.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\v8\v8-common.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\zone\async-complete-task.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\zone\call-context.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\zone\call-task.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\zone\eval-task.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\zone\napa-zone.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\zone\node-zone.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\zone\simple-thread-pool.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\zone\terminable-task.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\zone\timeout-service.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\zone\worker.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\zone\worker-context.cpp" />
   </ItemGroup>
 
   <!-- Core modules -->
@@ -82,8 +84,9 @@
   <!-- Test code -->
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)\worker-tests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\node-zone-tests.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\tasks-tests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\worker-tests.cpp" />
   </ItemGroup>
 
   <!-- Test artifacts binplace -->

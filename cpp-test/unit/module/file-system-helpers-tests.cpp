@@ -1,8 +1,9 @@
 #include "catch.hpp"
 
-#include "napa/module/platform.h"
-#include "module/core-modules/node/file-system-helpers.h"
+#include <platform/platform.h>
+#include <module/core-modules/node/file-system-helpers.h>
 
+using namespace napa;
 using namespace napa::module;
 
 TEST_CASE("File system helpers reads/writes a file correctly.", "[file-system-helpers]") {

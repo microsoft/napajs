@@ -19,9 +19,9 @@ namespace v8_helpers {
         v8::Local<v8::Value> argv[] = nullptr) {
 
         auto isolate = v8::Isolate::GetCurrent();
-        auto context = isolate->GetCurrentContext();
         v8::EscapableHandleScope scope(isolate);
-        
+
+        auto context = isolate->GetCurrentContext();
         auto function = context->Global()->Get(v8_helpers::MakeV8String(isolate, functionName));
 
         JS_ENSURE_WITH_RETURN(
@@ -49,9 +49,9 @@ namespace v8_helpers {
         v8::Local<v8::Value> argv[] = nullptr) {
 
         auto isolate = v8::Isolate::GetCurrent();
-        auto context = isolate->GetCurrentContext();
         v8::EscapableHandleScope scope(isolate);
-
+        
+        auto context = isolate->GetCurrentContext();
         auto function = object->Get(v8_helpers::MakeV8String(isolate, functionName));
 
         JS_ENSURE_WITH_RETURN(

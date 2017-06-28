@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include "scheduler/worker.h"
+#include "zone/worker.h"
 #include "napa-initialization-guard.h"
 
 #include "v8.h"
@@ -10,7 +10,9 @@
 #include <mutex>
 
 using namespace napa;
-using namespace napa::scheduler;
+using namespace napa::settings;
+using namespace napa::zone;
+
 
 
 class TestTask : public Task {

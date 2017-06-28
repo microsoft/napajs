@@ -4,7 +4,7 @@
 #include "nop-logging-provider.h"
 #include "nop-metric-provider.h"
 
-#include "module/module-resolver.h"
+#include <module/loader/module-resolver.h>
 
 #include <napa-log.h>
 
@@ -13,7 +13,7 @@
 
 #include <string>
 
-
+using namespace napa;
 using namespace napa::providers;
 
 // Forward declarations.
@@ -25,7 +25,7 @@ static LoggingProvider* _loggingProvider = LoadLoggingProvider("");
 static MetricProvider* _metricProvider = LoadMetricProvider("");
 
 
-bool napa::providers::Initialize(const napa::PlatformSettings& settings) {
+bool napa::providers::Initialize(const settings::PlatformSettings& settings) {
     _loggingProvider = LoadLoggingProvider(settings.loggingProvider);
     _metricProvider = LoadMetricProvider(settings.metricProvider);
 

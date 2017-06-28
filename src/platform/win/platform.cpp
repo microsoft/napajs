@@ -1,4 +1,4 @@
-#include <napa/module/platform.h>
+#include <platform/platform.h>
 
 #include <sstream>
 
@@ -8,7 +8,7 @@
 #include <sys/types.h>
 #include <windows.h>
 
-using namespace napa::module;
+using namespace napa;
 
 int platform::argc = __argc;
 char** platform::argv = __argv;

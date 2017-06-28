@@ -16,7 +16,7 @@ zone.execute(
         return text;
     }, 
     ['hello world'])
-    .then((result: napa.zone.ExecuteResponse) => {
+    .then((result: napa.zone.Result) => {
         console.log(result.value);
     });
 ```

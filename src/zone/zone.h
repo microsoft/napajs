@@ -3,7 +3,7 @@
 #include <napa/types.h>
 
 namespace napa {
-namespace internal {
+namespace zone {
 
     /// <summary> Interface for Zone. </summary>
     struct Zone {
@@ -17,9 +17,9 @@ namespace internal {
         virtual void Broadcast(const std::string& source, BroadcastCallback callback) = 0;
 
         /// <summary> Executes a pre-loaded JS function asynchronously. </summary>
-        /// <param name="request"> The execution request. </param>
+        /// <param name="spec"> The function spec. </param>
         /// <param name="callback"> A callback that is triggered when execution is done. </param>
-        virtual void Execute(const ExecuteRequest& request, ExecuteCallback callback) = 0;
+        virtual void Execute(const FunctionSpec& spec, ExecuteCallback callback) = 0;
 
         /// <summary> Virtual destructor. </summary>
         virtual ~Zone() {}

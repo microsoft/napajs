@@ -13,11 +13,17 @@ namespace module {
         /// <summary> Init this wrap. </summary>
         static void Init();
 
+        /// <summary> Create a non-owning transport context wrap. </summary>
+        static v8::Local<v8::Object> NewInstance(napa::transport::TransportContext* context);
+
         /// <summary> Get transport context. </summary>
         napa::transport::TransportContext* Get() override;
 
         /// <summary> Declare constructor in public, so we can export class constructor to JavaScript world. </summary>
         NAPA_DECLARE_PERSISTENT_CONSTRUCTOR
+
+        /// <summary> Exported class name. </summary>
+        static constexpr const char* exportName = "TransportContextWrap";
 
     private:
         /// <summary> Constructor. </summary>
@@ -38,9 +44,6 @@ namespace module {
 
         /// <summary> It implements TransportContext.loadShared(handle: Handle): napajs.memory.ShareableWrap) </summary>
         static void LoadSharedCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-        /// <summary> Exported class name. </summary>
-        static constexpr const char* _exportName = "TransportContextWrap";
 
         /// <summary> Non-owning transport context. </summary>
         napa::transport::TransportContext* _context;

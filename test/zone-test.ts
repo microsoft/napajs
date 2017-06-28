@@ -101,8 +101,7 @@ describe('napajs/zone', function () {
     });
 
     describe('broadcast', () => {
-        // TODO #1: implement NodeZone.
-        it.skip('@node: -> node zone with JavaScript code', () => {
+        it('@node: -> node zone with JavaScript code', () => {
             return napa.zone.current.broadcast("var state = 0;");
         });
 
@@ -119,8 +118,7 @@ describe('napajs/zone', function () {
             return napaZone1.execute(napaZoneTestModule, "broadcast", ["napa-zone1", "var state = 0;"]);
         });
 
-        // Blocked by TODO #1.
-        it.skip('@napa: -> node zone with JavaScript code', () => {
+        it('@napa: -> node zone with JavaScript code', () => {
             return napaZone1.execute(napaZoneTestModule, "broadcast", ["node", "var state = 0;"]);
         });
 
@@ -136,34 +134,31 @@ describe('napajs/zone', function () {
             });
         });
 
-        // Blocked by TODO #1.
-        it.skip('@node: -> node zone throw runtime error', () => {
+        it('@node: -> node zone throw runtime error', () => {
             return shouldFail(() => {
                 return napa.zone.current.broadcast("throw new Error();");
             });
         });
-       
+
         it('@node: -> napa zone throw runtime error', () => {
             return shouldFail(() => {
                 return napaZone1.broadcast("throw new Error();");
             });
         });
-        
+
         it('@napa: -> napa zone throw runtime error', () => {
             return shouldFail(() => {
                 return napaZone1.execute(napaZoneTestModule, "broadcast", ["napa-zone2", "throw new Error();"]);
             });
         });
-        
-        // Blocked by TODO #1.
-        it.skip('@napa: -> node zone throw runtime error', () => {
+
+        it('@napa: -> node zone throw runtime error', () => {
             return shouldFail(() => {
                 return napaZone1.execute(napaZoneTestModule, "broadcast", ["node", "throw new Error();"]);
             });
         });
-        
-        // Blocked by TODO #1.
-        it.skip('@node: -> node zone with anonymous function', () => {
+
+        it('@node: -> node zone with anonymous function', () => {
             return napa.zone.current.broadcast((input: string) => {
                 console.log(input);
             }, ['hello world']);
@@ -179,13 +174,11 @@ describe('napajs/zone', function () {
             return napaZone1.execute(napaZoneTestModule, "broadcastTestFunction", ['napa-zone2']);
         });
 
-        // Blocked by TODO #1.
-        it.skip('@napa: -> node zone with anonymous function', () => {
+        it('@napa: -> node zone with anonymous function', () => {
             return napaZone1.execute(napaZoneTestModule, "broadcastTestFunction", ['node']);
         });
 
         // TODO #4: support transportable args in broadcast.
-        // Also blocked by TODO #1.
         it.skip('@node: -> node zone with transportable args', () => {
             return napa.zone.current.broadcast((allocator: any) => {
                 console.log(allocator);
@@ -205,13 +198,11 @@ describe('napajs/zone', function () {
         });
 
         // Blocked by TODO #4.
-        // Also blocked by TODO #1.
         it.skip('@napa: -> node zone with transportable args', () => {
             return napa.zone.current.execute(napaZoneTestModule, "broadcastTransportable", []);
         });
 
-        // Blocked by TODO #1.
-        it.skip('@node: -> node zone with anonymous function having closure (should fail)', () => {
+        it('@node: -> node zone with anonymous function having closure (should fail)', () => {
             return shouldFail(() => {
                 return napa.zone.current.broadcast(() => {
                     console.log(napaZone1.id);
@@ -233,137 +224,68 @@ describe('napajs/zone', function () {
             });
         });
 
-        /// Blocked by TODO #1.
-        it.skip('@napa: -> node zone with anonymous function having closure (should fail)', () => {
+        it('@napa: -> node zone with anonymous function having closure (should fail)', () => {
             return shouldFail(() => {
                 return napaZone1.execute(napaZoneTestModule, "broadcastClosure", ['node']);
             });
         });
     });
 
-    describe("broadcastSync", () => {
-        /// Blocked by TODO #1.
-        it.skip('@node: -> node zone with JavaScript code', () => {
-            napa.zone.current.broadcastSync("var state = 0;");
-        });
-
-        it('@node: -> napa zone with JavaScript code', () => {
-            napaZone1.broadcastSync("var state = 0;");
-        });
-
-        // Duplicated with async broadcast version for now.
-        it.skip('@napa: -> napa zone with JavaScript code', () => {
-        });
-
-        // Blocked by TODO #1.
-        // Duplicated with async broadcast version for now.
-        it.skip('@napa: -> node zone with JavaScript code', () => {            
-        });
-
-        // Blocked by TODO #1.
-        it.skip('@node: -> node zone with anonymous function', () => {
-            napa.zone.current.broadcastSync((input: string) => {
-                console.log(input);
-            }, ['hello world']);
-        });
-
-        it('@node: -> napa zone with anonymous function', () => {
-            napaZone1.broadcastSync((input: string) => {
-                console.log(input);
-            }, ['hello world']);
-        });
-
-        // Duplicated with async broadcast version for now.
-        it.skip('@napa: -> napa zone with anonymous function', () => {
-        });
-
-        // Blocked by TODO #1
-        // Duplicated with async broadcast version for now
-        it.skip('@napa: -> node zone with anonymous function', () => {
-        });
-
-        // Blocked by TODO #1
-        it.skip('@node: -> node zone with runtime error', () => {
-            assert.throws(() => {
-                napa.zone.current.broadcastSync(() => {
-                    throw new Error();
-                }, ['hello world']);
-            });
-        });
-
-        it('@node: -> napa zone with runtime error', () => {
-            assert.throws(() => {
-                napaZone1.broadcastSync(() => {
-                    throw new Error();
-                }, ['hello world']);
-            });
-        });
-
-        // Duplicated with async broadcast version for now.
-        it('@napa: -> napa zone with runtime error', () => {
-        });
-
-        // Duplicated with async broadcast version for now.
-        it('@napa: -> node zone with runtime error', () => {
-        });
-    });
-
     describe('execute', () => {
-        napaZone1.broadcastSync('function foo(input) { return input; }');
-        napaZone1.broadcastSync(`
-            var ns1;
-            (function (ns1) {
-                var ns2;
-                (function (ns2) {
-                    function foo(input) {
-                        return input;
+        let fooDef = 'function foo(input) { return input; }';
+        let nestedFunctionDef = `
+            var ns1 = {
+                ns2: {
+                    foo: function (input) {
+                    return input;
                     }
-                    ns2.foo = foo;
-                })(ns2 = ns1.ns2 || (ns1.ns2 = {}));
-            })(ns1 = exports.ns1 || (exports.ns1 = {}));
-        `);
+                }
+            };
+        `;
 
-        napaZone2.broadcastSync('function foo(input) { return input; }');
+        napaZone1.broadcast(fooDef);
+        napaZone1.broadcast(nestedFunctionDef);
+        napaZone2.broadcast(fooDef);
+        
+        napa.zone.node.broadcast(fooDef);
+        napa.zone.node.broadcast(nestedFunctionDef);
 
-        // Blocked by TODO #1.
-        it.skip('@node: -> node zone with global function name', () => {
+        it('@node: -> node zone with global function name', () => {
             return napa.zone.current.execute("", "foo", ['hello world'])
-                .then((result: napa.zone.ExecuteResult) => {
+                .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
         it('@node: -> napa zone with global function name', () => {
             return napaZone1.execute("", "foo", ['hello world'])
-                .then((result: napa.zone.ExecuteResult) => {
+                .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
         it('@napa: -> napa zone with global function name', () => {
             return napaZone1.execute(napaZoneTestModule, 'execute', ["napa-zone2", "", "foo", ['hello world']])
-                .then((result: napa.zone.ExecuteResult) => {
+                .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
-        // Blocked by TODO #1.
-        it.skip('@napa: -> node zone with global function name', () => {
+        it('@napa: -> node zone with global function name', () => {
             return napaZone1.execute(napaZoneTestModule, 'execute', ["node", "", "foo", ['hello world']])
-                .then((result: napa.zone.ExecuteResult) => {
+                .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
         it('@node: -> napa zone with global function name: function with namespaces', () => {
             return napaZone1.execute("", "ns1.ns2.foo", ['hello world'])
-                .then((result: napa.zone.ExecuteResult) => {
+                .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
-        // Blocked by TODO #1.
-        it.skip('@node: -> node zone with global function name not exists', () => {
+        it('@node: -> node zone with global function name not exists', () => {
             return shouldFail(() => {
                 return napa.zone.current.execute("", "foo1", ['hello world']);
             });
@@ -381,59 +303,55 @@ describe('napajs/zone', function () {
             });
         });
 
-        // Blocked by TODO #1.
-        it.skip('@napa: -> node zone with global function name not exists', () => {
+        it('@napa: -> node zone with global function name not exists', () => {
             return shouldFail(() => {
                 return napaZone1.execute(napaZoneTestModule, 'execute', ["node", "", "foo1", []]);
             });
         });
 
-        // Blocked by TODO #1.
-        it.skip('@node: -> node zone with module function name', () => {
+        it('@node: -> node zone with module function name', () => {
             return napa.zone.current.execute(napaZoneTestModule, "bar", ['hello world'])
-                .then((result: napa.zone.ExecuteResult) => {
+                .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
         it('@node: -> napa zone with module function name', () => {
             return napaZone1.execute(napaZoneTestModule, "bar", ['hello world'])
-                .then((result: napa.zone.ExecuteResult) => {
+                .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
         
         it('@napa: -> napa zone with module function name', () => {
             return napaZone1.execute(napaZoneTestModule, 'execute', ["napa-zone2", napaZoneTestModule, "bar", ['hello world']])
-                .then((result: napa.zone.ExecuteResult) => {
+                .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
-        // Blocked by TODO #1.
-        it.skip('@napa: -> node zone with module function name', () => {
+        it('@napa: -> node zone with module function name', () => {
             return napaZone1.execute(napaZoneTestModule, 'execute', ["node", napaZoneTestModule, "bar", ['hello world']])
-                .then((result: napa.zone.ExecuteResult) => {
+                .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
         it('@node: -> napa zone with module function name: function with namespaces', () => {
             return napaZone1.execute(napaZoneTestModule, "ns1.ns2.foo", ['hello world'])
-                .then((result: napa.zone.ExecuteResult) => {
+                .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
         it('@node: -> napa zone with module function name: module is a function', () => {
             return napaZone1.execute(path.resolve(__dirname, "./napa-zone/function-as-module"), "", ['hello world'])
-                .then((result: napa.zone.ExecuteResult) => {
+                .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
-        // Blocked by TODO #1.
-        it.skip('@node: -> node zone with module not exists', () => {
+        it('@node: -> node zone with module not exists', () => {
             return shouldFail(() => {
                 return napa.zone.current.execute("abc", "foo1", ['hello world']);
             });
@@ -451,15 +369,13 @@ describe('napajs/zone', function () {
             });
         });
 
-        // Blocked by TODO #1.
-        it.skip('@napa: -> node zone with module not exists', () => {
+        it('@napa: -> node zone with module not exists', () => {
             return shouldFail(() => {
                 return napaZone1.execute(napaZoneTestModule, 'execute', ["node", "abc", "foo.", []]);
             });
         });
 
-        // Blocked by TODO #1.
-        it.skip('@node: -> node zone with module function not exists', () => {
+        it('@node: -> node zone with module function not exists', () => {
             return shouldFail(() => {
                 return napa.zone.current.execute(napaZoneTestModule, "foo1", ['hello world']);
             });
@@ -477,19 +393,17 @@ describe('napajs/zone', function () {
             });
         });
 
-        // Blocked by TODO #1.
-        it.skip('@napa: -> node zone with module function not exists', () => {
+        it('@napa: -> node zone with module function not exists', () => {
             return shouldFail(() => {
                 return napaZone1.execute(napaZoneTestModule, 'execute', ["node", napaZoneTestModule, "foo1", []]);
             });
         });
 
-        // Blocked by TODO #1.
-        it.skip('@node: -> node zone with anonymous function', () => {
+        it('@node: -> node zone with anonymous function', () => {
             return napa.zone.current.execute((input: string) => {
                 return input;
             }, ['hello world'])
-                .then((result: napa.zone.ExecuteResult) => {
+                .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
@@ -498,33 +412,32 @@ describe('napajs/zone', function () {
             return napaZone1.execute((input: string) => {
                 return input;
             }, ['hello world'])
-                .then((result: napa.zone.ExecuteResult) => {
+                .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
         it('@napa: -> napa zone with anonymous function', () => {
             return napaZone1.execute(napaZoneTestModule, 'executeTestFunction', ["napa-zone2"])
-                .then((result: napa.zone.ExecuteResult) => {
+                .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
-        // Blocked by TODO #1.
-        it.skip('@napa: -> node zone with anonymous function', () => {
+        it('@napa: -> node zone with anonymous function', () => {
             return napaZone1.execute(napaZoneTestModule, 'executeTestFunction', ["node"])
-                .then((result: napa.zone.ExecuteResult) => {
+                .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
-        // Blocked by TODO #1.
-        it.skip('@node: -> node zone with anonymous function having closure (should fail)', () => {
+        it('@node: -> node zone with anonymous function having closure (should success)', () => {
+            return napa.zone.current.execute(() => { return napaZone1; }, []);
         });
 
         it('@node: -> napa zone with anonymous function having closure (should fail)', () => {
             return shouldFail(() => {
-                return napaZone1.execute(() => { return napaZone1; }, ['hello world'])
+                return napaZone1.execute(() => { return napaZone1; }, []);
             });
         });
 
@@ -534,14 +447,12 @@ describe('napajs/zone', function () {
             });
         });
 
-        // Blocked by TODO #1.
-        it.skip('@napa: -> node zone with anonymous function having closure (should fail)', () => {
+        it('@napa: -> node zone with anonymous function having closure (should fail)', () => {
             return shouldFail(() => {
                 return napaZone1.execute(napaZoneTestModule, 'executeTestFunctionWithClosure', ["node"]);
             });
         });
 
-        // Blocked by TODO #1.
         it.skip('@node: -> node zone with transportable args', () => {
         });
 
@@ -551,11 +462,9 @@ describe('napajs/zone', function () {
         it.skip('@napa: -> napa zone with transportable args', () => {
         });
 
-        // Blocked by TODO #1.
         it.skip('@napa: -> node zone with transportable args', () => {
         });
 
-        // Blocked by TODO #1.
         it.skip('@node: -> node zone with transportable returns', () => {
         });
 
@@ -565,7 +474,6 @@ describe('napajs/zone', function () {
         it.skip('@napa: -> napa zone with transportable returns', () => {
         });
 
-        // Blocked by TODO #1.
         it.skip('@napa: -> node zone with transportable returns', () => {
         });
 
@@ -593,48 +501,6 @@ describe('napajs/zone', function () {
         });
 
         it.skip('@napa: -> napa zone with timed out in multiple hops', () => {
-        });
-    });
-
-    describe.skip("executeSync", () => {
-        // Blocked by TODO #1.
-        it('@node: -> node zone succeed', () => {
-        });
-        
-        it('@node: -> napa zone succeed', () => {
-        });
-
-        it('@napa: -> napa zone succeed', () => {
-        });
-
-        // Blocked by TODO #1.
-        it('@napa: -> node zone succeed', () => {
-        });
-
-        it('@node: -> node zone with runtime error', () => {
-        });
-        
-        it('@node: -> napa zone with runtime error', () => {
-        });
-
-        it('@napa: -> napa zone with runtime error', () => {
-        });
-
-        it('@napa: -> node zone with runtime error', () => {
-        });
-
-        // Blocked by TODO #1.
-        it('@node: -> node zone with runtime error', () => {
-        });
-        
-        it('@node: -> napa zone with timed out', () => {
-        });
-
-        it('@napa: -> napa zone with timed out', () => {
-        });
-
-        // Blocked by TODO #1.
-        it('@napa: -> node zone with timed out', () => {
         });
     });
 });

@@ -3,15 +3,18 @@
 #include "metric-wrap.h"
 #include "allocator-debugger-wrap.h"
 #include "allocator-wrap.h"
+#include "call-context-wrap.h"
 #include "shared-ptr-wrap.h"
 #include "store-wrap.h"
 #include "transport-context-wrap-impl.h"
 #include "zone-wrap.h"
 
+#include <zone/worker-context.h>
+
 #include <napa.h>
 #include <napa-memory.h>
+#include <napa/module/binding.h>
 #include <napa/module/binding/wraps.h>
-#include <napa/module/worker-context.h>
 #include <napa/providers/logging.h>
 #include <napa/providers/metric.h>
 
@@ -23,7 +26,16 @@ static void RegisterBinding(v8::Local<v8::Object> module) {
     v8::HandleScope scope(isolate);
 
     auto persistentModule = new v8::Persistent<v8::Object>(isolate, module);
-    WorkerContext::Set(WorkerContextItem::NAPA_BINDING, persistentModule);
+    zone::WorkerContext::Set(zone::WorkerContextItem::NAPA_BINDING, persistentModule);
+}
+
+v8::Local<v8::Object> napa::module::binding::GetModule() {
+    auto persistentModule = 
+        reinterpret_cast<v8::Persistent<v8::Object>*>(
+            zone::WorkerContext::Get(zone::WorkerContextItem::NAPA_BINDING));
+    
+    NAPA_ASSERT(persistentModule != nullptr, "\"napajs\" must be required before napa::module::binding::GetModule() can be called from C++.");
+    return v8::Local<v8::Object>::New(v8::Isolate::GetCurrent(), *persistentModule);
 }
 
 static void CreateZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -194,6 +206,7 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
     AllocatorDebuggerWrap::Init();
     AllocatorWrap::Init();
     MetricWrap::Init();
+    CallContextWrap::Init();
     SharedPtrWrap::Init();
     StoreWrap::Init();
     TransportContextWrapImpl::Init();
@@ -202,6 +215,7 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
     NAPA_EXPORT_OBJECTWRAP(exports, "AllocatorDebuggerWrap", AllocatorDebuggerWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "AllocatorWrap", AllocatorWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "MetricWrap", MetricWrap);
+    NAPA_EXPORT_OBJECTWRAP(exports, "CallContextWrap", CallContextWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "SharedPtrWrap", SharedPtrWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "TransportContextWrap", TransportContextWrapImpl);
 

@@ -2,7 +2,6 @@
 
 ## Table of Contents
 - [`create(id: string, settings: ZoneSettings = DEFAULT_SETTINGS): Zone`](#create-id-string-settings-zonesettings-default_settings-zone)
-- [`getOrCreate(id: string, settings: ZoneSettings = DEFAULT_SETTINGS): Zone`](#getOrCreate-id-string-settings-zonesettings-default_settings-zone)
 - [`get(id: string): Zone`](#get-id-string-zone)
 - [`current: Zone`](#current-zone)
 - [`node: Zone`](#node-zone)
@@ -15,11 +14,11 @@
     - [`zone.broadcast(function: (...args: any[]) => void, args: any[]): Promise<void>`](#zone-broadcast-function-args-any-void-args-any-promise-void)
     - [`zone.broadcastSync(code: string): void`](#zone-broadcastsync-code-string-void)
     - [`zone.broadcastSync(function: (...args: any[]) => void, args: any[]): void`](#zone-broadcastsync-function-args-any-void-args-any-void)
-    - [`zone.execute(moduleName: string, functionName: string, args: any[], timeout: number): Promise<ExecuteResult>`](#zone-execute-modulename-string-functionname-string-args-any-timeout-number-promise-executeresult)
-    - [`zone.execute(function: (...args[]) => any, args: any[], timeout: number): Promise<ExecuteResult>`](#zone-execute-function-args-any-args-any-timeout-number-promise-executeresult)
-    - [`zone.executeSync(moduleName: string, functionName: string, args: any[], timeout: number): ExecuteResult`](#zone-executesync-modulename-string-functionname-string-args-any-timeout-number-executeresult)
-    - [`zone.executeSync(function: (...args: any[]) => any, args: any[], timeout: number): ExecuteResult`](#zone-executesync-function-args-any-any-args-any-timeout-number-executeresult)
-- interface [`ExecuteResult`](#interface-executeresult)
+    - [`zone.execute(moduleName: string, functionName: string, args: any[], timeout: number): Promise<Result>`](#zone-execute-modulename-string-functionname-string-args-any-timeout-number-promise-result)
+    - [`zone.execute(function: (...args[]) => any, args: any[], timeout: number): Promise<Result>`](#zone-execute-function-args-any-args-any-timeout-number-promise-result)
+    - [`zone.executeSync(moduleName: string, functionName: string, args: any[], timeout: number): Result`](#zone-executesync-modulename-string-functionname-string-args-any-timeout-number-result)
+    - [`zone.executeSync(function: (...args: any[]) => any, args: any[], timeout: number): Result`](#zone-executesync-function-args-any-any-args-any-timeout-number-result)
+- interface [`Result`](#interface-result)
     - [`result.value: any`](#result-value-any)
     - [`result.payload: string`](#result-payload-string)
     - [`result.transportContext: transport.TransportContext`](#result-transportcontext-transport-transportcontext)
@@ -38,15 +37,6 @@ Example 2: Create a zone with id 'zone1', with 1 worker.
 ```ts
 let zone = napa.zone.create('zone1', {
     workers: 1
-});
-```
-### getOrCreate(id: string, settings: ZoneSettings): Zone
-It gets a reference of zone by an id if a zone with the id already exists, otherwise create a new one and return its reference.
-
-Example:
-```ts
-let zone = napa.zone.getOrCreate('zone1', {
-    workers: 4
 });
 ```
 ### get(id: string): Zone
@@ -154,12 +144,12 @@ catch (error) {
 }
 ```
 ### zone.execute(moduleName: string, functionName: string, args: any[], timeout: number = 0): Promise\<any\>
-Execute a function asynchronously on arbitrary worker via module name and function name. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns a Promise of [`ExecuteResult`](#interface-executeresult). If error happens, either bad code, user exception, or timeout is reached, promise will be rejected.
+Execute a function asynchronously on arbitrary worker via module name and function name. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns a Promise of [`Result`](#interface-result). If error happens, either bad code, user exception, or timeout is reached, promise will be rejected.
 
 Example: Execute function 'bar' in module 'foo', with arguments [1, 'hello', { field1: 1 }]. 300ms timeout is applied.
 ```ts
 zone.execute('foo', 'bar', [1, "hello", {field1: 1}], 300)
-    .then((result: ExecuteResult) => {
+    .then((result: Result) => {
         console.log('execute succeeded:', result.value);
     })
     .catch((error) => {
@@ -170,14 +160,14 @@ zone.execute('foo', 'bar', [1, "hello", {field1: 1}], 300)
 
 ### zone.execute(function: (...args: any[]) => any, args: any[], timeout: number = 0): Promise\<any\>
 
-Execute an anonymous function asynchronously on arbitrary worker. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns a Promise of [`ExecuteResult`](#interface-executeresult). If error happens, either bad code, user exception, or timeout is reached, promise will be rejected.
+Execute an anonymous function asynchronously on arbitrary worker. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns a Promise of [`Result`](#interface-result). If error happens, either bad code, user exception, or timeout is reached, promise will be rejected.
 
 Example:
 ```ts
 zone.execute((a: number, b: string, c: object) => {
         return a + b + JSON.stringify(c);
     }, [1, "hello", {field1: 1}])
-    .then((result: ExecuteResult) => {
+    .then((result: Result) => {
         console.log('execute succeeded:', result.value);
     })
     .catch((error) => {
@@ -188,7 +178,7 @@ zone.execute((a: number, b: string, c: object) => {
 
 ### zone.executeSync(moduleName: string, functionName: string, args: any[], timeout: number = 0): any
 
-Execute a function synchronously on arbitrary worker via module name and function name. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns an [`ExecuteResult`](#interface-executeresult). If error happens, either bad code, user exception, or timeout is reached, error will be thrown.
+Execute a function synchronously on arbitrary worker via module name and function name. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns an [`Result`](#interface-result). If error happens, either bad code, user exception, or timeout is reached, error will be thrown.
 
 Example: Execute function 'bar' in module 'foo', with arguments [1, 'hello', { field1: 1 }]. 300ms timeout is applied.
 ```ts
@@ -203,7 +193,7 @@ catch (error) {
 ```
 
 ### zone.executeSync(function: (...args: any[]) => any, args: any[], timeout: number = 0): any
-Execute an annoymouse function synchronously on arbitrary worker. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns an [`ExecuteResult`](#interface-executeresult). If error happens, either bad code, user exception, or timeout is reached, error will be thrown.
+Execute an annoymouse function synchronously on arbitrary worker. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns an [`Result`](#interface-result). If error happens, either bad code, user exception, or timeout is reached, error will be thrown.
 
 Example: Execute annoymouse function sychronously, with arguments [1, 'hello', { field1: 1 }]. No timeout is applied.
 ```ts
@@ -219,7 +209,7 @@ catch (error) {
 
 ```
 
-## Interface `ExecuteResult`
+## Interface `Result`
 Interface to access return value of `zone.execute` or `zone.executeSync`.
 
 ### result.value: any

@@ -1,6 +1,5 @@
-import * as napa from './zone/napa-zone';
-import * as node from './zone/node-zone';
 import * as zone from './zone/zone';
+import * as impl from './zone/zone-impl';
 
 import * as platform from './runtime/platform';
 
@@ -14,31 +13,32 @@ declare var __in_napa: boolean;
 /// <param name="settings"> The settings of the new zone. </param>
 export function create(id: string, settings: zone.ZoneSettings = zone.DEFAULT_SETTINGS) : zone.Zone {
     platform.initialize();
-    return new napa.NapaZone(binding.createZone(id, settings));
+    return new impl.ZoneImpl(binding.createZone(id, settings));
 }
 
 /// <summary> Returns the zone associated with the provided id. </summary>
 export function get(id: string) : zone.Zone {
     platform.initialize();
-    if (id === "node") {
-        return new node.NodeZone();
-    }
-
-    return new napa.NapaZone(binding.getZone(id));
+    return new impl.ZoneImpl(binding.getZone(id));
 }
 
 /// TODO: add function getOrCreate(id: string, settings: zone.ZoneSettings): Zone.
 
-/// <summary> Define a getter property 'current' to retrieves the current zone. </summary>
+/// <summary> Define a getter property 'current' to retrieve the current zone. </summary>
 export declare let current: zone.Zone;
 Object.defineProperty(exports, "current", {
     get: function () : zone.Zone {
         platform.initialize();
-        if (typeof __in_napa !== 'undefined') {
-            return new napa.NapaZone(binding.getCurrentZone());
-        }
+        return new impl.ZoneImpl(binding.getCurrentZone());
+    }
+});
 
-        return new node.NodeZone();
+/// <summary> Define a getter property 'node' to retrieve node zone. </summary>
+export declare let node: zone.Zone;
+Object.defineProperty(exports, "node", {
+    get: function () : zone.Zone {
+        platform.initialize();
+        return new impl.ZoneImpl(binding.getZone('node'));
     }
 });
 

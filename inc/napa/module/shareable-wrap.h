@@ -59,10 +59,16 @@ namespace module {
             return _object;
         }
 
+        /// <summary> Get reference of T, which is the type of contained native object. </summary>
+        template <typename T>
+        typename std::enable_if_t<!std::is_same<void, T>::value, T&> GetRef() {
+            return *std::static_pointer_cast<T>(_object);
+        }
+
         /// <summary> It creates a new instance of WrapType of shared_ptr<T>, WrapType is a sub-class of ShareableWrap. </summary>
         /// <param name="object"> shared_ptr of object. </summary>
         /// <returns> V8 object of type ShareableWrap. </summary>
-        template <typename T, typename WrapType>
+        template <typename WrapType, typename T>
         static v8::Local<v8::Object> NewInstance(std::shared_ptr<T> object) {
             auto instance = napa::module::NewInstance<WrapType>().ToLocalChecked();
             Set(instance, std::move(object));
@@ -110,9 +116,9 @@ namespace module {
         /// <summary> It implements TransportableObject.load(payload: object, transportContext: TransportContext): void </summary>
         static void LoadCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
             auto isolate = v8::Isolate::GetCurrent();
-            auto context = isolate->GetCurrentContext();
             v8::HandleScope scope(isolate);
-            
+            auto context = isolate->GetCurrentContext();
+
             CHECK_ARG(isolate, args.Length() == 2, "2 arguments are required for \"load\".");
             CHECK_ARG(isolate, args[0]->IsObject(), "Argument \"payload\" shall be 'Object' type.");
             CHECK_ARG(isolate, args[1]->IsObject(), "Argument \"transportContext\" shall be 'TransportContextWrap' type.");
@@ -134,8 +140,8 @@ namespace module {
         /// <summary> It implements TransportableObject.save(payload: object, transportContext: TransportContext): void </summary>
         static void SaveCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
             auto isolate = v8::Isolate::GetCurrent();
-            auto context = isolate->GetCurrentContext();
             v8::HandleScope scope(isolate);
+            auto context = isolate->GetCurrentContext();
             
             CHECK_ARG(isolate, args.Length() == 2, "2 arguments are required for \"save\".");
             CHECK_ARG(isolate, args[0]->IsObject(), "Argument \"payload\" should be 'Object' type.");

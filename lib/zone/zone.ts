@@ -27,8 +27,8 @@ export enum TransportOption {
     MANUAL,
 }
 
-/// <summary> Represent the options of an execute call. </summary>
-export interface ExecuteOptions {
+/// <summary> Represent the options of calling a function. </summary>
+export interface CallOptions {
 
     /// <summary> Timeout in milliseconds. By default set to 0 if timeout is not needed. </summary>
     timeout?: number,
@@ -38,7 +38,7 @@ export interface ExecuteOptions {
 }
 
 /// <summary> Default execution options. </summary>
-export let DEFAULT_EXECUTE_OPTIONS: ExecuteOptions = {
+export let DEFAULT_CALL_OPTIONS: CallOptions = {
 
     /// <summary> No timeout. </summary>
     timeout: 0,
@@ -48,7 +48,7 @@ export let DEFAULT_EXECUTE_OPTIONS: ExecuteOptions = {
 }
 
 /// <summary> Represent the result of an execute call. </summary>
-export interface ExecuteResult {
+export interface Result {
 
     /// <summary> The unmarshalled result value. </summary>
     readonly value : any;
@@ -81,15 +81,15 @@ export interface Zone {
     /// <param name="module"> The module name that contains the function to execute. </param>
     /// <param name="func"> The function name to execute. </param>
     /// <param name="args"> The arguments that will pass to the function. </param>
-    /// <param name="options"> Execute options, defaults to DEFAULT_EXECUTE_OPTIONS. </param>
-    execute(module: string, func: string, args: any[], options?: ExecuteOptions) : Promise<ExecuteResult>;
-    executeSync(module: string, func: string, args: any[], options?: ExecuteOptions) : ExecuteResult;
+    /// <param name="options"> Call options, defaults to DEFAULT_CALL_OPTIONS. </param>
+    execute(module: string, func: string, args: any[], options?: CallOptions) : Promise<Result>;
+    executeSync(module: string, func: string, args: any[], options?: CallOptions) : Result;
 
     /// <summary> Executes the function on one of the zone workers. </summary>
     /// <param name="func"> The JS function to execute. </param>
     /// <param name="args"> The arguments that will pass to the function. </param>
-    /// <param name="options"> Execute options, defaults to DEFAULT_EXECUTE_OPTIONS. </param>
-    execute(func: Function, args: any[], timeout?: number) : Promise<ExecuteResult>;
-    executeSync(func: Function, args: any[], timeout?: number) : ExecuteResult;
+    /// <param name="options"> Call options, defaults to DEFAULT_CALL_OPTIONS. </param>
+    execute(func: Function, args: any[], timeout?: number) : Promise<Result>;
+    executeSync(func: Function, args: any[], timeout?: number) : Result;
 }
 

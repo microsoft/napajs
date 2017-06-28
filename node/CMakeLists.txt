@@ -1,5 +1,12 @@
 # Files to compile
-file(GLOB SOURCE_FILES "addon.cpp" "../src/module/core-modules/napa/*.cpp")
+file(GLOB SOURCE_FILES 
+    "addon.cpp"
+    "node-zone-delegates.cpp"
+    "${PROJECT_SOURCE_DIR}/src/zone/call-context.cpp"
+    "${PROJECT_SOURCE_DIR}/src/zone/call-task.cpp"
+    "${PROJECT_SOURCE_DIR}/src/zone/eval-task.cpp"
+    "${PROJECT_SOURCE_DIR}/src/zone/terminable-task.cpp"
+    "${PROJECT_SOURCE_DIR}/src/module/core-modules/napa/*.cpp")
 
 # The addon name
 set(TARGET_NAME "${PROJECT_NAME}-binding")
@@ -13,10 +20,11 @@ set_target_properties(${TARGET_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 target_include_directories(${TARGET_NAME} PRIVATE
     ${CMAKE_JS_INC}
     ${Boost_INCLUDE_DIRS}
+    ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/src/module/core-modules/napa)
 
 # Compiler definitions
-target_compile_definitions(${TARGET_NAME} PRIVATE BUILDING_NODE_EXTENSION)
+target_compile_definitions(${TARGET_NAME} PRIVATE BUILDING_NODE_EXTENSION NAPA_BINDING_EXPORTS)
 
 # Link libraries
 target_link_libraries(${TARGET_NAME} PRIVATE

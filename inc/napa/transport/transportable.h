@@ -42,8 +42,8 @@ namespace transport {
         /// <summary> It implements Transportable.marshall(context: TransportContext): object </summary>
         static void MarshallCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
             auto isolate = v8::Isolate::GetCurrent();
-            auto context = isolate->GetCurrentContext();
             v8::HandleScope scope(isolate);
+            auto context = isolate->GetCurrentContext();
 
             CHECK_ARG(isolate, args.Length() == 1, "1 argument is required for calling 'marshall'.");
             CHECK_ARG(isolate, args[0]->IsObject(), "The 1st argument of 'marshall' shall be object of TransportContext.");
@@ -86,8 +86,8 @@ namespace transport {
         /// <summary> It implements Transportable.unmarshall(payload: object, context: TransportContext): void </summary>
         static void UnmarshallCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
             auto isolate = v8::Isolate::GetCurrent();
-            auto context = isolate->GetCurrentContext();
             v8::HandleScope scope(isolate);
+            auto context = isolate->GetCurrentContext();
 
             CHECK_ARG(isolate, args.Length() == 2, "Two arguments are required for calling 'unmarshall'. ");
 

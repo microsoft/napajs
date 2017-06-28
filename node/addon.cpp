@@ -1,7 +1,10 @@
 #include "napa-binding.h"
+#include "node-zone-delegates.h"
 
 #include <napa.h>
 #include <napa-module.h>
+
+#include <zone/node-zone.h>
 
 void Initialize(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
@@ -33,6 +36,8 @@ void Shutdown(const v8::FunctionCallbackInfo<v8::Value>&) {
 
 void InitAll(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) {
     napa::module::binding::Init(exports, module);
+
+    napa::zone::NodeZone::Init(napa::node_zone::Broadcast, napa::node_zone::Execute);
 
     // Only node addon can initialize/shutdown napa.
     NAPA_SET_METHOD(exports, "initialize", Initialize);

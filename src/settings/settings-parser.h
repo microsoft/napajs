@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace napa {
-namespace settings_parser {
+namespace settings {
 
     /// <summary> Parses napa settings from a vector of arguments. </summary>
     /// <param name="str"> The arguments holding the settings. </param>

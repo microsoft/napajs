@@ -1,7 +1,7 @@
 #pragma once
 
 #include <napa-assert.h>
-#include <napa/module/worker-context.h>
+#include <napa/exports.h>
 #include <napa/v8-helpers/maybe.h>
 #include <napa/v8-helpers/string.h>
 #include <napa/v8-helpers/flow.h>
@@ -14,14 +14,7 @@ namespace binding {
 
     /// <summary> Get 'module' object of napa binding, which is napa-binding.node in Node.JS isolate or napa-binding from core-modules in Napa isolate. </summary>
     /// <returns> 'module' object for napa binding (napajs/bin/napa-binding.node or napa.dll) </returns>
-    inline v8::Local<v8::Object> GetModule() {
-        auto persistentModule = 
-            reinterpret_cast<v8::Persistent<v8::Object>*>(
-                WorkerContext::Get(WorkerContextItem::NAPA_BINDING));
-        
-        NAPA_ASSERT(persistentModule != nullptr, "\"napajs\" must be required before napa::module::binding::GetModule() can be called from C++.");
-        return v8::Local<v8::Object>::New(v8::Isolate::GetCurrent(), *persistentModule);
-    }
+    NAPA_BINDING_API v8::Local<v8::Object> GetModule();
 
     /// <summary> Get 'module.exports' from napa binding. </summary>
     /// <returns> 'module.exports' object for napa binding (napajs/bin/napa-binding.node or napa.dll) </returns>

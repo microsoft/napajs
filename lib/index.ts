@@ -7,3 +7,7 @@ import * as transport from './transport';
 import * as zone from './zone';
 
 export { log, memory, metric, runtime, store, transport, zone };
+
+// Add execute proxy to global context.
+import { call } from './zone/function-call';
+(<any>(global))["__napa_zone_call__"] = call;

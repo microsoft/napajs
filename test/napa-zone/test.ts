@@ -17,52 +17,55 @@ export function getCurrentZone(): napa.zone.Zone {
     return napa.zone.current;
 }
 
-export function broadcast(id: string, code: string): void {
+export function broadcast(id: string, code: string): Promise<void> {
     let zone = napa.zone.get(id);
-    // TODO: replace with broadcast when TODO:#3 is done.
-    zone.broadcastSync(code);
+    return zone.broadcast(code);
 }
 
-export function broadcastTestFunction(id: string): void {
-    // TODO: replace with broadcast when TODO:#3 is done.
-    napa.zone.get(id).broadcastSync((input: string) => {
-        console.log(input);
-    }, ["hello world"]);
+export function broadcastTestFunction(id: string): Promise<void> {
+    return napa.zone.get(id).broadcast((input: string) => {
+            console.log(input);
+        }, ["hello world"]);
 }
 
-export function broadcastTransportable(id: string): void {
-    // TODO: replace with broadcast when TODO:#3 is done.
-    napa.zone.get(id).broadcastSync((input: any) => {
-        console.log(input);
-    }, [napa.memory.crtAllocator]);
+export function broadcastTransportable(id: string): Promise<void> {
+    return napa.zone.get(id).broadcast((input: any) => {
+            console.log(input);
+        }, [napa.memory.crtAllocator]);
 }
 
-export function broadcastClosure(id: string): void {
+export function broadcastClosure(id: string): Promise<void> {
     let zone = napa.zone.get(id);
-    // TODO: replace with broadcast when TODO:#3 is done.
-    zone.broadcastSync(() => {
-        console.log(zone);
-    }, []);
+    return zone.broadcast(() => {
+            console.log(zone);
+        }, []);
 }
 
-export function execute(id: string, moduleName: string, functionName: string, args?: any[]): any {
+export function execute(id: string, moduleName: string, functionName: string, args?: any[]): Promise<any> {
     let zone = napa.zone.get(id);
-    // TODO: replace with execute when TODO:#3 is done.
-    return zone.executeSync(moduleName, functionName, args).value;
+    return new Promise((resolve, reject) => {
+        zone.execute(moduleName, functionName, args)
+            .then(result => resolve(result.value))
+            .catch(error => reject(error));
+    });
 }
 
-export function executeTestFunction(id: string): any {
+export function executeTestFunction(id: string): Promise<any> {
     let zone = napa.zone.get(id);
-    // TODO: replace with execute when TODO:#3 is done.
-    return zone.executeSync((input: string) => {
-            return input;
-        }, ['hello world']).value;
+    return new Promise((resolve, reject) => {
+        zone.execute((input: string) => { return input; }, ['hello world'])
+            .then(result => resolve(result.value))
+            .catch(error => reject(error));
+    });
 }
 
-export function executeTestFunctionWithClosure(id: string): any {
+export function executeTestFunctionWithClosure(id: string): Promise<any> {
     let zone = napa.zone.get(id);
-    // TODO: replace with execute when TODO:#3 is done.
-    return zone.executeSync(() => { return zone; }, []).value;
+    return new Promise((resolve, reject) => {
+        zone.execute(() => { return zone; }, [])
+            .then(result => resolve(result.value))
+            .catch(error => reject(error));
+    });
 }
 
 /// <summary> Memory test helpers. </summary>

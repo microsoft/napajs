@@ -30,7 +30,7 @@ EXTERN_C NAPA_API napa_zone_handle napa_zone_get_current();
 
 /// <summary> Releases the zone handle. When all handles for a zone are released the zone is destoryed. </summary>
 /// <param name="handle"> The zone handle. </param>
-EXTERN_C NAPA_API napa_response_code napa_zone_release(napa_zone_handle handle);
+EXTERN_C NAPA_API napa_result_code napa_zone_release(napa_zone_handle handle);
 
 /// <summary>
 ///     Initializes the napa zone, providing specific settings.
@@ -39,7 +39,7 @@ EXTERN_C NAPA_API napa_response_code napa_zone_release(napa_zone_handle handle);
 /// </summary>
 /// <param name="handle"> The zone handle. </param>
 /// <param name="settings"> The settings string. </param>
-EXTERN_C NAPA_API napa_response_code napa_zone_init(
+EXTERN_C NAPA_API napa_result_code napa_zone_init(
     napa_zone_handle handle,
     napa_string_ref settings);
 
@@ -60,12 +60,12 @@ EXTERN_C NAPA_API void napa_zone_broadcast(
 
 /// <summary> Executes a pre-loaded function asynchronously in a single zone wroker. </summary>
 /// <param name="handle"> The zone handle. </param>
-/// <param name="request"> The execution request. </param>
+/// <param name="spec"> The function spec to call. </param>
 /// <param name="callback"> A callback that is triggered when execution is done. </param>
 /// <param name="context"> An opaque pointer that is passed back in the callback. </param>
 EXTERN_C NAPA_API void napa_zone_execute(
     napa_zone_handle handle,
-    napa_zone_execute_request request,
+    napa_zone_function_spec spec,
     napa_zone_execute_callback callback,
     void* context);
 
@@ -76,23 +76,23 @@ EXTERN_C NAPA_API void napa_zone_execute(
 ///     TODO: specify public settings here.
 /// </summary>
 /// <param name="settings"> The settings string. </param>
-EXTERN_C NAPA_API napa_response_code napa_initialize(napa_string_ref settings);
+EXTERN_C NAPA_API napa_result_code napa_initialize(napa_string_ref settings);
 
 /// <summary>
 ///     Same as napa_initialize only accepts arguments as provided by console
 /// </summary>
 /// <param name="argc"> Number of arguments. </param>
 /// <param name="argv"> The arguments. </param>
-EXTERN_C NAPA_API napa_response_code napa_initialize_from_console(
+EXTERN_C NAPA_API napa_result_code napa_initialize_from_console(
     int argc,
     char* argv[]);
 
 /// <summary> Invokes napa shutdown steps. All non released zones will be destroyed. </summary>
-EXTERN_C NAPA_API napa_response_code napa_shutdown();
+EXTERN_C NAPA_API napa_result_code napa_shutdown();
 
-/// <summary> Convert the napa response code to its string representation. </summary>
-/// <param name="code"> The response code. </param>
-EXTERN_C NAPA_API const char* napa_response_code_to_string(napa_response_code code);
+/// <summary> Convert the napa result code to its string representation. </summary>
+/// <param name="code"> The result code. </param>
+EXTERN_C NAPA_API const char* napa_result_code_to_string(napa_result_code code);
 
 /// <summary> Set customized allocator, which will be used for napa_allocate and napa_deallocate.
 /// If user doesn't call napa_allocator_set, C runtime malloc/free from napa.dll will be used. </summary>
