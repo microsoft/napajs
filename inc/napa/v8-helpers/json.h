@@ -10,8 +10,8 @@ namespace v8_helpers {
         /// <summary> JSON.stringify </summary>
         /// TODO @asib: Use v8::JSON::Stringify when available
         inline v8::MaybeLocal<v8::String> Stringify(v8::Isolate* isolate, const v8::Local<v8::Value>& value) {
-            auto context = isolate->GetCurrentContext();
             v8::EscapableHandleScope scope(isolate);
+            auto context = isolate->GetCurrentContext();
 
             auto json = context->Global()
                 ->Get(context, v8::String::NewFromUtf8(isolate, "JSON"))

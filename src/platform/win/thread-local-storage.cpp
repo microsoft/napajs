@@ -1,7 +1,7 @@
-#include <napa/module/thread-local-storage.h>
+#include <platform/thread-local-storage.h>
 #include <windows.h>
 
-using namespace napa::module;
+using namespace napa::platform;
 
 uint32_t tls::Alloc() {
     return TlsAlloc();

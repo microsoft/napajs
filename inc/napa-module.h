@@ -7,10 +7,8 @@
 #ifdef BUILDING_NAPA_EXTENSION
 #include "napa/module/module-internal.h"
 #include "napa/module/module-node-compat.h"
-#include "napa/module/napa-async-runner.h"
 #include "napa/module/object-wrap.h"
 #else
-#include "napa/module/node-async-runner.h"
 #include <node.h>
 #include <node_object_wrap.h>
 #endif

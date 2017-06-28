@@ -1,7 +1,7 @@
 #include "process.h"
 
 #include <napa-module.h>
-#include <napa/module/platform.h>
+#include <platform/platform.h>
 
 #include <boost/filesystem.hpp>
 
@@ -122,8 +122,6 @@ namespace {
     }
 
     void HrtimeCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
-        const static uint32_t NANOS_PER_SECOND = 1000000000;
-
         auto isolate = v8::Isolate::GetCurrent();
         v8::HandleScope scope(isolate);
         auto context = isolate->GetCurrentContext();
@@ -132,30 +130,13 @@ namespace {
         uint64_t time = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 
         if (args.Length() == 1) {
-            CHECK_ARG(isolate, args[0]->IsArray(), "process.hrtime only accepts an Array tuple");
-
-            auto arr = v8::Local<v8::Array>::Cast(args[0]);
-            CHECK_ARG(isolate, arr->Length() == 2, "process.hrtime only accepts an Array tuple of size 2");
-
-            uint64_t prev = (static_cast<uint64_t>(arr->Get(0)->Uint32Value()) * NANOS_PER_SECOND)
-                + arr->Get(1)->Uint32Value();
+            auto result = v8_helpers::V8Uint32ArrayToHrtime(isolate, args[0]);
+            JS_ENSURE(isolate, result.second, "The 1st argument of hrtime must be a two-element uint32 array.");
 
             // Calculate the delta
-            time -= prev;
+            time -= result.first;
         }
-
-        v8::Local<v8::Array> res = v8::Array::New(isolate, 2);
-        (void)res->CreateDataProperty(
-            context,
-            0,
-            v8::Integer::NewFromUnsigned(isolate, static_cast<uint32_t>(time / NANOS_PER_SECOND)));
-
-        (void)res->CreateDataProperty(
-            context,
-            1,
-            v8::Integer::NewFromUnsigned(isolate, static_cast<uint32_t>(time % NANOS_PER_SECOND)));
-
-        args.GetReturnValue().Set(res);
+        args.GetReturnValue().Set(v8_helpers::HrtimeToV8Uint32Array(isolate, time));
     }
 
     void UmaskCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {

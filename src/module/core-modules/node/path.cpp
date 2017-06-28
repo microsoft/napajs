@@ -1,7 +1,7 @@
 #include "path.h"
 
 #include <napa-module.h>
-#include <napa/module/platform.h>
+#include <platform/platform.h>
 
 #include <boost/filesystem.hpp>
 #include <string>

@@ -25,21 +25,21 @@ namespace napa {
 
 #endif // __cplusplus
 
-/// <summary> Represents response code in napa zone apis. </summary>
-#define NAPA_RESPONSE_CODE_DEF(symbol, ...) NAPA_RESPONSE_##symbol
+/// <summary> Represents result code in napa zone apis. </summary>
+#define NAPA_RESULT_CODE_DEF(symbol, ...) NAPA_RESULT_##symbol
 
 typedef enum {
 
-#include "napa/response-codes.inc"
+#include "napa/result-codes.inc"
 
-} napa_response_code;
+} napa_result_code;
 
-#undef NAPA_RESPONSE_CODE_DEF
+#undef NAPA_RESULT_CODE_DEF
 
 #ifdef __cplusplus
 
 namespace napa {
-    typedef napa_response_code ResponseCode;
+    typedef napa_result_code ResultCode;
 }
 
 #endif // __cplusplus
@@ -66,7 +66,7 @@ namespace napa {
 
 #endif // __cplusplus
 
-/// <summary> Represents options for an execution request. </summary>
+/// <summary> Represents options for calling a function. </summary>
 typedef struct {
 
     /// <summary> Timeout in milliseconds - Use 0 for inifinite. </summary>
@@ -74,17 +74,17 @@ typedef struct {
 
     /// <summary> Arguments transport option. Default is AUTO. </summary>
     napa_transport_option transport;
-} napa_zone_execute_options;
+} napa_zone_call_options;
 
 #ifdef __cplusplus
 
 namespace napa {
-    typedef napa_zone_execute_options ExecuteOptions;
+    typedef napa_zone_call_options CallOptions;
 }
 
 #endif // __cplusplus
 
-/// <summary> Represents an execution request for a zone. </summary>
+/// <summary> Represents a function to run within a zone, with binded aruments . </summary>
 typedef struct {
 
     /// <summary> The module that exports the function to execute. </summary>
@@ -100,11 +100,11 @@ typedef struct {
     size_t arguments_count;
 
     /// <summary> Options. </summary>
-    napa_zone_execute_options options;
+    napa_zone_call_options options;
 
     /// <summary> A context used for transporting handles across zones/workers. </summary>
     void* transport_context;
-} napa_zone_execute_request;
+} napa_zone_function_spec;
 
 #ifdef __cplusplus
 
@@ -114,8 +114,8 @@ typedef struct {
 #include <vector>
 
 namespace napa {
-    /// <summary> Represents an execution request. </summary>
-    struct ExecuteRequest {
+    /// <summary> Represents a function to call with its arguments. </summary>
+    struct FunctionSpec {
 
         /// <summary> The module that exports the function to execute. </summary>
         StringRef module = EMPTY_NAPA_STRING_REF;
@@ -127,7 +127,7 @@ namespace napa {
         std::vector<StringRef> arguments;
 
         /// <summary> Execute options. </summary>
-        ExecuteOptions options = { 0, AUTO };
+        CallOptions options = { 0, AUTO };
 
         /// <summary> Used for transporting shared_ptr and unique_ptr across zones/workers. </summary>
         mutable std::unique_ptr<napa::transport::TransportContext> transportContext;
@@ -136,11 +136,11 @@ namespace napa {
 
 #endif // __cplusplus
 
-/// <summary> Represents a response from executing in a zone. </summary>
+/// <summary> Represents a result from executing in a zone. </summary>
 typedef struct {
 
-    /// <summary> A response code. </summary>
-    napa_response_code code;
+    /// <summary> A result code. </summary>
+    napa_result_code code;
 
     /// <summary> The error message in case of an error. </summary>
     napa_string_ref error_message;
@@ -150,16 +150,16 @@ typedef struct {
 
     /// <summary> A context used for transporting handles across zones/workers. </summary>
     void* transport_context;
-} napa_zone_execute_response;
+} napa_zone_result;
 
 #ifdef __cplusplus
 
 namespace napa {
-    /// <summary> Represents an execution response. </summary>
-    struct ExecuteResponse {
+    /// <summary> Represents a function call result. </summary>
+    struct Result {
 
-        /// <summary> A response code. </summary>
-        ResponseCode code;
+        /// <summary> A result code. </summary>
+        ResultCode code;
 
         /// <summary> The error message in case of an error. </summary>
         std::string errorMessage;
@@ -175,16 +175,16 @@ namespace napa {
 #endif // __cplusplus
 
 /// <summary> Callback signatures. </summary>
-typedef void(*napa_zone_broadcast_callback)(napa_response_code code, void* context);
-typedef void(*napa_zone_execute_callback)(napa_zone_execute_response response, void* context);
+typedef void(*napa_zone_broadcast_callback)(napa_result_code code, void* context);
+typedef void(*napa_zone_execute_callback)(napa_zone_result result, void* context);
 
 #ifdef __cplusplus
 
 #include <functional>
 
 namespace napa {
-    typedef std::function<void(ResponseCode)> BroadcastCallback;
-    typedef std::function<void(ExecuteResponse)> ExecuteCallback;
+    typedef std::function<void(ResultCode)> BroadcastCallback;
+    typedef std::function<void(Result)> ExecuteCallback;
 }
 
 #endif // __cplusplus

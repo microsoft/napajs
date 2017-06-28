@@ -2,6 +2,7 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)\allocator-debugger-wrap.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\allocator-wrap.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\call-context-wrap.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\metric-wrap.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\napa-binding.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\shared-ptr-wrap.cpp" />

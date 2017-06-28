@@ -1,11 +1,11 @@
 #include <catch.hpp>
 
-#include <module/module-loader.h>
-#include <napa/module/platform.h>
+#include <module/loader/module-loader.h>
 #include <napa/module/module-internal.h>
 #include <napa/v8-helpers.h>
-#include <scheduler/scheduler.h>
-#include <zone/zone-impl.h>
+#include <platform/platform.h>
+#include <zone/scheduler.h>
+#include <zone/napa-zone.h>
 #include <v8/array-buffer-allocator.h>
 #include <v8/v8-common.h>
 
@@ -22,7 +22,9 @@
 
 using namespace napa;
 using namespace napa::module;
-using namespace napa::scheduler;
+using namespace napa::settings;
+using namespace napa::zone;
+
 
 class V8InitializationGuard {
 public:
@@ -311,7 +313,7 @@ TEST_CASE("resolve full path modules", "[module-loader]") {
 
 class AsyncTestTask : public Task {
 public:
-    AsyncTestTask(ZoneImpl* zone, std::string filename)
+    AsyncTestTask(zone::NapaZone* zone, std::string filename)
         : _zone(zone), _filename(std::move(filename)), _succeeded(false) {}
 
     void Execute() override {
@@ -361,7 +363,7 @@ public:
 
 private:
 
-    ZoneImpl* _zone;
+    zone::NapaZone* _zone;
 
     std::string _filename;
     bool _succeeded = false;
@@ -375,7 +377,7 @@ TEST_CASE("async", "[module-loader]") {
     settings.id = "zone";
     settings.workers = 1;
 
-    auto zone = ZoneImpl::Create(settings);
+    auto zone = zone::NapaZone::Create(settings);
 
     auto scheduler = zone->GetScheduler();
     scheduler->ScheduleOnAllWorkers(std::make_shared<AsyncTestTask>(zone.get(), std::string()));

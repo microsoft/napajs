@@ -12,6 +12,14 @@ TransportContextWrapImpl::TransportContextWrapImpl(TransportContext* context) {
     _context = context;
 }
 
+v8::Local<v8::Object> TransportContextWrapImpl::NewInstance(napa::transport::TransportContext* context) {
+    auto object = napa::module::NewInstance<TransportContextWrapImpl>().ToLocalChecked();
+    auto wrap = NAPA_OBJECTWRAP::Unwrap<TransportContextWrapImpl>(object);
+    wrap->_context = context;
+
+    return object;
+}
+
 TransportContext* TransportContextWrapImpl::Get() {
     return _context;
 }
@@ -19,14 +27,14 @@ TransportContext* TransportContextWrapImpl::Get() {
 void TransportContextWrapImpl::Init() {
     auto isolate = v8::Isolate::GetCurrent();
     auto constructorTemplate = v8::FunctionTemplate::New(isolate, TransportContextWrapImpl::ConstructorCallback);
-    constructorTemplate->SetClassName(MakeV8String(isolate, _exportName));
+    constructorTemplate->SetClassName(MakeV8String(isolate, exportName));
     constructorTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 
     NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "saveShared", SaveSharedCallback);
     NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "loadShared", LoadSharedCallback);
     NAPA_SET_ACCESSOR(constructorTemplate, "sharedCount", GetSharedCountCallback, nullptr);
 
-    NAPA_SET_PERSISTENT_CONSTRUCTOR(_exportName, constructorTemplate->GetFunction());
+    NAPA_SET_PERSISTENT_CONSTRUCTOR(exportName, constructorTemplate->GetFunction());
 }
 
 void TransportContextWrapImpl::GetSharedCountCallback(v8::Local<v8::String>, const v8::PropertyCallbackInfo<v8::Value>& args){

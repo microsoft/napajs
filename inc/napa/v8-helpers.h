@@ -9,3 +9,4 @@
 #include <napa/v8-helpers/object.h>
 #include <napa/v8-helpers/ptr.h>
 #include <napa/v8-helpers/string.h>
+#include <napa/v8-helpers/time.h>

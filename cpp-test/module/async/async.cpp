@@ -1,4 +1,5 @@
 #include <napa-module.h>
+#include <napa-async.h>
 
 #include <atomic>
 #include <functional>
@@ -22,7 +23,7 @@ void Increase(const FunctionCallbackInfo<Value>& args) {
 
     auto value = args[0]->Uint32Value();
 
-    napa::module::PostAsyncWork(Local<Function>::Cast(args[1]),
+    napa::zone::PostAsyncWork(Local<Function>::Cast(args[1]),
         [value]() {
             // This runs at the separate thread.
             _now += value;
@@ -51,7 +52,7 @@ void IncreaseSync(const FunctionCallbackInfo<Value>& args) {
 
     auto value = args[0]->Uint32Value();
 
-    napa::module::DoAsyncWork(Local<Function>::Cast(args[1]),
+    napa::zone::DoAsyncWork(Local<Function>::Cast(args[1]),
         [value](auto complete) {
             // This runs at the same thread.
             _now += value;

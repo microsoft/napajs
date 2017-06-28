@@ -10,7 +10,7 @@ namespace napa {
 namespace providers {
 
     /// <summary> Initializes and loads all providers based on the provided settings. </summary>
-    bool Initialize(const napa::PlatformSettings& settings);
+    bool Initialize(const settings::PlatformSettings& settings);
 
     /// <summary> Clean up and destroy all loaded providers. </summary>
     void Shutdown();

@@ -28,7 +28,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <DisableSpecificWarnings>4100;4996;4459</DisableSpecificWarnings>
-      <PreprocessorDefinitions>NAPA_EXPORTS;NAPA_LOG_DISABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NAPA_EXPORTS;NAPA_BINDING_EXPORTS;NAPA_LOG_DISABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(NapaVanillaRoot)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -37,13 +37,13 @@
   <!-- Product code that is tested and needs to compile -->
   <ItemGroup>
     <ClCompile Include="$(NapaVanillaRoot)\src\module\core-modules\node\file-system-helpers.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\module\module-resolver.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\module\worker-context.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\module\loader\module-resolver.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\platform.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\platform\win\thread-local-storage.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\simple-thread-pool.cpp" />
-    <ClCompile Include="$(NapaVanillaRoot)\src\scheduler\timeout-service.cpp" />
     <ClCompile Include="$(NapaVanillaRoot)\src\settings\settings-parser.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\zone\simple-thread-pool.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\zone\timeout-service.cpp" />
+    <ClCompile Include="$(NapaVanillaRoot)\src\zone\worker-context.cpp" />
   </ItemGroup>
 
   <!-- Test code -->
@@ -51,8 +51,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="module\file-system-helpers-tests.cpp" />
     <ClCompile Include="module\module-resolver-tests.cpp" />
-    <ClCompile Include="scheduler\scheduler-tests.cpp" />
-    <ClCompile Include="scheduler\timeout-service-tests.cpp" />
+    <ClCompile Include="zone\scheduler-tests.cpp" />
+    <ClCompile Include="zone\timeout-service-tests.cpp" />
     <ClCompile Include="settings\parser-tests.cpp" />
   </ItemGroup>
 

@@ -8,17 +8,17 @@
 namespace napa {
 
     /// <summary> Initializes napa with global scope settings. </summary>
-    inline ResponseCode Initialize(const std::string& settings = "") {
+    inline ResultCode Initialize(const std::string& settings = "") {
         return napa_initialize(STD_STRING_TO_NAPA_STRING_REF(settings));
     }
 
     /// <summary> Initialize napa using console provided arguments. </summary>
-    inline ResponseCode InitializeFromConsole(int argc, char* argv[]) {
+    inline ResultCode InitializeFromConsole(int argc, char* argv[]) {
         return napa_initialize_from_console(argc, argv);
     }
 
     /// <summary> Shut down napa. </summary>
-    inline ResponseCode Shutdown() {
+    inline ResultCode Shutdown() {
         return napa_shutdown();
     }
 
@@ -33,9 +33,9 @@ namespace napa {
             _handle = napa_zone_create(STD_STRING_TO_NAPA_STRING_REF(id));
 
             auto res = napa_zone_init(_handle, STD_STRING_TO_NAPA_STRING_REF(settings));
-            if (res != NAPA_RESPONSE_SUCCESS) {
+            if (res != NAPA_RESULT_SUCCESS) {
                 napa_zone_release(_handle);
-                throw std::runtime_error(napa_response_code_to_string(res));
+                throw std::runtime_error(napa_result_code_to_string(res));
             }
         }
 
@@ -59,7 +59,7 @@ namespace napa {
             napa_zone_broadcast(
                 _handle,
                 STD_STRING_TO_NAPA_STRING_REF(source),
-                [](napa_response_code code, void* context) {
+                [](napa_result_code code, void* context) {
                     // Ensures the context is deleted when this scope ends.
                     std::unique_ptr<BroadcastCallback> callback(reinterpret_cast<BroadcastCallback*>(context));
 
@@ -69,11 +69,11 @@ namespace napa {
 
         /// <summary> Compiles and run the provided source code on all zone workers synchronously. </summary>
         /// <param name="source"> The source code. </param>
-        ResponseCode BroadcastSync(const std::string& source) {
-            std::promise<ResponseCode> prom;
+        ResultCode BroadcastSync(const std::string& source) {
+            std::promise<ResultCode> prom;
             auto fut = prom.get_future();
 
-            Broadcast(source, [&prom](ResponseCode code) {
+            Broadcast(source, [&prom](ResultCode code) {
                 prom.set_value(code);
             });
 
@@ -81,47 +81,47 @@ namespace napa {
         }
 
         /// <summary> Executes a pre-loaded JS function asynchronously. </summary>
-        /// <param name="request"> The execution request. </param>
+        /// <param name="spec"> A function spec to call. </param>
         /// <param name="callback"> A callback that is triggered when execution is done. </param>
-        void Execute(const ExecuteRequest& request, ExecuteCallback callback) {
+        void Execute(const FunctionSpec& spec, ExecuteCallback callback) {
             // Will be deleted on when the callback scope ends.
             auto context = new ExecuteCallback(std::move(callback));
 
-            napa_zone_execute_request req;
-            req.module = request.module;
-            req.function = request.function;
-            req.arguments = request.arguments.data();
-            req.arguments_count = request.arguments.size();
-            req.options = request.options;
+            napa_zone_function_spec req;
+            req.module = spec.module;
+            req.function = spec.function;
+            req.arguments = spec.arguments.data();
+            req.arguments_count = spec.arguments.size();
+            req.options = spec.options;
 
             // Release ownership of transport context
-            req.transport_context = reinterpret_cast<void*>(request.transportContext.release());
+            req.transport_context = reinterpret_cast<void*>(spec.transportContext.release());
 
-            napa_zone_execute(_handle, req, [](napa_zone_execute_response response, void* context) {
+            napa_zone_execute(_handle, req, [](napa_zone_result result, void* context) {
                 // Ensures the context is deleted when this scope ends.
                 std::unique_ptr<ExecuteCallback> callback(reinterpret_cast<ExecuteCallback*>(context));
 
-                ExecuteResponse res;
-                res.code = response.code;
-                res.errorMessage = NAPA_STRING_REF_TO_STD_STRING(response.error_message);
-                res.returnValue = NAPA_STRING_REF_TO_STD_STRING(response.return_value);
+                Result res;
+                res.code = result.code;
+                res.errorMessage = NAPA_STRING_REF_TO_STD_STRING(result.error_message);
+                res.returnValue = NAPA_STRING_REF_TO_STD_STRING(result.return_value);
 
                 // Assume ownership of transport context
                 res.transportContext.reset(
-                    reinterpret_cast<napa::transport::TransportContext*>(response.transport_context));
+                    reinterpret_cast<napa::transport::TransportContext*>(result.transport_context));
 
                 (*callback)(std::move(res));
             }, context);
         }
 
         /// <summary> Executes a pre-loaded JS function synchronously. </summary>
-        /// <param name="request"> The execution request. </param>
-        ExecuteResponse ExecuteSync(const ExecuteRequest& request) {
-            std::promise<ExecuteResponse> prom;
+        /// <param name="spec"> The function spec to call. </param>
+        Result ExecuteSync(const FunctionSpec& spec) {
+            std::promise<Result> prom;
             auto fut = prom.get_future();
 
-            Execute(request, [&prom](ExecuteResponse response) {
-                prom.set_value(std::move(response));
+            Execute(spec, [&prom](Result result) {
+                prom.set_value(std::move(result));
             });
 
             return fut.get();

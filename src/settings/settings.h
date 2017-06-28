@@ -7,6 +7,7 @@
 
 
 namespace napa {
+namespace settings {
 
     /// <summary> Zone specific settings. </summary>
     struct ZoneSettings {
@@ -45,4 +46,5 @@ namespace napa {
         /// <summary> A flag to specify whether v8 should be initialized. </summary>
         bool initV8 = true;
     };
+}
 }

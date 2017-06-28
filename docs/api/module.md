@@ -40,7 +40,7 @@ As you can count on NPM, most modules are pure JavaScript. These are only a few 
 | ------------------------------------------------------------ | ---------- | ------------- | -------------- | ------------ |
 | Export JavaScript function only                              |            |               |                |  hello-world [[.md](../../examples/modules/hello-world/README.md) [.cpp](../../examples/modules/hello-world/node/addon.cpp) [test](../../examples/modules/hello-world/test/test.ts)]                           |
 | Export JavaScript object (ObjectWrap)                        |      X     |               |                |  plus-number [[.md](../../examples/modules/plus-number/README.md) [.cpp](../../examples/modules/plus-number/node/addon.cpp) [test](../../examples/modules/plus-number/test/module-test/test.ts)]            |
-| Share C++ object across isolates                             |      X     |      X        |                |  allocator-wrap [[.h](../../src/module/core-modules/napa-wraps/allocator-wrap.h) [.cpp](../../src/module/core-modules/napa-wraps/allocator-wrap.cpp)]            |
+| Share C++ object across isolates                             |      X     |      X        |                |  allocator-wrap [[.h](../../src/module/core-modules/napa/allocator-wrap.h) [.cpp](../../src/module/core-modules/napa/allocator-wrap.cpp)]            |
 | Export asynchronous JavaScript function                      |      X     |               |      X         |  async-number [[.md](../../examples/modules/async-number/README.md) [.cpp](../../examples/modules/async-number/node/addon.cpp) [test](../../examples/modules/async-number/test/test.ts)]            |
 
 ## Special topics

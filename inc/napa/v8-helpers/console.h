@@ -12,8 +12,8 @@ namespace v8_helpers {
         /// <param name="argv"> Actual arguments. </param>
         static void Log(int argc, v8::Local<v8::Value> argv[]) {
             auto isolate = v8::Isolate::GetCurrent();
-            auto context = isolate->GetCurrentContext();
             v8::HandleScope scope(isolate);
+            auto context = isolate->GetCurrentContext();
 
             auto console = v8::Local<v8::Object>::Cast(context->Global()->Get(
                 v8_helpers::MakeV8String(isolate, "console")));

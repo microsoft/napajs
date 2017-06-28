@@ -1,13 +1,15 @@
 #include "catch.hpp"
 
-#include <module/module-resolver.h>
-#include <napa/module/platform.h>
+#include <module/loader/module-resolver.h>
+#include <platform/platform.h>
 
 #include <boost/filesystem.hpp>
 
 #include <sstream>
 
+using namespace napa;
 using namespace napa::module;
+
 
 namespace {
 

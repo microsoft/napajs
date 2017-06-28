@@ -14,7 +14,7 @@ private:
     class NapaInitialization {
     public:
         NapaInitialization() {
-            napa::PlatformSettings settings;
+            napa::settings::PlatformSettings settings;
             settings.loggingProvider = "console";
             napa::providers::Initialize(settings);
 
