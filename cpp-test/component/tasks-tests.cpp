@@ -121,7 +121,7 @@ TEST_CASE("tasks", "[tasks]") {
         spec.arguments = { NAPA_STRING_REF("3"), NAPA_STRING_REF("5") };
 
         Result result;
-        TimeoutTaskDecorator<CallTask>(100ms, std::make_shared<CallContext>(spec, [&](Result res) {
+        TimeoutTaskDecorator<CallTask>(500ms, std::make_shared<CallContext>(spec, [&](Result res) {
             result = std::move(res);
         })).Execute();
 
@@ -136,7 +136,7 @@ TEST_CASE("tasks", "[tasks]") {
         spec.function = NAPA_STRING_REF("f3");
 
         Result result;
-        TimeoutTaskDecorator<CallTask>(30ms, std::make_shared<CallContext>(spec, [&](Result res) {
+        TimeoutTaskDecorator<CallTask>(500ms, std::make_shared<CallContext>(spec, [&](Result res) {
             result = std::move(res);
         })).Execute();
 
@@ -152,7 +152,7 @@ TEST_CASE("tasks", "[tasks]") {
         request1.function = NAPA_STRING_REF("f4");
 
         Result response1;
-        TimeoutTaskDecorator<CallTask>(30ms, std::make_shared<CallContext>(request1, [&](Result res) {
+        TimeoutTaskDecorator<CallTask>(500ms, std::make_shared<CallContext>(request1, [&](Result res) {
             response1 = std::move(res);
         })).Execute();
 
@@ -164,7 +164,7 @@ TEST_CASE("tasks", "[tasks]") {
         request2.arguments = { NAPA_STRING_REF("3"), NAPA_STRING_REF("5") };
 
         Result response2;
-        TimeoutTaskDecorator<CallTask>(100ms, std::make_shared<CallContext>(request2, [&](Result res) {
+        TimeoutTaskDecorator<CallTask>(500ms, std::make_shared<CallContext>(request2, [&](Result res) {
             response2 = std::move(res);
         })).Execute();
 

@@ -31,9 +31,7 @@ void ZoneWrap::Init() {
     // Prototypes.
     NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "getId", GetId);
     NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "broadcast", Broadcast);
-    NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "broadcastSync", BroadcastSync);
     NODE_SET_PROTOTYPE_METHOD(functionTemplate, "execute", Execute);
-    NODE_SET_PROTOTYPE_METHOD(functionTemplate, "executeSync", ExecuteSync);
 
     // Set persistent constructor into V8.
     NAPA_SET_PERSISTENT_CONSTRUCTOR(exportName, functionTemplate->GetFunction());
@@ -89,19 +87,6 @@ void ZoneWrap::Broadcast(const v8::FunctionCallbackInfo<v8::Value>& args) {
     );
 }
 
-void ZoneWrap::BroadcastSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    auto isolate = v8::Isolate::GetCurrent();
-
-    CHECK_ARG(isolate, args[0]->IsString(), "first argument to zone.broadcastSync must be the javascript source");
-
-    v8::String::Utf8Value source(args[0]->ToString());
-
-    auto wrap = ObjectWrap::Unwrap<ZoneWrap>(args.Holder());
-    auto resultCode = wrap->_zoneProxy->BroadcastSync(*source);
-
-    args.GetReturnValue().Set(v8::Uint32::NewFromUnsigned(isolate, resultCode));
-}
-
 void ZoneWrap::Execute(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
 
@@ -134,19 +119,6 @@ void ZoneWrap::Execute(const v8::FunctionCallbackInfo<v8::Value>& args) {
             delete result;
         }
     );
-}
-
-void ZoneWrap::ExecuteSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    auto isolate = v8::Isolate::GetCurrent();
-
-    CHECK_ARG(isolate, args[0]->IsObject(), "first argument to zone.execute must be the function spec object");
-
-    CreateRequestAndExecute(args[0]->ToObject(), [&args](const napa::FunctionSpec& spec) {
-        auto wrap = ObjectWrap::Unwrap<ZoneWrap>(args.Holder());
-
-        napa::Result result = wrap->_zoneProxy->ExecuteSync(spec);
-        args.GetReturnValue().Set(CreateResponseObject(result));
-    });
 }
 
 static v8::Local<v8::Object> CreateResponseObject(const napa::Result& result) {

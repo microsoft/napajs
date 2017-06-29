@@ -31,10 +31,10 @@ describe('napajs/zone', function () {
             assert.strictEqual(napaZone1.id, 'napa-zone1');
         });
 
-        it('@napa: default settings', () => {
+        it('@napa: default settings', async () => {
             // Zone should be destroyed when going out of scope.
-            let result = napaZone1.executeSync('../lib/zone', 'create', ['new-zone']);
-            console.log(result.value);
+            let result = await napaZone1.execute('../lib/zone', 'create', ['new-zone']);
+            assert.equal(result.value.id, "new-zone");
         });
 
         it('@node: zone id already exists', () => {
@@ -42,7 +42,9 @@ describe('napajs/zone', function () {
         });
 
         it('@napa: zone id already exists', () => {
-            assert.throws(() => { napaZone1.executeSync('../lib/zone', 'create', ['napa-zone1']); });
+            shouldFail(() => {
+                return napaZone1.execute('../lib/zone', 'create', ['napa-zone1']);
+            });
         });
     });
 
@@ -59,13 +61,13 @@ describe('napajs/zone', function () {
             assert.strictEqual(zone.id, 'napa-zone1');
         });
 
-        it('@napa: get napa zone', () => {
-            let result = napaZone1.executeSync('../lib/zone', "get", ['napa-zone1']);
+        it('@napa: get napa zone', async () => {
+            let result = await napaZone1.execute('../lib/zone', "get", ['napa-zone1']);
             assert.strictEqual(result.value.id, 'napa-zone1');
         });
 
-        it('@napa: get node zone', () => {
-            let result = napaZone1.executeSync('../lib/zone', "get", ['node']);
+        it('@napa: get node zone', async () => {
+            let result = await napaZone1.execute('../lib/zone', "get", ['node']);
             assert.strictEqual(result.value.id, 'node');
         });
 
@@ -75,8 +77,8 @@ describe('napajs/zone', function () {
             assert.strictEqual(zone.id, 'napa-zone2');
         });
 
-        it('@napa: get napa created zone', () => {
-            let result = napaZone1.executeSync('../lib/zone', 'get', ['napa-zone2']);
+        it('@napa: get napa created zone', async () => {
+            let result = await napaZone1.execute('../lib/zone', 'get', ['napa-zone2']);
             assert.strictEqual(result.value.id, 'napa-zone2');
         });
 
@@ -85,7 +87,9 @@ describe('napajs/zone', function () {
         });
 
         it('@napa: zone not existed', () => {
-            assert.throws(() => { napaZone1.executeSync('napajs/lib/zone', 'get', ['zonex']); });
+            shouldFail(() => { 
+                return napaZone1.execute('../lib/zone', 'get', ['zonex']); 
+            });
         });
     });
 
@@ -94,8 +98,8 @@ describe('napajs/zone', function () {
             assert.strictEqual(napa.zone.current.id, 'node');
         });
 
-        it('@napa', () => {
-            let result = napaZone1.executeSync(napaZoneTestModule, "getCurrentZone", []);
+        it('@napa', async () => {
+            let result = await napaZone1.execute(napaZoneTestModule, "getCurrentZone", []);
             assert.strictEqual(result.value.id, 'napa-zone1');
         });
     });

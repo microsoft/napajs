@@ -4,7 +4,8 @@ import * as path from 'path';
 
 let NAPA_ZONE_TEST_MODULE = path.resolve(__dirname, 'napa-zone/test');
 
-describe('napajs/memory', () => {
+describe('napajs/memory', function() {
+    this.timeout(0);
     let napaZone = napa.zone.create('zone5');
 
     describe('Handle', () => {
@@ -31,7 +32,7 @@ describe('napajs/memory', () => {
         });
         
         it('@napa: crtAllocator', () => {
-            napaZone.executeSync(NAPA_ZONE_TEST_MODULE, "crtAllocatorTest", []);
+            napaZone.execute(NAPA_ZONE_TEST_MODULE, "crtAllocatorTest", []);
         });
     
         it('@node: defaultAllocator', () => {
@@ -41,7 +42,7 @@ describe('napajs/memory', () => {
         });
 
         it('@napa: defaultAllocator', () => {
-            napaZone.executeSync(NAPA_ZONE_TEST_MODULE, "defaultAllocatorTest", []);
+            napaZone.execute(NAPA_ZONE_TEST_MODULE, "defaultAllocatorTest", []);
         });
 
         it('@node: debugAllocator', () => {
@@ -59,7 +60,7 @@ describe('napajs/memory', () => {
         });
 
         it('@napa: debugAllocator', () => {
-            napaZone.executeSync(NAPA_ZONE_TEST_MODULE, "debugAllocatorTest", []);
+            napaZone.execute(NAPA_ZONE_TEST_MODULE, "debugAllocatorTest", []);
         });
     });
 });

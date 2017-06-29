@@ -36,9 +36,7 @@ namespace module {
         // ZoneWrap methods
         static void GetId(const v8::FunctionCallbackInfo<v8::Value>& args);
         static void Broadcast(const v8::FunctionCallbackInfo<v8::Value>& args);
-        static void BroadcastSync(const v8::FunctionCallbackInfo<v8::Value>& args);
         static void Execute(const v8::FunctionCallbackInfo<v8::Value>& args);
-        static void ExecuteSync(const v8::FunctionCallbackInfo<v8::Value>& args);
 
         /// <summary> Friend default constructor callback. </summary>
         template <typename WrapType>

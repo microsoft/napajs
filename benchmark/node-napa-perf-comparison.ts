@@ -18,25 +18,22 @@ export function test1(): [number, number] {
     });
 }
 
-export function bench(zone: napa.zone.Zone): Promise<void> {
+export async function bench(zone: napa.zone.Zone): Promise<void> {
     zone.broadcast(timeIt.toString());
     zone.broadcast(test1.toString());
 
     // Warm up.
     test1();
-    zone.executeSync('', 'test1', []);
+    await zone.execute('', 'test1', []);
 
     // Actual test.
     let table = [];
     table.push(["node time", "napa time"]);
-    table.push([
-        formatTimeDiff(test1()), 
-        formatTimeDiff(zone.executeSync('', 'test1', []).value)]);
-
+    let nodeTime = formatTimeDiff(test1());
+    let napaTime = formatTimeDiff((await zone.execute('', 'test1', [])).value);
+    table.push([nodeTime, napaTime]);
+        
     console.log("## Node vs Napa JavaScript execution performance\n");
     console.log(mdTable(table));
     console.log('');
-    return new Promise<void>((resolve, reject) => {
-        resolve();
-    });
 }
