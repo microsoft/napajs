@@ -67,15 +67,6 @@ export class ZoneImpl implements zone.Zone {
         });
     }
 
-    public broadcastSync(arg1: any, arg2?: any) : void {
-        let source: string = this.createBroadcastSource(arg1, arg2);
-
-        let resultCode: number = this._nativeZone.broadcastSync(source);
-        if (resultCode !== 0) {
-            throw new Error("broadcast failed with result code: " + resultCode);
-        }
-    }
-
     public execute(arg1: any, arg2: any, arg3?: any, arg4?: any) : Promise<zone.Result> {
         let spec : FunctionSpec = this.createExecuteRequest(arg1, arg2, arg3, arg4);
         
@@ -90,17 +81,6 @@ export class ZoneImpl implements zone.Zone {
                 }
             });
         });
-    }
-
-    public executeSync(arg1: any, arg2: any, arg3?: any, arg4?: any) : zone.Result {
-        let spec : FunctionSpec = this.createExecuteRequest(arg1, arg2, arg3, arg4);
-
-        let result = this._nativeZone.executeSync(spec);
-        if (result.code === 0) {
-            return new ExecuteResult(result.returnValue, transport.createTransportContext(result.contextHandle));
-        } else {
-            throw new Error(result.errorMessage);
-        }
     }
 
     private createBroadcastSource(arg1: any, arg2?: any) : string {

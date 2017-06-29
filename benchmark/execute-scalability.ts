@@ -37,18 +37,18 @@ function testCrc() {
     return result;
 }
 
-export function bench(zone: napa.zone.Zone): Promise<void> {
+export async function bench(zone: napa.zone.Zone): Promise<void> {
     console.log("Benchmarking execute scalability...");
 
     // Prepare a empty function.
-    zone.broadcastSync(makeCRCTable.toString());
-    zone.broadcastSync("var crcTable = makeCRCTable();");
-    zone.broadcastSync(crc32.toString());
-    zone.broadcastSync(testCrc.toString());
+    await zone.broadcast(makeCRCTable.toString());
+    await zone.broadcast("var crcTable = makeCRCTable();");
+    await zone.broadcast(crc32.toString());
+    await zone.broadcast(testCrc.toString());
 
     // Warm-up.
     let crcResult = testCrc();
-    zone.broadcastSync("testCrc()");
+    await zone.broadcast("testCrc()");
 
     // Execute in Node with 1 thread.
     let start = process.hrtime();
@@ -62,7 +62,7 @@ export function bench(zone: napa.zone.Zone): Promise<void> {
 
         return new Promise<void>((resolve, reject) => {
             for (let i = 0; i < workers; ++i) {
-                zone.execute("", "testCrc", []).then((result: napa.zone.ExecuteResult) => {
+                zone.execute("", "testCrc", []).then((result: napa.zone.Result) => {
                     assert(crcResult === result.value);
                     ++finished;
                     if (finished === workers) {
@@ -75,16 +75,14 @@ export function bench(zone: napa.zone.Zone): Promise<void> {
     };
 
     // Execute from 1 worker to 8 workers.
-    return scalabilityTest(1)
-        .then(() => scalabilityTest(2))
-        .then(() => scalabilityTest(4))
-        .then(() => scalabilityTest(8))
-        .then(() => { 
-            console.log("## Execute scalability\n")
-            console.log(mdTable([
-                ["node", "napa - 1 worker", "napa - 2 workers", "napa - 4 workers", "napa - 8 workers"],
-                [nodeTime, executeTime[1], executeTime[2], executeTime[4], executeTime[8]]
-            ]));
-            console.log('');
-        });
+    await scalabilityTest(1);
+    await scalabilityTest(2);
+    await scalabilityTest(4);
+    await scalabilityTest(8);
+    console.log("## Execute scalability\n")
+    console.log(mdTable([
+        ["node", "napa - 1 worker", "napa - 2 workers", "napa - 4 workers", "napa - 8 workers"],
+        [nodeTime, executeTime[1], executeTime[2], executeTime[4], executeTime[8]]
+    ]));
+    console.log('');
 }

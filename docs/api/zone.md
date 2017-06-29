@@ -1,6 +1,7 @@
 # namespace `zone`
 
 ## Table of Contents
+- [The concept of Zone](#zone)
 - [`create(id: string, settings: ZoneSettings = DEFAULT_SETTINGS): Zone`](#create-id-string-settings-zonesettings-default_settings-zone)
 - [`get(id: string): Zone`](#get-id-string-zone)
 - [`current: Zone`](#current-zone)
@@ -12,16 +13,28 @@
     - [`zone.id: string`](#zone-id-string)
     - [`zone.broadcast(code: string): Promise<void>`](#zone-broadcast-code-string-promise-void)
     - [`zone.broadcast(function: (...args: any[]) => void, args: any[]): Promise<void>`](#zone-broadcast-function-args-any-void-args-any-promise-void)
-    - [`zone.broadcastSync(code: string): void`](#zone-broadcastsync-code-string-void)
-    - [`zone.broadcastSync(function: (...args: any[]) => void, args: any[]): void`](#zone-broadcastsync-function-args-any-void-args-any-void)
-    - [`zone.execute(moduleName: string, functionName: string, args: any[], timeout: number): Promise<Result>`](#zone-execute-modulename-string-functionname-string-args-any-timeout-number-promise-result)
-    - [`zone.execute(function: (...args[]) => any, args: any[], timeout: number): Promise<Result>`](#zone-execute-function-args-any-args-any-timeout-number-promise-result)
-    - [`zone.executeSync(moduleName: string, functionName: string, args: any[], timeout: number): Result`](#zone-executesync-modulename-string-functionname-string-args-any-timeout-number-result)
-    - [`zone.executeSync(function: (...args: any[]) => any, args: any[], timeout: number): Result`](#zone-executesync-function-args-any-any-args-any-timeout-number-result)
+    - [`zone.execute(moduleName: string, functionName: string, args: any[], options?: CallOptions): Promise<Result>`](#zone-execute-modulename-string-functionname-string-args-any-options-calloptions-number-promise-result)
+    - [`zone.execute(function: (...args[]) => any, args: any[], options?: CallOptions): Promise<Result>`](#zone-execute-function-args-any-args-any-options-calloptions-number-promise-result)
+- interface [`CallOptions`](#interface-calloptions)
+    - [`options.timeout: number`](#options-timeout-number)
+    - [`options.transport: TransportOption`](#options-transport-transportoption)
 - interface [`Result`](#interface-result)
     - [`result.value: any`](#result-value-any)
     - [`result.payload: string`](#result-payload-string)
     - [`result.transportContext: transport.TransportContext`](#result-transportcontext-transport-transportcontext)
+
+## Zone
+ Zone is a key concept of napajs that exposes multi-thread capabilities in JavaScript world. 
+ 
+ Zone consists of one or multiple JavaScript threads, we name each thread `worker`. Workers within a zone are symetric, which means execute on any worker from the zone should return the same result, and the internal state of every worker should be the same from long running point of view. 
+ 
+ Multiple zones can co-exist in the same process, with each loading different code, bearing different states or applying different policies, like heap size, etc. The purpose of having multiple zone is to allow multiple roles of a complex work, each role loads the minimum resource for its own usage.
+
+ There are 2 operations, designed to reinforce the symetricity of workers:
+ 1) Broadcast - run code that changes worker state on all workers, returning a promise for pending operation. Through the promise, we can only know if operation succeed or failed. Usually we use `broadcast` to bootstrap application, pre-cache objects, or change application settings.
+ 2) Execute - run code that doesn't change worker state on an abitrary worker, returning a promise of getting the result. Execute is designed for doing the real work.
+
+ Zone operations are on a basis of first-come-first-serve, while `broadcast` takes higher priority over `execute`.
 
 ## API
 ### create(id: string, settings: ZoneSettings): Zone
@@ -113,42 +126,12 @@ zone.broadcast((state) => {
         console.log('broadcast failed:', error)
     });
 ```
-### zone.broadcastSync(code: string): void
-It synchronously broadcasts a snippet of JavaScript code in a string to all workers. If any of the workers failed to execute the code, an error will be thrown with message.
-
-Example:
-
-```ts
-try {
-    zone.broadcastSync("var state = 0;");
-}
-catch (error) {
-    console.log('broadcast failed:', error);
-}
-```
-### zone.broadcastSync(function: (...args: any[]) => void, args: any[]): void
-
-It synchronously broadcasts an annoymous function with its arguments to all workers. If any of the workers failed to execute the code, an error will be thrown with message.
-
-*Please note that Napa doesn't support closure in 'function' during broadcastSync.
-
-Example:
-```ts
-try {
-    zone.broadcastSync(() => {
-            require('some-module').setModuleState(state)
-        }, [{field1: 1}]);
-}
-catch (error) {
-    console.log('broadcast failed:', error);
-}
-```
-### zone.execute(moduleName: string, functionName: string, args: any[], timeout: number = 0): Promise\<any\>
+### zone.execute(moduleName: string, functionName: string, args: any[], options?: CallOptions): Promise\<any\>
 Execute a function asynchronously on arbitrary worker via module name and function name. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns a Promise of [`Result`](#interface-result). If error happens, either bad code, user exception, or timeout is reached, promise will be rejected.
 
 Example: Execute function 'bar' in module 'foo', with arguments [1, 'hello', { field1: 1 }]. 300ms timeout is applied.
 ```ts
-zone.execute('foo', 'bar', [1, "hello", {field1: 1}], 300)
+zone.execute('foo', 'bar', [1, "hello", {field1: 1}], { timeout: 300 })
     .then((result: Result) => {
         console.log('execute succeeded:', result.value);
     })
@@ -158,7 +141,7 @@ zone.execute('foo', 'bar', [1, "hello", {field1: 1}], 300)
 
 ```
 
-### zone.execute(function: (...args: any[]) => any, args: any[], timeout: number = 0): Promise\<any\>
+### zone.execute(function: (...args: any[]) => any, args: any[], options?: CallOptions): Promise\<any\>
 
 Execute an anonymous function asynchronously on arbitrary worker. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns a Promise of [`Result`](#interface-result). If error happens, either bad code, user exception, or timeout is reached, promise will be rejected.
 
@@ -175,39 +158,14 @@ zone.execute((a: number, b: string, c: object) => {
     });
 
 ```
+## Interface `CallOptions`
+Interface for options to call function in `zone.execute`.
 
-### zone.executeSync(moduleName: string, functionName: string, args: any[], timeout: number = 0): any
+### options.timeout: number
+Timeout in milliseconds. Default value 0 indicates no timeout.
 
-Execute a function synchronously on arbitrary worker via module name and function name. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns an [`Result`](#interface-result). If error happens, either bad code, user exception, or timeout is reached, error will be thrown.
-
-Example: Execute function 'bar' in module 'foo', with arguments [1, 'hello', { field1: 1 }]. 300ms timeout is applied.
-```ts
-try {
-    let result = zone.executeSync('foo', 'bar', [1, "hello", {field1: 1}], 300);
-    console.log("execute succeeded:", result.value);
-}
-catch (error) {
-    console.log("execute failed:", error);
-}
-
-```
-
-### zone.executeSync(function: (...args: any[]) => any, args: any[], timeout: number = 0): any
-Execute an annoymouse function synchronously on arbitrary worker. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns an [`Result`](#interface-result). If error happens, either bad code, user exception, or timeout is reached, error will be thrown.
-
-Example: Execute annoymouse function sychronously, with arguments [1, 'hello', { field1: 1 }]. No timeout is applied.
-```ts
-try {
-    let result = zone.executeSync((a: number, b: string, c: object) => {
-            return a + b + JSON.stringify(c);
-        }, [1, "hello", {field1: 1}]);
-    console.log("execute succeeded:", result.value);
-}
-catch (error) {
-    console.log("execute failed:", error);
-}
-
-```
+### options.transport: TransportOption
+(reserved) Control flag that indicate if transport.marshall/unmarshall is automatically invoked by the framework, or manually by user.
 
 ## Interface `Result`
 Interface to access return value of `zone.execute` or `zone.executeSync`.
