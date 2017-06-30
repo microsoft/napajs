@@ -4,8 +4,12 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/property_tree/json_parser.hpp>
 
+#include <rapidjson/document.h>
+#include <rapidjson/error/en.h>
+#include <rapidjson/istreamwrapper.h>
+
+#include <fstream>
 #include <sstream>
 #include <unordered_set>
 
@@ -231,11 +235,15 @@ ModuleInfo ModuleResolver::ModuleResolverImpl::LoadAsDirectory(const boost::file
 
     auto packageJson = fullPath / "package.json";
     if (boost::filesystem::is_regular_file(packageJson)) {
-        boost::property_tree::ptree package;
+        rapidjson::Document package;
         try {
-            boost::property_tree::json_parser::read_json(packageJson.string(), package);
+            std::ifstream ifs(packageJson.string());
+            rapidjson::IStreamWrapper isw(ifs);
+            if (package.ParseStream(isw).HasParseError()) {
+                throw std::runtime_error(rapidjson::GetParseError_En(package.GetParseError()));
+            }
 
-            boost::filesystem::path mainPath(package.get<std::string>("main"));
+            boost::filesystem::path mainPath(package["main"].GetString());
             mainPath = mainPath.normalize().make_preferred();
 
             auto moduleInfo = LoadAsFile(mainPath, fullPath);

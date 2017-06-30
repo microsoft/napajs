@@ -9,8 +9,12 @@
 #include <napa-log.h>
 
 #include <boost/dll.hpp>
-#include <boost/property_tree/json_parser.hpp>
 
+#include <rapidjson/document.h>
+#include <rapidjson/error/en.h>
+#include <rapidjson/istreamwrapper.h>
+
+#include <fstream>
 #include <string>
 
 using namespace napa;
@@ -66,17 +70,20 @@ static ProviderType* LoadProvider(
     auto modulePath = boost::filesystem::path(moduleInfo.packageJsonPath).parent_path();
 
     // Extract relative path to provider dll from package.json
-    boost::property_tree::ptree package;
-    boost::property_tree::json_parser::read_json(moduleInfo.packageJsonPath, package);
-    auto providerRelativePath = package.get_optional<std::string>(jsonProperyPath);
-    NAPA_ASSERT(
-        providerRelativePath.is_initialized(),
-        "missing property '%s' in '%s'",
-        jsonProperyPath.c_str(),
-        moduleInfo.packageJsonPath.c_str());
+    rapidjson::Document package;
+    std::ifstream ifs(moduleInfo.packageJsonPath);
+    rapidjson::IStreamWrapper isw(ifs);
+    NAPA_ASSERT(!package.ParseStream(isw).HasParseError(), rapidjson::GetParseError_En(package.GetParseError()));
+
+    NAPA_ASSERT(package.HasMember(jsonProperyPath.c_str()),
+                "missing property '%s' in '%s'",
+                jsonProperyPath.c_str(),
+                moduleInfo.packageJsonPath.c_str());
+
+    auto providerRelativePath = package[jsonProperyPath.c_str()].GetString();
 
     // Full path to provider dll
-    auto providerPath = (modulePath / providerRelativePath.get()).normalize().make_preferred();
+    auto providerPath = (modulePath / providerRelativePath).normalize().make_preferred();
 
     // boost::dll unloads dll when a reference object is gone.
     // Keep a static instance for each provider type (each template type will have its own static variable).
