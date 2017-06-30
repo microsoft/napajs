@@ -8,7 +8,12 @@
 #include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
-#include <boost/property_tree/json_parser.hpp>
+
+#include <rapidjson/document.h>
+#include <rapidjson/error/en.h>
+#include <rapidjson/istreamwrapper.h>
+
+#include <fstream>
 
 using namespace napa;
 using namespace napa::module;
@@ -140,15 +145,19 @@ std::vector<module_loader_helpers::CoreModuleInfo> module_loader_helpers::ReadCo
     // Reserve capacity to help avoiding too frequent allocation.
     coreModuleInfos.reserve(16);
 
-    boost::property_tree::ptree modules;
+    rapidjson::Document document;
     try {
-        boost::property_tree::json_parser::read_json(CORE_MODULES_JSON_PATH, modules);
+        std::ifstream ifs(CORE_MODULES_JSON_PATH);
+        rapidjson::IStreamWrapper isw(ifs);
+        if (document.ParseStream(isw).HasParseError()) {
+            throw std::runtime_error(rapidjson::GetParseError_En(document.GetParseError()));
+        }
 
-        for (const auto& value : modules) {
-            const auto& module = value.second;
+        for (const auto& obj : document.GetArray()) {
+            auto moduleName = obj["name"].GetString();
+            auto isBuiltIn = (obj["value"] == "builtin");
 
-            coreModuleInfos.emplace_back(module.get<std::string>("name"),
-                                         boost::iequals(module.get<std::string>("type"), "builtin"));
+            coreModuleInfos.emplace_back(moduleName, isBuiltIn);
         }
     } catch (const std::exception& ex) {
         LOG_ERROR("ModuleLoader", ex.what());

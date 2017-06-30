@@ -1,6 +1,6 @@
 {
   "name": "napajs",
-  "version": "0.4.11",
+  "version": "0.4.12",
   "author": "napajs",
   "main": "./lib/index.js",
   "types": "./types/index.d.ts",
@@ -11,8 +11,7 @@
     "@types/mocha": ">= 2.2.0"
   },
   "scripts": {
-    "install": "cmake-js compile",
-    "postinstall": "cmake-js clean",
+    "install": "cmake-js rebuild",
     "prepublish": "tsc -p lib",
     "pretest": "tsc -p test",
     "test": "mocha test --recursive"
