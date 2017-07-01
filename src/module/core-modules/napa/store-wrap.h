@@ -2,9 +2,10 @@
 
 #include <napa-module.h>
 #include <napa/module/common.h>
-#include "../../../store/store.h"
 
-#include <boost/thread/shared_mutex.hpp>
+#include <store/store.h>
+
+#include <mutex>
 
 namespace napa {
 namespace module {
@@ -64,8 +65,8 @@ namespace module {
         /// <summary> Store. </summary>
         std::shared_ptr<napa::store::Store> _store;
 
-        /// <summary> Shared mutex to value map access. </summary>
-        boost::shared_mutex _storeAccess;
+        /// <summary> Mutex to value map access. (use std::shared_mutex when it's public) </summary>
+        std::mutex _storeAccess;
     };
 }
 }

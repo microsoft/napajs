@@ -5,10 +5,11 @@
 #include "nop-metric-provider.h"
 
 #include <module/loader/module-resolver.h>
+#include <platform/dll.h>
 
 #include <napa-log.h>
 
-#include <boost/dll.hpp>
+#include <boost/filesystem/path.hpp>
 
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
@@ -85,10 +86,9 @@ static ProviderType* LoadProvider(
     // Full path to provider dll
     auto providerPath = (modulePath / providerRelativePath).normalize().make_preferred();
 
-    // boost::dll unloads dll when a reference object is gone.
     // Keep a static instance for each provider type (each template type will have its own static variable).
-    static auto createProviderFunc = boost::dll::import<ProviderType*()>(providerPath, functionName);
-
+    static dll::SharedLibrary library(providerPath.string());
+    auto createProviderFunc = library.Import<ProviderType*()>(functionName);
     return createProviderFunc();
 }
 

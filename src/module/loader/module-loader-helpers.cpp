@@ -1,13 +1,12 @@
 #include "module-loader-helpers.h" 
+
 #include <module/core-modules/node/file-system-helpers.h>
+#include <platform/dll.h>
 
 #include <napa-log.h>
 #include <napa/v8-helpers.h>
 
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
@@ -80,12 +79,12 @@ std::string module_loader_helpers::GetModuleDirectory(v8::Local<v8::Object> modu
 }
 
 const std::string& module_loader_helpers::GetNapaDllPath() {
-    static std::string dllPath = boost::dll::this_line_location().string();
+    static std::string dllPath = dll::ThisLineLocation();
     return dllPath;
 }
 
 const std::string& module_loader_helpers::GetNapaRuntimeDirectory() {
-    static std::string runtimeDirectory = boost::dll::this_line_location().parent_path().string();
+    static std::string runtimeDirectory = boost::filesystem::path(GetNapaDllPath()).parent_path().string();
     return runtimeDirectory;
 }
 
@@ -95,7 +94,7 @@ const std::string& module_loader_helpers::GetCurrentWorkingDirectory() {
 }
 
 const std::string& module_loader_helpers::GetLibDirectory() {
-    static std::string libDirectory = (boost::dll::this_line_location().parent_path().parent_path() / "lib").string();
+    static std::string libDirectory = (boost::filesystem::path(GetNapaDllPath()).parent_path().parent_path() / "lib").string();
     return libDirectory;
 }
 

@@ -1,8 +1,8 @@
 #include "module-resolver.h"
 
 #include <platform/platform.h>
+#include <utils/string.h>
 
-#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 
 #include <rapidjson/document.h>
@@ -133,7 +133,8 @@ ModuleResolver::ModuleResolverImpl::ModuleResolverImpl() {
     auto envPath = platform::GetEnv("NODE_PATH");
     if (!envPath.empty()) {
         std::vector<std::string> nodePaths;
-        boost::split(nodePaths, envPath, boost::is_any_of(platform::ENV_DELIMITER));
+        utils::string::Split(envPath, nodePaths, platform::ENV_DELIMITER);
+
         for (auto& nodePath : nodePaths) {
             if (boost::filesystem::exists(nodePath)) {
                 _nodePaths.emplace_back(std::move(nodePath));
