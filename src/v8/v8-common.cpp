@@ -10,8 +10,6 @@ void napa::v8_common::Shutdown() {}
 
 #include <napa-log.h>
 
-#include <boost/dll/runtime_symbol_info.hpp>
-
 // V8 libraries
 #include <libplatform/libplatform.h>
 #include <v8.h>

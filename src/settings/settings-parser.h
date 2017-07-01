@@ -1,8 +1,7 @@
 #pragma once
 
 #include "settings.h"
-
-#include <boost/algorithm/string.hpp>
+#include <utils/string.h>
 
 #include <iostream>
 #include <string>
@@ -33,7 +32,7 @@ namespace settings {
         std::vector<std::string> args;
 
         try {
-            boost::split(args, str, boost::is_any_of("\t "), boost::token_compress_on);
+            utils::string::Split(str, args, "\t ", true);
         }
         catch (std::exception& ex) {
             std::cerr << "Failed to split input string [" << str << "] error: " << ex.what() << std::endl;

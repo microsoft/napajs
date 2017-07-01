@@ -3,7 +3,7 @@
 
 #include <napa/v8-helpers.h>
 
-#include <boost/dll.hpp>
+#include <platform/dll.h>
 
 using namespace napa;
 using namespace napa::module;
@@ -15,7 +15,9 @@ bool BinaryModuleLoader::TryGet(const std::string& path, v8::Local<v8::Object>& 
     auto isolate = v8::Isolate::GetCurrent();
     v8::EscapableHandleScope scope(isolate);
 
-    auto napaModule = boost::dll::import<NapaModule>(path, napa::module::NAPA_MODULE_EXPORT);
+    auto library = std::make_shared<dll::SharedLibrary>(path);
+    auto napaModule = library->Import<NapaModule>(napa::module::NAPA_MODULE_EXPORT);
+
     JS_ENSURE_WITH_RETURN(isolate,
                           napaModule != nullptr,
                           false,
@@ -28,8 +30,7 @@ bool BinaryModuleLoader::TryGet(const std::string& path, v8::Local<v8::Object>& 
                           "Module version is not compatible: \"%s\"",
                           path.c_str());
 
-    // Since boost::dll unload dll when a reference object is gone, keep an instance into local store.
-    _modules.push_back(napaModule);
+    _modules.push_back(library);
 
     auto context = isolate->GetCurrentContext();
 

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "module-file-loader.h"
+#include "platform/dll.h"
 
-#include <boost/shared_ptr.hpp>
-
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -30,8 +30,7 @@ namespace module {
         BuiltInModulesSetter _builtInModulesSetter;
 
         /// <summary> It keeps binary modules loaded. </summary>
-        /// <remarks> boost::dll unload a shared library when no reference is there. </remarks>
-        std::vector<boost::shared_ptr<NapaModule>> _modules;
+        std::vector<std::shared_ptr<dll::SharedLibrary>> _modules;
     };
 
 }   // End of namespace module.

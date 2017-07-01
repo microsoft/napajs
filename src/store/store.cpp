@@ -3,8 +3,7 @@
 #include <napa-memory.h>
 #include <napa/stl/unordered_map.h>
 
-#include <boost/thread/shared_mutex.hpp>
-#include <boost/thread/locks.hpp>
+#include <mutex>
 
 using namespace napa::store;
 
@@ -73,11 +72,11 @@ namespace store {
 
     namespace {
         napa::stl::UnorderedMap<napa::stl::String, std::weak_ptr<Store>> _storeRegistry;
-        boost::shared_mutex _registryAccess;
+        std::mutex _registryAccess;
     } // namespace
 
     std::shared_ptr<Store> CreateStore(const char* id) {
-        boost::unique_lock<boost::shared_mutex> lockWrite(_registryAccess);
+        std::lock_guard<std::mutex> lockWrite(_registryAccess);
         
         std::shared_ptr<Store> store;
         auto it = _storeRegistry.find(id);
@@ -101,7 +100,7 @@ namespace store {
     }
 
     std::shared_ptr<Store> GetStore(const char* id) {
-        boost::shared_lock<boost::shared_mutex> lockRead(_registryAccess);
+        std::lock_guard<std::mutex> lockRead(_registryAccess);
         auto it = _storeRegistry.find(id);
         if (it != _storeRegistry.end()) {
             return it->second.lock();
@@ -110,7 +109,7 @@ namespace store {
     }
 
     size_t GetStoreCount() {
-        boost::unique_lock<boost::shared_mutex> lockWrite(_registryAccess);
+        std::lock_guard<std::mutex> lockWrite(_registryAccess);
         for (auto it = _storeRegistry.begin(); it != _storeRegistry.end(); ) {
             if (it->second.use_count() == 0) {
                 _storeRegistry.erase(it++);

@@ -1,15 +1,15 @@
 #include "napa-zone.h"
 
-#include "zone/eval-task.h"
-#include "zone/call-task.h"
-#include "zone/call-context.h"
-#include "zone/task-decorators.h"
+#include <platform/dll.h>
+#include <utils/string.h>
+#include <zone/eval-task.h>
+#include <zone/call-task.h>
+#include <zone/call-context.h>
+#include <zone/task-decorators.h>
 
 #include <napa-log.h>
 
-#include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/algorithm/string/replace.hpp>
 
 using namespace napa;
 using namespace napa::zone;
@@ -66,8 +66,8 @@ NapaZone::NapaZone(const settings::ZoneSettings& settings) : _settings(settings)
 }
 
 /// <summary> Load 'napajs' module during bootstrap. We use relative path to decouple from how module will be published.  </summary>
-static const std::string NAPAJS_MODULE_PATH = boost::dll::this_line_location().parent_path().parent_path().string();
-static const std::string BOOTSTRAP_SOURCE = "require('" + boost::replace_all_copy(NAPAJS_MODULE_PATH, "\\", "\\\\") + "');";
+static const std::string NAPAJS_MODULE_PATH = boost::filesystem::path(dll::ThisLineLocation()).parent_path().parent_path().string();
+static const std::string BOOTSTRAP_SOURCE = "require('" + utils::string::ReplaceAllCopy(NAPAJS_MODULE_PATH, "\\", "\\\\") + "');";
 
 void NapaZone::Init() {
     // Create the zone's scheduler.
