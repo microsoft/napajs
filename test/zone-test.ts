@@ -14,8 +14,6 @@ function shouldFail<T>(func: () => Promise<T>) {
         });
 }
 
-napa.runtime.setPlatformSettings({ loggingProvider: "nop" });
-
 describe('napajs/zone', function () {
     // disable timeouts. 
     // promise.then is always fired after mocha test timeout.

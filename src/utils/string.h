@@ -58,6 +58,22 @@ namespace string {
         Split(str, list, delimiters, compress);
     }
 
+    /// <summary> Trim the provided string. </summary>
+    inline void Trim(std::string &str) {
+        // Left trim
+        str.erase(0, str.find_first_not_of(" \n\r\t"));
+
+        // Right trim
+        str.erase(str.find_last_not_of(" \n\r\t") + 1);
+    }
+
+    /// <summary> Return a trimmed copy of the string. </summary>
+    inline std::string TrimCopy(const std::string &str) {
+        std::string copy;
+        Trim(copy);
+        return copy;
+    }
+
     /// <summary> In-place convert a string to lower case. </summary>
     inline void ToLower(std::string& str) {
         std::transform(str.begin(), str.end(), str.begin(), std::tolower);
@@ -102,6 +118,7 @@ namespace string {
     inline bool CaseInsensitiveEquals(const std::string& left, const std::string& right) {
         return CaseInsensitiveCompare(left, right) == 0;
     }
+
 }
 }
 }
