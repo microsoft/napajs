@@ -29,13 +29,17 @@ namespace settings {
     /// <returns> True if parsing succeeded, false otherwise. </returns>
     template <typename SettingsType>
     bool ParseFromString(const std::string& str, SettingsType& settings) {
-        std::vector<std::string> args;
+        auto strCopy = utils::string::TrimCopy(str);
+        if (strCopy.empty()) {
+            return true;
+        }
 
+        std::vector<std::string> args;
         try {
-            utils::string::Split(str, args, "\t ", true);
+            utils::string::Split(strCopy, args, "\t ", true);
         }
         catch (std::exception& ex) {
-            std::cerr << "Failed to split input string [" << str << "] error: " << ex.what() << std::endl;
+            std::cerr << "Failed to split input string [" << strCopy << "] error: " << ex.what() << std::endl;
             return false;
         }
 

@@ -9,6 +9,16 @@
 namespace napa {
 namespace settings {
 
+    /// <summary> Platform settings - setting that affect all zones. </summary>
+    struct PlatformSettings {
+
+        /// <summary> The logging provider. </summary>
+        std::string loggingProvider = "console";
+
+        /// <summary> The metric provider. </summary>
+        std::string metricProvider;
+    };
+
     /// <summary> Zone specific settings. </summary>
     struct ZoneSettings {
 
@@ -29,22 +39,6 @@ namespace settings {
 
         /// <summary> The maximum size that the isolate stack is allowed to grow in bytes. </summary>
         uint32_t maxStackSize = 500 * 1024;
-    };
-
-    /// <summary> Platform settings. These are cross-zone settings as well as default settings for zones. </summary>
-    struct PlatformSettings : ZoneSettings {
-
-        /// <summary> The logging provider. </summary>
-        std::string loggingProvider = "console";
-
-        /// <summary> The metric provider. </summary>
-        std::string metricProvider;
-
-        /// <summary> V8 flags. </summary>
-        std::vector<std::string> v8Flags;
-
-        /// <summary> A flag to specify whether v8 should be initialized. </summary>
-        bool initV8 = true;
     };
 }
 }

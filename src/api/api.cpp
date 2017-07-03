@@ -70,8 +70,7 @@ napa_result_code napa_zone_init(napa_zone_handle handle, napa_string_ref setting
     NAPA_ASSERT(_initialized, "Napa wasn't initialized");
     NAPA_ASSERT(handle, "Zone handle is null");
 
-    // Zone settings are based on platform settings.
-    settings::ZoneSettings zoneSettings = _platformSettings;
+    settings::ZoneSettings zoneSettings;
     if (!napa::settings::ParseFromString(NAPA_STRING_REF_TO_STD_STRING(settings), zoneSettings)) {
         LOG_ERROR("Api", "Failed to parse zone settings: %s", settings.data);
         return NAPA_RESULT_SETTINGS_PARSER_ERROR;
@@ -161,10 +160,8 @@ static napa_result_code napa_initialize_common() {
         return NAPA_RESULT_PROVIDERS_INIT_ERROR;
     }
 
-    if (_platformSettings.initV8) {
-        if (!napa::v8_common::Initialize()) {
-            return NAPA_RESULT_V8_INIT_ERROR;
-        }
+    if (!napa::v8_common::Initialize()) {
+        return NAPA_RESULT_V8_INIT_ERROR;
     }
 
     _initialized = true;
@@ -198,10 +195,7 @@ napa_result_code napa_shutdown() {
     NAPA_ASSERT(_initialized, "Napa wasn't initialized");
 
     napa::providers::Shutdown();
-
-    if (_platformSettings.initV8) {
-        napa::v8_common::Shutdown();
-    }
+    napa::v8_common::Shutdown();
 
     LOG_INFO("Api", "Napa shutdown successfully");
 

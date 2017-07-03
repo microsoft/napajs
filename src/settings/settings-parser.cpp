@@ -2,63 +2,76 @@
 
 #include <napa-log.h>
 
-#include <boost/program_options.hpp>
+// Open source header only library for argument parsing.
+// https://github.com/Taywee/args
+#include <args/args.hxx>
 
-using namespace boost::program_options;
 using namespace napa;
 using namespace napa::settings;
 
-static void AddZoneOptions(options_description& desc, ZoneSettings& settings) {
-    // Zone parsing options should be added here.
-    desc.add_options()
-        ("workers", value(&settings.workers), "number of workers")
-        ("maxOldSpaceSize", value(&settings.maxOldSpaceSize), "max old space size in MB")
-        ("maxSemiSpaceSize", value(&settings.maxSemiSpaceSize), "max semi space size in MB")
-        ("maxExecutableSize", value(&settings.maxExecutableSize), "max executable size in MB")
-        ("maxStackSize", value(&settings.maxStackSize), "max isolate stack size in bytes");
-}
 
-static void AddPlatformOptions(options_description& desc, PlatformSettings& settings) {
-    // Platform parsing options should be added here.
-    desc.add_options()
-        ("loggingProvider", value(&settings.loggingProvider), "logging provider")
-        ("metricProvider", value(&settings.metricProvider), "metric provider")
-        ("v8Flags", value(&settings.v8Flags)->multitoken(), "v8 flags")
-        ("initV8", value(&settings.initV8), "specify whether v8 should be initialized");
-}
+bool settings::Parse(const std::vector<std::string>& args, PlatformSettings& settings) {
+    args::ArgumentParser parser("platform settings parser");
 
-bool settings::Parse(const std::vector<std::string>& args, ZoneSettings& settings) {
-    options_description desc;
-    AddZoneOptions(desc, settings);
+    args::ValueFlag<std::string> loggingProvider(parser, "loggingProvider", "logging provider", { "loggingProvider" });
+    args::ValueFlag<std::string> metricProvider(parser, "metricProvider", "metric provider", { "metricProvider" });
 
     try {
-        variables_map vm;
-        store(command_line_parser(args).options(desc).run(), vm);
-        notify(vm);
-    } catch (std::exception& ex) {
-        std::cerr << "Failed to parse zone settings. Error: " << ex.what() << std::endl;
+        parser.ParseArgs(args);
+    }
+    catch (const std::exception& ex) {
+        LOG_ERROR("Settings", "Failed to parse platform settings. Error: %s", ex.what());
         return false;
     }
 
-    NAPA_ASSERT(settings.workers > 0, "The number of workers must be greater than 0");
-    NAPA_ASSERT(settings.maxStackSize > 0, "The maximum allowed stack size must be greater than 0");
+    if (loggingProvider) {
+        settings.loggingProvider = loggingProvider.Get();
+    }
+
+    if (metricProvider) {
+        settings.metricProvider = metricProvider.Get();
+    }
 
     return true;
 }
 
-bool settings::Parse(const std::vector<std::string>& args, PlatformSettings& settings) {
-    options_description desc;
-    AddZoneOptions(desc, settings);
-    AddPlatformOptions(desc, settings);
+bool settings::Parse(const std::vector<std::string>& args, ZoneSettings& settings) {
+    args::ArgumentParser parser("zone settings parser");
+
+    args::ValueFlag<uint32_t> workers(parser, "workers", "number of zone workers", { "workers" });
+    args::ValueFlag<uint32_t> maxOldSpaceSize(parser, "maxOldSpaceSize", "max old space size in MB", { "maxOldSpaceSize" });
+    args::ValueFlag<uint32_t> maxSemiSpaceSize(parser, "maxSemiSpaceSize", "max semi space size in MB", { "maxSemiSpaceSize" });
+    args::ValueFlag<uint32_t> maxExecutableSize(parser, "maxExecutableSize", "max executable size in MB", { "maxExecutableSize" });
+    args::ValueFlag<uint32_t> maxStackSize(parser, "maxStackSize", "max isolate stack size in bytes", { "maxStackSize" });
 
     try {
-        variables_map vm;
-        store(command_line_parser(args).options(desc).run(), vm);
-        notify(vm);
+        parser.ParseArgs(args);
     }
-    catch (std::exception& ex) {
-        std::cerr << "Failed to parse platform settings. Error: " << ex.what() << std::endl;
+    catch (const std::exception& ex) {
+        LOG_ERROR("Settings", "Failed to parse zone settings. Error: %s", ex.what());
         return false;
+    }
+
+    if (workers) {
+        NAPA_ASSERT(workers.Get() > 0, "The number of workers must be greater than 0");
+        settings.workers = workers.Get();
+    }
+
+    if (maxOldSpaceSize) {
+        settings.maxOldSpaceSize = maxOldSpaceSize.Get();
+    }
+
+    if (maxSemiSpaceSize) {
+        settings.maxSemiSpaceSize = maxSemiSpaceSize.Get();
+    }
+
+    if (maxExecutableSize) {
+        settings.maxExecutableSize = maxExecutableSize.Get();
+    }
+
+    if (maxStackSize) {
+        NAPA_ASSERT(maxStackSize.Get() > 0, "The maximum allowed stack size must be greater than 0");
+        settings.maxStackSize = maxStackSize.Get();
     }
 
     return true;
