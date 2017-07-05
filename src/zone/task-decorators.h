@@ -2,7 +2,7 @@
 
 #include "task.h"
 #include "terminable-task.h"
-#include "timeout-service.h"
+#include "timer.h"
 
 #include <v8.h>
 
@@ -36,10 +36,11 @@ namespace zone {
         void Execute() override {
             auto isolate = v8::Isolate::GetCurrent();
 
-            // RAII - token will cancel the callback upon destruction
-            auto token = TimeoutService::Instance().Register(_timeout, [this, isolate]() {
+            // RAII - timer will automatically stop upon destruction.
+            napa::zone::Timer timer([this, isolate]() {
                 this->_innerTask.Terminate(TerminationReason::TIMEOUT, isolate);
-            });
+            }, _timeout);
+            timer.Start();
 
             this->_innerTask.Execute();
         }
