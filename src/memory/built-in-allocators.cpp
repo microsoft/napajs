@@ -1,5 +1,6 @@
 #include <napa-memory.h>
 #include <napa-c.h>
+#include <cstring>
 
 /// <summary> C runtime allocator from napa.dll. </summary>
 class CrtAllocator: public napa::memory::Allocator {
@@ -15,18 +16,18 @@ public:
     /// <param name="memory"> Pointer to the memory. </summary>
     /// <param name="sizeHint"> Hint of size to delete. 0 if not available from caller. </summary>
     /// <returns> None. May throw if error happens. </returns>
-    void CrtAllocator::Deallocate(void* memory, size_t sizeHint) override {
+    void Deallocate(void* memory, size_t sizeHint) override {
         ::napa_free(memory, sizeHint);
     }
 
     /// <summary> Get allocator type for better debuggability. </summary>
-    const char* CrtAllocator::GetType() const override {
+    const char* GetType() const override {
         return "CrtAllocator";
     }
 
     /// <summary> Tell if another allocator equals to this allocator. </summary>
     bool operator==(const Allocator& other) const override {
-        return strcmp(other.GetType(), GetType()) == 0;
+        return std::strcmp(other.GetType(), GetType()) == 0;
     }
 };
 
@@ -56,7 +57,7 @@ public:
 
     /// <summary> Tell if another allocator equals to this allocator. </summary>
     bool operator==(const Allocator& other) const override {
-        return strcmp(other.GetType(), GetType()) == 0;
+        return std::strcmp(other.GetType(), GetType()) == 0;
     }
 };
 

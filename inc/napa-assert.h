@@ -24,7 +24,7 @@ inline void OutputAssertMessage(const char* condition, const char* file, int lin
 
 #define NAPA_ASSERT(condition, format, ...) do {                                    \
     if (!(condition)) {                                                             \
-        OutputAssertMessage(#condition, __FILE__, __LINE__, format, __VA_ARGS__);   \
+        OutputAssertMessage(#condition, __FILE__, __LINE__, format, ##__VA_ARGS__); \
         std::terminate();                                                           \
     }                                                                               \
 } while (false)

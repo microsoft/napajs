@@ -2,6 +2,7 @@
 
 #include <v8.h>
 #include <napa/stl/string.h>
+#include <cstring>
 
 namespace napa {
 namespace v8_helpers {
@@ -24,7 +25,7 @@ namespace v8_helpers {
     /// <summary> Make a V8 string from external const char*. </summary>
     inline v8::Local<v8::String> MakeExternalV8String(v8::Isolate *isolate, const char* data) {
         // V8 garbage collection frees ExternalOneByteStringResourceImpl.
-        auto externalResource = new v8::ExternalOneByteStringResourceImpl(data, strlen(data));
+        auto externalResource = new v8::ExternalOneByteStringResourceImpl(data, std::strlen(data));
         return v8::String::NewExternalOneByte(isolate, externalResource).ToLocalChecked();
     }
 

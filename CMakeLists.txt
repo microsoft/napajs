@@ -4,8 +4,14 @@ project("napa")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/bin)
+
+# Require Cxx14 features
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Find boost
 set(REQUIRED_BOOST_COMPONENTS "filesystem;system;thread")
@@ -16,14 +22,18 @@ if (CMAKE_JS_VERSION)
     # Include BoostLib module
 
     if(WIN32)
-        execute_process(COMMAND cmd /c "npm prefix -g" RESULT_VARIABLE ERR OUTPUT_VARIABLE NPM_GLOBAL_PATH)
+        execute_process(COMMAND cmd /c "npm prefix -g" RESULT_VARIABLE ERR OUTPUT_VARIABLE NPM_GLOBAL_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
         if(ERR)
             message(FATAL_ERROR "Failed to get npm global installation path. ${ERR}, ${NPM_GLOBAL_PATH}")
         endif(ERR)
         string(REPLACE "\\" "/" NPM_GLOBAL_PATH ${NPM_GLOBAL_PATH})
-        string(STRIP ${NPM_GLOBAL_PATH} NPM_GLOBAL_PATH)
     else()
-        # TODO: extract NPM_GLOBAL PATH in non-windows environments
+        # TODO: For MacOS it may be different. Need to verify.
+        execute_process(COMMAND npm prefix -g RESULT_VARIABLE ERR OUTPUT_VARIABLE NPM_GLOBAL_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
+        if(ERR)
+            message(FATAL_ERROR "Failed to get npm global installation path. ${ERR}, ${NPM_GLOBAL_PATH}")
+        endif(ERR)
+        string(CONCAT NPM_GLOBAL_PATH ${NPM_GLOBAL_PATH} "/lib")
     endif()
 
     list(APPEND CMAKE_MODULE_PATH "${NPM_GLOBAL_PATH}/node_modules/boost-lib/cmake")

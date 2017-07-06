@@ -1,5 +1,7 @@
 #pragma once
 
+#include "conversion.h"
+
 #include <v8.h>
 #include <vector>
 

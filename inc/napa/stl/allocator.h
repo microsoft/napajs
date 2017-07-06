@@ -35,11 +35,9 @@ namespace stl {
         /// <summary> Constructor that accepts a custom allocator </summary>
         explicit Allocator(napa::memory::Allocator& allocator);
 
-        /// The following two methods are in the C++98 specification but were
-        /// not implemented. Keeping the declarations here to document
-        /// differences from the specification and to help with debugging.
-        /// Allocator() throw();
-        /// Allocator(const Allocator& other);
+        /// <summary> Copy constructor will be used in assignment of std::shared_ptr in GCC </summary>
+        Allocator(const Allocator& other) = default;
+        Allocator& operator=(const Allocator&) = default;
 
         template <typename U> Allocator(const Allocator<U>&) throw();
 
@@ -63,24 +61,20 @@ namespace stl {
         bool operator!=(const Allocator&) const;
 
     private:
-        template <typename T>
+        template <typename U>
         friend class Allocator;
 
-        // Allocator does not implement an assignment operator because
-        // it stores a reference to its IAllocator.
-        Allocator& operator=(const Allocator&);
-
-        napa::memory::Allocator& _allocator;
+        napa::memory::Allocator* _allocator;
     };
 
     template <typename T>
     Allocator<T>::Allocator()
-        : _allocator(napa::memory::GetDefaultAllocator()) {
+        : _allocator(&napa::memory::GetDefaultAllocator()) {
     }
 
     template <typename T>
     Allocator<T>::Allocator(napa::memory::Allocator& allocator)
-        : _allocator(allocator) {
+        : _allocator(&allocator) {
     }
 
     template <typename T>
@@ -101,16 +95,16 @@ namespace stl {
 
     template <typename T>
     typename Allocator<T>::pointer Allocator<T>::allocate(typename Allocator<T>::size_type count, const void* /*hint*/) {
-        return static_cast<Allocator<T>::pointer>(_allocator.Allocate(sizeof(T) * count));
+        return static_cast<Allocator<T>::pointer>(_allocator->Allocate(sizeof(T) * count));
     }
 
     template <typename T>
     void Allocator<T>::deallocate(typename Allocator<T>::pointer p, typename Allocator<T>::size_type count) {
-        _allocator.Deallocate(p, sizeof(T) * count);
+        _allocator->Deallocate(p, sizeof(T) * count);
     }
 
     template <typename T>
-    typename Allocator<T>::size_type Allocator<T>::max_size() const {
+    typename Allocator<T>::size_type Allocator<T>::max_size() const throw() {
         return std::numeric_limits<Allocator<T>::size_type>::max();
     }
 
@@ -133,12 +127,12 @@ namespace stl {
 
     template <typename T>
     bool Allocator<T>::operator==(const Allocator& other) const {
-        return _allocator == other._allocator;
+        return *_allocator == *(other._allocator);
     }
 
     template <typename T>
     bool Allocator<T>::operator!=(const Allocator& other) const {
-        return !(_allocator == other._allocator);
+        return !(*_allocator == *(other._allocator));
     }
 }
 }

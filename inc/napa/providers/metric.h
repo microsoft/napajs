@@ -2,6 +2,7 @@
 
 #include <napa/exports.h>
 
+#include <cstddef>
 #include <stdint.h>
 
 namespace napa {

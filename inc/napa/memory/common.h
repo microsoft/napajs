@@ -28,19 +28,19 @@ namespace memory {
         return UniquePtr<T>(t, DefaultDeleter<T>);
     }
 
-    /// <summary> std::make_shared using Napa default allocator. </summary>
-    template <typename T, typename... Args>
-    std::shared_ptr<T> MakeShared(Args&&... args) {
-        return AllocateShared<T>(
-            GetDefaultAllocator(), 
-            std::forward<Args>(args)...);
-    }
-
     /// <summary> std::allocate_shared using napa::memory::Allocator. </summary>
     template <typename T, typename Alloc, typename... Args>
     std::shared_ptr<T> AllocateShared(Alloc& allocator, Args&&... args) {
         return std::allocate_shared<T>(
             napa::stl::Allocator<T>(allocator), 
+            std::forward<Args>(args)...);
+    }
+
+    /// <summary> std::make_shared using Napa default allocator. </summary>
+    template <typename T, typename... Args>
+    std::shared_ptr<T> MakeShared(Args&&... args) {
+        return AllocateShared<T>(
+            GetDefaultAllocator(), 
             std::forward<Args>(args)...);
     }
 }

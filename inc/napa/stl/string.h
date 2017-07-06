@@ -11,3 +11,21 @@ namespace napa {
         typedef BasicString<char> String;
     }
 }
+
+#if defined(__GNUC__)
+
+namespace std {
+    // std::hash specialization for napa::stl::String.
+    template<>
+    struct hash<napa::stl::String> : public __hash_base<size_t, napa::stl::String> {
+        size_t operator()(const napa::stl::String& s) const noexcept {
+            return std::_Hash_impl::hash(s.data(), s.length());
+        }
+    };
+
+    template<>
+    struct __is_fast_hash<hash<napa::stl::String>> : std::false_type {
+    };
+}
+
+#endif
