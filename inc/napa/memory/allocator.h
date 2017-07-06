@@ -1,6 +1,7 @@
 #pragma once
 
 #include <napa/exports.h>
+#include <cstddef>
 
 namespace napa {
 namespace memory {

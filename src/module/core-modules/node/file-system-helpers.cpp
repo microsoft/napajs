@@ -1,3 +1,5 @@
+// TODO: we should remove this macro once we have our own filesystem implementation.
+#define _CRT_SECURE_NO_DEPRECATE
 #include "file-system-helpers.h"
 
 #include <boost/filesystem.hpp>
@@ -20,8 +22,7 @@ namespace {
 std::string file_system_helpers::ReadFileSync(const std::string& filename) {
     std::string fileFullPath = GetFileFullPath(filename);
 
-    FILE* source = nullptr;
-    fopen_s(&source, fileFullPath.c_str(), "rb");
+    FILE* source = fopen(fileFullPath.c_str(), "rb");
     if (source == nullptr) {
         std::ostringstream oss;
         oss << "Can't open for read " << fileFullPath;
@@ -54,8 +55,7 @@ std::string file_system_helpers::ReadFileSync(const std::string& filename) {
 void file_system_helpers::WriteFileSync(const std::string& filename, const char* data, size_t length) {
     auto fileFullPath = GetFileFullPath(filename);
     
-    FILE* target = nullptr;
-    fopen_s(&target, fileFullPath.c_str(), "wb");
+    FILE* target = fopen(fileFullPath.c_str(), "wb");
     if (target == nullptr) {
         std::ostringstream oss;
         oss << "Can't open for write " << fileFullPath;

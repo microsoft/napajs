@@ -76,7 +76,7 @@ namespace string {
 
     /// <summary> In-place convert a string to lower case. </summary>
     inline void ToLower(std::string& str) {
-        std::transform(str.begin(), str.end(), str.begin(), std::tolower);
+        std::transform(str.begin(), str.end(), str.begin(), (int (*)(int))std::tolower);
     }
 
     /// <summary> Return a copy of a string of lower case. </summary>
@@ -88,7 +88,7 @@ namespace string {
 
     /// <summary> In-place convert a string to upper case. </summary>
     inline void ToUpper(std::string& str) {
-        std::transform(str.begin(), str.end(), str.begin(), std::toupper);
+        std::transform(str.begin(), str.end(), str.begin(), (int (*)(int))std::toupper);
     }
 
     /// <summary> Return a copy of a string of upper case. </summary>

@@ -84,6 +84,9 @@ void Worker::Enqueue(std::shared_ptr<Task> task) {
 }
 
 void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
+    // Initialize the worker context TLS data
+    INIT_WORKER_CONTEXT();
+
     // Zone instance into TLS.
     WorkerContext::Set(WorkerContextItem::ZONE,
                                reinterpret_cast<void*>(NapaZone::Get(settings.id).get()));

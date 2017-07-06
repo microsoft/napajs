@@ -1,47 +1,33 @@
 #include "worker-context.h"
 
 #include <napa-log.h>
-#include <platform/thread-local-storage.h>
 
-using namespace napa::platform;
+#include <array>
+
 using namespace napa::zone;
 
-// Global instance of WorkerContext.
-WorkerContext& WorkerContext::GetInstance() {
-    static WorkerContext context;
-    return context;
-}
+namespace {
+    thread_local std::array<
+        void*,
+        static_cast<size_t>(WorkerContextItem::END_OF_WORKER_CONTEXT_ITEM)> dataCollection;
 
-WorkerContext::WorkerContext() {
-    for (auto& tlsIndex : _tlsIndexes) {
-        tlsIndex = tls::Alloc();
-    }
-}
+    // Get data by worker context item from the singleton TLS data collection
+    void*& GetTlsData(WorkerContextItem item) {
+        auto slotId = static_cast<size_t>(item);
+        NAPA_ASSERT(slotId < dataCollection.size(), "slot id out of range");
 
-WorkerContext::~WorkerContext() {
-    for (auto tlsIndex : _tlsIndexes) {
-        tls::Free(tlsIndex);
+        return dataCollection[slotId];
     }
 }
 
 void WorkerContext::Init() {
-    for (auto tlsIndex : GetInstance()._tlsIndexes) {
-        tls::SetValue(tlsIndex, nullptr);
-    }
+    dataCollection.fill(nullptr);
 }
 
 void* WorkerContext::Get(WorkerContextItem item) {
-    auto slotId = static_cast<size_t>(item);
-    NAPA_ASSERT(slotId < GetInstance()._tlsIndexes.size(), "slot id out of range");
-
-    auto tlsIndex = GetInstance()._tlsIndexes[slotId];
-    return tls::GetValue(tlsIndex);
+    return GetTlsData(item);
 }
 
 void WorkerContext::Set(WorkerContextItem item, void* data) {
-    auto slotId = static_cast<size_t>(item);
-    NAPA_ASSERT(slotId < GetInstance()._tlsIndexes.size(), "slot id out of range");
-
-    auto tlsIndex = GetInstance()._tlsIndexes[slotId];
-    tls::SetValue(tlsIndex, data);
+    GetTlsData(item) = data;
 }

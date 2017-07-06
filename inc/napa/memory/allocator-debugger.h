@@ -39,6 +39,16 @@ namespace memory {
             _typeName = stream.str();
         }
 
+        /// <summary> Copy constructor </summary>
+        SimpleAllocatorDebugger(const SimpleAllocatorDebugger& other)
+          : _allocator(other._allocator),
+            _typeName(other._typeName),
+            _allocateCount(other._allocateCount.load()),
+            _deallocateCount(other._deallocateCount.load()),
+            _allocatedSize(other._allocatedSize.load()),
+            _deallocatedSize(other._deallocatedSize.load()) {
+        }
+
         /// <summary> Allocate memory of given size. </summary>
         /// <param name="size"> Requested size. </summary>
         /// <returns> Allocated memory. May throw if error happens. </returns>
@@ -88,10 +98,6 @@ namespace memory {
         }
 
     private:
-        /// <summary> No copy, no assignment. </summary>
-        SimpleAllocatorDebugger(const SimpleAllocatorDebugger&) = delete;
-        SimpleAllocatorDebugger& operator=(const SimpleAllocatorDebugger&) = delete;
-
         std::shared_ptr<Allocator> _allocator;
         std::string _typeName;
 

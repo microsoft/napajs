@@ -35,9 +35,6 @@ namespace zone {
     class NAPA_API WorkerContext {
     public:
 
-        /// <summary> Returns the single instance of this class. </summary>
-        static WorkerContext& GetInstance();
-
         /// <summary> Initialize isolate data. </summary>
         static void Init();
 
@@ -50,17 +47,6 @@ namespace zone {
         /// <param name="item"> Pre-defined data id for Napa specific data. </param>
         /// <param name="data"> Pointer to stored data. </param>
         static void Set(WorkerContextItem item, void* data);
-
-    private:
-
-        /// <summary> Constructor to assign TLS index to all data. It's done once at process level. </summary>
-        WorkerContext();
-
-        /// <summary> Destructor. </summary>
-        ~WorkerContext();
-
-        /// <summary> It stores the tls index for all data. </summary>
-        std::array<uint32_t, static_cast<size_t>(WorkerContextItem::END_OF_WORKER_CONTEXT_ITEM)> _tlsIndexes;
     };
 
     #define INIT_WORKER_CONTEXT napa::zone::WorkerContext::Init
