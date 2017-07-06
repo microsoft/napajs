@@ -38,7 +38,7 @@ namespace string {
                     if (len != 0 || !compress) {
                         list.push_back(str.substr(start, len));
                     }
-                    start = i;
+                    start = i + 1;
                     break;
                 }
             }
@@ -69,7 +69,7 @@ namespace string {
 
     /// <summary> Return a trimmed copy of the string. </summary>
     inline std::string TrimCopy(const std::string &str) {
-        std::string copy;
+        std::string copy = str;
         Trim(copy);
         return copy;
     }
