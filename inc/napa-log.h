@@ -50,25 +50,25 @@ inline void LogFormattedMessage(
 #endif
 
 #define LOG_ERROR(section, format, ...) \
-    LOG(section, napa::providers::LoggingProvider::Verboseness::Error, "", format, ##__VA_ARGS__);
+    LOG(section, napa::providers::LoggingProvider::Verboseness::Error, "", format, ##__VA_ARGS__)
 
 #define LOG_ERROR_WITH_TRACEID(section, traceId, format, ...) \
-    LOG(section, napa::providers::LoggingProvider::Verboseness::Error, traceId, format, ##__VA_ARGS__);
+    LOG(section, napa::providers::LoggingProvider::Verboseness::Error, traceId, format, ##__VA_ARGS__)
 
 #define LOG_WARNING(section, format, ...) \
-    LOG(section, napa::providers::LoggingProvider::Verboseness::Warning, "", format, ##__VA_ARGS__);
+    LOG(section, napa::providers::LoggingProvider::Verboseness::Warning, "", format, ##__VA_ARGS__)
 
 #define LOG_WARNING_WITH_TRACEID(section, traceId, format, ...) \
-    LOG(section, napa::providers::LoggingProvider::Verboseness::Warning, traceId, format, ##__VA_ARGS__);
+    LOG(section, napa::providers::LoggingProvider::Verboseness::Warning, traceId, format, ##__VA_ARGS__)
 
 #define LOG_INFO(section, format, ...) \
-    LOG(section, napa::providers::LoggingProvider::Verboseness::Info, "", format, ##__VA_ARGS__);
+    LOG(section, napa::providers::LoggingProvider::Verboseness::Info, "", format, ##__VA_ARGS__)
 
 #define LOG_INFO_WITH_TRACEID(section, traceId, format, ...) \
-    LOG(section, napa::providers::LoggingProvider::Verboseness::Info, traceId, format, ##__VA_ARGS__);
+    LOG(section, napa::providers::LoggingProvider::Verboseness::Info, traceId, format, ##__VA_ARGS__)
 
 #define LOG_DEBUG(section, format, ...) \
-    LOG(section, napa::providers::LoggingProvider::Verboseness::Debug, "", format, ##__VA_ARGS__);
+    LOG(section, napa::providers::LoggingProvider::Verboseness::Debug, "", format, ##__VA_ARGS__)
 
 #define LOG_DEBUG_WITH_TRACEID(section, traceId, format, ...) \
-    LOG(section, napa::providers::LoggingProvider::Verboseness::Debug, traceId, format, ##__VA_ARGS__);
+    LOG(section, napa::providers::LoggingProvider::Verboseness::Debug, traceId, format, ##__VA_ARGS__)

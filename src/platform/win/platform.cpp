@@ -54,6 +54,10 @@ int32_t platform::Getpid() {
     return _getpid();
 }
 
+int32_t platform::Gettid() {
+    return static_cast<int32_t>(GetCurrentThreadId());
+}
+
 int32_t platform::Isatty(int32_t fd) {
     return _isatty(fd);
 }

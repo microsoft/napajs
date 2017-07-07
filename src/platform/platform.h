@@ -38,6 +38,9 @@ namespace platform {
     /// <summary> Return pid. </summary>
     int32_t Getpid();
 
+    /// <summary> Return tid. </summary>
+    int32_t Gettid();
+
     /// <summary> Return nonzero value if a descriptor is associated with a character device. </summary>
     /// <param name="fd"> File descriptor. </param>
     int32_t Isatty(int32_t fd);
