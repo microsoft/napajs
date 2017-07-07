@@ -4,14 +4,13 @@
 #include <napa/module/module-internal.h>
 #include <napa/v8-helpers.h>
 #include <platform/dll.h>
+#include <platform/filesystem.h>
 #include <platform/platform.h>
 #include <utils/string.h>
 #include <zone/scheduler.h>
 #include <zone/napa-zone.h>
 #include <v8/array-buffer-allocator.h>
 #include <v8/v8-common.h>
-
-#include <boost/filesystem.hpp>
 
 #include <chrono>
 #include <condition_variable>
@@ -177,8 +176,8 @@ TEST_CASE("require.resolve", "[module-loader]") {
 
     auto result = RunScript(oss.str(), [](v8::Local<v8::Value> run) {
         v8::String::Utf8Value value(run);
-        auto filePath = boost::filesystem::current_path() / "jsmodule.js";
-        return filePath.string().compare(*value) == 0;
+        auto filePath = filesystem::CurrentDirectory() / "jsmodule.js";
+        return filePath.String().compare(*value) == 0;
     });
     REQUIRE(result);
 
@@ -214,7 +213,7 @@ TEST_CASE("process", "[module-loader]") {
 
     result = RunScript(oss.str(), [](v8::Local<v8::Value> run) {
         v8::String::Utf8Value value(run);
-        return boost::filesystem::exists(boost::filesystem::path(*value));
+        return filesystem::Exists(filesystem::Path(*value));
     });
     REQUIRE(result);
 
@@ -223,7 +222,7 @@ TEST_CASE("process", "[module-loader]") {
 
     result = RunScript(oss.str(), [](v8::Local<v8::Value> run) {
         v8::String::Utf8Value value(run);
-        return dll::ThisLineLocation() == boost::filesystem::path(*value).string();
+        return dll::ThisLineLocation() == *value;
     });
     REQUIRE(result);
 
@@ -297,8 +296,8 @@ TEST_CASE("resolve modules", "[module-loader]") {
 }
 
 TEST_CASE("resolve full path modules", "[module-loader]") {
-    auto filePath = boost::filesystem::current_path() / "tests\\sub\\sub1\\file2.js";
-    auto filePathString = filePath.string();
+    auto filePath = filesystem::CurrentDirectory() / "tests\\sub\\sub1\\file2.js";
+    auto filePathString = filePath.String();
     utils::string::ReplaceAll(filePathString, "\\", "\\\\");
 
     std::ostringstream oss;

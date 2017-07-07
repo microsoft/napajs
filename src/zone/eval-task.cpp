@@ -4,11 +4,11 @@
 #endif
 
 #include "eval-task.h"
+
+#include <platform/filesystem.h>
+
 #include <napa-log.h>
-
 #include <napa/v8-helpers.h>
-
-#include <boost/filesystem.hpp>
 
 #include <v8.h>
 
@@ -26,11 +26,11 @@ void EvalTask::Execute() {
     auto context = isolate->GetCurrentContext();
 
     auto filename = v8_helpers::MakeV8String(isolate, _sourceOrigin);
-    boost::filesystem::path originPath = boost::filesystem::path(_sourceOrigin);
-    if (originPath.is_absolute()) {
+    filesystem::Path originPath(_sourceOrigin);
+    if (originPath.IsAbsolute()) {
         auto global = context->Global();
 
-        auto dirname = v8_helpers::MakeV8String(isolate, originPath.parent_path().string());
+        auto dirname = v8_helpers::MakeV8String(isolate, originPath.Parent().Normalize().String());
         (void)global->Set(context, v8_helpers::MakeV8String(isolate, "__dirname"), dirname);
         (void)global->Set(context, v8_helpers::MakeV8String(isolate, "__filename"), filename);
     }

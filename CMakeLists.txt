@@ -13,40 +13,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Find boost
-set(REQUIRED_BOOST_COMPONENTS "filesystem;system;thread")
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-if (CMAKE_JS_VERSION)
-    # Include BoostLib module
-
-    if(WIN32)
-        execute_process(COMMAND cmd /c "npm prefix -g" RESULT_VARIABLE ERR OUTPUT_VARIABLE NPM_GLOBAL_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
-        if(ERR)
-            message(FATAL_ERROR "Failed to get npm global installation path. ${ERR}, ${NPM_GLOBAL_PATH}")
-        endif(ERR)
-        string(REPLACE "\\" "/" NPM_GLOBAL_PATH ${NPM_GLOBAL_PATH})
-    else()
-        # TODO: For MacOS it may be different. Need to verify.
-        execute_process(COMMAND npm prefix -g RESULT_VARIABLE ERR OUTPUT_VARIABLE NPM_GLOBAL_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
-        if(ERR)
-            message(FATAL_ERROR "Failed to get npm global installation path. ${ERR}, ${NPM_GLOBAL_PATH}")
-        endif(ERR)
-        string(CONCAT NPM_GLOBAL_PATH ${NPM_GLOBAL_PATH} "/lib")
-    endif()
-
-    list(APPEND CMAKE_MODULE_PATH "${NPM_GLOBAL_PATH}/node_modules/boost-lib/cmake")
-    include(BoostLib)
-    
-    require_boost_libs(">= 1.62.0" "${REQUIRED_BOOST_COMPONENTS}")
-else()
-    find_package(Boost 1.62.0 REQUIRED "${REQUIRED_BOOST_COMPONENTS}")
-    if(NOT Boost_FOUND)
-        message(FATAL_ERROR "Could not find the boost package. Try setting BOOST_ROOT variable")
-    endif()
-endif()
-
 # Build napa shared library.
 add_subdirectory(src)
 

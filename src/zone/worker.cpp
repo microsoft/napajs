@@ -1,9 +1,6 @@
 #include "worker.h"
 
-#include "worker-context.h"
-#include "module/loader/module-loader.h"
 #include "v8/array-buffer-allocator.h"
-#include "zone/napa-zone.h"
 
 #include <napa-log.h>
 
@@ -42,16 +39,21 @@ struct Worker::Impl {
     /// <summary> V8 isolate associated with this worker. </summary>
     v8::Isolate* isolate;
 
-    /// <summary> A callback function that is called when a worker becomes idle. </summary>
+    /// <summary> A callback function to setup the isolate after worker created its isolate. </summary>
+    std::function<void(WorkerId)> setupCallback;
+
+    /// <summary> A callback function that is called when worker becomes idle. </summary>
     std::function<void(WorkerId)> idleNotificationCallback;
 };
 
 Worker::Worker(WorkerId id,
                const settings::ZoneSettings& settings,
+               std::function<void(WorkerId)> setupCallback,
                std::function<void(WorkerId)> idleNotificationCallback)
     : _impl(std::make_unique<Worker::Impl>()) {
 
     _impl->id = id;
+    _impl->setupCallback = std::move(setupCallback);
     _impl->idleNotificationCallback = std::move(idleNotificationCallback);
     _impl->workerThread = std::thread(&Worker::WorkerThreadFunc, this, settings);
 }
@@ -84,17 +86,7 @@ void Worker::Enqueue(std::shared_ptr<Task> task) {
 }
 
 void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
-    // Initialize the worker context TLS data
-    INIT_WORKER_CONTEXT();
-
-    // Zone instance into TLS.
-    WorkerContext::Set(WorkerContextItem::ZONE,
-                               reinterpret_cast<void*>(NapaZone::Get(settings.id).get()));
-
-    // Worker Id into TLS.
-    WorkerContext::Set(WorkerContextItem::WORKER_ID,
-                               reinterpret_cast<void*>(static_cast<uintptr_t>(_impl->id)));
-
+    
     _impl->isolate = CreateIsolate(settings);
 
     // If any user of v8 library uses a locker on any isolate, all isolates must be locked before use.
@@ -111,8 +103,8 @@ void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
     context->SetSecurityToken(v8::Undefined(_impl->isolate));
     v8::Context::Scope contextScope(context);
 
-    // Load module loader and built-in modules of require, console and etc.
-    CREATE_MODULE_LOADER();
+    // Setup worker after isolate creation.
+    _impl->setupCallback(_impl->id);
 
     while (true) {
         std::shared_ptr<Task> task;

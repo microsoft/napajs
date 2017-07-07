@@ -3,7 +3,7 @@
 #include "module-cache.h"
 #include "module-loader-helpers.h"
 
-#include <boost/filesystem.hpp>
+#include <platform/filesystem.h>
 
 #include <sstream>
 
@@ -23,20 +23,20 @@ CoreModuleLoader::CoreModuleLoader(BuiltInModulesSetter builtInModulesSetter,
     : JavascriptModuleLoader(std::move(builtInModulesSetter), moduleCache), _bindingCache(bindingCache) {}
                                 
 bool CoreModuleLoader::TryGet(const std::string& name, v8::Local<v8::Object>& module) {
-    boost::filesystem::path basePath(module_loader_helpers::GetNapaRuntimeDirectory());
+    filesystem::Path basePath(module_loader_helpers::GetNapaRuntimeDirectory());
     auto fileName = name + CORE_MODULE_EXTENSION;
 
     // Check ./lib or ../lib directory only
     auto fullPath = basePath / CORE_MODULE_DIRECTORY / fileName;
-    if (boost::filesystem::is_regular_file(fullPath)) {
+    if (filesystem::IsRegularFile(fullPath)) {
         // Load javascript core module from a file at ./lib directory.
-        return JavascriptModuleLoader::TryGet(fullPath.string(), module);
+        return JavascriptModuleLoader::TryGet(fullPath.String(), module);
     }
 
-    fullPath = basePath.parent_path() / CORE_MODULE_DIRECTORY / fileName;
-    if (boost::filesystem::is_regular_file(fullPath)) {
+    fullPath = (basePath.Parent() / CORE_MODULE_DIRECTORY / fileName).Normalize();
+    if (filesystem::IsRegularFile(fullPath)) {
         // Load javascript core module from a file at ../lib directory.
-        return JavascriptModuleLoader::TryGet(fullPath.string(), module);
+        return JavascriptModuleLoader::TryGet(fullPath.String(), module);
     }
 
     // Return binary core module if exists.

@@ -5,10 +5,9 @@
 #include "v8/v8-common.h"
 #include "zone/napa-zone.h"
 #include "zone/node-zone.h"
+#include "zone/worker-context.h"
 
 #include <napa-log.h>
-
-#include <boost/filesystem.hpp>
 
 #include <atomic>
 #include <fstream>

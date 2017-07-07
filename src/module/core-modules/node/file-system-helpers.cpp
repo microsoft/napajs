@@ -1,10 +1,11 @@
 // TODO: we should remove this macro once we have our own filesystem implementation.
 #define _CRT_SECURE_NO_DEPRECATE
 #include "file-system-helpers.h"
+#include <platform/filesystem.h>
 
-#include <boost/filesystem.hpp>
 
 #include <algorithm>
+#include <functional>
 #include <memory>
 #include <sstream>
 
@@ -14,7 +15,7 @@ using namespace napa::module;
 namespace {
 
     std::string GetFileFullPath(const std::string& file) {
-        return boost::filesystem::absolute(file).string();
+        return filesystem::Path(file).Absolute().Normalize().String();
     }
 
 }   // End of anonymous namespace.
@@ -77,8 +78,8 @@ void file_system_helpers::WriteFileSync(const std::string& filename, const char*
 }
 
 void file_system_helpers::MkdirSync(const std::string& directory) {
-    boost::filesystem::path path(GetFileFullPath(directory));
-    if (!boost::filesystem::exists(path) && !boost::filesystem::create_directory(path))
+    filesystem::Path path(GetFileFullPath(directory));
+    if (!filesystem::IsDirectory(path) && !filesystem::MakeDirectory(path))
     {
         std::ostringstream oss;
         oss << "The directory: " << directory << " doesn't exist, and can't be created.";
@@ -87,17 +88,14 @@ void file_system_helpers::MkdirSync(const std::string& directory) {
 }
 
 bool file_system_helpers::ExistsSync(const std::string& path) {
-    auto fullPath = GetFileFullPath(path);
-    return boost::filesystem::exists(fullPath);
+    return filesystem::Exists(GetFileFullPath(path));
 }
 
 std::vector<std::string> file_system_helpers::ReadDirectorySync(const std::string& directory) {
-    boost::filesystem::path path(GetFileFullPath(directory));
-
     std::vector<std::string> names;
-    for (const auto& entry : boost::filesystem::directory_iterator(path)) {
-        names.emplace_back(entry.path().filename().string());
+    filesystem::PathIterator iterator(GetFileFullPath(directory));
+    while (iterator.Next()) {
+        names.emplace_back(iterator->Filename().String());
     }
-
     return names;
 }

@@ -1,10 +1,9 @@
 #pragma once
 
-#include "worker.h"
-#include "worker-context.h"
 #include "settings/settings.h"
 #include "simple-thread-pool.h"
 #include "task.h"
+#include "worker.h"
 
 #include <napa-log.h>
 
@@ -25,7 +24,8 @@ namespace zone {
 
         /// <summary> Constructor. </summary>
         /// <param name="settings"> A settings object. </param>
-        explicit SchedulerImpl(const settings::ZoneSettings& settings);
+        /// <param name="workerSetupCallback"> Callback to setup the isolate after worker created its isolate. </param>
+        SchedulerImpl(const settings::ZoneSettings& settings, std::function<void(WorkerId)> workerSetupCallback);
 
         /// <summary> Destructor. Waits for all tasks to finish. </summary>
         ~SchedulerImpl();
@@ -78,7 +78,7 @@ namespace zone {
     typedef SchedulerImpl<Worker> Scheduler;
 
     template <typename WorkerType>
-    SchedulerImpl<WorkerType>::SchedulerImpl(const settings::ZoneSettings& settings) :
+    SchedulerImpl<WorkerType>::SchedulerImpl(const settings::ZoneSettings& settings, std::function<void(WorkerId)> workerSetupCallback) :
         _idleWorkersFlags(settings.workers),
         _synchronizer(std::make_unique<SimpleThreadPool>(1)),
         _shouldStop(false) {
@@ -86,7 +86,7 @@ namespace zone {
         _workers.reserve(settings.workers);
 
         for (WorkerId i = 0; i < settings.workers; i++) {
-            _workers.emplace_back(i, settings, [this](WorkerId workerId) {
+            _workers.emplace_back(i, settings, workerSetupCallback, [this](WorkerId workerId) {
                 IdleWorkerNotificationCallback(workerId);
             });
 

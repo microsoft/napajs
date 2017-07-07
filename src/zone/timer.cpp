@@ -49,7 +49,9 @@ TimersScheduler::~TimersScheduler() {
     running = false;
     cv.notify_one();
 
-    thread.join();
+	if (thread.joinable()) {
+		thread.join();
+	}
 }
 
 bool TimersScheduler::StartMainLoop() {

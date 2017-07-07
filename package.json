@@ -12,6 +12,7 @@
   },
   "scripts": {
     "install": "cmake-js compile",
+    "buildd": "cmake-js compile --debug",
     "prepublish": "tsc -p lib",
     "pretest": "tsc -p test",
     "test": "mocha test --recursive",

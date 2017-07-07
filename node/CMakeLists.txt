@@ -19,7 +19,6 @@ set_target_properties(${TARGET_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 # Include directories
 target_include_directories(${TARGET_NAME} PRIVATE
     ${CMAKE_JS_INC}
-    ${Boost_INCLUDE_DIRS}
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/src/module/core-modules/napa)
 
@@ -29,5 +28,4 @@ target_compile_definitions(${TARGET_NAME} PRIVATE BUILDING_NODE_EXTENSION NAPA_B
 # Link libraries
 target_link_libraries(${TARGET_NAME} PRIVATE
     ${PROJECT_NAME}
-    ${Boost_LIBRARIES}
     ${CMAKE_JS_LIB})

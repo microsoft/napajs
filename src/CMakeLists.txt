@@ -29,7 +29,6 @@ target_include_directories(${TARGET_NAME}
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/third-party
-    ${Boost_INCLUDE_DIRS}
     PUBLIC
     ${PROJECT_SOURCE_DIR}/inc)
 
@@ -37,7 +36,7 @@ target_include_directories(${TARGET_NAME}
 target_compile_definitions(${TARGET_NAME} PRIVATE NAPA_EXPORTS BUILDING_NAPA_EXTENSION NAPA_BINDING_EXPORTS)
 
 # Link libraries
-target_link_libraries(${TARGET_NAME} PRIVATE ${Boost_LIBRARIES})
+target_link_libraries(${TARGET_NAME} PRIVATE)
 
 if (CMAKE_JS_VERSION)
     # Building Napa as an npm package for node usage (using exported v8 from node.exe)
@@ -69,7 +68,4 @@ endif()
 
 if (WIN32)
     target_link_libraries(${TARGET_NAME} PRIVATE winmm.lib)
-    
-    # Define this to fix boost asio related warning ('Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately')
-    target_compile_definitions(${TARGET_NAME} PRIVATE _WIN32_WINNT=0x0501)
 endif()

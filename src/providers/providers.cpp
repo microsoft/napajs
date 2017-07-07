@@ -6,10 +6,9 @@
 
 #include <module/loader/module-resolver.h>
 #include <platform/dll.h>
+#include <platform/filesystem.h>
 
 #include <napa-log.h>
-
-#include <boost/filesystem/path.hpp>
 
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
@@ -68,7 +67,7 @@ static ProviderType* LoadProvider(
     NAPA_ASSERT(!moduleInfo.packageJsonPath.empty(), "missing package.json in provider '%s'", providerName.c_str());
 
     // Full path to the root of the provider module
-    auto modulePath = boost::filesystem::path(moduleInfo.packageJsonPath).parent_path();
+    auto modulePath = filesystem::Path(moduleInfo.packageJsonPath).Parent().Normalize();
 
     // Extract relative path to provider dll from package.json
     rapidjson::Document package;
@@ -84,10 +83,10 @@ static ProviderType* LoadProvider(
     auto providerRelativePath = package[jsonProperyPath.c_str()].GetString();
 
     // Full path to provider dll
-    auto providerPath = (modulePath / providerRelativePath).normalize().make_preferred();
+    auto providerPath = (modulePath / providerRelativePath).Normalize();
 
     // Keep a static instance for each provider type (each template type will have its own static variable).
-    static dll::SharedLibrary library(providerPath.string());
+    static dll::SharedLibrary library(providerPath.String());
     auto createProviderFunc = library.Import<ProviderType*()>(functionName);
     return createProviderFunc();
 }

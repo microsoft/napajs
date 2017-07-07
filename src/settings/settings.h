@@ -2,9 +2,7 @@
 
 #include <algorithm>
 #include <string>
-#include <thread>
 #include <vector>
-
 
 namespace napa {
 namespace settings {
@@ -26,7 +24,7 @@ namespace settings {
         std::string id;
 
         /// <summary> The number of zone workers. </summary>
-        uint32_t workers = std::max(1u, std::thread::hardware_concurrency() / 2);
+        uint32_t workers = 2;
 
         /// <summary> Isolate memory constraint - The maximum old space size in megabytes. </summary>
         uint32_t maxOldSpaceSize = 0u;

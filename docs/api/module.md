@@ -11,7 +11,7 @@ Napa.JS follows [Node.JS' approach](https://nodejs.org/api/modules.html) to supp
 But there are also differences:
 1) C++ module that is designed/implemented for Napa.JS can run on Node.JS (need different compile flags to produce '.napa' and '.node'). But not vice versal. 
 2) Napa.JS hasn't supported all Node.JS API yet. We follow an [incremental approach](./node-api.md) to add Node.JS built-ins and core modules that are needed for computation heavy tasks. You can access full capabilities of Node exposed via [Node zone](./zone.md#node-zone).
-3) Napa.JS doesn't provide `uv` functionalities, instead built-ins and core modules are implemented in `boost`.
+3) Napa.JS doesn't provide `uv` functionalities, instead built-ins and core modules have its own implementation.
 4) Napa.JS supports embed mode. C++ modules need separate compilation between Node mode and embed mode.
 
 
