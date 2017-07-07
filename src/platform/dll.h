@@ -29,7 +29,7 @@ namespace napa {
 
         /// <summary> Returns the path of the dll including this line of code. </summary>
         static inline std::string ThisLineLocation() {
-            return GetSymbolLocation(ThisLineLocation);
+            return GetSymbolLocation(reinterpret_cast<void*>(ThisLineLocation));
         }
     }
 }
