@@ -1,9 +1,9 @@
 #include "path.h"
 
 #include <napa-module.h>
+#include <platform/filesystem.h>
 #include <platform/platform.h>
 
-#include <boost/filesystem.hpp>
 #include <string>
 
 using namespace napa;
@@ -146,8 +146,8 @@ namespace {
             "path.normalize requires 1 string parameter of file path.");
         
         v8::String::Utf8Value utf8Path(args[0]);
-        auto path = boost::filesystem::path(*utf8Path).normalize().make_preferred();
-        args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, path.string()));
+        auto path = filesystem::Path(*utf8Path).Normalize();
+        args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, path.String()));
     }
 
     void ResolveCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -158,7 +158,7 @@ namespace {
             args.Length() > 0,
             "path.resolve requires at least one string parameters.");
 
-        auto path = boost::filesystem::current_path();
+        auto path = filesystem::CurrentDirectory();
 
         for (int i = 0; i < args.Length(); ++i) {
             CHECK_ARG(isolate,
@@ -166,10 +166,9 @@ namespace {
                 "path.resolve doesn't accept non-string argument.");
             
             v8::String::Utf8Value nextPath(args[i]);
-            path = boost::filesystem::absolute(boost::filesystem::path(*nextPath), path);
+            path /= *nextPath;
         }
-        path.normalize().make_preferred();
-        args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, path.string()));
+        args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, path.Absolute().Normalize().String()));
     }
 
     void JoinCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -181,7 +180,7 @@ namespace {
             "path.join requires at least one string parameters.");
 
         v8::String::Utf8Value basePath(args[0]);
-        auto path = boost::filesystem::path(*basePath);
+        auto path = filesystem::Path(*basePath);
 
         for (int i = 1; i < args.Length(); ++i) {
             CHECK_ARG(isolate,
@@ -191,9 +190,7 @@ namespace {
             v8::String::Utf8Value nextPath(args[i]);
             path /= *nextPath;
         }
-        path.normalize().make_preferred();
-
-        args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, path.string()));
+        args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, path.Normalize().String()));
     }
 
     void DirnameCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -205,9 +202,8 @@ namespace {
             "path.dirname requires 1 string parameter of file path.");
         
         v8::String::Utf8Value utf8Path(args[0]);
-        auto path = boost::filesystem::path(*utf8Path);
-        args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate,
-            path.has_parent_path() ?  path.parent_path().string() : path.string()));
+        auto path = filesystem::Path(*utf8Path);
+        args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, path.Dirname().String()));
     }
 
     void BasenameCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -223,7 +219,7 @@ namespace {
             "path.basename requires a string parameter of file path.");
         
         v8::String::Utf8Value utf8Path(args[0]);
-        auto fileName = boost::filesystem::path(*utf8Path).filename().string();
+        auto fileName = filesystem::Path(*utf8Path).Filename().String();
         if (args.Length() == 2) {
             CHECK_ARG(isolate,
                 args[1]->IsString() ,
@@ -247,8 +243,8 @@ namespace {
             "path.extname requires 1 string parameter of file path.");
         
         v8::String::Utf8Value utf8Path(args[0]);
-        auto path = boost::filesystem::path(*utf8Path);
-        args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, path.extension().string()));
+        auto path = filesystem::Path(*utf8Path);
+        args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, path.Extension().String()));
     }
 
     void IsAbsoluteCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -260,8 +256,8 @@ namespace {
             "path.isAbsolute requires 1 string parameter of file path.");
         
         v8::String::Utf8Value utf8Path(args[0]);
-        auto path = boost::filesystem::path(*utf8Path);
-        args.GetReturnValue().Set(path.is_absolute());
+        auto path = filesystem::Path(*utf8Path);
+        args.GetReturnValue().Set(path.IsAbsolute());
     }
 
     void RelativeCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -275,13 +271,8 @@ namespace {
         v8::String::Utf8Value from(args[0]);
         v8::String::Utf8Value to(args[1]);
 
-        auto fromPath = boost::filesystem::absolute(*from).normalize().make_preferred();
-        auto toPath = boost::filesystem::absolute(*to).normalize().make_preferred();
-        auto relativePath = toPath.lexically_relative(fromPath);
-
-        // from/to path doesn't share the same root (drive).
-        args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, 
-            relativePath.empty() ?  toPath.string() : relativePath.string()));
+        auto relativePath = filesystem::Path(*to).Relative(*from);
+        args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, relativePath.String()));
     }
 
 }   // End of anonymous namespace.

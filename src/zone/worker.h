@@ -20,9 +20,11 @@ namespace zone {
         /// <summary> Constructor. </summary>
         /// <param name="id"> The task id. </param>
         /// <param name="settings"> A settings object. </param>
+        /// <param name="setupCallback"> Callback to setup the isolate after worker created its isolate. </param>
         /// <param name="idleNotificationCallback"> Triggers when the worker becomes idle. </param>
         Worker(WorkerId id,
                const settings::ZoneSettings &settings,
+               std::function<void(WorkerId)> setupCallback,
                std::function<void(WorkerId)> idleNotificationCallback);
 
         /// <summary> Destructor. </summary>

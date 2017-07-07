@@ -1,9 +1,8 @@
 #include "process.h"
 
 #include <napa-module.h>
+#include <platform/filesystem.h>
 #include <platform/platform.h>
-
-#include <boost/filesystem.hpp>
 
 #include <chrono>
 #include <iostream>
@@ -86,7 +85,7 @@ namespace {
         v8::HandleScope scope(isolate);
 
         args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, 
-            boost::filesystem::current_path().make_preferred().string().c_str()));
+            filesystem::CurrentDirectory().String()));
     }
 
     void ChdirCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -98,10 +97,10 @@ namespace {
             "process.chdir requires a string parameter.");
 
         v8::String::Utf8Value dirname(args[0]);
-        boost::filesystem::path dir(*dirname);
-        JS_ENSURE(isolate, boost::filesystem::exists(dir), "Directory \"%s\" doesn't exist", dir.string().c_str());
+        filesystem::Path dir(*dirname);
+        JS_ENSURE(isolate, filesystem::IsDirectory(dir), "Directory \"%s\" doesn't exist", dir.c_str());
 
-        boost::filesystem::current_path(dir);
+        filesystem::SetCurrentDirectory(dir);
 
         args.GetReturnValue().SetUndefined();
     }

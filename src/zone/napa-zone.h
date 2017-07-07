@@ -41,7 +41,6 @@ namespace zone {
 
     private:
         explicit NapaZone(const settings::ZoneSettings& settings);
-        void Init();
 
         settings::ZoneSettings _settings;
         std::shared_ptr<zone::Scheduler> _scheduler;

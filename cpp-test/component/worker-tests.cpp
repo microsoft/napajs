@@ -34,8 +34,20 @@ private:
 // Make sure V8 it initialized exactly once.
 static NapaInitializationGuard _guard;
 
+TEST_CASE("worker runs setup complete callback", "[scheduler-worker]") {
+    std::mutex mutex;
+    std::condition_variable cv;
+    
+    auto worker = std::make_unique<Worker>(0, ZoneSettings(), [&cv](WorkerId) {
+        cv.notify_one();
+    }, [](WorkerId) {});
+    
+    bool setupCompleted = (cv.wait_for(lock, std::chrono::milliseconds(1000)) == std::cv_status::no_timeout);
+    REQUIRE(setupCompleted == true);
+}
+
 TEST_CASE("worker runs scheduled task", "[scheduler-worker]") {
-    auto worker = std::make_unique<Worker>(0, ZoneSettings(), [](WorkerId) {});
+    auto worker = std::make_unique<Worker>(0, ZoneSettings(), [](WorkerId) {}, [](WorkerId) {});
     
     auto task = std::make_shared<TestTask>();
     worker->Schedule(task);
@@ -49,7 +61,7 @@ TEST_CASE("worker notifies idle condition", "[scheduler-worker]") {
     std::mutex mutex;
     std::condition_variable cv;
 
-    auto worker = std::make_unique<Worker>(0, ZoneSettings(), [&cv](WorkerId) {
+    auto worker = std::make_unique<Worker>(0, ZoneSettings(), [](WorkerId) {}, [&cv](WorkerId) {
         cv.notify_one();
     });
 
@@ -62,7 +74,7 @@ TEST_CASE("worker notifies idle condition", "[scheduler-worker]") {
 }
 
 TEST_CASE("worker runs all tasks before shutting down", "[scheduler-worker]") {
-    auto worker = std::make_unique<Worker>(0, ZoneSettings(), [](WorkerId) {});
+    auto worker = std::make_unique<Worker>(0, ZoneSettings(), [](WorkerId) {}, [](WorkerId) {});
 
     auto task = std::make_shared<TestTask>();
 
@@ -76,7 +88,7 @@ TEST_CASE("worker runs all tasks before shutting down", "[scheduler-worker]") {
 }
 
 TEST_CASE("worker runs javascript task", "[scheduler-worker]") {
-    auto worker = std::make_unique<Worker>(0, ZoneSettings(), [](WorkerId) {});
+    auto worker = std::make_unique<Worker>(0, ZoneSettings(), [](WorkerId) {}, [](WorkerId) {});
 
     auto task = std::make_shared<TestTask>([]() {
         auto isolate = v8::Isolate::GetCurrent();
@@ -102,7 +114,7 @@ TEST_CASE("worker runs javascript task", "[scheduler-worker]") {
 }
 
 TEST_CASE("worker runs javascript with stack overflow", "[scheduler-worker]") {
-    auto worker = std::make_unique<Worker>(0, ZoneSettings(), [](WorkerId) {});
+    auto worker = std::make_unique<Worker>(0, ZoneSettings(), [](WorkerId) {}, [](WorkerId) {});
 
     auto task = std::make_shared<TestTask>([]() {
         auto isolate = v8::Isolate::GetCurrent();

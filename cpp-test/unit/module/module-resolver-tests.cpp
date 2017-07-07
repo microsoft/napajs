@@ -1,9 +1,8 @@
 #include "catch.hpp"
 
 #include <module/loader/module-resolver.h>
+#include <platform/filesystem.h>
 #include <platform/platform.h>
-
-#include <boost/filesystem.hpp>
 
 #include <sstream>
 
@@ -17,9 +16,9 @@ namespace {
         // Set environment variables before module resolver is initialized.
         static bool setNodePath = []() {
             std::ostringstream oss;
-            oss << (boost::filesystem::current_path() / "resolve-env").string()
+            oss << (filesystem::CurrentDirectory() / "resolve-env").String()
                 << platform::ENV_DELIMITER
-                << (boost::filesystem::current_path() / "child" / "node_modules" / "child").string();
+                << (filesystem::CurrentDirectory() / "child" / "node_modules" / "child").String();
             return platform::SetEnv("NODE_PATH", oss.str().c_str());
         }();
         REQUIRE(setNodePath);
@@ -38,7 +37,7 @@ namespace {
     }
 
     void ResolveIt(const char* module,
-                   const boost::filesystem::path& expected,
+                   const filesystem::Path& expected,
                    ModuleType type) {
         auto detail = GetModuleResolver().Resolve(module);
 
@@ -47,20 +46,20 @@ namespace {
     }
 
     void ResolveIt(const char* module,
-                   const boost::filesystem::path& expected,
+                   const filesystem::Path& expected,
                    ModuleType type,
-                   const boost::filesystem::path& package) {
+                   const filesystem::Path& package) {
         auto detail = GetModuleResolver().Resolve(module);
 
         REQUIRE(detail.fullPath == expected);
         REQUIRE(detail.type == type);
-        REQUIRE(detail.packageJsonPath == package.string());
+        REQUIRE(detail.packageJsonPath == package.String());
     }
 
 }   // Namespace of anonymous namespace.
 
 TEST_CASE("resolve node modules correctly.", "[module-resolver]") {
-    auto currentPath = boost::filesystem::current_path();
+    auto currentPath = filesystem::CurrentDirectory();
 
     SECTION("resolve built-in or core modules") {
         // Set build-in and core modules.
@@ -110,14 +109,14 @@ TEST_CASE("resolve node modules correctly.", "[module-resolver]") {
 
         // Starts with "../" and a file exists.
         std::ostringstream oss;
-        oss << "../" << currentPath.filename().string() << "/resolve-file";
+        oss << "../" << currentPath.Filename().String() << "/resolve-file";
         ResolveIt(oss.str().c_str(), currentPath / "resolve-file", ModuleType::JAVASCRIPT);
 
         // Starts with "/", but a file doesn't exist.
         ResolveIt("/resolve-file", "", ModuleType::NONE);
 
         // Use absolute path and a file exists.
-        ResolveIt((currentPath / "resolve-file").string().c_str(),
+        ResolveIt((currentPath / "resolve-file").c_str(),
                   currentPath / "resolve-file",
                   ModuleType::JAVASCRIPT);
     }
@@ -149,7 +148,7 @@ TEST_CASE("resolve node modules correctly.", "[module-resolver]") {
 
         // Starts with "../" and a directory exists.
         std::ostringstream oss;
-        oss << "../" << currentPath.filename().string() << "/resolve-directory/resolver";
+        oss << "../" << currentPath.Filename().String() << "/resolve-directory/resolver";
         ResolveIt(oss.str().c_str(),
                   currentPath / "resolve-directory" / "resolver" / "resolve-file",
                   ModuleType::JAVASCRIPT,
@@ -159,7 +158,7 @@ TEST_CASE("resolve node modules correctly.", "[module-resolver]") {
         ResolveIt("/resolve-directory/resolver", "", ModuleType::NONE);
 
         // Use absolute path and a file exists.
-        ResolveIt((currentPath / "resolve-directory" / "resolver").string().c_str(),
+        ResolveIt((currentPath / "resolve-directory" / "resolver").c_str(),
                   currentPath / "resolve-directory" / "resolver" / "resolve-file",
                   ModuleType::JAVASCRIPT,
                   currentPath / "resolve-directory" / "resolver" / "package.json");

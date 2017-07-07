@@ -2,11 +2,10 @@
 
 #include <module/core-modules/node/file-system-helpers.h>
 #include <platform/dll.h>
+#include <platform/filesystem.h>
 
 #include <napa-log.h>
 #include <napa/v8-helpers.h>
-
-#include <boost/filesystem.hpp>
 
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
@@ -74,8 +73,8 @@ std::string module_loader_helpers::GetModuleDirectory(v8::Local<v8::Object> modu
         return "";
     }
 
-    boost::filesystem::path moduleFile(v8_helpers::V8ValueTo<std::string>(filename));
-    return moduleFile.parent_path().string();
+    filesystem::Path moduleFile(v8_helpers::V8ValueTo<std::string>(filename));
+    return moduleFile.Parent().Normalize().String();
 }
 
 const std::string& module_loader_helpers::GetNapaDllPath() {
@@ -84,17 +83,17 @@ const std::string& module_loader_helpers::GetNapaDllPath() {
 }
 
 const std::string& module_loader_helpers::GetNapaRuntimeDirectory() {
-    static std::string runtimeDirectory = boost::filesystem::path(GetNapaDllPath()).parent_path().string();
+    static std::string runtimeDirectory = filesystem::Path(GetNapaDllPath()).Parent().Normalize().String();
     return runtimeDirectory;
 }
 
 const std::string& module_loader_helpers::GetCurrentWorkingDirectory() {
-    static std::string currentWorkingDirectory = boost::filesystem::current_path().string();
+    static std::string currentWorkingDirectory = filesystem::CurrentDirectory().String();
     return currentWorkingDirectory;
 }
 
 const std::string& module_loader_helpers::GetLibDirectory() {
-    static std::string libDirectory = (boost::filesystem::path(GetNapaDllPath()).parent_path().parent_path() / "lib").string();
+    static std::string libDirectory = (filesystem::Path(GetNapaDllPath()).Parent().Parent() / "lib").Normalize().String();
     return libDirectory;
 }
 
@@ -123,8 +122,8 @@ void module_loader_helpers::SetupModuleContext(v8::Local<v8::Context> parentCont
     if (path.empty()) {
         SetupModulePath(exports, GetCurrentWorkingDirectory(), std::string());
     } else {
-        boost::filesystem::path current(path);
-        SetupModulePath(exports, current.parent_path().string(), path);
+        filesystem::Path current(path);
+        SetupModulePath(exports, current.Parent().Normalize().String(), path);
     }
 
     auto global = parentContext->Global()->Get(parentContext, v8_helpers::MakeV8String(isolate, "global")).ToLocalChecked()->ToObject();
@@ -133,9 +132,9 @@ void module_loader_helpers::SetupModuleContext(v8::Local<v8::Context> parentCont
 
 std::vector<module_loader_helpers::CoreModuleInfo> module_loader_helpers::ReadCoreModulesJson() {
     static const std::string CORE_MODULES_JSON_PATH =
-        (boost::filesystem::path(GetLibDirectory()) / "core\\core-modules.json").string();
+        (filesystem::Path(GetLibDirectory()) / "core\\core-modules.json").String();
 
-    if (!boost::filesystem::exists(CORE_MODULES_JSON_PATH)) {
+    if (!filesystem::IsRegularFile(CORE_MODULES_JSON_PATH)) {
         return std::vector<CoreModuleInfo>();
     }
 
@@ -154,7 +153,7 @@ std::vector<module_loader_helpers::CoreModuleInfo> module_loader_helpers::ReadCo
 
         for (const auto& obj : document.GetArray()) {
             auto moduleName = obj["name"].GetString();
-            auto isBuiltIn = (obj["value"] == "builtin");
+            auto isBuiltIn = (obj["type"] == "builtin");
 
             coreModuleInfos.emplace_back(moduleName, isBuiltIn);
         }

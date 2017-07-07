@@ -7,7 +7,9 @@ set(NAPA_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/..)
 # Test Files
 file(GLOB_RECURSE TEST_FILES
     main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/platform/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/settings/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/zone/*.cpp)
 
 # Source files under test

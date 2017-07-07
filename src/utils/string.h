@@ -26,36 +26,53 @@ namespace string {
         return copy;
     }
 
-    /// <summary> Split a string into a list with a set of delimiters. </summary>
-    inline void Split(const std::string& str, std::vector<std::string>& list, const std::vector<char>& delimiters, bool compress = false) {
-        list.clear();
-        size_t start = 0;
+    /// <summary> Split a string range into a list with a set of delimiters. </summary>
+    inline void Split(
+        std::string::const_iterator begin,
+        std::string::const_iterator end,
+        std::vector<std::string>& outputList,
+        const std::vector<char>& delimiters,
+        bool compress = false) {
 
-        for (size_t i = 0; i < str.size(); ++i) {
-            for (size_t j = 0; j < delimiters.size(); ++j) {
-                if (str[i] == delimiters[j]) {
-                    auto len = i - start;
-                    if (len != 0 || !compress) {
-                        list.push_back(str.substr(start, len));
+        outputList.clear();
+        auto start = begin;
+
+        for (auto it = begin; it != end; ++it) {
+            for (auto j = delimiters.begin(); j < delimiters.end(); ++j) {
+                if (*it == *j) {
+                    if (it != start || !compress) {
+                        outputList.push_back(std::string(start, it));
                     }
-                    start = i + 1;
+                    start = it + 1;
                     break;
                 }
             }
         }
-        auto len = str.size() - start;
-        if (len != 0 || !compress) {
-            list.push_back(str.substr(start, len));
+        if (start != end || !compress) {
+            outputList.push_back(std::string(start, end));
         }
     }
 
-    /// <summary> Split a string into a list with a delimiter. </summary>
-    inline void Split(const std::string& str, std::vector<std::string>& list, const std::string& anyCharAsDelimiter, bool compress = false) {
-        std::vector<char> delimiters;
-        for (auto it = anyCharAsDelimiter.begin(); it != anyCharAsDelimiter.end(); ++it) {
-            delimiters.push_back(*it);
-        }
-        Split(str, list, delimiters, compress);
+    /// <summary> Split a string range into a list with a set of delimiters passed in as a string. </summary>
+    inline void Split(
+        std::string::const_iterator begin,
+        std::string::const_iterator end,
+        std::vector<std::string>& outputList,
+        const std::string& anyCharAsDelimiter,
+        bool compress = false) {
+
+        std::vector<char> delimiters(anyCharAsDelimiter.begin(), anyCharAsDelimiter.end());
+        Split(begin, end, outputList, delimiters, compress);
+    }
+
+    /// <summary> Split a string into a list with a set of delimiters. </summary>
+    inline void Split(
+        const std::string& str,
+        std::vector<std::string>& outputList,
+        const std::string& delimiters,
+        bool compress = false) {
+
+        return Split(str.begin(), str.end(), outputList, delimiters, compress);
     }
 
     /// <summary> Trim the provided string. </summary>
@@ -111,14 +128,13 @@ namespace string {
                 return l - r;
             }
         }
-        return -1;
+        return 0;
     }
 
     /// <summary> Case insensitive equals. </summary>
     inline bool CaseInsensitiveEquals(const std::string& left, const std::string& right) {
         return CaseInsensitiveCompare(left, right) == 0;
     }
-
 }
 }
 }

@@ -1,15 +1,18 @@
 #include "napa-zone.h"
 
+#include <module/loader/module-loader.h>
 #include <platform/dll.h>
+#include <platform/filesystem.h>
 #include <utils/string.h>
 #include <zone/eval-task.h>
 #include <zone/call-task.h>
 #include <zone/call-context.h>
 #include <zone/task-decorators.h>
+#include <zone/worker-context.h>
 
 #include <napa-log.h>
 
-#include <boost/filesystem.hpp>
+#include <future>
 
 using namespace napa;
 using namespace napa::zone;
@@ -17,6 +20,10 @@ using namespace napa::zone;
 // Static members initialization
 std::mutex NapaZone::_mutex;
 std::unordered_map<std::string, std::weak_ptr<NapaZone>> NapaZone::_zones;
+
+/// <summary> Load 'napajs' module during bootstrap. We use relative path to decouple from how module will be published.  </summary>
+static const std::string NAPAJS_MODULE_PATH = filesystem::Path(dll::ThisLineLocation()).Parent().Parent().Normalize().String();
+static const std::string BOOTSTRAP_SOURCE = "require('" + utils::string::ReplaceAllCopy(NAPAJS_MODULE_PATH, "\\", "\\\\") + "');";
 
 std::shared_ptr<NapaZone> NapaZone::Create(const settings::ZoneSettings& settings) {
     std::lock_guard<std::mutex> lock(_mutex);
@@ -32,14 +39,10 @@ std::shared_ptr<NapaZone> NapaZone::Create(const settings::ZoneSettings& setting
         MakeSharedEnabler(const settings::ZoneSettings& settings) : NapaZone(settings) {}
     };
 
-    std::shared_ptr<NapaZone> zone = std::make_shared<MakeSharedEnabler>(settings);
+    // Fail to create Napa zone is not expected, will always trigger crash.
+    auto zone = std::make_shared<MakeSharedEnabler>(settings);
     _zones[settings.id] = zone;
-    try {
-        zone->Init();
-    } catch (const std::exception& ex) {
-        LOG_ERROR("Zone", "Failed to initialize zone '%s': %s", settings.id.c_str(), ex.what());
-        return nullptr;
-    }
+	
     return zone;
 }
 
@@ -62,21 +65,33 @@ std::shared_ptr<NapaZone> NapaZone::Get(const std::string& id) {
     return zone;
 }
 
-NapaZone::NapaZone(const settings::ZoneSettings& settings) : _settings(settings) {
-}
+NapaZone::NapaZone(const settings::ZoneSettings& settings) : 
+    _settings(settings) {
 
-/// <summary> Load 'napajs' module during bootstrap. We use relative path to decouple from how module will be published.  </summary>
-static const std::string NAPAJS_MODULE_PATH = boost::filesystem::path(dll::ThisLineLocation()).parent_path().parent_path().string();
-static const std::string BOOTSTRAP_SOURCE = "require('" + utils::string::ReplaceAllCopy(NAPAJS_MODULE_PATH, "\\", "\\\\") + "');";
-
-void NapaZone::Init() {
     // Create the zone's scheduler.
-    _scheduler = std::make_unique<Scheduler>(_settings);
+    _scheduler = std::make_unique<Scheduler>(_settings, [this](WorkerId id) {
+        // Initialize the worker context TLS data
+        INIT_WORKER_CONTEXT();
+
+        // Zone instance into TLS.
+        WorkerContext::Set(WorkerContextItem::ZONE, reinterpret_cast<void*>(this));
+
+        // Worker Id into TLS.
+        WorkerContext::Set(WorkerContextItem::WORKER_ID, reinterpret_cast<void*>(static_cast<uintptr_t>(id)));
+
+        // Load module loader and built-in modules of require, console and etc.
+        CREATE_MODULE_LOADER();
+    });
+
+    std::promise<ResultCode> promise;
+    auto future = promise.get_future();
 
     // Bootstrap after zone is created.
-    Broadcast(BOOTSTRAP_SOURCE, [](ResultCode code){ 
-        NAPA_ASSERT(code == NAPA_RESULT_SUCCESS, "Bootstrap Napa zone failed.");
+    Broadcast(BOOTSTRAP_SOURCE, [&promise](ResultCode code){ 
+        promise.set_value(code);
     });
+
+    NAPA_ASSERT(future.get() == NAPA_RESULT_SUCCESS, "Bootstrap Napa zone failed.");
 }
 
 const std::string& NapaZone::GetId() const {
