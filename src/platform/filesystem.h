@@ -574,7 +574,7 @@ namespace filesystem {
         }
 #else
         if (::readlink("/proc/self/exe", path, sizeof(path)) > 0
-            || ::readlink("/proc/curproc/file", path, sizeof(path>)) > 0
+            || ::readlink("/proc/curproc/file", path, sizeof(path)) > 0
             || ::readlink("/proc/self/path/a.out", path, sizeof(path))) {
             return path;
         }
@@ -623,7 +623,7 @@ namespace filesystem {
 #ifdef _WIN32
         return ::CreateDirectoryA(path.c_str(), 0) == TRUE || ::GetLastError() == ERROR_ALREADY_EXISTS;
 #else
-        return ::mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) == 0 || ::errno() == EEXIST;
+        return ::mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) == 0 || errno == EEXIST;
 #endif
     }
 
