@@ -73,6 +73,9 @@ namespace zone {
 
         /// <summary> A flag to signal that scheduler is stopping. </summary>
         std::atomic<bool> _shouldStop;
+
+        /// <summary> Tasks being scheduled but not yet dispatched to worker or put into non-scheduled queue. </summary>
+        std::atomic<size_t> _beingScheduled;
     };
 
     typedef SchedulerImpl<Worker> Scheduler;
@@ -81,7 +84,8 @@ namespace zone {
     SchedulerImpl<WorkerType>::SchedulerImpl(const settings::ZoneSettings& settings, std::function<void(WorkerId)> workerSetupCallback) :
         _idleWorkersFlags(settings.workers),
         _synchronizer(std::make_unique<SimpleThreadPool>(1)),
-        _shouldStop(false) {
+        _shouldStop(false),
+        _beingScheduled(0) {
 
         _workers.reserve(settings.workers);
 
@@ -99,7 +103,7 @@ namespace zone {
     template <typename WorkerType>
     SchedulerImpl<WorkerType>::~SchedulerImpl() {
         // Wait for all tasks to be scheduled.
-        while (_nonScheduledTasks.size() > 0) {
+        while (_beingScheduled > 0 || !_nonScheduledTasks.empty()) {
             std::this_thread::yield();
         }
 
@@ -116,7 +120,7 @@ namespace zone {
     template <typename WorkerType>
     void SchedulerImpl<WorkerType>::Schedule(std::shared_ptr<Task> task) {
         NAPA_ASSERT(task, "task is null");
-        
+        _beingScheduled++;
         _synchronizer->Execute([this, task]() {
             if (_idleWorkers.empty()) {
                 // If there is no idle worker, put the task into the non-scheduled queue.
@@ -130,7 +134,9 @@ namespace zone {
                 // Schedule task on worker
                 _workers[workerId].Schedule(std::move(task));
             }
+            _beingScheduled--;
         });
+        
     }
 
     template <typename WorkerType>
