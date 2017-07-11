@@ -1,4 +1,16 @@
 var path = require('path');
 var childProcess = require('child_process');
 
-childProcess.execFileSync(path.join(__dirname, 'bin/napa-unittest.exe'), [], { stdio: 'inherit' });
+try {
+    childProcess.execFileSync(
+        path.join(__dirname, 'build/test/napa-unittest.exe'),
+        [],
+        {
+            cwd: path.join(__dirname, 'build/test'),
+            stdio: 'inherit'
+        }
+    );
+}
+catch(err) {
+    process.exit(1); // Error
+}

@@ -1,4 +1,4 @@
-#include "catch.hpp"
+#include <catch/catch.hpp>
 
 #include <platform/platform.h>
 #include <module/core-modules/node/file-system-helpers.h>

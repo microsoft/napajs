@@ -10,6 +10,8 @@
 #include <stack>
 #include <thread>
 
+#include <iostream>
+
 using namespace napa::zone;
 
 struct TimerInfo {
@@ -49,19 +51,18 @@ TimersScheduler::~TimersScheduler() {
     running = false;
     cv.notify_one();
 
-	if (thread.joinable()) {
-		thread.join();
-	}
+    if (thread.joinable()) {
+        thread.join();
+    }
 }
 
 bool TimersScheduler::StartMainLoop() {
     running = true;
     thread = std::thread([this]() {
+        std::unique_lock<std::mutex> lock(mutex);
 
         // Timers main loop.
         while (running) {
-            std::unique_lock<std::mutex> lock(mutex);
-
             cv.wait(lock, [this]() {
                 return !activeTimers.empty() || !running;
             });
@@ -70,17 +71,12 @@ bool TimersScheduler::StartMainLoop() {
                 return;
             }
 
-            auto now = std::chrono::high_resolution_clock::now();
-
-            auto topTimer = activeTimers.top();
-            if (topTimer.expirationTime < now) {
-                // Timer expired, call callback if still valid.
-                activeTimers.pop();
-
+            const auto& topTimer = activeTimers.top();
+            if (topTimer.expirationTime <= std::chrono::high_resolution_clock::now()) {
                 if (timers[topTimer.index].active) {
                     try {
                         // Fire the callback.
-                        // The callback is asusmed to be very fast as it is meant to dispatch to appropriate
+                        // The callback is assumed to be very fast as it is meant to dispatch to appropriate
                         // callback queues.
                         timers[topTimer.index].callback();
                     }
@@ -91,10 +87,15 @@ bool TimersScheduler::StartMainLoop() {
                     // We only support single trigger timers.
                     timers[topTimer.index].active = false;
                 }
+
+                // Timer expired, so it's no longer active.
+                activeTimers.pop();
             }
             else {
-                // top timer time have not elpased yet, wait for it.
-                cv.wait_for(lock, topTimer.expirationTime - now);
+                // Wait for timer expiration.
+                cv.wait_until(lock, topTimer.expirationTime, [&topTimer]() {
+                    return topTimer.expirationTime <= std::chrono::high_resolution_clock::now();
+                });
             }
         }
     });
@@ -109,7 +110,7 @@ Timer::Timer(Callback callback, std::chrono::milliseconds timeout) {
     // Start the timers scheduler if this is the first timer created.
     static bool init = _timersScheduler.StartMainLoop();
 
-    std::unique_lock<std::mutex> lock(_timersScheduler.mutex);
+    std::lock_guard<std::mutex> lock(_timersScheduler.mutex);
 
     TimerInfo timerInfo{ false, timeout, callback };
 
@@ -126,22 +127,24 @@ Timer::Timer(Callback callback, std::chrono::milliseconds timeout) {
 }
 
 Timer::~Timer() {
-    Stop();
+    std::lock_guard<std::mutex> lock(_timersScheduler.mutex);
 
-    std::unique_lock<std::mutex> lock(_timersScheduler.mutex);
+    _timersScheduler.timers[_index].active = false;
 
     // Free the timer slot.
     _timersScheduler.freeSlots.emplace(_index);
 }
 
 void Timer::Start() {
-    std::unique_lock<std::mutex> lock(_timersScheduler.mutex);
+    {
+        std::lock_guard<std::mutex> lock(_timersScheduler.mutex);
+        
+        auto& timerInfo = _timersScheduler.timers[_index];
+        timerInfo.active = true;
 
-    auto& timerInfo = _timersScheduler.timers[_index];
-    timerInfo.active = true;
-
-    ActiveTimerEntry entry = { _index, std::chrono::high_resolution_clock::now() + timerInfo.timeout };
-    _timersScheduler.activeTimers.emplace(std::move(entry));
+        ActiveTimerEntry entry = { _index, std::chrono::high_resolution_clock::now() + timerInfo.timeout };
+        _timersScheduler.activeTimers.emplace(std::move(entry));
+    }
 
     _timersScheduler.cv.notify_one();
 }

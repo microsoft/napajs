@@ -1,4 +1,4 @@
-#include "catch.hpp"
+#include <catch/catch.hpp>
 
 #include <module/loader/module-resolver.h>
 #include <platform/filesystem.h>
