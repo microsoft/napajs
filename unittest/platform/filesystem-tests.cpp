@@ -249,8 +249,8 @@ TEST_CASE("filesystem::PathIterator", "[PathIterator]") {
             }
         } while (it.Next());
 
-        REQUIRE(hasDot);
-        REQUIRE(hasDotDot);
+        REQUIRE(!hasDot);
+        REQUIRE(!hasDotDot);
         REQUIRE(hasExe);
     }
 }

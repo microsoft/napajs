@@ -77,18 +77,6 @@ namespace filesystem {
             return *this;
         }
 
-        bool operator==(const Path& path) const {
-            return _pathname == path._pathname;
-        }
-
-        bool operator!=(const Path& path) const {
-            return !(this->operator==(path));
-        }
-
-        bool operator<(const Path& path) const {
-            return _pathname < path._pathname;
-        }
-
         /// <summary> Operator to append a relative path. </summmary>
         Path& operator/=(const Path& path) {
             return Append(path);
@@ -99,6 +87,11 @@ namespace filesystem {
             Path tmp(*this);
             tmp /= path;
             return tmp;
+        }
+
+        /// <summary> Compare two paths. </summmary>
+        int Compare(const Path& path) const {
+            return _pathname.compare(path._pathname);
         }
 
         /// <summary> Get unnormalized path string. </summary>
@@ -527,6 +520,18 @@ namespace filesystem {
         return stream;
     }
 
+    inline bool operator==(const Path& lhs, const Path& rhs) {
+        return lhs.Compare(rhs) == 0;
+    }
+
+    inline bool operator!=(const Path& lhs, const Path& rhs) {
+        return lhs.Compare(rhs) != 0;
+    }
+
+    inline bool operator<(const Path& lhs, const Path& rhs) {
+        return lhs.Compare(rhs) < 0;
+    }
+
     /// <summary> Get current working directory. </summary>
     static inline Path CurrentDirectory() {
         static constexpr size_t DEFAULT_PATH_SIZE = 1024;
@@ -687,17 +692,20 @@ namespace filesystem {
         /// <remarks> Always call Next() after construction. </remarks>
         bool Next() {
 #ifdef _WIN32
-            if (_first) {
-                _first = false;
-                return INVALID_HANDLE_VALUE != _findHandle;
-            }
-
-            WIN32_FIND_DATAA findData;
-            if (::FindNextFileA(_findHandle, &findData) == FALSE) {
+            if (_findHandle == INVALID_HANDLE_VALUE) {
                 return false;
             }
-            _currentPath = _base / findData.cFileName;
-            return true;
+
+            if (_first) {
+                _first = false;
+            }
+            else {
+                WIN32_FIND_DATAA findData;
+                if (::FindNextFileA(_findHandle, &findData) == FALSE) {
+                    return false;
+                }
+                _currentPath = _base / findData.cFileName;
+            }
 #else
             if (_dir == nullptr) {
                 return false;
@@ -708,11 +716,18 @@ namespace filesystem {
                 return false;
             }
             _currentPath = _base / dp->d_name;
-            return true;
 #endif
+
+            if (_currentPath.IsFilenameDot() || _currentPath.IsFilenameDotDot()) {
+                // Don't include '.' or '..' as files in a directory.
+                return Next();
+            }
+
+            return true;
         }
 
     private:
+
 #ifdef _WIN32
         HANDLE _findHandle;
         bool _first;
