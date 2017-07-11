@@ -4,6 +4,11 @@
   "author": "napajs",
   "main": "./lib/index.js",
   "types": "./types/index.d.ts",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
   "devDependencies": {
     "mocha": ">= 3.4.2",
     "typescript": ">= 2.2.1",
@@ -13,7 +18,7 @@
   "scripts": {
     "install": "cmake-js compile",
     "buildd": "cmake-js compile --debug",
-    "prepublish": "tsc -p lib",
+    "prepare": "tsc -p lib",
     "pretest": "tsc -p test",
     "test": "mocha test --recursive",
     "unittest": "cmake-js compile -d unittest && node unittest/run.js"
