@@ -1,22 +1,5 @@
 # Files to compile
-file(GLOB_RECURSE SOURCE_COMMON_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/api/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/memory/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/module/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/providers/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/settings/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/store/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/utils/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/v8/*.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/zone/*.cpp)
-
-if (WIN32)
-    file(GLOB_RECURSE SOURCE_PLATFORM_FILES ${CMAKE_CURRENT_SOURCE_DIR}/platform/win/*.cpp)
-else()
-    file(GLOB_RECURSE SOURCE_PLATFORM_FILES ${CMAKE_CURRENT_SOURCE_DIR}/platform/linux/*.cpp)
-endif()
-
-set(SOURCE_FILES ${SOURCE_COMMON_FILES} ${SOURCE_PLATFORM_FILES})
+file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
 # The target name
 set(TARGET_NAME ${PROJECT_NAME})

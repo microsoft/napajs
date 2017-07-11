@@ -14,5 +14,5 @@ void os::Init(v8::Local<v8::Object> exports) {
 
     (void)exports->CreateDataProperty(context,
                                       v8_helpers::MakeV8String(isolate, "type"),
-                                      v8_helpers::MakeV8String(isolate, platform::OS_TYPE));
+                                      v8_helpers::MakeV8String(isolate, platform::GetOSType()));
 }
