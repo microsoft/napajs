@@ -49,9 +49,11 @@ void process::Init(v8::Local<v8::Object> exports) {
     NAPA_SET_METHOD(exports, "hrtime", HrtimeCallback);
     NAPA_SET_METHOD(exports, "umask", UmaskCallback);
 
-    auto arguments = v8::Array::New(isolate, platform::argc);
-    for (int i = 0; i < platform::argc; ++i) {
-        (void)arguments->CreateDataProperty(context, i, v8_helpers::MakeV8String(isolate, platform::argv[i]));
+    auto argc = platform::GetArgc();
+    auto argv = platform::GetArgv();
+    auto arguments = v8::Array::New(isolate, argc);
+    for (int i = 0; i < argc; ++i) {
+        (void)arguments->CreateDataProperty(context, i, v8_helpers::MakeV8String(isolate, argv[i]));
     }
     (void)exports->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "argv"), arguments);
 
