@@ -46,13 +46,22 @@ TEST_CASE("filesystem::Path", "[Path]") {
         REQUIRE(path.Extension().IsEmpty());
 
         REQUIRE(path.ReplaceExtension(".exe").Extension().IsEmpty());
-        REQUIRE(path.Normalize() == "..\\a\\c");
 
+#ifdef _WIN32
+        REQUIRE(path.Normalize() == "..\\a\\c");
         REQUIRE(path.Parent().Normalize() == "..\\a");
         REQUIRE(path.Parent().Parent().Normalize() == "..");
         REQUIRE(path.Parent().Parent().Parent().Normalize() == "..\\..");
-
         REQUIRE(path.String() == "..\\a\\c");
+#else
+        REQUIRE(path.Normalize() == "../a/c");
+        REQUIRE(path.Parent().Normalize() == "../a");
+        REQUIRE(path.Parent().Parent().Normalize() == "..");
+        REQUIRE(path.Parent().Parent().Parent().Normalize() == "../..");
+
+        REQUIRE(path.String() == "../a/c");
+#endif
+        
         REQUIRE(path.GenericForm() == "../a/c");
         REQUIRE(path.DriveSpec().IsEmpty());
         REQUIRE(!path.HasUncPrefix());
@@ -73,18 +82,31 @@ TEST_CASE("filesystem::Path", "[Path]") {
         REQUIRE(path.Extension() == ".txt");
 
         REQUIRE(path.ReplaceExtension(".exe").Extension() == ".exe");
+
+#ifdef _WIN32   
         REQUIRE(path.Normalize() == "a\\b\\d\\e.exe");
-
         REQUIRE(path.Parent().Normalize() == "a\\b\\d");
-        REQUIRE(path.Parent().Parent().Parent().Normalize() == "a");
-        REQUIRE(path.Parent().Parent().Parent().Parent().Normalize() == ".");
-        REQUIRE(path.Parent().Parent().Parent().Parent().Parent().Normalize() == "..");
-
+        
         REQUIRE(path.Relative("a/b/./e") == "..\\d\\e.exe");
         REQUIRE(path.Relative("b/c/../e") == "..\\..\\a\\b\\d\\e.exe");
         REQUIRE(path.Relative(filesystem::CurrentDirectory() / "e" / "f") == "..\\..\\a\\b\\d\\e.exe");
         REQUIRE(path.Relative("F:\\a\\b") == path.Absolute().Normalize());
         REQUIRE(path.String() == "a\\b\\d\\e.exe");
+#else   
+        REQUIRE(path.Normalize() == "a/b/d/e.exe");
+        REQUIRE(path.Parent().Normalize() == "a/b/d");
+
+        REQUIRE(path.Relative("a/b/./e") == "../d/e.exe");
+        REQUIRE(path.Relative("b/c/../e") == "../../a/b/d/e.exe");
+        REQUIRE(path.Relative(filesystem::CurrentDirectory() / "e" / "f") == "../../a/b/d/e.exe");
+
+        REQUIRE(path.String() == "a/b/d/e.exe");
+#endif
+        
+        REQUIRE(path.Parent().Parent().Parent().Normalize() == "a");
+        REQUIRE(path.Parent().Parent().Parent().Parent().Normalize() == ".");
+        REQUIRE(path.Parent().Parent().Parent().Parent().Parent().Normalize() == "..");
+
         REQUIRE(path.GenericForm() == "a/b/d/e.exe");
         REQUIRE(path.DriveSpec().IsEmpty());
         REQUIRE(!path.HasUncPrefix());
@@ -107,19 +129,27 @@ TEST_CASE("filesystem::Path", "[Path]") {
         REQUIRE(path.Extension() == "");
 
         REQUIRE(path.ReplaceExtension(".exe").Extension().IsEmpty());
-        REQUIRE(path.Normalize() == "\\a");
 
+#ifdef _WIN32   
+        REQUIRE(path.Normalize() == "\\a");
         REQUIRE(path.Parent().Normalize().String() == "\\");
+        REQUIRE(path.String() == "\\a");
+#else     
+        REQUIRE(path.Normalize() == "/a");
+        REQUIRE(path.Parent().Normalize().String() == "/");
+        REQUIRE(path.String() == "/a");
+#endif
+        
         REQUIRE(path.Parent().Parent().Normalize().IsEmpty());
 
         REQUIRE(path.Relative("/") == "a");
         REQUIRE(path.Relative("/a/c") == "..");
-        REQUIRE(path.String() == "\\a");
         REQUIRE(path.GenericForm() == "/a");
         REQUIRE(path.DriveSpec() == "");
         REQUIRE(!path.HasUncPrefix());
     }
 
+#ifdef _WIN32
     SECTION("Absolute path (Windows)") {
         // C:/a/c/.
         filesystem::Path path("C:\\a\\./b\\..\\c/.");
@@ -182,12 +212,13 @@ TEST_CASE("filesystem::Path", "[Path]") {
         REQUIRE(path.DriveSpec() == "c:");
         REQUIRE(path.HasUncPrefix());
     }
+#endif    
 }
 
 TEST_CASE("filesystem::PathIterator", "[PathIterator]") {
 
     SECTION("Path not exist") {
-        filesystem::PathIterator it("H:/a/b/c");
+        filesystem::PathIterator it("/a/b/c");
         REQUIRE(!it.Next());
         REQUIRE(*it == "");
         REQUIRE(it->IsEmpty());

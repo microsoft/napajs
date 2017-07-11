@@ -4,6 +4,10 @@ project("napa-unittest")
 
 set(NAPA_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
+# Require Cxx14 features
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # Test Files
 file(GLOB_RECURSE TEST_FILES
     main.cpp
@@ -38,3 +42,10 @@ set_target_properties(${TARGET_NAME} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_SOURCE_DIR}/bin
     RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_SOURCE_DIR}/bin
 )
+
+if (CMAKE_COMPILER_IS_GNUCC)
+    # GCC: enable std::thread via -pthread option.
+    set(THREADS_PREFER_PTHREAD_FLAG ON)
+    find_package(Threads REQUIRED)
+    target_link_libraries(${TARGET_NAME} PRIVATE Threads::Threads)
+endif()

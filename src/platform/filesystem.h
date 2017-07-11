@@ -629,10 +629,13 @@ namespace filesystem {
 
     /// <summary> Make directories recursively. </summary>
     inline bool MakeDirectories(const Path& path) {
+        if (path.IsEmpty()) {
+            return false;
+        }
         if (IsDirectory(path)) {
             return true;
         }
-        auto parent = path.Parent();
+        auto parent = path.Parent().Normalize();
         if (!IsDirectory(parent) && !MakeDirectories(parent)) {
             return false;
         }
@@ -696,6 +699,9 @@ namespace filesystem {
             _currentPath = _base / findData.cFileName;
             return true;
 #else
+            if (_dir == nullptr) {
+                return false;
+            }
             struct dirent *dp;
             dp = ::readdir(_dir);
             if (dp == nullptr) {
