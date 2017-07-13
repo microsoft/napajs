@@ -1,5 +1,7 @@
-import * as napa from '../..';
 import * as assert from 'assert';
+import * as path from "path";
+import * as napa from '../..';
+let napaDir: string = path.resolve(__dirname, '../..');
 
 export function bar(input: any) {
     return input;
@@ -64,6 +66,50 @@ export function executeTestFunctionWithClosure(id: string): Promise<any> {
     return new Promise((resolve, reject) => {
         zone.execute(() => { return zone; }, [])
             .then(result => resolve(result.value))
+            .catch(error => reject(error));
+    });
+}
+
+export function waitMS(waitTimeInMS: number): number {
+    var start = new Date().getTime();
+    var wait = 0;
+    do {
+        wait = new Date().getTime() - start;
+    } while (wait < waitTimeInMS);
+    return wait - waitTimeInMS;
+}
+
+export function executeTestFunctionWithTimeout(id: string, waitTimeInMS: number, timeoutInMS?: number): Promise<any> {
+    timeoutInMS = timeoutInMS ? timeoutInMS : Number.MAX_SAFE_INTEGER;
+    let zone = napa.zone.get(id);
+    return new Promise((resolve, reject) => {
+        zone.execute(waitMS, [waitTimeInMS], {timeout: timeoutInMS})
+            .then(result => resolve(result.value))
+            .catch(error => reject(error));
+    });
+}
+
+export function executeWithTransportableArgs(id: string): Promise<any> {
+    let zone = napa.zone.get(id);
+    return new Promise((resolve, reject) => {
+        zone.execute((allocator: napa.memory.Allocator, napaDir: string) => {
+                var assert = require("assert");
+                var napa = require(napaDir);
+                assert.deepEqual(allocator.handle, napa.memory.crtAllocator.handle);
+                return 1;
+            }, [napa.memory.crtAllocator, napaDir])
+            .then (result => resolve(result.value))
+            .catch(error => reject(error));
+    });
+}
+
+export function executeWithTransportableReturns(id: string): Promise<any> {
+    let zone = napa.zone.get(id);
+    return new Promise((resolve, reject) => {
+        zone.execute((allocator: napa.memory.Allocator) => {
+                return allocator;
+            }, [napa.memory.crtAllocator])
+            .then (result => resolve(result.value))
             .catch(error => reject(error));
     });
 }

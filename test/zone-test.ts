@@ -1,6 +1,7 @@
-import * as napa from "..";
 import * as assert from "assert";
 import * as path from "path";
+import * as napa from "..";
+let napaDir: string = path.resolve(__dirname, '..');
 
 type Zone = napa.zone.Zone;
 
@@ -115,8 +116,7 @@ describe('napajs/zone', function () {
             return napaZone1.execute(napaZoneTestModule, "broadcast", ["napa-zone2", "var state = 0;"]);
         });
 
-        // Bug #4: zone.broadcast in the same napa zone will hang forever.
-        it.skip('@napa: -> napa zone with JavaScript code', () => {
+        it('@napa: -> napa zone with JavaScript code', () => {
             return napaZone1.execute(napaZoneTestModule, "broadcast", ["napa-zone1", "var state = 0;"]);
         });
 
@@ -196,12 +196,12 @@ describe('napajs/zone', function () {
 
         // Blocked by TODO #4.
         it.skip('@napa: -> napa zone with transportable args', () => {
-            return napaZone1.execute(napaZoneTestModule, "broadcastTransportable", []);
+            return napaZone1.execute(napaZoneTestModule, "broadcastTransportable", ['napa-zone2']);
         });
 
         // Blocked by TODO #4.
         it.skip('@napa: -> node zone with transportable args', () => {
-            return napa.zone.current.execute(napaZoneTestModule, "broadcastTransportable", []);
+            return napaZone1.execute(napaZoneTestModule, "broadcastTransportable", ['node']);
         });
 
         it('@node: -> node zone with anonymous function having closure (should fail)', () => {
@@ -324,7 +324,7 @@ describe('napajs/zone', function () {
                     assert.equal(result.value, 'hello world');
                 });
         });
-        
+
         it('@napa: -> napa zone with module function name', () => {
             return napaZone1.execute(napaZoneTestModule, 'execute', ["napa-zone2", napaZoneTestModule, "bar", ['hello world']])
                 .then((result: napa.zone.Result) => {
@@ -455,42 +455,80 @@ describe('napajs/zone', function () {
             });
         });
 
-        it.skip('@node: -> node zone with transportable args', () => {
+        it('@node: -> node zone with transportable args', () => {
+            return napa.zone.current.execute((allocator: napa.memory.Allocator, napaDir: string) => {
+                var assert = require("assert");
+                var napa = require(napaDir);
+                assert.deepEqual(allocator.handle, napa.memory.crtAllocator.handle);
+            }, [napa.memory.crtAllocator, napaDir]);
         });
 
-        it.skip('@node: -> napa zone with transportable args', () => {
+        it('@node: -> napa zone with transportable args', () => {
+            return napaZone1.execute((allocator: napa.memory.Allocator, napaDir: string) => {
+                var assert = require("assert");
+                var napa = require(napaDir);
+                assert.deepEqual(allocator.handle, napa.memory.crtAllocator.handle);
+            }, [napa.memory.crtAllocator, napaDir]);
         });
 
-        it.skip('@napa: -> napa zone with transportable args', () => {
+        it('@napa: -> napa zone with transportable args', () => {
+            return napaZone1.execute(napaZoneTestModule, "executeWithTransportableArgs", ['napa-zone2']);
         });
 
-        it.skip('@napa: -> node zone with transportable args', () => {
+        it('@napa: -> node zone with transportable args', () => {
+            return napaZone1.execute(napaZoneTestModule, "executeWithTransportableArgs", ['node']);
         });
 
-        it.skip('@node: -> node zone with transportable returns', () => {
+        it('@node: -> node zone with transportable returns', () => {
+            return napa.zone.current.execute((allocator: napa.memory.Allocator) => {
+                return allocator;
+            }, [napa.memory.crtAllocator])
+            .then((result: napa.zone.Result) => {
+                assert.deepEqual(result.value.handle, napa.memory.crtAllocator.handle);
+            });
         });
 
-        it.skip('@node: -> napa zone with transportable returns', () => {
+        it('@node: -> napa zone with transportable returns', () => {
+            return napaZone1.execute((allocator: napa.memory.Allocator) => {
+                return allocator;
+            }, [napa.memory.crtAllocator])
+            .then((result: napa.zone.Result) => {
+                assert.deepEqual(result.value.handle, napa.memory.crtAllocator.handle);
+            });
         });
 
-        it.skip('@napa: -> napa zone with transportable returns', () => {
+        it('@napa: -> napa zone with transportable returns', () => {
+            return napaZone1.execute(napaZoneTestModule, "executeWithTransportableReturns", ['napa-zone2'])
+                .then((result: napa.zone.Result) => {
+                    assert.deepEqual(result.value.handle, napa.memory.crtAllocator.handle);
+                });
         });
 
-        it.skip('@napa: -> node zone with transportable returns', () => {
+        it('@napa: -> node zone with transportable returns', () => {
+            return napaZone1.execute(napaZoneTestModule, "executeWithTransportableReturns", ['node'])
+                .then((result: napa.zone.Result) => {
+                    assert.deepEqual(result.value.handle, napa.memory.crtAllocator.handle);
+                });
         });
 
-        /// Timeout is not available in node zone.
-        it.skip('@node: -> napa zone with timeout and succeed', () => {
+        it('@node: -> napa zone with timeout and succeed', () => {
+            return napaZone1.execute(napaZoneTestModule, 'waitMS', [1], {timeout: 100});
         });
         
-        it.skip('@napa: -> napa zone with timeout and succeed', () => {
+        it('@napa: -> napa zone with timeout and succeed', () => {
+            return napaZone1.execute(napaZoneTestModule, 'executeTestFunctionWithTimeout', ["napa-zone2", 1], {timeout: 100});
         });
 
-        /// Timeout is not available in node zone.
-        it.skip('@node: -> napa zone with timed out in JavaScript', () => {
+        it('@node: -> napa zone with timed out in JavaScript', () => {
+            return shouldFail(() => {
+                return napaZone1.execute(napaZoneTestModule, 'waitMS', [100], {timeout: 1});
+            });
         });
 
-        it.skip('@napa: -> napa zone with timed out in JavaScript', () => {
+        it('@napa: -> napa zone with timed out in JavaScript', () => {
+            return shouldFail(() => {
+                return napaZone1.execute(napaZoneTestModule, 'executeTestFunctionWithTimeout', ["napa-zone2", 100], {timeout: 1});
+            });
         });
 
         it.skip('@node: -> napa zone with timed out in add-on', () => {
