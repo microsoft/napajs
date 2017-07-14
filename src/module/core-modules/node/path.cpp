@@ -2,7 +2,7 @@
 
 #include <napa-module.h>
 #include <platform/filesystem.h>
-#include <platform/platform.h>
+#include <platform/os.h>
 
 #include <string>
 

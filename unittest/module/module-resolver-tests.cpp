@@ -2,7 +2,8 @@
 
 #include <module/loader/module-resolver.h>
 #include <platform/filesystem.h>
-#include <platform/platform.h>
+#include <platform/os.h>
+#include <platform/process.h>
 
 #include <sstream>
 
