@@ -1,0 +1,7 @@
+test-dir
+test-file
+
+!node_modules
+
+# unignore js files used for module testing
+!**/*.js
