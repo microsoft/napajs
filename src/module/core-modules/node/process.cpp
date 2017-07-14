@@ -2,7 +2,8 @@
 
 #include <napa-module.h>
 #include <platform/filesystem.h>
-#include <platform/platform.h>
+#include <platform/os.h>
+#include <platform/process.h>
 
 #include <chrono>
 #include <iostream>
@@ -73,7 +74,7 @@ void process::Init(v8::Local<v8::Object> exports) {
 
     (void)exports->CreateDataProperty(context,
                                       v8_helpers::MakeV8String(isolate, "execPath"),
-                                      v8_helpers::MakeV8String(isolate, platform::GetExecPath()));
+                                      v8_helpers::MakeV8String(isolate, filesystem::ProgramPath().String()));
 
     (void)exports->CreateDataProperty(context,
                                       v8_helpers::MakeV8String(isolate, "pid"),

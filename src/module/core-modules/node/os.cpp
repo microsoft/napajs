@@ -1,7 +1,7 @@
 #include "os.h"
 
 #include <napa-module.h>
-#include <platform/platform.h>
+#include <platform/os.h>
 
 using namespace napa;
 using namespace napa::module;

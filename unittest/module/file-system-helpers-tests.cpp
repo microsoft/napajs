@@ -1,6 +1,6 @@
 #include <catch/catch.hpp>
 
-#include <platform/platform.h>
+#include <platform/os.h>
 #include <module/core-modules/node/file-system-helpers.h>
 
 using namespace napa;

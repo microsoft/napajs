@@ -1,7 +1,7 @@
 #include "tty-wrap.h"
 
 #include <napa-module.h>
-#include <platform/platform.h>
+#include <platform/process.h>
 
 using namespace napa;
 using namespace napa::module;
