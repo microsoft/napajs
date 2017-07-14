@@ -21,16 +21,12 @@ file(GLOB_RECURSE TEST_FILES
 file(GLOB_RECURSE SOURCE_FILES
     ${NAPA_ROOT}/src/module/core-modules/node/file-system-helpers.cpp
     ${NAPA_ROOT}/src/module/loader/module-resolver.cpp
+    ${NAPA_ROOT}/src/platform/filesystem.cpp
+    ${NAPA_ROOT}/src/platform/os.cpp
+    ${NAPA_ROOT}/src/platform/process.cpp
     ${NAPA_ROOT}/src/settings/settings-parser.cpp
     ${NAPA_ROOT}/src/zone/simple-thread-pool.cpp
     ${NAPA_ROOT}/src/zone/timer.cpp)
-
-# Platform specific source files
-if (WIN32)
-    file(GLOB_RECURSE PLATFORM_SOURCE_FILES ${NAPA_ROOT}/src/platform/win/*.cpp)
-else()
-    file(GLOB_RECURSE PLATFORM_SOURCE_FILES ${NAPA_ROOT}/src/platform/linux/*.cpp)
-endif()
 
 # The target name
 set(TARGET_NAME ${PROJECT_NAME})
