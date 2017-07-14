@@ -6,15 +6,12 @@
 
 #include <memory>
 
-
 namespace napa {
 namespace module {
 
     /// <summary> An object wrap to expose metric APIs. </summary>
     class MetricWrap : public NAPA_OBJECTWRAP {
     public:
-
-        
 
         /// <summary> Initializes the wrap. </summary>
         static void Init();

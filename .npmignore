@@ -1,6 +1,5 @@
 bin
 build
-cpp-test
 tools
 
 .npmrc
