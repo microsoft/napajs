@@ -511,21 +511,21 @@ describe('napajs/zone', function () {
                 });
         });
 
-        it('@node: -> napa zone with timeout and succeed', () => {
+        it.skip('@node: -> napa zone with timeout and succeed', () => {
             return napaZone1.execute(napaZoneTestModule, 'waitMS', [1], {timeout: 100});
         });
         
-        it('@napa: -> napa zone with timeout and succeed', () => {
+        it.skip('@napa: -> napa zone with timeout and succeed', () => {
             return napaZone1.execute(napaZoneTestModule, 'executeTestFunctionWithTimeout', ["napa-zone2", 1], {timeout: 100});
         });
 
-        it('@node: -> napa zone with timed out in JavaScript', () => {
+        it.skip('@node: -> napa zone with timed out in JavaScript', () => {
             return shouldFail(() => {
                 return napaZone1.execute(napaZoneTestModule, 'waitMS', [100], {timeout: 1});
             });
         });
 
-        it('@napa: -> napa zone with timed out in JavaScript', () => {
+        it.skip('@napa: -> napa zone with timed out in JavaScript', () => {
             return shouldFail(() => {
                 return napaZone1.execute(napaZoneTestModule, 'executeTestFunctionWithTimeout', ["napa-zone2", 100], {timeout: 1});
             });
