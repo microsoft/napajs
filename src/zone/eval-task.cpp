@@ -6,6 +6,7 @@
 #include "eval-task.h"
 
 #include <platform/filesystem.h>
+#include <utils/debug.h>
 
 #include <napa-log.h>
 #include <napa/v8-helpers.h>
@@ -25,6 +26,8 @@ void EvalTask::Execute() {
     v8::HandleScope scope(isolate);
     auto context = isolate->GetCurrentContext();
 
+    NAPA_DEBUG("EvalTask", "Begin executing script:\"%s\"", _source.c_str());
+
     auto filename = v8_helpers::MakeV8String(isolate, _sourceOrigin);
     filesystem::Path originPath(_sourceOrigin);
     if (originPath.IsAbsolute()) {
@@ -39,27 +42,41 @@ void EvalTask::Execute() {
     auto sourceOrigin = v8::ScriptOrigin(filename);
 
     // Compile the source code.
-    auto compileResult = v8::Script::Compile(context, source, &sourceOrigin);
-    if (compileResult.IsEmpty()) {
-        LOG_ERROR("Broadcast", "Failed while compiling the provided source code. %s", _source.c_str());
-        _callback(NAPA_RESULT_BROADCAST_SCRIPT_ERROR);
-        return;
+    v8::MaybeLocal<v8::Script> compileResult;
+    {
+        v8::TryCatch tryCatch(isolate);
+        compileResult = v8::Script::Compile(context, source, &sourceOrigin);
+        if (tryCatch.HasCaught()) {
+            auto exception = tryCatch.Exception();
+            v8::String::Utf8Value exceptionStr(exception);
+
+            NAPA_DEBUG("EvalTask", "Compilation failed: %s ", *exceptionStr);
+
+            _callback(NAPA_RESULT_BROADCAST_SCRIPT_ERROR);
+            return;
+        }
     }
+    
+    NAPA_DEBUG("EvalTask", "Script compiled successfully");
     auto script = compileResult.ToLocalChecked();
 
     // Run the source code.
-    v8::TryCatch tryCatch(isolate);
-    (void)script->Run(context);
-    if (tryCatch.HasCaught()) {
-        auto exception = tryCatch.Exception();
-        v8::String::Utf8Value exceptionStr(exception);
-        auto stackTrace = tryCatch.StackTrace();
-        v8::String::Utf8Value stackTraceStr(stackTrace);
+    {
+        v8::TryCatch tryCatch(isolate);
+        (void)script->Run(context);
+        if (tryCatch.HasCaught()) {
+            auto exception = tryCatch.Exception();
+            v8::String::Utf8Value exceptionStr(exception);
+            auto stackTrace = tryCatch.StackTrace();
+            v8::String::Utf8Value stackTraceStr(stackTrace);
 
-        LOG_ERROR("Broadcast", "JS exception thrown: %s - %s", *exceptionStr, *stackTraceStr);
-        _callback(NAPA_RESULT_BROADCAST_SCRIPT_ERROR);
-        return;
+            NAPA_DEBUG("EvalTask", "Eval failed: %s - %s", *exceptionStr, *stackTraceStr);
+
+            _callback(NAPA_RESULT_BROADCAST_SCRIPT_ERROR);
+            return;
+        }
     }
 
+    NAPA_DEBUG("EvalTask", "Eval script completed with success");
     _callback(NAPA_RESULT_SUCCESS);
 }

@@ -3,7 +3,7 @@ var childProcess = require('child_process');
 
 try {
     childProcess.execFileSync(
-        path.join(__dirname, 'build/test/napa-unittest.exe'),
+        path.join(__dirname, 'build/test/', process.platform === 'win32'? 'napa-unittest.exe': 'napa-unittest'),
         [],
         {
             cwd: path.join(__dirname, 'build/test'),

@@ -9,6 +9,7 @@
 #include "module-resolver.h"
 
 #include <module/core-modules/core-modules.h>
+#include <utils/debug.h>
 
 // TODO: decouple dependencies between moduler-loader and zone.
 #include <zone/worker-context.h>
@@ -115,6 +116,7 @@ void ModuleLoader::CreateModuleLoader() {
         // Now, Javascript core module's 'require' can find module loader instance correctly.
         moduleLoader->_impl->Bootstrap();
     }
+    NAPA_DEBUG("ModuleLoader", "Module loader is created successfully.");
 }
 
 ModuleLoader::ModuleLoader() : _impl(std::make_unique<ModuleLoader::ModuleLoaderImpl>()) {}
@@ -150,6 +152,7 @@ void ModuleLoader::ModuleLoaderImpl::Bootstrap() {
 
     // Initialize core modules listed in core-modules.h.
     INITIALIZE_CORE_MODULES(LoadBinaryCoreModule)
+    NAPA_DEBUG("ModuleLoader", "Binary core modules are loaded.");
 
     // Set up built-in modules from binaries.
     SetupBuiltInModules(context);
@@ -177,6 +180,7 @@ void ModuleLoader::ModuleLoaderImpl::Bootstrap() {
                                          module);
         }
     }
+    NAPA_DEBUG("ModuleLoader", "JavaScript core modules are loaded.");
 }
 
 void ModuleLoader::ModuleLoaderImpl::RequireCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -227,6 +231,7 @@ void ModuleLoader::ModuleLoaderImpl::BindingCallback(const v8::FunctionCallbackI
         return;
     }
 
+    LOG_WARNING("ModuleLoader", "process.binding for \"%s\" does not exist.", *name);
     args.GetReturnValue().SetUndefined();
 }
 
@@ -251,12 +256,15 @@ void ModuleLoader::ModuleLoaderImpl::RequireModule(const char* path, const v8::F
 
     auto moduleInfo = _resolver.Resolve(path, contextDir.c_str());
     if (moduleInfo.type == ModuleType::NONE) {
+        NAPA_DEBUG("ModuleLoader", "Cannot resolve module path \"%s\".", path);
+
         args.GetReturnValue().SetUndefined();
         return;
     }
 
     v8::Local<v8::Object> module;
     if (_moduleCache.TryGet(moduleInfo.fullPath, module)) {
+        NAPA_DEBUG("ModuleLoader", "Retrieved module from cache: \"%s\".", path);
         args.GetReturnValue().Set(module);
         return;
     }
@@ -266,10 +274,13 @@ void ModuleLoader::ModuleLoaderImpl::RequireModule(const char* path, const v8::F
 
     auto succeeded = loader->TryGet(moduleInfo.fullPath, module);
     if (!succeeded) {
+        NAPA_DEBUG("ModuleLoader", "Cannot load module \"%s\".", path);
+
         args.GetReturnValue().SetUndefined();
         return;
     }
 
+    NAPA_DEBUG("ModuleLoader", "Loaded module from file (first time): \"%s\".", path);
     _moduleCache.Upsert(moduleInfo.fullPath, module);
     args.GetReturnValue().Set(module);
 }

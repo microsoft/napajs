@@ -1,11 +1,12 @@
 #include <napa-c.h>
 
-#include "providers/providers.h"
-#include "settings/settings-parser.h"
-#include "v8/v8-common.h"
-#include "zone/napa-zone.h"
-#include "zone/node-zone.h"
-#include "zone/worker-context.h"
+#include <providers/providers.h>
+#include <settings/settings-parser.h>
+#include <utils/debug.h>
+#include <v8/v8-common.h>
+#include <zone/napa-zone.h>
+#include <zone/node-zone.h>
+#include <zone/worker-context.h>
 
 #include <napa-log.h>
 
@@ -54,7 +55,7 @@ napa_zone_handle napa_zone_get(napa_string_ref id) {
 }
 
 napa_zone_handle napa_zone_get_current() {
-    NAPA_ASSERT(_initialized, "Napa wasn't initialized");
+    NAPA_ASSERT(_initialized, "Napa platform wasn't initialized");
 
     auto zone = reinterpret_cast<zone::Zone*>(zone::WorkerContext::Get(zone::WorkerContextItem::ZONE));
     if (zone == nullptr) {
@@ -66,12 +67,12 @@ napa_zone_handle napa_zone_get_current() {
 }
 
 napa_result_code napa_zone_init(napa_zone_handle handle, napa_string_ref settings) {
-    NAPA_ASSERT(_initialized, "Napa wasn't initialized");
+    NAPA_ASSERT(_initialized, "Napa platform wasn't initialized");
     NAPA_ASSERT(handle, "Zone handle is null");
 
     settings::ZoneSettings zoneSettings;
     if (!napa::settings::ParseFromString(NAPA_STRING_REF_TO_STD_STRING(settings), zoneSettings)) {
-        LOG_ERROR("Api", "Failed to parse zone settings: %s", settings.data);
+        NAPA_DEBUG("Api", "Failed to parse zone settings: %s", settings.data);
         return NAPA_RESULT_SETTINGS_PARSER_ERROR;
     }
 
@@ -80,17 +81,17 @@ napa_result_code napa_zone_init(napa_zone_handle handle, napa_string_ref setting
     // Create the actual zone.
     handle->zone = zone::NapaZone::Create(zoneSettings);
     if (handle->zone == nullptr) {
-        LOG_ERROR("Api", "Failed to initialize zone: %s", handle->id.c_str());
+        NAPA_DEBUG("Api", "Failed to create Napa zone '%s' with settings: %s", handle->id.c_str(), settings.data);
         return NAPA_RESULT_ZONE_INIT_ERROR;
     }
 
-    LOG_INFO("Api", "Napa zone '%s' initialized successfully", handle->id.c_str());
+    NAPA_DEBUG("Api", "Napa zone '%s' created with settings: %s", handle->id.c_str(), settings.data);
 
     return NAPA_RESULT_SUCCESS;
 }
 
 napa_result_code napa_zone_release(napa_zone_handle handle) {
-    NAPA_ASSERT(_initialized, "Napa wasn't initialized");
+    NAPA_ASSERT(_initialized, "Napa platform wasn't initialized");
     NAPA_ASSERT(handle, "Zone handle is null");
 
     handle->zone = nullptr;
@@ -100,7 +101,7 @@ napa_result_code napa_zone_release(napa_zone_handle handle) {
 }
 
 napa_string_ref napa_zone_get_id(napa_zone_handle handle) {
-    NAPA_ASSERT(_initialized, "Napa wasn't initialized");
+    NAPA_ASSERT(_initialized, "Napa platform wasn't initialized");
     NAPA_ASSERT(handle, "Zone handle is null");
     
     return STD_STRING_TO_NAPA_STRING_REF(handle->id);
@@ -110,7 +111,7 @@ void napa_zone_broadcast(napa_zone_handle handle,
                          napa_string_ref source,
                          napa_zone_broadcast_callback callback,
                          void* context) {
-    NAPA_ASSERT(_initialized, "Napa wasn't initialized");
+    NAPA_ASSERT(_initialized, "Napa platform wasn't initialized");
     NAPA_ASSERT(handle, "Zone handle is null");
     NAPA_ASSERT(handle->zone, "Zone handle wasn't initialized");
 
@@ -123,7 +124,7 @@ void napa_zone_execute(napa_zone_handle handle,
                        napa_zone_function_spec spec,
                        napa_zone_execute_callback callback,
                        void* context) {
-    NAPA_ASSERT(_initialized, "Napa wasn't initialized");
+    NAPA_ASSERT(_initialized, "Napa platform wasn't initialized");
     NAPA_ASSERT(handle, "Zone handle is null");
     NAPA_ASSERT(handle->zone, "Zone handle wasn't initialized");
 
@@ -165,13 +166,13 @@ static napa_result_code napa_initialize_common() {
 
     _initialized = true;
 
-    LOG_INFO("Api", "Napa initialized successfully");
+    NAPA_DEBUG("Api", "Napa platform initialized successfully");
 
     return NAPA_RESULT_SUCCESS;
 }
 
 napa_result_code napa_initialize(napa_string_ref settings) {
-    NAPA_ASSERT(!_initialized, "Napa was already initialized");
+    NAPA_ASSERT(!_initialized, "Napa platform was already initialized");
 
     if (!napa::settings::ParseFromString(NAPA_STRING_REF_TO_STD_STRING(settings), _platformSettings)) {
         return NAPA_RESULT_SETTINGS_PARSER_ERROR;
@@ -181,7 +182,7 @@ napa_result_code napa_initialize(napa_string_ref settings) {
 }
 
 napa_result_code napa_initialize_from_console(int argc, char* argv[]) {
-    NAPA_ASSERT(!_initialized, "Napa was already initialized");
+    NAPA_ASSERT(!_initialized, "Napa platform was already initialized");
 
     if (!napa::settings::ParseFromConsole(argc, argv, _platformSettings)) {
         return NAPA_RESULT_SETTINGS_PARSER_ERROR;
@@ -191,12 +192,12 @@ napa_result_code napa_initialize_from_console(int argc, char* argv[]) {
 }
 
 napa_result_code napa_shutdown() {
-    NAPA_ASSERT(_initialized, "Napa wasn't initialized");
+    NAPA_ASSERT(_initialized, "Napa platform wasn't initialized");
 
     napa::providers::Shutdown();
     napa::v8_common::Shutdown();
 
-    LOG_INFO("Api", "Napa shutdown successfully");
+    LOG_INFO("Api", "Napa platform shutdown successfully");
 
     return NAPA_RESULT_SUCCESS;
 }

@@ -1,4 +1,4 @@
-import * as napa from "..";
+import * as napa from "../lib/index";
 import * as assert from 'assert';
 import * as path from 'path';
 import * as t from './napa-zone/test';

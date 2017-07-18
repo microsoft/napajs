@@ -1,6 +1,7 @@
 #include "worker.h"
 
-#include "v8/array-buffer-allocator.h"
+#include <utils/debug.h>
+#include <v8/array-buffer-allocator.h>
 
 #include <napa-log.h>
 
@@ -61,12 +62,14 @@ Worker::Worker(WorkerId id,
 Worker::~Worker() {
     // Signal the thread loop that it should stop processing tasks.
     Enqueue(nullptr);
-
+    NAPA_DEBUG("Worker", "(id=%u) Shutting down: Start draining task queue.", _impl->id);
+    
     _impl->workerThread.join();
 
     if (_impl->isolate != nullptr) {
         _impl->isolate->Dispose();
     }
+    NAPA_DEBUG("Worker", "(id=%u) Shutdown complete.", _impl->id);
 }
 
 Worker::Worker(Worker&&) = default;
@@ -75,6 +78,7 @@ Worker& Worker::operator=(Worker&&) = default;
 void Worker::Schedule(std::shared_ptr<Task> task) {
     NAPA_ASSERT(task != nullptr, "Task should not be null");
     Enqueue(task);
+    NAPA_DEBUG("Worker", "(id=%u) Task queued.", _impl->id);
 }
 
 void Worker::Enqueue(std::shared_ptr<Task> task) {
@@ -103,8 +107,11 @@ void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
     context->SetSecurityToken(v8::Undefined(_impl->isolate));
     v8::Context::Scope contextScope(context);
 
+    NAPA_DEBUG("Worker", "(id=%u) V8 Isolate created.", _impl->id);
+
     // Setup worker after isolate creation.
     _impl->setupCallback(_impl->id);
+    NAPA_DEBUG("Worker", "(id=%u) Setup completed.", _impl->id);
 
     while (true) {
         std::shared_ptr<Task> task;
@@ -124,6 +131,7 @@ void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
 
         // A null task means that the worker needs to shutdown.
         if (task == nullptr) {
+            NAPA_DEBUG("Worker", "(id=%u) Finish serving tasks.", _impl->id);
             break;
         }
 

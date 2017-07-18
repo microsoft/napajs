@@ -19,6 +19,14 @@ add_library(${TARGET_NAME} SHARED
 # Change output extension to 'napa'
 set_target_properties(${TARGET_NAME} PROPERTIES PREFIX "" SUFFIX ".napa")
 
+# Set output directory for the addon
+set_target_properties(${TARGET_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_SOURCE_DIR}/build
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_SOURCE_DIR}/build
+    LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_SOURCE_DIR}/build
+    LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_SOURCE_DIR}/build
+)
+
 # Include directories
 target_include_directories(${TARGET_NAME}
     PRIVATE
@@ -38,8 +46,4 @@ endif()
 # Compiler definitions
 target_compile_definitions(${TARGET_NAME} PRIVATE BUILDING_NAPA_EXTENSION)
 
-# Set output directory for the addon
-set_target_properties(${TARGET_NAME} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_SOURCE_DIR}/build
-    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_SOURCE_DIR}/build
-)
+

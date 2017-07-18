@@ -21,7 +21,7 @@ namespace test {
         /// <summary> Create a new wrap instance. </summary>
         static void NewInstance(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-        std::atomic<uint32_t> value = 0;
+        std::atomic<uint32_t> value = { 0 };
 
     private:
 

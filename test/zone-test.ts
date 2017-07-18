@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import * as path from "path";
-import * as napa from "..";
+import * as napa from "../lib/index";
 let napaDir: string = path.resolve(__dirname, '..');
 
 type Zone = napa.zone.Zone;

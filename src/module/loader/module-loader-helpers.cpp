@@ -132,11 +132,9 @@ void module_loader_helpers::SetupModuleContext(v8::Local<v8::Context> parentCont
 
 std::vector<module_loader_helpers::CoreModuleInfo> module_loader_helpers::ReadCoreModulesJson() {
     static const std::string CORE_MODULES_JSON_PATH =
-        (filesystem::Path(GetLibDirectory()) / "core\\core-modules.json").String();
+        (filesystem::Path(GetLibDirectory()) / "core" / "core-modules.json").String();
 
-    if (!filesystem::IsRegularFile(CORE_MODULES_JSON_PATH)) {
-        return std::vector<CoreModuleInfo>();
-    }
+    NAPA_ASSERT(filesystem::IsRegularFile(CORE_MODULES_JSON_PATH), "Core module JSON file \"%s\" does not exist.", CORE_MODULES_JSON_PATH.c_str());
 
     std::vector<CoreModuleInfo> coreModuleInfos;
 
@@ -158,8 +156,7 @@ std::vector<module_loader_helpers::CoreModuleInfo> module_loader_helpers::ReadCo
             coreModuleInfos.emplace_back(moduleName, isBuiltIn);
         }
     } catch (const std::exception& ex) {
-        LOG_ERROR("ModuleLoader", ex.what());
-        return std::vector<CoreModuleInfo>();
+        NAPA_ASSERT(false, "Reading core-modules.json failed: %s", ex.what());
     }
 
     return coreModuleInfos;

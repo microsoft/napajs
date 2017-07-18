@@ -5,6 +5,12 @@
 #include <napa-async.h>
 #include <napa/v8-helpers.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
+
 using namespace napa::module;
 using namespace napa::test;
 using namespace napa::v8_helpers;
@@ -93,6 +99,13 @@ void SimpleObjectWrap::PostIncrementWork(const v8::FunctionCallbackInfo<v8::Valu
     napa::zone::PostAsyncWork(
         v8::Local<v8::Function>::Cast(args[0]),
         [wrap]() {
+            #ifdef _WIN32
+                Sleep(10);
+            #else
+                // Sleep 10 ms.
+                usleep(10 * 1000);
+            #endif
+
             // This runs at the separate thread.
             auto newValue = ++wrap->value;
 

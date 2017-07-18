@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import * as path from "path";
-import * as napa from '../..';
+import * as napa from '../../lib/index';
 let napaDir: string = path.resolve(__dirname, '../..');
 
 export function bar(input: any) {
@@ -47,8 +47,8 @@ export function execute(id: string, moduleName: string, functionName: string, ar
     let zone = napa.zone.get(id);
     return new Promise((resolve, reject) => {
         zone.execute(moduleName, functionName, args)
-            .then(result => resolve(result.value))
-            .catch(error => reject(error));
+            .then((result: napa.zone.Result) => resolve(result.value))
+            .catch((error: any) => reject(error));
     });
 }
 
@@ -56,8 +56,8 @@ export function executeTestFunction(id: string): Promise<any> {
     let zone = napa.zone.get(id);
     return new Promise((resolve, reject) => {
         zone.execute((input: string) => { return input; }, ['hello world'])
-            .then(result => resolve(result.value))
-            .catch(error => reject(error));
+            .then((result: napa.zone.Result) => resolve(result.value))
+            .catch((error: any) => reject(error));
     });
 }
 
@@ -65,8 +65,8 @@ export function executeTestFunctionWithClosure(id: string): Promise<any> {
     let zone = napa.zone.get(id);
     return new Promise((resolve, reject) => {
         zone.execute(() => { return zone; }, [])
-            .then(result => resolve(result.value))
-            .catch(error => reject(error));
+            .then((result: napa.zone.Result) => resolve(result.value))
+            .catch((error: any) => reject(error));
     });
 }
 
@@ -84,8 +84,8 @@ export function executeTestFunctionWithTimeout(id: string, waitTimeInMS: number,
     let zone = napa.zone.get(id);
     return new Promise((resolve, reject) => {
         zone.execute(waitMS, [waitTimeInMS], {timeout: timeoutInMS})
-            .then(result => resolve(result.value))
-            .catch(error => reject(error));
+            .then((result: napa.zone.Result) => resolve(result.value))
+            .catch((error: any) => reject(error));
     });
 }
 
@@ -98,8 +98,8 @@ export function executeWithTransportableArgs(id: string): Promise<any> {
                 assert.deepEqual(allocator.handle, napa.memory.crtAllocator.handle);
                 return 1;
             }, [napa.memory.crtAllocator, napaDir])
-            .then (result => resolve(result.value))
-            .catch(error => reject(error));
+            .then ((result: napa.zone.Result) => resolve(result.value))
+            .catch((error: any) => reject(error));
     });
 }
 
@@ -109,8 +109,8 @@ export function executeWithTransportableReturns(id: string): Promise<any> {
         zone.execute((allocator: napa.memory.Allocator) => {
                 return allocator;
             }, [napa.memory.crtAllocator])
-            .then (result => resolve(result.value))
-            .catch(error => reject(error));
+            .then ((result: napa.zone.Result) => resolve(result.value))
+            .catch((error: any) => reject(error));
     });
 }
 

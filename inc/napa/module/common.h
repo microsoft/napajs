@@ -32,7 +32,7 @@ namespace module {
     template <typename WrapType>
     inline v8::MaybeLocal<v8::Object> NewInstance(int argc = 0, v8::Local<v8::Value> argv[] = nullptr) {
         auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(WrapType::exportName, WrapType);
-        return constructor->NewInstance(argc, argv);
+        return constructor->NewInstance(v8::Isolate::GetCurrent()->GetCurrentContext(), argc, argv);
     }
 }
 }

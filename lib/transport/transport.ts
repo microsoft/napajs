@@ -67,6 +67,9 @@ export function unmarshall(
     json: string, 
     context: transportable.TransportContext): any {
     
+    if (json === "undefined") {
+        return undefined;
+    }
     return JSON.parse(json, 
         (key: any, value: any): any => {
             return unmarshallTransform(value, context);

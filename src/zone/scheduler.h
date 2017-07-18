@@ -1,9 +1,11 @@
 #pragma once
 
-#include "settings/settings.h"
 #include "simple-thread-pool.h"
 #include "task.h"
 #include "worker.h"
+
+#include <settings/settings.h>
+#include <utils/debug.h>
 
 #include <napa-log.h>
 
@@ -102,6 +104,8 @@ namespace zone {
 
     template <typename WorkerType>
     SchedulerImpl<WorkerType>::~SchedulerImpl() {
+        NAPA_DEBUG("Scheduler", "Shutting down: Start draining unscheduled tasks...");
+
         // Wait for all tasks to be scheduled.
         while (_beingScheduled > 0 || !_nonScheduledTasks.empty()) {
             std::this_thread::yield();
@@ -115,6 +119,8 @@ namespace zone {
 
         // Wait for all workers to finish processing remaining tasks.
         _workers.clear();
+
+        NAPA_DEBUG("Scheduler", "Shutdown completed");
     }
 
     template <typename WorkerType>
@@ -123,6 +129,8 @@ namespace zone {
         _beingScheduled++;
         _synchronizer->Execute([this, task]() {
             if (_idleWorkers.empty()) {
+                NAPA_DEBUG("Scheduler", "All workers are busy, putting task to non-scheduled queue.");
+
                 // If there is no idle worker, put the task into the non-scheduled queue.
                 _nonScheduledTasks.emplace(std::move(task));
             } else {
@@ -133,6 +141,8 @@ namespace zone {
 
                 // Schedule task on worker
                 _workers[workerId].Schedule(std::move(task));
+
+                NAPA_DEBUG("Scheduler", "Scheduled task on worker %u.", workerId);
             }
             _beingScheduled--;
         });
@@ -152,6 +162,8 @@ namespace zone {
 
             // Schedule task on worker
             _workers[workerId].Schedule(std::move(task));
+
+            NAPA_DEBUG("Scheduler", "Explicitly scheduled task on worker %u.", workerId);
         });
     }
 
@@ -170,6 +182,7 @@ namespace zone {
             for (auto& worker : _workers) {
                 worker.Schedule(task);
             }
+            NAPA_DEBUG("Scheduler", "Scheduled task on all workers");
         });
     }
 
@@ -186,13 +199,16 @@ namespace zone {
                 // If there is a non scheduled task, schedule it on the idle worker.
                 auto task = _nonScheduledTasks.front();
                 _nonScheduledTasks.pop();
-
                 _workers[workerId].Schedule(std::move(task));
+
+                NAPA_DEBUG("Scheduler", "Worker %u fetched a task from non-scheduled queue", workerId);
             } else {
                 // Put worker in idle list.
                 if (_idleWorkersFlags[workerId] == _idleWorkers.end()) {
                     auto iter = _idleWorkers.emplace(_idleWorkers.end(), workerId);
                     _idleWorkersFlags[workerId] = iter;
+
+                    NAPA_DEBUG("Scheduler", "Worker %u becomes idle", workerId);
                 }
             }
         });
