@@ -1,8 +1,19 @@
 #include <napa/module/module-internal.h>
+#include <napa/v8-helpers.h>
 
+#include <utils/debug.h>
 #include <zone/worker-context.h>
 
 using namespace napa;
+
+/// <summary>
+/// Map from module's class name to persistent constructor object.
+/// To suppport multiple isolates, let each isolate has its own persistent constructor at thread local storage.
+/// </summary>
+typedef v8::Persistent<v8::Function, v8::CopyablePersistentTraits<v8::Function>> PersistentConstructor;
+struct ConstructorInfo {
+    std::unordered_map<std::string, PersistentConstructor> constructorMap;
+};
 
 /// <summary> It sets the persistent constructor at the current V8 isolate. </summary>
 /// <param name="name"> Unique constructor name. It's recommended to use the same name as module. </param>

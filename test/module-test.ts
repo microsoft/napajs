@@ -1,4 +1,4 @@
-import * as napa from "..";
+import * as napa from "../lib/index";
 import * as assert from "assert";
 import * as path from "path";
 
@@ -207,7 +207,7 @@ describe('napajs/module', function () {
                     fs.writeFileSync(testDir + '/1', 'test');
                     fs.writeFileSync(testDir + '/2', 'test');
                     
-                    assert.deepEqual(fs.readdirSync(testDir), ['1', '2']);
+                    assert.deepEqual(fs.readdirSync(testDir).sort(), ['1', '2']);
                 }, [__dirname]).then(()=> {
                     // Cleanup
                     var fs = require('fs');
@@ -357,8 +357,8 @@ describe('napajs/module', function () {
                         assert.equal(path.relative("c:/a", "c:/"), "..");
                     } else {
                         assert.equal(path.relative("/test/a/../b", "/test/b"), "");
-                        assert.equal(path.relative("/test/a", "/test1/b/../c"), "/test1/c");
-                        assert.equal(path.relative("/test/a", "a.txt"), process.cwd() + "/a.txt");
+                        assert.equal(path.relative("/test/a", "/test1/b/../c"), "../../test1/c");
+                        assert.equal(path.relative("/test/a", "a.txt"), "../.." + process.cwd() + "/a.txt");
                         assert.equal(path.relative("/test/a", "/test/"), "..");
                     }
                 }, []);
@@ -409,7 +409,7 @@ describe('napajs/module', function () {
                 assert.equal(obj.getValue(), 3);
 
                 return promise;
-            }, [__dirname]).then((result) => {
+            }, [__dirname]).then((result: napa.zone.Result) => {
                 assert.equal(result.value, 4);
             });
         });
@@ -432,7 +432,7 @@ describe('napajs/module', function () {
                 assert.equal(obj.getValue(), 9);
 
                 return promise;
-            }, [__dirname]).then((result) => {
+            }, [__dirname]).then((result: napa.zone.Result) => {
                 assert.equal(result.value, 9);
             });
         });

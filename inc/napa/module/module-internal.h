@@ -33,15 +33,6 @@ namespace module {
         ModuleInitializer initializer;
     };
 
-    /// <summary>
-    /// Map from module's class name to persistent constructor object.
-    /// To suppport multiple isolates, let each isolate has its own persistent constructor at thread local storage.
-    /// </summary>
-    typedef v8::Persistent<v8::Function, v8::CopyablePersistentTraits<v8::Function>> PersistentConstructor;
-    struct ConstructorInfo {
-        std::unordered_map<std::string, PersistentConstructor> constructorMap;
-    };
-
     /// <summary> It binds the method name with V8 function. </summary>
     /// <param name="exports"> V8 object to bind with the given callback function. </param>
     /// <param name="name"> Method name. </param>
@@ -79,7 +70,7 @@ namespace module {
 
     #define NAPA_REGISTER_MODULE(name, function) \
         extern "C" { \
-            _declspec(dllexport) napa::module::NapaModule _napa_module = { \
+            DLL_EXPORT napa::module::NapaModule _napa_module = { \
                 napa::module::MODULE_VERSION, \
                 #name, \
                 reinterpret_cast<napa::module::ModuleInitializer>(function) \

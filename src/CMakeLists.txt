@@ -16,7 +16,7 @@ target_include_directories(${TARGET_NAME}
     ${PROJECT_SOURCE_DIR}/inc)
 
 # Compiler definitions
-target_compile_definitions(${TARGET_NAME} PRIVATE NAPA_EXPORTS BUILDING_NAPA_EXTENSION NAPA_BINDING_EXPORTS)
+target_compile_definitions(${TARGET_NAME} PRIVATE NAPA_EXPORTS NAPA_BINDING_EXPORTS BUILDING_NAPA_EXTENSION)
 
 # Link libraries
 target_link_libraries(${TARGET_NAME} PRIVATE)

@@ -71,7 +71,7 @@ namespace napa {
 namespace store {
 
     namespace {
-        napa::stl::UnorderedMap<napa::stl::String, std::weak_ptr<Store>> _storeRegistry;
+        std::unordered_map<std::string, std::weak_ptr<Store>> _storeRegistry;
         std::mutex _registryAccess;
     } // namespace
 
@@ -81,8 +81,8 @@ namespace store {
         std::shared_ptr<Store> store;
         auto it = _storeRegistry.find(id);
         if (it == _storeRegistry.end()) {
-            store = NAPA_MAKE_SHARED<StoreImpl>(id);
-            _storeRegistry.insert(std::make_pair(napa::stl::String(id), store));
+            store = std::make_shared<StoreImpl>(id);
+            _storeRegistry.insert(std::make_pair(std::string(id), store));
         }
         return store;
     }

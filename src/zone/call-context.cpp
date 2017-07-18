@@ -5,7 +5,8 @@
 
 #include "call-context.h"
 
-//#include <napa-transport.h>
+#include <utils/debug.h>
+
 #include <napa-log.h>
 #include <napa/v8-helpers.h>
 
@@ -37,6 +38,9 @@ bool CallContext::Resolve(std::string marshalledResult) {
     if (!_finished.compare_exchange_strong(expected, true)) {
         return false;
     }
+
+    NAPA_DEBUG("CallTask", "Call to \"%s.%s\" is resolved successfully.", _module.c_str(), _function.c_str());
+
     _callback({ 
         NAPA_RESULT_SUCCESS, 
         "", 
@@ -52,7 +56,7 @@ bool CallContext::Reject(napa::ResultCode code, std::string reason) {
         return false;
     }
 
-    LOG_ERROR("Execute", "Call was rejected: %s", reason.c_str());
+    NAPA_DEBUG("CallTask", "Call to \"%s.%s\" was rejected: %s.", _module.c_str(), _function.c_str(), reason.c_str());
 
     _callback({ code, reason, "", std::move(_transportContext) });
     return true;

@@ -34,7 +34,6 @@ public:
 /// <summary> Allocator that uses napa_allocate and napa_deallocate. </summary>
 class DefaultAllocator: public napa::memory::Allocator {
 public:
-    public:
     /// <summary> Allocate memory of given size. </summary>
     /// <param name="size"> Requested size. </summary>
     /// <returns> Allocated memory. May throw if error happens. </returns>
@@ -65,16 +64,17 @@ namespace napa {
 namespace memory {
 
     namespace {
-        CrtAllocator _crtAllocator;
-        DefaultAllocator _defaultAllocator;
-    } // namespace
+        // Never destory to ensure they live longer than all consumers.
+        auto _crtAllocator = new CrtAllocator();
+        auto _defaultAllocator = new DefaultAllocator();
+    }
 
     Allocator& GetCrtAllocator() {
-        return _crtAllocator;
+        return *_crtAllocator;
     }
 
     Allocator& GetDefaultAllocator() {
-        return _defaultAllocator;
+        return *_defaultAllocator;
     }
 } // namespace memory
 } // namespace napa

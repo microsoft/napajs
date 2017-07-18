@@ -46,7 +46,7 @@ TEST_CASE("timer is not called if stopped", "[timer]") {
 }
 
 TEST_CASE("timers are called by order", "[timer]") {
-    std::atomic<int> callOrder = 0;
+    std::atomic<int> callOrder(0);
 
     std::promise<int> promise1;
     auto future1 = promise1.get_future();

@@ -1,6 +1,9 @@
 #pragma once
 
+#include <napa/exports.h>
+
 #include "zone.h"
+
 #include <functional>
 
 namespace napa {
