@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "json-module-loader.h"
 #include "module-loader-helpers.h"
 

@@ -1,4 +1,7 @@
-#include <napa-module.h>
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
+#include <napa/module.h>
 
 namespace napa {
 namespace demo {

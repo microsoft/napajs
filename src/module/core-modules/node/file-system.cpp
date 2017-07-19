@@ -1,7 +1,10 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "file-system.h"
 #include "file-system-helpers.h"
 
-#include <napa-module.h>
+#include <napa/module.h>
 
 using namespace napa;
 using namespace napa::module;

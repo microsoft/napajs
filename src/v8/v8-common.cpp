@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "v8-common.h"
 
 #ifdef USING_V8_SHARED
@@ -8,7 +11,7 @@ void napa::v8_common::Shutdown() {}
 
 #else
 
-#include <napa-log.h>
+#include <napa/log.h>
 
 // V8 libraries
 #include <libplatform/libplatform.h>

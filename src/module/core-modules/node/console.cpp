@@ -1,6 +1,9 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "console.h"
 
-#include <napa-module.h>
+#include <napa/module.h>
 
 #include <iostream>
 #include <sstream>

@@ -1,5 +1,8 @@
-#include <napa-module.h>
-#include <napa-async.h>
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
+#include <napa/module.h>
+#include <napa/async.h>
 
 #include <atomic>
 #include <functional>

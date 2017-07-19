@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 /// <summary> Store is a facility to share (built-in JavaScript types or Transportable subclasses) objects across isolates. </summary>
 export interface Store {
     /// <summary> Id of this store. </summary>

@@ -3,7 +3,7 @@
 This example shows the simple napa module, which shows the basic difference between node.js module and napa module.
 
 ```cpp
-#include <napa-module.h>
+#include <napa/module.h>
 
 namespace napa {
 namespace demo {
@@ -26,8 +26,8 @@ NAPA_MODULE(addon, Init)
 ```
 
 ## Transition from node.js module
-* *napa-module.h* is used instead of *node.h*. Depending on preprocessor definition, *NAPA_MODULE_EXTENSION* or
- *BUILDING_NODE_EXTENSION* preprocessor definition, *napa-module.h* includes necessary napa or node header files
+* *napa/module.h* is used instead of *node.h*. Depending on preprocessor definition, *NAPA_MODULE_EXTENSION* or
+ *BUILDING_NODE_EXTENSION* preprocessor definition, *napa/module.h* includes necessary napa or node header files
   accordingly and build system creates either node.js module or napa module.
 * *NAPA_SET_METHOD* is equivalent to *NODE_SET_METHOD*. This module will have *hello()* function.
 * *NAPA_MODULE* is equivalent to *NODE_MODULE*, which exports an initialization function.

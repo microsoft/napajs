@@ -41,7 +41,7 @@ namespace demo {
 *addon.h* declares the wrapper class inherited from *NAPA_OBJECTWRAP* as follows,
 
 ```h
-#include <napa-module.h>
+#include <napa/module.h>
 #include <plus-number.h>
 
 namespace napa {

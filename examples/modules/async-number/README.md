@@ -55,7 +55,7 @@ This example shows how to create async module. It keeps one number and three API
 * *Now*: It returns the current value of a number.
 
 ```cpp
-#include <napa-module.h>
+#include <napa/module.h>
 
 #include <atomic>
 #include <functional>

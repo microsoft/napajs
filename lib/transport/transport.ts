@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as transportable from './transportable';
 import * as functionTransporter from './function-transporter';
 import * as path from 'path';

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "simple-thread-pool.h"
 
 using namespace napa::zone;

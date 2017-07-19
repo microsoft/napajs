@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as napa from 'napajs';
 import * as nodeNapaPerfComp from './node-napa-perf-comparison';
 import * as executeOverhead from './execute-overhead';

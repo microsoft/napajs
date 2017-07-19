@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import { log } from './log';
 import * as memory from './memory';
 import * as metric from './metric';

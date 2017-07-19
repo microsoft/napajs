@@ -1,5 +1,8 @@
-#include <napa-memory.h>
-#include <napa-c.h>
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
+#include <napa/memory.h>
+#include <napa/capi.h>
 #include <cstring>
 
 /// <summary> C runtime allocator from napa.dll. </summary>

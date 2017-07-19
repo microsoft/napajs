@@ -28,7 +28,7 @@ A log row may contain following information:
     - Debug: for debugging purpose
 
 ## C++ API
-Include header: `<napa-log.h>`
+Include header: `<napa/log.h>`
 
 Macros:
 - LOG_ERROR(section, format, ...)
@@ -41,7 +41,7 @@ Macros:
 - LOG_DEBUG_WITH_TRACEID(section, traceId, format, ...)
 
 ```cpp
-#include <napa-log.h>
+#include <napa/log.h>
 
 void MyFunction() {
     // ...

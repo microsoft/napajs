@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 /// <summary> In Napa.JS, transporting objects across isolates is required for multi-thread collaborations.
 /// 
 /// A JavaScript value is transportable, if

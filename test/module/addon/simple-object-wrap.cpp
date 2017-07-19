@@ -1,8 +1,11 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "simple-object-wrap.h"
 
-#include <napa.h>
-#include <napa-assert.h>
-#include <napa-async.h>
+#include <napa/zone.h>
+#include <napa/assert.h>
+#include <napa/async.h>
 #include <napa/v8-helpers.h>
 
 #ifdef _WIN32

@@ -1,10 +1,12 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #pragma once
 
-#include <napa-module.h>
-#include <napa-transport.h>
-
+#include <napa/module.h>
 #include <napa/module/common.h>
 #include <napa/module/transport-context-wrap.h>
+#include <napa/transport.h>
 
 #include <memory>
 #include <string>
