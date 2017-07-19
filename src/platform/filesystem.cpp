@@ -13,6 +13,9 @@
 #include <iostream>
 #include <vector>
 
+#ifdef OS_MAC
+#include <mach-o/dyld.h>
+#endif
 
 namespace napa {
 namespace filesystem {
@@ -476,16 +479,23 @@ Path ProgramPath() {
     static constexpr size_t DEFAULT_PATH_SIZE = 1024;
     char path[DEFAULT_PATH_SIZE] = { '\0' };
 
-#ifdef SUPPORT_POSIX
+#if defined(OS_MAC)
+    uint32_t size = sizeof(path);
+    if (_NSGetExecutablePath(path, &size) == 0) {
+        return path;
+    }
+#elif defined(OS_WINDOWS)
+    if (::GetModuleFileNameA(NULL, path, sizeof(path)) > 0) {
+        return path;
+    }
+#elif defined(SUPPORT_POSIX)
     if (::readlink("/proc/self/exe", path, sizeof(path)) > 0
         || ::readlink("/proc/curproc/file", path, sizeof(path)) > 0
         || ::readlink("/proc/self/path/a.out", path, sizeof(path))) {
         return path;
     }
 #else
-    if (::GetModuleFileNameA(NULL, path, sizeof(path)) > 0) {
-        return path;
-    }
+    static_assert(false, "Unsupported OS";)
 #endif
     return Path();
 }

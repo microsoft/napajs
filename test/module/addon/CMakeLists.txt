@@ -39,6 +39,8 @@ target_link_libraries(${TARGET_NAME} PRIVATE ${CMAKE_JS_LIB})
 # Link with napa shared library
 if (WIN32)
     target_link_libraries(${TARGET_NAME} PRIVATE ${NAPA_ROOT}/bin/napa.lib)
+elseif (APPLE)
+    target_link_libraries(${TARGET_NAME} PRIVATE ${NAPA_ROOT}/bin/libnapa.dylib)
 else()
     target_link_libraries(${TARGET_NAME} PRIVATE ${NAPA_ROOT}/bin/libnapa.so)
 endif()
