@@ -1,6 +1,9 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #pragma once
 
-#include <napa-c.h>
+#include <napa/capi.h>
 #include <napa/memory/allocator.h>
 #include <napa/memory/common.h>
 

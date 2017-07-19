@@ -1,8 +1,11 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "napa-binding.h"
 #include "node-zone-delegates.h"
 
-#include <napa.h>
-#include <napa-module.h>
+#include <napa/module.h>
+#include <napa/zone.h>
 
 #include <zone/node-zone.h>
 

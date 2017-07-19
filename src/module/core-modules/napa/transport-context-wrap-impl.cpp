@@ -1,4 +1,8 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "transport-context-wrap-impl.h"
+
 #include <napa/module/shareable-wrap.h>
 #include <napa/module/binding/wraps.h>
 

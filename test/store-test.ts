@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 import * as napa from "../lib/index";
 import * as assert from 'assert';
 import * as path from 'path';

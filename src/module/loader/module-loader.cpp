@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "module-loader.h"
 
 #include "binary-module-loader.h"
@@ -14,8 +17,8 @@
 // TODO: decouple dependencies between moduler-loader and zone.
 #include <zone/worker-context.h>
 
-#include <napa-log.h>
-#include <napa-module.h>
+#include <napa/log.h>
+#include <napa/module.h>
 
 #include <unordered_set>
 

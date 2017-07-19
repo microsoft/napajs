@@ -1,9 +1,12 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "worker.h"
 
 #include <utils/debug.h>
 #include <v8/array-buffer-allocator.h>
 
-#include <napa-log.h>
+#include <napa/log.h>
 
 #include <v8.h>
 

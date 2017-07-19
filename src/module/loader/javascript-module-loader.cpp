@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "javascript-module-loader.h"
 #include "module-cache.h"
 #include "module-loader-helpers.h"

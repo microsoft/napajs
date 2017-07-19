@@ -1,10 +1,13 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "module-loader-helpers.h" 
 
 #include <module/core-modules/node/file-system-helpers.h>
 #include <platform/dll.h>
 #include <platform/filesystem.h>
 
-#include <napa-log.h>
+#include <napa/log.h>
 #include <napa/v8-helpers.h>
 
 #include <rapidjson/document.h>

@@ -1,6 +1,9 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "store.h"
 
-#include <napa-memory.h>
+#include <napa/memory.h>
 #include <napa/stl/unordered_map.h>
 
 #include <mutex>

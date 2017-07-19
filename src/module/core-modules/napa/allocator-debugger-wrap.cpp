@@ -1,6 +1,9 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "allocator-debugger-wrap.h"
 
-#include <napa-memory.h>
+#include <napa/memory.h>
 
 using namespace napa::module;
 

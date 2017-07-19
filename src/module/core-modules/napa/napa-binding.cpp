@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "napa-binding.h"
 
 #include "metric-wrap.h"
@@ -11,8 +14,8 @@
 
 #include <zone/worker-context.h>
 
-#include <napa.h>
-#include <napa-memory.h>
+#include <napa/zone.h>
+#include <napa/memory.h>
 #include <napa/module/binding.h>
 #include <napa/module/binding/wraps.h>
 #include <napa/providers/logging.h>

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #pragma once
 
 #include "simple-thread-pool.h"
@@ -7,7 +10,7 @@
 #include <settings/settings.h>
 #include <utils/debug.h>
 
-#include <napa-log.h>
+#include <napa/log.h>
 
 #include <atomic>
 #include <list>

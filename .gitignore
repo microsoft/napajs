@@ -15,3 +15,6 @@ test/**/*.js
 package-lock.json
 
 !tsconfig.json
+
+# ignore all VSCode files
+.vscode

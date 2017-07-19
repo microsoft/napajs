@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "providers.h"
 
 #include "console-logging-provider.h"
@@ -8,7 +11,7 @@
 #include <platform/dll.h>
 #include <platform/filesystem.h>
 
-#include <napa-log.h>
+#include <napa/log.h>
 
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>

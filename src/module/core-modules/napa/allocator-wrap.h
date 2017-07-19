@@ -1,5 +1,9 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #pragma once
-#include <napa-module.h>
+
+#include <napa/module.h>
 #include <napa/memory/allocator.h>
 #include <napa/module/common.h>
 #include <napa/module/shareable-wrap.h>

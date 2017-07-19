@@ -1,6 +1,9 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "path.h"
 
-#include <napa-module.h>
+#include <napa/module.h>
 #include <platform/filesystem.h>
 #include <platform/os.h>
 

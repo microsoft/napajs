@@ -1,6 +1,9 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #pragma once
 
-#include <napa-assert.h>
+#include <napa/assert.h>
 #include <napa/exports.h>
 #include <napa/v8-helpers/maybe.h>
 #include <napa/v8-helpers/string.h>

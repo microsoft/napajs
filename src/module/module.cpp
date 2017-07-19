@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include <napa/module/module-internal.h>
 #include <napa/v8-helpers.h>
 

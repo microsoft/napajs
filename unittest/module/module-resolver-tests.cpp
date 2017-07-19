@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include <catch/catch.hpp>
 
 #include <module/loader/module-resolver.h>

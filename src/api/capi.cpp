@@ -1,4 +1,7 @@
-#include <napa-c.h>
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
+#include <napa/capi.h>
 
 #include <providers/providers.h>
 #include <settings/settings-parser.h>
@@ -8,7 +11,7 @@
 #include <zone/node-zone.h>
 #include <zone/worker-context.h>
 
-#include <napa-log.h>
+#include <napa/log.h>
 
 #include <atomic>
 #include <fstream>

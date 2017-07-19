@@ -1,8 +1,11 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "node-zone.h"
 
 #include "worker-context.h"
 
-#include <napa-assert.h>
+#include <napa/assert.h>
 
 using namespace napa;
 using namespace napa::zone;

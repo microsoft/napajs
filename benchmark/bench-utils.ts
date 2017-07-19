@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 /// <summary> Utility function to generate object for testing. </summary>
 
 export function generateString(length: number): string {

@@ -1,6 +1,9 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "tty-wrap.h"
 
-#include <napa-module.h>
+#include <napa/module.h>
 #include <platform/process.h>
 
 using namespace napa;

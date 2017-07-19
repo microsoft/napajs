@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 export type Handle = [number, number] | [number, number, number];
 
 /// <summary> nullptr. </summary>

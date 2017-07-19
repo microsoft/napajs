@@ -1,1 +1,0 @@
-Figure out a list of example applications.

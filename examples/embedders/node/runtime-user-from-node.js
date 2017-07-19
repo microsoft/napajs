@@ -1,1 +1,0 @@
-// Example for JS embedder.

@@ -1,6 +1,9 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "settings-parser.h"
 
-#include <napa-log.h>
+#include <napa/log.h>
 
 // Open source header only library for argument parsing.
 // https://github.com/Taywee/args

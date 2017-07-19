@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include "napa-zone.h"
 
 #include <module/loader/module-loader.h>
@@ -11,7 +14,7 @@
 #include <zone/task-decorators.h>
 #include <zone/worker-context.h>
 
-#include <napa-log.h>
+#include <napa/log.h>
 
 #include <future>
 

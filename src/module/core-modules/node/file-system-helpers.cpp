@@ -1,8 +1,12 @@
-// TODO: we should remove this macro once we have our own filesystem implementation.
-#define _CRT_SECURE_NO_DEPRECATE
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include "file-system-helpers.h"
 #include <platform/filesystem.h>
-
 
 #include <algorithm>
 #include <functional>
