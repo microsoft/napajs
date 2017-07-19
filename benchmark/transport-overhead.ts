@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import * as napa from 'napajs';
+import * as napa from '../lib/index';
 import * as assert from 'assert';
 import * as mdTable from 'markdown-table';
 import { generateObject, timeDiffInMs, formatTimeDiff, formatRatio } from './bench-utils';

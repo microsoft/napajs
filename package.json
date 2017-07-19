@@ -13,11 +13,13 @@
     "mocha": ">= 3.4.2",
     "typescript": ">= 2.2.1",
     "@types/node": ">= 7.0.8",
-    "@types/mocha": ">= 2.2.0"
+    "@types/mocha": ">= 2.2.0",
+    "markdown-table": "1.1.0"
   },
   "scripts": {
-    "install": "cmake-js compile",
+    "benchmark": "tsc -p benchmark & node benchmark/bench.js",
     "buildd": "cmake-js compile --debug",
+    "install": "cmake-js compile",
     "prepare": "tsc -p lib",
     "pretest": "cmake-js compile -d test/module/addon && tsc -p test",
     "test": "mocha test --recursive",
