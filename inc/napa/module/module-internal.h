@@ -6,6 +6,7 @@
 #include <napa/exports.h>
 
 #include <array>
+#include <string>
 #include <tuple>
 #include <unordered_map>
 #include <utility>

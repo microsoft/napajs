@@ -22,6 +22,9 @@ NodeZone::NodeZone(BroadcastDelegate broadcast, ExecuteDelegate execute):
     NAPA_ASSERT(_broadcast, "Broadcast delegate must be a valid function.");
     NAPA_ASSERT(_execute, "Execute delegate must be a valid function.");
 
+    // Init worker context for Node event loop.
+    INIT_WORKER_CONTEXT();
+
     // Zone instance into TLS.
     WorkerContext::Set(WorkerContextItem::ZONE, reinterpret_cast<void*>(this));
 

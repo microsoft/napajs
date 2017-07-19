@@ -5,34 +5,29 @@
 
 #include <napa/log.h>
 #include <platform/process.h>
+#include <platform/thread-local.h>
 #include <array>
 
+using namespace napa;
 using namespace napa::zone;
 
 namespace {
-    thread_local std::array<
+    tls::ThreadLocal<std::array<
         void*,
-        static_cast<size_t>(WorkerContextItem::END_OF_WORKER_CONTEXT_ITEM)> dataCollection;
-
-    // Get data by worker context item from the singleton TLS data collection
-    void*& GetTlsData(WorkerContextItem item) {
-        auto slotId = static_cast<size_t>(item);
-        NAPA_ASSERT(slotId < dataCollection.size(), "slot id out of range");
-
-        return dataCollection[slotId];
-    }
+        static_cast<size_t>(WorkerContextItem::END_OF_WORKER_CONTEXT_ITEM)>> items;
 }
 
 void WorkerContext::Init() {
-    dataCollection.fill(nullptr);
+    items.Install();
+    items->fill(nullptr);
 }
 
 void* WorkerContext::Get(WorkerContextItem item) {
-    auto data = GetTlsData(item);
-
-    return data;
+    NAPA_ASSERT(item < WorkerContextItem::END_OF_WORKER_CONTEXT_ITEM, "Invalid WorkerContextItem");
+    return (*items)[static_cast<size_t>(item)];
 }
 
 void WorkerContext::Set(WorkerContextItem item, void* data) {
-    GetTlsData(item) = data;
+    NAPA_ASSERT(item < WorkerContextItem::END_OF_WORKER_CONTEXT_ITEM, "Invalid WorkerContextItem");
+    (*items)[static_cast<size_t>(item)] = data;
 }

@@ -15,7 +15,7 @@ namespace napa {
     }
 }
 
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(__clang__)
 
 namespace std {
     // std::hash specialization for napa::stl::String.
