@@ -4,13 +4,8 @@
         "target": "es5",
         "experimentalDecorators": true,
         "noImplicitAny": false,
-        "declaration": true,
+        "declaration": false,
         "sourceMap": false,
-        "lib": ["es2015"],
-        "outDir": "./objd/amd64"
-    },
-    "exclude": [
-        "objd",
-        "obj"
-    ]
+        "lib": ["es2015"]
+    }
 }
