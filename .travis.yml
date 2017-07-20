@@ -1,0 +1,22 @@
+language: node_js
+node_js:
+- '6'
+os:
+- linux
+compiler:
+- gcc
+addons:
+  apt:
+    packages:
+    - cmake
+    - gcc-4.8
+    - g++-4.8
+install:
+- npm install cmake-js -g
+- npm install
+script:
+- npm test
+- npm run unittest
+after_success:
+- ./node_modules/.bin/node-pre-gyp package
+- ./node_modules/.bin/node-pre-gyp-github publish

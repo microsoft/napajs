@@ -9,17 +9,31 @@
     "type": "git",
     "url": "https://github.com/Microsoft/napajs"
   },
+  "binary": {
+    "module_name": "napa",
+    "module_path": "./bin/",
+    "host": "https://github.com/Microsoft/napajs/releases/download/",
+    "remote_path": "{version}"
+  },
+  "dependencies": {
+    "node-pre-gyp": ">= 0.6.36"
+  },
   "devDependencies": {
+    "node-pre-gyp-github": ">= 1.3.1",
     "mocha": ">= 3.4.2",
     "typescript": ">= 2.2.1",
     "@types/node": ">= 7.0.8",
     "@types/mocha": ">= 2.2.0",
     "markdown-table": "1.1.0"
   },
+  "bundledDependencies": [
+    "node-pre-gyp",
+    "node-pre-gyp-github"
+  ],
   "scripts": {
     "benchmark": "tsc -p benchmark & node benchmark/bench.js",
     "buildd": "cmake-js compile --debug",
-    "install": "cmake-js compile",
+    "install": "node-pre-gyp install --fallback-to-build=false || cmake-js compile",
     "prepare": "tsc -p lib",
     "pretest": "cmake-js compile -d test/module/addon && tsc -p test",
     "test": "mocha test --recursive",
