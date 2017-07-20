@@ -8,9 +8,9 @@ compiler:
 addons:
   apt:
     packages:
-    - cmake
-    - gcc-4.8
-    - g++-4.8
+    - cmake3
+    - gcc-5.4
+    - g++-5.4
 install:
 - npm install cmake-js -g
 - npm install
