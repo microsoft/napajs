@@ -7,10 +7,13 @@ compiler:
 - gcc
 addons:
   apt:
+    sources:
+    - ubuntu-toolchain-r-test
     packages:
-    - cmake3
     - gcc-5
     - g++-5
+before_install:
+- eval "CC=gcc-5 && CXX=g++-5"
 install:
 - npm install cmake-js -g
 - npm install
