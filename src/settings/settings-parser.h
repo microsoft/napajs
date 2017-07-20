@@ -58,7 +58,7 @@ namespace settings {
     /// </param>
     /// <returns> True if parsing succeeded, false otherwise. </returns>
     template <typename SettingsType>
-    bool ParseFromConsole(int argc, const char* argv[], SettingsType& settings) {
+    bool ParseFromConsole(int argc, char* argv[], SettingsType& settings) {
         std::vector<std::string> args;
 
         args.reserve(argc);
