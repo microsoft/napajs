@@ -28,9 +28,9 @@ TEST_CASE("Parsing from console", "[settings-parser]") {
     settings::PlatformSettings settings;
     settings.loggingProvider = "";
 
-    std::vector<char*> args = { "--loggingProvider", "myProvider" };
+    std::vector<const char*> args = { "--loggingProvider", "myProvider" };
 
-    REQUIRE(settings::ParseFromConsole(static_cast<int>(args.size()), args.data(), settings));
+    REQUIRE(settings::ParseFromConsole(static_cast<int>(args.size()), const_cast<char**>(args.data()), settings));
     REQUIRE(settings.loggingProvider == "myProvider");
 }
 
