@@ -18,7 +18,7 @@ install:
 - npm install cmake-js -g
 - npm install
 script:
-- npm test
+#- npm test
 - npm run unittest
 after_success:
 - "./node_modules/.bin/node-pre-gyp package"

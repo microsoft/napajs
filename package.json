@@ -10,7 +10,7 @@
     "url": "https://github.com/Microsoft/napajs"
   },
   "binary": {
-    "module_name": "napa",
+    "module_name": "napa-pre",
     "module_path": "./bin/",
     "host": "https://github.com/Microsoft/napajs/releases/download/",
     "remote_path": "{version}"
