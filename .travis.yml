@@ -1,0 +1,34 @@
+language: node_js
+node_js:
+- '6'
+os:
+- linux
+compiler:
+- gcc
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-5
+    - g++-5
+before_install:
+- export CXX="g++-5" CC="gcc-5"
+install:
+- sudo apt-get install -y gdb
+- npm install cmake-js -g
+- npm install
+before_script:
+- ulimit -c unlimited -S
+script:
+- npm test
+- npm run unittest
+after_failure:
+- COREFILE=$(find, -maxdepth 1 -name "core*" | head -n 1)
+- if [[ -f "$COREFILE"]]; then gdb -c "$COREFILE" node -ex "thread apply all bt" -ex "set pagination 0" -batch; fi
+after_success:
+#- "./node_modules/.bin/node-pre-gyp package"
+#- "./node_modules/.bin/node-pre-gyp-github publish"
+env:
+  global:
+    secure: S7DDixQ9tPK0hi7iGGNhipNUZtOa3qN4xwKpvUdB8XSBMP7N2LBjh/Bzjh/9zq7dyAVbUBrXHZkGICIYEDpGvjenIGUcr0mUQc6TDcf8Pk0OgY1jpF3I/eBdKX8e+WnfmOwD87SABQGdivlkZw6LXgT1Cw3fSxGZnkBHmjpKtJASZNi3AbS8agtiDPBwSxWiQQvIXdp35fIKh08KTeWbyZ9f9tlmVXZlbN78EXANR3Jc1UcL2JgCJoj7XxESpyUQpZP+rOrBPd9vhUORsK/et5ZTKJb66oeJcK4fq21hqMJxDIhpNnBgFC6KEmgOyDeqjLCp5a+520+QmE0+V0EAgVDXSaaLBgkV3DJShhuTX+ti4NgAc1MAxbDkXBF6WUAT3bOvr0BpuUhYW8j+wAs5bv1YnPYXja2umK+shVQ3epXtZ/Cdg3rhNymb3W6q36+z3pbB/ceRsOmLJollbF/18Iumo/iYHfxYiVXrF5OdVMexk/dLQ3s6FyjIqjxERjQhZqX34PTNmZBYk/NTyLut27fxEp21uhHqH6L7Un0IiDBTpsnpVhwRyOrzqFi/CJJC/Lbw76M1j47LPEymTz3E8rReDVBfj7Wfce8pB0D41moR/AbgtZUPeNH9XAduHz0ScMJNv+i0kH4SmqEvSbSVu3liknYlRumFn7MAEk2vfps=
