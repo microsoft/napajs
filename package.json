@@ -27,8 +27,7 @@
     "markdown-table": "1.1.0"
   },
   "bundledDependencies": [
-    "node-pre-gyp",
-    "node-pre-gyp-github"
+    "node-pre-gyp"
   ],
   "scripts": {
     "benchmark": "tsc -p benchmark & node benchmark/bench.js",

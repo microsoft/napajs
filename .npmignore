@@ -1,6 +1,5 @@
 bin
 build
-scripts
 tools
 
 .npmrc

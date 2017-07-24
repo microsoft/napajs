@@ -38,7 +38,14 @@ addons:
 #     - COMPILER_OVERRIDE="CC=clang-3.4 CXX=clang++-3.4"
 
 before_install:
-- if [ $TRAVIS_OS_NAME == linux ]; then source ./scripts/travis-linux-before-install.sh; fi
+- if [ $TRAVIS_OS_NAME == linux ]; then
+    if [ "$COMPILER_OVERRIDE" == "" ]; then
+      #use g++5 by default
+      export CXX="g++-5" CC="gcc-5"
+    else
+      export ${COMPILER_OVERRIDE}
+    fi
+  fi
 install:
 - npm install cmake-js -g
 - npm install
