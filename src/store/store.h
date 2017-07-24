@@ -4,8 +4,9 @@
 #pragma once
 
 #include <napa/exports.h>
-#include <napa/stl/string.h>
 #include <napa/transport/transport-context.h>
+
+#include <string>
 #include <memory>
 
 namespace napa {
@@ -19,7 +20,7 @@ namespace store {
         /// Meta-data that is necessary to marshall/unmarshall JS values.
         struct ValueType {
             /// <summary> JSON string from marshalled JS value. </summary>
-            napa::stl::String payload;
+            std::string payload;
 
             /// <summary> TransportContext that is needed to unmarshall the JS value. </summary>
             napa::transport::TransportContext transportContext;
