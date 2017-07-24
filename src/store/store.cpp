@@ -4,9 +4,9 @@
 #include "store.h"
 
 #include <napa/memory.h>
-#include <napa/stl/unordered_map.h>
 
 #include <mutex>
+#include <unordered_map>
 
 using namespace napa::store;
 
@@ -30,7 +30,7 @@ public:
         if (it != _valueMap.end()) {
             it->second = std::move(value);
         } else {
-            _valueMap.emplace(napa::stl::String(key), std::move(value));
+            _valueMap.emplace(std::string(key), std::move(value));
         }
     }
 
@@ -64,10 +64,10 @@ public:
 
 private:
     /// <summary> ID. Case sensitive. </summary>
-    napa::stl::String _id;
+    std::string _id;
 
     /// <summary> Key to value map. </summary>
-    napa::stl::UnorderedMap<napa::stl::String, Store::ValueType> _valueMap;
+    std::unordered_map<std::string, Store::ValueType> _valueMap;
 };
 
 namespace napa {
