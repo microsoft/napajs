@@ -5,6 +5,8 @@
 
 #include <napa/module/module-internal.h>
 
+#include <vector>
+
 namespace napa {
 namespace module {
 namespace module_loader_helpers {

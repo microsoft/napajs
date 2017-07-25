@@ -117,3 +117,6 @@
 #define NAPA_EXPORT_OBJECTWRAP(exports, exportName, className) \
     exports->Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), exportName), \
                  NAPA_GET_PERSISTENT_CONSTRUCTOR(exportName, className))
+
+// Depends on NAPA_GET_PERSISTENT_CONSTRUCTOR.
+#include "napa/module/common.h"
