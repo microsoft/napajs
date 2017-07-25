@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include <napa/module.h>
-#include <napa/module/common.h>
+#include <napa.h>
 
 #include <atomic>
 
