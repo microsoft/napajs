@@ -4,7 +4,6 @@
 #include "call-context-wrap.h"
 #include "transport-context-wrap-impl.h"
 
-#include <napa/module/common.h>
 #include <napa/transport.h>
 
 using namespace napa;

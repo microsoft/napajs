@@ -4,7 +4,6 @@
 #pragma once
 
 #include <napa/module.h>
-#include <napa/module/common.h>
 #include <napa/providers/metric.h>
 
 #include <memory>
