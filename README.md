@@ -2,14 +2,14 @@
 Napa.js is a multi-threaded JavaScript runtime built on [V8](https://github.com/v8/v8), which was originally designed to develop highly iterative services with non-compromised performance in Bing. As it evolves, we find it useful to complement [Node.js](https://nodejs.org) in CPU-bound tasks, with the capability of executing JavaScript in multiple V8 isolates and communicating between them. Napa.js is exposed as a Node.js module, while it can also be embedded in a host process without Node.js dependency.
 
 ## Supported OS and Compilers
-Napa.js requires C++ compiler that supports VC14, currently it has been tested on following combinations: 
+Napa.js requires C++ compiler that supports [C++14](https://en.wikipedia.org/wiki/C%2B%2B14), currently it has been tested on following combinations: 
 * Windows: 7+ with Visual Studio 2015
 * Linux: Ubantu 14.04 LTS, 16.04 TLS, with gcc 5.0 
 * OSX: 10.11 (Yosemite), clang 9.0.0
 
 ## Installation
 ### Prerequisites
-* Install C++ compilers that support [C++14](https://en.wikipedia.org/wiki/C%2B%2B14): 
+* Install C++ compilers that support C++14: 
     * Windows: [VC 2015 Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools)
     * Linux: [via Apt-get](https://askubuntu.com/questions/618474/how-to-install-the-latest-gcurrently-5-1-in-ubuntucurrently-14-04)
     * OSX: `xcode-select --install`
