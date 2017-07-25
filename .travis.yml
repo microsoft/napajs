@@ -1,11 +1,9 @@
 language: node_js
 node_js:
-# ISSUE with 'node' (v8.x.x). Need to fix. See https://github.com/Microsoft/napajs/issues/5
 - 'node'
 - '6'
-- '4'
+- '4.5.0'
 os:
-# ISSUE with 'linux'. Need to fix. See https://github.com/Microsoft/napajs/issues/4
 - linux
 - osx
 addons:
@@ -15,27 +13,18 @@ addons:
     packages:
     - g++-5
 
-# should re-enable extra build in matrix after ISSUE 4 and 5 resolved
-# matrix:
-#   include:
-#   - os: linux
-#     compiler: g++-6
-#     addons:
-#       apt:
-#         sources:
-#         - ubuntu-toolchain-r-test
-#         packages:
-#         - g++-6
-#     env:
-#     - COMPILER_OVERRIDE="CXX=g++-6 CC=gcc-6"
-#   - os: linux
-#     compiler: clang
-#     addons:
-#       apt:
-#         packages:
-#         - clang-3.4
-#     env:
-#     - COMPILER_OVERRIDE="CC=clang-3.4 CXX=clang++-3.4"
+matrix:
+  include:
+  - os: linux
+    compiler: g++-6
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-6
+    env:
+    - COMPILER_OVERRIDE="CXX=g++-6 CC=gcc-6"
 
 before_install:
 - |
