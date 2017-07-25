@@ -56,7 +56,7 @@ void StoreWrap::SetCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     store.Set(
         v8_helpers::V8ValueTo<std::string>(args[0]).c_str(),
         napa::store::Store::ValueType { 
-            v8_helpers::V8ValueTo<napa::stl::String>(payload.ToLocalChecked()), 
+            v8_helpers::V8ValueTo<std::string>(payload.ToLocalChecked()), 
             std::move(transportContext)
         });
 }
