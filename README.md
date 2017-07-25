@@ -27,25 +27,14 @@ zone.execute(
 - API for pluggable logging, metric and memory allocator
 - Distributed as a Node.JS module, as well as supporting embed scenarios
 
-## Architecture
-In Napa.JS, all works related to multi-threading are around the concept of `Zone`,
-which is the basic unit to define policies and execute JavaScript code. 
-A process may contain multiple zones, each consists of multiple JavaScript `Workers`. 
+## Benchmarks
+- [Napa.JS 1.0.1](benchmark/README.md)
 
-![Architecture](docs/architecture.png)
-
-Within a zone, all workers are symmetrical: they load the same code, serve `zone.broadcast` and `zone.execute` in an indistinguishable way. Basically, you cannot ask a zone to execute code on a specific worker. 
-
-Workers across different zones are asymmetrical: they may load different code, or load the same code but reinforce different policies, like heap size, security settings, etc. Applications may need multiple zones for work loads of different purposes or different policies.
-
-Napa.JS provides API to access current or other zones in JavaScript, thus a parallelizable workflow can be easily described by `zone.execute` across workers or zones. Node.JS event loop is exposed as a single-worker 'virtual' zone. Thus code running in Napa.JS isolates can call to Node.JS world via `zone.node.execute`.
 
 ## Documentation
-- [API reference](docs/api/index.md)
-- [Modules](docs/api/module.md)
-- [Benchmarks](benchmark/README.md)
-- [Embedder's guide](docs/embedder/index.md)
-- [Design docs](docs/design/index.md)
+- [Napa.JS wiki](https://github.com/Microsoft/napajs/wiki)
+
 
 ## Contribute
+- Please refer to [wiki](https://github.com/Microsoft/napajs/wiki/contribute)
 
