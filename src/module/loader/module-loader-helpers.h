@@ -4,6 +4,7 @@
 #pragma once
 
 #include <napa/module/module-internal.h>
+#include <vector>
 
 #include <vector>
 
