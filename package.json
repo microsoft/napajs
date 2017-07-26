@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Microsoft/napajs"
+    "url": "https://github.com/Microsoft/napajs.git"
   },
   "devDependencies": {
     "mocha": ">= 3.4.2",
