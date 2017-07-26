@@ -26,14 +26,14 @@ var napa = require('napajs');
 var zone = napa.zone.create('zone1', { workers: 4} );
 
 // Broadcast code to all 4 workers in 'zone1'.
-zone.broadcast('console.log("hello world");');
+zone.broadcast('console.log("hello world!");');
 
 // Execute an anonymous function in any worker thread in 'zone1'.
 zone.execute(
     (text) => {
         return text;
     }, 
-    ['hello world'])
+    ['hello napa!'])
     .then((result) => {
         console.log(result.value);
     });
