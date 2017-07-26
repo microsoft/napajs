@@ -21,7 +21,7 @@ Napa.js requires C++ compiler that supports [C++14](https://en.wikipedia.org/wik
 npm install napajs
 ```
 ## Quick Start
-```ts
+```js
 var napa = require('napajs');
 var zone = napa.zone.create('zone1', { workers: 4} );
 
