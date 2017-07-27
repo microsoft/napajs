@@ -23,13 +23,13 @@ npm install napajs
 ## Quick Start
 ```ts
 var napa = require('napajs');
-var zone = napa.zone.create('zone1', { workers: 4} );
+var zone1 = napa.zone.create('zone1', { workers: 4} );
 
 // Broadcast code to all 4 workers in 'zone1'.
-zone.broadcast('console.log("hello world");');
+zone1.broadcast('console.log("hello world");');
 
 // Execute an anonymous function in any worker thread in 'zone1'.
-zone.execute(
+zone1.execute(
     (text) => {
         return text;
     }, 
