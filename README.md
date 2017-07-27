@@ -2,7 +2,7 @@
 Napa.js is a multi-threaded JavaScript runtime built on [V8](https://github.com/v8/v8), which was originally designed to develop highly iterative services with non-compromised performance in Bing. As it evolves, we find it useful to complement [Node.js](https://nodejs.org) in CPU-bound tasks, with the capability of executing JavaScript in multiple V8 isolates and communicating between them. Napa.js is exposed as a Node.js module, while it can also be embedded in a host process without Node.js dependency.
 
 ## Supported OS and Compilers
-Napa.js requires C++ compiler that supports VC14, currently we have tested following OS/compiler combinations: 
+Napa.js requires C++ compiler that supports [C++14](https://en.wikipedia.org/wiki/C%2B%2B14), currently we have tested following OS/compiler combinations: 
 * Windows: 7+ with Visual Studio 2015
 * Linux: Ubantu 14.04 LTS, 16.04 TLS, with gcc 5.4+ 
 * OSX: 10.11 (Yosemite), Apple LLVM 7.0.2 (clang-700.1.18)
@@ -21,7 +21,7 @@ Napa.js requires C++ compiler that supports VC14, currently we have tested follo
 npm install napajs
 ```
 ## Quick Start
-```ts
+```js
 var napa = require('napajs');
 var zone1 = napa.zone.create('zone1', { workers: 4} );
 
@@ -33,7 +33,7 @@ zone1.execute(
     (text) => {
         return text;
     }, 
-    ['hello world'])
+    ['hello napa'])
     .then((result) => {
         console.log(result.value);
     });
@@ -45,10 +45,10 @@ More examples:
 
 ## Features
 - Multi-threaded JavaScript runtime
-- Node.JS compatible module architecture with NPM support
+- Node.js compatible module architecture with NPM support
 - API for object transportation, object sharing and synchronization across JavaScript threads
 - API for pluggable logging, metric and memory allocator
-- Distributed as a Node.JS module, as well as supporting embed scenarios
+- Distributed as a Node.js module, as well as supporting embed scenarios
 
 ## Documentation
 - [Napa.js Home](https://github.com/Microsoft/napajs/wiki)
@@ -60,7 +60,7 @@ You can contribute to Napa.js in following ways:
 * Review the [source code changes](https://github.com/Microsoft/napajs/pulls).
 * Contribute bug fixes.
 
-This project has adopted the Microsoft Open Source Code of Conduct. For more information see the Code of Conduct FAQ or contact opencode@microsoft.com with any additional questions or comments.
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact opencode@microsoft.com with any additional questions or comments.
 
 # Contacts
 * [Mailing list](https://groups.google.com/forum/#!forum/napajs)
