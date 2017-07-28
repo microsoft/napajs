@@ -45,8 +45,6 @@ void StoreWrap::SetCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<StoreWrap>(args.Holder());
     auto& store = thisObject->Get();
 
-    std::lock_guard<std::mutex> lockWrite(thisObject->_storeAccess);
-
     // Marshall value object into payload.
     napa::transport::TransportContext transportContext;
     auto payload = napa::transport::Marshall(args[1], &transportContext);
@@ -71,8 +69,6 @@ void StoreWrap::GetCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<StoreWrap>(args.Holder());
     auto& store = thisObject->Get();
 
-    std::lock_guard<std::mutex> lockRead(thisObject->_storeAccess);
-
     // Marshall value object into payload.
     auto key = v8_helpers::V8ValueTo<std::string>(args[0]);
     auto storeValue = store.Get(key.c_str());
@@ -96,7 +92,6 @@ void StoreWrap::HasCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<StoreWrap>(args.Holder());
     auto& store = thisObject->Get();
 
-    std::lock_guard<std::mutex> lockRead(thisObject->_storeAccess);
     args.GetReturnValue().Set(store.Has(v8_helpers::V8ValueTo<std::string>(args[0]).c_str()));
 }
 
@@ -110,7 +105,6 @@ void StoreWrap::DeleteCallback(const v8::FunctionCallbackInfo<v8::Value>& args) 
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<StoreWrap>(args.Holder());
     auto& store = thisObject->Get();
 
-    std::lock_guard<std::mutex> lockWrite(thisObject->_storeAccess);
     store.Delete(v8_helpers::V8ValueTo<std::string>(args[0]).c_str());
 }
 
@@ -131,7 +125,6 @@ void StoreWrap::GetSizeCallback(v8::Local<v8::String>, const v8::PropertyCallbac
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<StoreWrap>(args.Holder());
     auto& store = thisObject->Get();
 
-    std::lock_guard<std::mutex> lockRead(thisObject->_storeAccess);
     args.GetReturnValue().Set(static_cast<uint32_t>(store.Size()));
 }
 
