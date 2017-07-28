@@ -6,22 +6,32 @@
 #include <napa/module/shareable-wrap.h>
 #include <napa/module/binding/wraps.h>
 
+using namespace napa;
 using namespace napa::transport;
 using namespace napa::module;
-using namespace napa::v8_helpers;
+
 
 NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(TransportContextWrapImpl);
 
-TransportContextWrapImpl::TransportContextWrapImpl(TransportContext* context) {
-    _context = context;
+TransportContextWrapImpl::TransportContextWrapImpl(TransportContext* context, bool owning) : 
+    _context(context), _owning(owning) {
 }
 
-v8::Local<v8::Object> TransportContextWrapImpl::NewInstance(napa::transport::TransportContext* context) {
-    auto object = napa::module::NewInstance<TransportContextWrapImpl>().ToLocalChecked();
-    auto wrap = NAPA_OBJECTWRAP::Unwrap<TransportContextWrapImpl>(object);
-    wrap->_context = context;
+v8::Local<v8::Object> TransportContextWrapImpl::NewInstance(bool owning, napa::transport::TransportContext* context) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::EscapableHandleScope scope(isolate);
 
-    return object;
+    v8::Local<v8::Value> argv[] = { v8::Boolean::New(isolate, owning), v8_helpers::PtrToV8Uint32Array(isolate, context) };
+    auto object = napa::module::NewInstance<TransportContextWrapImpl>(2, argv);
+    RETURN_VALUE_ON_PENDING_EXCEPTION(object, v8::Local<v8::Object>());
+    
+    return scope.Escape(object.ToLocalChecked());
+}
+
+TransportContextWrapImpl::~TransportContextWrapImpl() {
+    if (_owning) {
+        delete _context;
+    }
 }
 
 TransportContext* TransportContextWrapImpl::Get() {
@@ -31,7 +41,7 @@ TransportContext* TransportContextWrapImpl::Get() {
 void TransportContextWrapImpl::Init() {
     auto isolate = v8::Isolate::GetCurrent();
     auto constructorTemplate = v8::FunctionTemplate::New(isolate, TransportContextWrapImpl::ConstructorCallback);
-    constructorTemplate->SetClassName(MakeV8String(isolate, exportName));
+    constructorTemplate->SetClassName(v8_helpers::MakeV8String(isolate, exportName));
     constructorTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 
     NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "saveShared", SaveSharedCallback);
@@ -57,22 +67,25 @@ void TransportContextWrapImpl::ConstructorCallback(const v8::FunctionCallbackInf
     JS_ENSURE(isolate, args.IsConstructCall(), 
         "class \"TransportContextWrap\" allows constructor call only.");
 
-    CHECK_ARG(isolate, args.Length() <= 1, 
-        "class \"TransportContextWrap\" accept no arguments or 1 argument of 'handle' as constructor.'");
+    CHECK_ARG(isolate, args.Length() == 1 || args.Length() == 2, 
+        "class \"TransportContextWrap\" accept a required boolean argument 'owning' and an optional argument 'handle' of Handle type.");
+
+    CHECK_ARG(isolate, args[0]->IsBoolean(), "Argument \"owning\" must be boolean.");
+    bool owning = args[0]->BooleanValue();
 
     // It's deleted when its Javascript object is garbage collected by V8's GC.
-    // TODO: use replacement new to allocate memory from napa.dll
     TransportContext* context = nullptr;
     
-    if (args.Length() == 0 || args[0]->IsUndefined()) {
+    if (args.Length() == 1 || args[1]->IsUndefined()) {
         context = new TransportContext();
     } else {
-        auto result = v8_helpers::V8ValueToPtr<TransportContext>(isolate, args[0]);
+        auto result = v8_helpers::V8ValueToPtr<TransportContext>(isolate, args[1]);
         JS_ENSURE(isolate, result.second, 
             "argument 'handle' must be of type [number, number].");
+
         context = result.first;
     }
-    auto wrap = new TransportContextWrapImpl(context);
+    auto wrap = new TransportContextWrapImpl(context, owning);
     wrap->Wrap(args.This());
     args.GetReturnValue().Set(args.This());
 }

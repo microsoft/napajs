@@ -129,7 +129,7 @@ void CallContextWrap::GetTransportContextCallback(v8::Local<v8::String> /*proper
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<CallContextWrap>(args.Holder());
 
     auto& transportContext = thisObject->GetRef().GetTransportContext();
-    auto wrap = TransportContextWrapImpl::NewInstance(&transportContext);
+    auto wrap = TransportContextWrapImpl::NewInstance(false, &transportContext);
     args.GetReturnValue().Set(wrap);
 }
 
