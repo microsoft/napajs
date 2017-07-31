@@ -1,7 +1,7 @@
 # Estimate PI in parallel
-This example is designed to demonstrate concurrent executions of tasks across multiple workers of napa zone.
+This example demonstrates concurrent execution of tasks across multiple workers of napa zone.
 
-With Monte Carlo method to evaluate PI, multiple batches of points were evaluated by a napa zone asynchronously. The napa zone was initialized with 4 workers, so different batches could be evaluated concurrently by different workers. After all the batches finished its evalutation, the resutls were aggregated to get the final PI evaluation.
+With Monte Carlo method to evaluate PI, multiple batches of points were evaluated by a napa zone asynchronously. The napa zone was initialized with 4 workers, so different batches could be evaluated concurrently by different workers. After all the batches finished their evalutation, the resutls were aggregated to get the final PI evaluation.
 
 ## How to run
 1. go to directory of "examples/tutorial/estimate-pi-in-parrallel"
@@ -9,7 +9,7 @@ With Monte Carlo method to evaluate PI, multiple batches of points were evaluate
 3. run "node estimate-pi-in-parrallel.js"
 
 ## Program output
-The below table shows the result of Monte Carlo with 4,000,000 points evaluted by a napa zone with 4 worker initialized. The execution latency varies for differnt  # of batches the points was splited. The latency of the first 3 executions reduced significantly along with the increasement # of batches (1 -> 2 -> 4), while the last 2 executions shows close latency because only 4 workers are available for 4 / 8 batches.
+The below table shows the result of Monte Carlo with 4,000,000 points evaluated by a napa zone with 4 workers. The 4,000,000 points is divided into different number of batches for each iteration. For those iterations (1-batch, 2-batch, and 4-batch) whose batch number is less than the worker number, execution latency is proportional to the number of batches. Meanwhile, the 8-batch iteration cannot scale linearly due to insufficient free worker, which is expected.
 ```
         # of points     # of batches    # of workers    latency in MS   estimated π     deviation
         ---------------------------------------------------------------------------------------

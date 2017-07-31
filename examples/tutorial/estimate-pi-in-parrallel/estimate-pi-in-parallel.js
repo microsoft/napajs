@@ -7,7 +7,7 @@ var napa = require("napajs");
 const NUMBER_OF_WORKERS = 4;
 
 // Create a napa zone with number_of_workers napa workers.
-var napaZone = napa.zone.create('napa-zone', { workers: NUMBER_OF_WORKERS });
+var zone = napa.zone.create('zone', { workers: NUMBER_OF_WORKERS });
 
 /*
 Estimate the value of π by using a Monte Carlo method.
@@ -41,7 +41,7 @@ function run(points, batches) {
 
     var promises = [];
     for (var i = 0; i < batches; i++) {
-        promises[i] = napaZone.execute(estimatePI, [points / batches]);
+        promises[i] = zone.execute(estimatePI, [points / batches]);
     }
     
     return Promise.all(promises).then(values => {

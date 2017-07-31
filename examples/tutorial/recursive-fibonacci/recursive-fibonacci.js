@@ -7,7 +7,7 @@ var napa = require("napajs");
 const NUMBER_OF_WORKERS = 4;
 
 // Create a napa zone with number_of_workers napa workers.
-var napaZone = napa.zone.create('napa-zone', { workers: NUMBER_OF_WORKERS });
+var zone = napa.zone.create('zone', { workers: NUMBER_OF_WORKERS });
 
 /*
 Fibonacci sequence starts with 0 and 1,
@@ -40,7 +40,7 @@ function fibonacci(n) {
 function run(n) {
     var start = Date.now();
 
-    return napaZone.execute('', "fibonacci", [n])
+    return zone.execute('', "fibonacci", [n])
         .then(result => {
             printResult(n, result.value, Date.now() - start);
             return result.value;
@@ -59,12 +59,12 @@ console.log('\tNth\tFibonacci\t# of workers\tlatency in MS');
 console.log('\t-----------------------------------------------------------');
 
 // Broadcast declaration of 'napa' and 'zone' to napa workers.
-napaZone.broadcast(' \
+zone.broadcast(' \
     var napa = require("napajs"); \
-    var zone = napa.zone.get("napa-zone"); \
+    var zone = napa.zone.get("zone"); \
 ');
 // Broadcast function declaration of 'fibonacci' to napa workers.
-napaZone.broadcast(fibonacci.toString());
+zone.broadcast(fibonacci.toString());
 
 // Run fibonacci eavluation in sequence.
 run(10)

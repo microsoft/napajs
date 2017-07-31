@@ -7,7 +7,7 @@ var napa = require("napajs");
 const NUMBER_OF_WORKERS = 4;
 
 // Create a napa zone with number_of_workers napa workers.
-var napaZone = napa.zone.create('napa-zone', { workers: NUMBER_OF_WORKERS });
+var zone = napa.zone.create('zone', { workers: NUMBER_OF_WORKERS });
 
 // Create a napa store with 'sub-matrix-size-store' as its key.
 // It is used to communicate max sub binary matrix size across isolates.
@@ -24,20 +24,20 @@ function run() {
     ];
 
     // Setup all workers with functions to be executed.
-    napaZone.broadcast(' \
+    zone.broadcast(' \
         var napa = require("napajs"); \
-        var zone = napa.zone.get("napa-zone"); \
+        var zone = napa.zone.get("zone"); \
         var store = napa.store.get("sub-matrix-size-store"); \
     ');
-    napaZone.broadcast(get_key_of_store.toString());
-    napaZone.broadcast(max_square_sub_matrix_with_all_1s_ended_at.toString());
-    napaZone.broadcast(max_square_sub_matrix_with_all_1s_at_layer.toString());
-    napaZone.broadcast(max_square_sub_matrix_with_all_1s.toString());
+    zone.broadcast(get_key_of_store.toString());
+    zone.broadcast(max_square_sub_matrix_with_all_1s_ended_at.toString());
+    zone.broadcast(max_square_sub_matrix_with_all_1s_at_layer.toString());
+    zone.broadcast(max_square_sub_matrix_with_all_1s.toString());
 
     var start = Date.now();
 
     // Start to execute.
-    return napaZone.execute('', 'max_square_sub_matrix_with_all_1s', [squareMatrix])
+    return zone.execute('', 'max_square_sub_matrix_with_all_1s', [squareMatrix])
         .then(result => {
             print_result(squareMatrix, Date.now() - start);
         });
@@ -65,7 +65,7 @@ the max square sub matrix with all 1s is
 
 with size = 3, and the lowest-rightest element = example_matrix[4, 3].
 
-Notaion:
+Notation:
     SubMatrixSize[i, j]: represents the size of the max square sub matrix with all 1s,
         whose lowest-rightest element is example_matrix[i, j].
     Layer of element:
@@ -87,8 +87,8 @@ Algorithm:
        Min(SubMatrixSize[i - 1, j], SubMatrixSize[i - 1, j - 1], SubMatrixSize[i, j - 1]) + 1;
 
 By the above algorithm, the lower-righter layer (with larger layer #)
-can be evluated from the results of the upper-lefter layer (with smaller layer #).
-There are no dependencies between evaluation of the elemments in the same layer,
+can be evaluated from the results of the upper-lefter layer (with smaller layer #).
+There are no dependencies between evaluation of the elements in the same layer,
 so evaluation of the elements in the same layer could be parallel.
 */
 async function max_square_sub_matrix_with_all_1s(squareMatrix) {

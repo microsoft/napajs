@@ -1,7 +1,7 @@
 # Recursive fibonacci
-This example is designed to demonstrate the recursive exection of napa tasks.
+This example demonstrates recursive execution of napa tasks.
 
-Fibonacci(n) is evaluted through recursively executing Fibonacci(n - 1) and Fibonacci(n - 2) by a napa zone with 4 workers.
+Fibonacci(n) is evaluated through recursively executing Fibonacci(n - 1) and Fibonacci(n - 2) by a napa zone with 4 workers.
 
 ## How to run
 1. go to directory of "examples/tutorial/recursive-fibonacci"
@@ -9,7 +9,7 @@ Fibonacci(n) is evaluted through recursively executing Fibonacci(n - 1) and Fibo
 3. run "node recursive-fibonacci.js"
 
 ## Program output
-The below table shows the result of evaluations of Fibonacci from 10 to 16 by a napa zone with 4 worker initialized.
+The below table shows the result of evaluations of Fibonacci from 10 to 16 by a napa zone with 4 workers.
 ```
         Nth     Fibonacci       # of workers    latency in MS
         -----------------------------------------------------------
@@ -31,4 +31,4 @@ The above result was got by running the example in the below environment.
 |OS Name        |Microsoft Windows Server 2016 Datacenter                                               |
 |               |                                                                                       |
 
-BTW, this example is designed to show the usage of napajs by the simplest algorithm. It isn't optimized for performance. Please refer to benchmark for performance of napajs.
+The purpose of this example is to demonstrate recursive execution of napa tasks. It's not performance efficient. Please refer to [Benchmark](https://github.com/Microsoft/napajs/blob/master/benchmark/README.md) to see performance details.
