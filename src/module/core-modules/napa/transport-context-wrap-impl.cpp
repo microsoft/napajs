@@ -22,7 +22,7 @@ v8::Local<v8::Object> TransportContextWrapImpl::NewInstance(bool owning, napa::t
     v8::EscapableHandleScope scope(isolate);
 
     v8::Local<v8::Value> argv[] = { v8::Boolean::New(isolate, owning), v8_helpers::PtrToV8Uint32Array(isolate, context) };
-    auto object = napa::module::NewInstance<TransportContextWrapImpl>(2, argv);
+    auto object = napa::module::NewInstance<TransportContextWrapImpl>(sizeof(argv) / sizeof(v8::Local<v8::Value>), argv);
     RETURN_VALUE_ON_PENDING_EXCEPTION(object, v8::Local<v8::Object>());
     
     return scope.Escape(object.ToLocalChecked());

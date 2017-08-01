@@ -129,6 +129,7 @@ void CallContextWrap::GetTransportContextCallback(v8::Local<v8::String> /*proper
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<CallContextWrap>(args.Holder());
 
     auto& transportContext = thisObject->GetRef().GetTransportContext();
+    // Create a non-owning transport context wrap, since transport context is always owned by call context. 
     auto wrap = TransportContextWrapImpl::NewInstance(false, &transportContext);
     args.GetReturnValue().Set(wrap);
 }

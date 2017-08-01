@@ -40,7 +40,7 @@ namespace transport {
     inline v8::MaybeLocal<v8::String> Marshall(v8::Local<v8::Value> object, napa::transport::TransportContext* transportContext) {
         auto isolate = v8::Isolate::GetCurrent();
         v8::Local<v8::Value> argv[] = { 
-            v8::Boolean::New(isolate, false),                      // Not owning.
+            v8::Boolean::New(isolate, false),                           // Not owning since wrap is temporary.
             v8_helpers::PtrToV8Uint32Array(isolate, transportContext) 
         };
         auto transportContextWrap = napa::module::binding::NewInstance(
@@ -69,7 +69,7 @@ namespace transport {
     inline v8::MaybeLocal<v8::Value> Unmarshall(v8::Local<v8::Value> payload, const napa::transport::TransportContext* transportContext) {
         auto isolate = v8::Isolate::GetCurrent();
         v8::Local<v8::Value> argv[] = { 
-            v8::Boolean::New(isolate, false),
+            v8::Boolean::New(isolate, false),                           // Not owning since wrap is temporary.
             v8_helpers::PtrToV8Uint32Array(isolate, transportContext) 
         };
         auto transportContextWrap = napa::module::binding::NewInstance(
