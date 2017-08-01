@@ -139,7 +139,7 @@ void CallContextWrap::GetOptionsCallback(v8::Local<v8::String> /*propertyName*/,
     
     // Prepare execute options.
     // NOTE: export necessary fields from CallContext.GetOptions to jsOptions object here. Now it's empty.
-    auto jsOptions = v8::ObjectTemplate::New(isolate)->NewInstance();
+    auto jsOptions = v8::Object::New(isolate);
 
     args.GetReturnValue().Set(jsOptions);
 }
