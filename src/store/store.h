@@ -47,6 +47,14 @@ namespace store {
         /// <summary> Delete a key. No-op if key is not found in store. </summary>
         virtual void Delete(const char* key) = 0;
 
+        /// <summary> Enter a critical section. </summary>
+        /// <remarks> This will block the thread if the lock is acquired. </remarks>
+        virtual void EnterCriticalSection() = 0;
+
+        /// <summary> Exit a critical section. </summary>
+        /// <remarks> An exception will be thrown if not already entered. </remarks>
+        virtual void ExitCriticalSection() = 0;
+
         /// <summary> Return size of the store. </summary>
         virtual size_t Size() const = 0;
 

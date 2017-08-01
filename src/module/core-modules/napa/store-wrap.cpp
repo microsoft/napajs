@@ -4,6 +4,8 @@
 #include "store-wrap.h"
 #include <napa/transport.h>
 
+#include <functional>
+
 using namespace napa::module;
 
 NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(StoreWrap)
@@ -45,7 +47,10 @@ void StoreWrap::SetCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<StoreWrap>(args.Holder());
     auto& store = thisObject->Get();
 
-    std::lock_guard<std::mutex> lockWrite(thisObject->_storeAccess);
+    store.EnterCriticalSection();
+    std::unique_ptr<napa::store::Store, std::function<void(napa::store::Store*)>> deferred(&store, [](auto store) {
+        store->ExitCriticalSection();
+    });
 
     // Marshall value object into payload.
     napa::transport::TransportContext transportContext;
@@ -71,7 +76,10 @@ void StoreWrap::GetCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<StoreWrap>(args.Holder());
     auto& store = thisObject->Get();
 
-    std::lock_guard<std::mutex> lockRead(thisObject->_storeAccess);
+    store.EnterCriticalSection();
+    std::unique_ptr<napa::store::Store, std::function<void(napa::store::Store*)>> deferred(&store, [](auto store) {
+        store->ExitCriticalSection();
+    });
 
     // Marshall value object into payload.
     auto key = v8_helpers::V8ValueTo<std::string>(args[0]);
@@ -96,7 +104,11 @@ void StoreWrap::HasCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<StoreWrap>(args.Holder());
     auto& store = thisObject->Get();
 
-    std::lock_guard<std::mutex> lockRead(thisObject->_storeAccess);
+    store.EnterCriticalSection();
+    std::unique_ptr<napa::store::Store, std::function<void(napa::store::Store*)>> deferred(&store, [](auto store) {
+        store->ExitCriticalSection();
+    });
+
     args.GetReturnValue().Set(store.Has(v8_helpers::V8ValueTo<std::string>(args[0]).c_str()));
 }
 
@@ -110,7 +122,11 @@ void StoreWrap::DeleteCallback(const v8::FunctionCallbackInfo<v8::Value>& args) 
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<StoreWrap>(args.Holder());
     auto& store = thisObject->Get();
 
-    std::lock_guard<std::mutex> lockWrite(thisObject->_storeAccess);
+    store.EnterCriticalSection();
+    std::unique_ptr<napa::store::Store, std::function<void(napa::store::Store*)>> deferred(&store, [](auto store) {
+        store->ExitCriticalSection();
+    });
+
     store.Delete(v8_helpers::V8ValueTo<std::string>(args[0]).c_str());
 }
 
@@ -131,7 +147,11 @@ void StoreWrap::GetSizeCallback(v8::Local<v8::String>, const v8::PropertyCallbac
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<StoreWrap>(args.Holder());
     auto& store = thisObject->Get();
 
-    std::lock_guard<std::mutex> lockRead(thisObject->_storeAccess);
+    store.EnterCriticalSection();
+    std::unique_ptr<napa::store::Store, std::function<void(napa::store::Store*)>> deferred(&store, [](auto store) {
+        store->ExitCriticalSection();
+    });
+
     args.GetReturnValue().Set(static_cast<uint32_t>(store.Size()));
 }
 

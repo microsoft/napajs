@@ -62,12 +62,27 @@ public:
         return _valueMap.size();
     }
 
+    /// <summary> Enter a critical section. </summary>
+    /// <remarks> This will block the thread if the lock is acquired. </remarks>
+    void EnterCriticalSection() {
+        _lock.lock();
+    }
+
+    /// <summary> Exit a critical section. </summary>
+    /// <remarks> An exception will be thrown if not already entered. </remarks>
+    void ExitCriticalSection() {
+        _lock.unlock();
+    }
+
 private:
     /// <summary> ID. Case sensitive. </summary>
     std::string _id;
 
     /// <summary> Key to value map. </summary>
     std::unordered_map<std::string, Store::ValueType> _valueMap;
+
+    /// <summary> A mutex object for the lock operations. </summary>
+    std::mutex _lock;
 };
 
 namespace napa {
