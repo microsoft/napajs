@@ -37,14 +37,17 @@ public:
 
     /// <summary> Get value by a key. </summary>
     /// <param name="key"> Case-sensitive key to get. </param>
-    /// <returns> ValueType pointer, null if not found. </returns>
-    const ValueType* Get(const char* key) const override {
+    /// <param name="onFound"> A callback function that will be called when value is found.
+    /// If the key does not exist in store, the callback function will not be called. </param>
+    /// <returns> True if the key exists in store. </returns>
+    bool Get(const char* key, std::function<void(const ValueType*)> onFound) const override {
 		std::lock_guard<std::mutex> lockRead(_storeAccess);
         auto it = _valueMap.find(key);
         if (it != _valueMap.end()) {
-            return &(it->second);
+            onFound(&(it->second));
+            return true;
         }
-        return nullptr;
+        return false;
     }
 
     /// <summary> Check if this store has a key. </summary>

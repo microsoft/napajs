@@ -71,15 +71,16 @@ void StoreWrap::GetCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
     // Marshall value object into payload.
     auto key = v8_helpers::V8ValueTo<std::string>(args[0]);
-    auto storeValue = store.Get(key.c_str());
-    if (storeValue != nullptr) {
-        auto value = napa::transport::Unmarshall(
-            v8_helpers::MakeExternalV8String(isolate, storeValue->payload), 
-            &(storeValue->transportContext));
+    store.Get(key.c_str(), [args, isolate](auto storeValue) {
+        if (storeValue != nullptr) {
+            auto value = napa::transport::Unmarshall(
+                v8_helpers::MakeExternalV8String(isolate, storeValue->payload), 
+                &(storeValue->transportContext));
 
-        RETURN_ON_PENDING_EXCEPTION(value);
-        args.GetReturnValue().Set(value.ToLocalChecked());
-    }
+            RETURN_ON_PENDING_EXCEPTION(value);
+            args.GetReturnValue().Set(value.ToLocalChecked());
+        }
+    });
 }
 
 void StoreWrap::HasCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {

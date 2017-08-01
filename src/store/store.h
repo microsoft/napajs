@@ -6,6 +6,7 @@
 #include <napa/exports.h>
 #include <napa/transport/transport-context.h>
 
+#include <functional>
 #include <string>
 #include <memory>
 
@@ -36,8 +37,11 @@ namespace store {
 
         /// <summary> Get value by a key. </summary>
         /// <param name="key"> Case-sensitive key to get. </param>
-        /// <returns> ValueType pointer, null if not found. </returns>
-        virtual const ValueType* Get(const char* key) const = 0;
+        /// <param name="onFound"> A callback function that will be called when value is found.
+        /// If the key does not exist in store, the callback function will not be called. </param>
+        /// <remarks> The store will keep locked before the onFound function returns. </remarks>
+        /// <returns> True if the key exists in store. </returns>
+        virtual bool Get(const char* key, std::function<void(const ValueType*)> onFound) const = 0;
 
         /// <summary> Check if this store has a key. </summary>
         /// <param name="key"> Case-sensitive key. </param>
