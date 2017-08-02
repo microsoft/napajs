@@ -1,15 +1,17 @@
 # Estimate PI in parallel
-This example demonstrates concurrent execution of tasks across multiple workers of napa zone.
+This example implements an algorithm to [estimate PI using Monte Carlo method](http://mathfaculty.fullerton.edu/mathews/n2003/montecarlopimod.html). It demonstrates how to fan out sub-tasks into multiple JavaScript threads, run them in parallel and aggregate output into a final result.
 
-With Monte Carlo method to evaluate PI, multiple batches of points were evaluated by a napa zone asynchronously. The napa zone was initialized with 4 workers, so different batches could be evaluated concurrently by different workers. After all the batches finished their evalutation, the resutls were aggregated to get the final PI evaluation.
+In the implementation, multiple batches of points are evaluated simultaneously in a napa zone of 4 workers. Results are aggregated to calculate the final PI after all batches finishes.
 
 ## How to run
 1. go to directory of "examples/tutorial/estimate-pi-in-parrallel"
 2. run "npm install" to install napajs
-3. run "node estimate-pi-in-parrallel.js"
+3. run "node estimate-pi-in-parallel.js"
 
 ## Program output
-The below table shows the result of Monte Carlo with 4,000,000 points evaluated by a napa zone with 4 workers. The 4,000,000 points is divided into different number of batches for each iteration. For those iterations (1-batch, 2-batch, and 4-batch) whose batch number is less than the worker number, execution latency is proportional to the number of batches. Meanwhile, the 8-batch iteration cannot scale linearly due to insufficient free worker, which is expected.
+The table below shows results of PI calculated under different settings, each setting emulates 4,000,000 points evaluated by a napa zone of 4 workers. 
+
+These 4,000,000 points are divided into multiple batches, each setting differs only in number of batches. For settings (1-batch, 2-batch, and 4-batch) whose batch number is less than the worker number, total latency is proportional to the number of batches, that means we have enough workers to pick up coming batches. On the contrary, the 8-batch setting cannot scale linearly due to insufficient free worker, which is expected.
 ```
         # of points     # of batches    # of workers    latency in MS   estimated π     deviation
         ---------------------------------------------------------------------------------------
@@ -18,7 +20,7 @@ The below table shows the result of Monte Carlo with 4,000,000 points evaluated 
         4000000         4               4               78              3.139600        0.001992654
         4000000         8               4               62              3.142732        0.001139346
 ```
-The above result was got by running the example in the below environment.
+We got results above under environment:
 
 |               |                                                                                       |
 |---------------|---------------------------------------------------------------------------------------|
