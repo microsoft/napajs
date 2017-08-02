@@ -2,35 +2,45 @@
 
 ## Table of Contents
 - [Introduction](#intro)
+    - [Multiple Workers vs Multiple Zones](#worker-vs-zone)
+    - [Zone Types](#zone-types)
+    - [Zone Operations](#zone-operations)
 - [API](#api)
     - [`create(id: string, settings: ZoneSettings = DEFAULT_SETTINGS): Zone`](#create)
     - [`get(id: string): Zone`](#get)
     - [`current: Zone`](#current)
     - [`node: Zone`](#node-zone)
-    - interface [`ZoneSettings`](#zone-settings)
+    - Interface [`ZoneSettings`](#zone-settings)
         - [`settings.workers: number`](#zone-settings-workers)
-    - object [`DEFAULT_SETTINGS: ZoneSettings`](#default-settings)
-    - interface [`Zone`](#zone)
+    - Object [`DEFAULT_SETTINGS: ZoneSettings`](#default-settings)
+    - Interface [`Zone`](#zone)
         - [`zone.id: string`](#zone-id)
         - [`zone.broadcast(code: string): Promise<void>`](#broadcast-code)
         - [`zone.broadcast(function: (...args: any[]) => void, args: any[]): Promise<void>`](#broadcast-function)
         - [`zone.execute(moduleName: string, functionName: string, args: any[], options?: CallOptions): Promise<Result>`](#execute-by-name)
         - [`zone.execute(function: (...args[]) => any, args: any[], options?: CallOptions): Promise<Result>`](#execute-anonymous-function)
-    - interface [`CallOptions`](#call-options)
+    - Interface [`CallOptions`](#call-options)
         - [`options.timeout: number`](#call-options-timeout)
-    - interface [`Result`](#result)
+    - Interface [`Result`](#result)
         - [`result.value: any`](#result-value)
         - [`result.payload: string`](#result-payload)
         - [`result.transportContext: transport.TransportContext`](#result-transportcontext)
 
 ## <a name="intro"></a> Introduction
- Zone is a key concept of napajs that exposes multi-thread capabilities in JavaScript world. 
- 
- Zone consists of one or multiple JavaScript threads, we name each thread `worker`. Workers within a zone are symetric, which means execute on any worker from the zone should return the same result, and the internal state of every worker should be the same from long running point of view. 
- 
- Multiple zones can co-exist in the same process, with each loading different code, bearing different states or applying different policies, like heap size, etc. The purpose of having multiple zone is to allow multiple roles of a complex work, each role loads the minimum resource for its own usage.
+Zone is a key concept of napajs that exposes multi-thread capabilities in JavaScript world. 
 
- There are 2 operations, designed to reinforce the symetricity of workers:
+### <a name="worker-vs-zone"></a> Multiple Workers vs Multiple Zones
+Zone consists of one or multiple JavaScript threads, we name each thread `worker`. Workers within a zone are symetric, which means execute on any worker from the zone should return the same result, and the internal state of every worker should be the same from long running point of view. 
+ 
+Multiple zones can co-exist in the same process, with each loading different code, bearing different states or applying different policies, like heap size, etc. The purpose of having multiple zone is to allow multiple roles of a complex work, each role loads the minimum resource for its own usage.
+ 
+### <a name="zone-types"></a> Zone Types
+There are two types of zone:
+- **Napa zone** - zone consists of Napa.js managed JavaScript workers (V8 isolates). Can be multiple, each may contain multiple workers. Workers in Napa zone support partial Node.JS APIs.
+- **Node zone** - a 'virtual' zone which exposes Node.js eventloop, has access to full Node.js capabilities.
+
+### <a name="zone-operations"><a> Zone Operations 
+There are two operations, designed to reinforce the symetricity of workers within a zone:
  1) **Broadcast** - run code that changes worker state on all workers, returning a promise for pending operation. Through the promise, we can only know if operation succeed or failed. Usually we use `broadcast` to bootstrap application, pre-cache objects, or change application settings.
  2) **Execute** - run code that doesn't change worker state on an abitrary worker, returning a promise of getting the result. Execute is designed for doing the real work.
 
