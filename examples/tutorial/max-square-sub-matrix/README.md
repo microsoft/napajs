@@ -29,14 +29,14 @@ The below output shows the result of the implementation. By a napa zone with 4 w
             Latency in MS       : 15
         -------------------------------------
 ```
-The above result was got by running the example in the below environment.
+We got results under environment:
 
-|               |                                                                                       |
-|---------------|---------------------------------------------------------------------------------------|
-|Processor      |Intel(R) Xeon(R) CPU E5-2620 0 @ 2.00GHz, 2000 Mhz, 6 Core(s), 12 Logical Processor(s) |
-|System Type    |x64-based PC                                                                           |
-|Physical Memory|32.0 GB                                                                                |
-|OS Name        |Microsoft Windows Server 2016 Datacenter                                               |
-|               |                                                                                       |
+| Name              | Value                                                                                 |
+|-------------------|---------------------------------------------------------------------------------------|
+|**Processor**      |Intel(R) Xeon(R) CPU E5-2620 0 @ 2.00GHz, 2000 Mhz, 6 Core(s), 12 Logical Processor(s) |
+|**System Type**    |x64-based PC                                                                           |
+|**Physical Memory**|32.0 GB                                                                                |
+|**OS version**     |Microsoft Windows Server 2016 Datacenter                                               |
+
 
 The purpose of this example is to demonstrate shared data access across different isolates. It's not performance efficient. Your code should minimize shared data access since it comes with an overload. Please refer to [Benchmark](https://github.com/Microsoft/napajs/blob/master/benchmark/README.md) to see performance details.
