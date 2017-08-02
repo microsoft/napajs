@@ -3,7 +3,7 @@ Napa.js is a multi-threaded JavaScript runtime built on [V8](https://github.com/
 
 ## Supported OS and Compilers
 Napa.js requires C++ compiler that supports [C++14](https://en.wikipedia.org/wiki/C%2B%2B14), currently we have tested following OS/compiler combinations: 
-* Windows: 7+ with Visual Studio 2015
+* Windows: 7+ with Visual Studio 2015+ (VC14.0+)
 * Linux: Ubantu 14.04 LTS, 16.04 TLS, with gcc 5.4+ 
 * OSX: 10.11 (Yosemite), Apple LLVM 7.0.2 (clang-700.1.18)
 
