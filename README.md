@@ -3,14 +3,14 @@ Napa.js is a multi-threaded JavaScript runtime built on [V8](https://github.com/
 
 ## Supported OS and Compilers
 Napa.js requires C++ compiler that supports [C++14](https://en.wikipedia.org/wiki/C%2B%2B14), currently we have tested following OS/compiler combinations: 
-* Windows: 7+ with Visual Studio 2015+ (VC14.0+)
+* Windows: 7+ with Visual Studio 2015 or 2017
 * Linux: Ubantu 14.04 LTS, 16.04 TLS, with gcc 5.4+ 
 * OSX: 10.11 (Yosemite), Apple LLVM 7.0.2 (clang-700.1.18)
 
 ## Installation
 ### Prerequisites
 * Install C++ compilers that support VC14: 
-    * Windows: [VC 2015 Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools)
+    * Windows: [VC 2015 Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools) or [VS 2017 Build Tools](https://www.visualstudio.com/downloads/#build-tools-for-visual-studio-2017)
     * Linux: [via Apt-get](https://askubuntu.com/questions/618474/how-to-install-the-latest-gcurrently-5-1-in-ubuntucurrently-14-04)
     * OSX: `xcode-select --install`
 * Install CMake: [Download or build](https://cmake.org/install/), [Apt-get (Linux/Ubuntu)](https://askubuntu.com/questions/355565/how-to-install-latest-cmake-version-in-linux-ubuntu-from-command-line)
@@ -20,6 +20,8 @@ Napa.js requires C++ compiler that supports [C++14](https://en.wikipedia.org/wik
 ```
 npm install napajs
 ```
+\* *You can also [build Napa.js from source](https://github.com/Microsoft/napajs/wiki/build-napa.js-from-source).*
+
 ## Quick Start
 ```js
 var napa = require('napajs');
@@ -39,9 +41,9 @@ zone1.execute(
     });
 ```
 More examples:
-* [Estimate PI in parallel]()
-* [Recursive Fibonacci]()
-* [Max sub-matrix of 1s in parallel]()
+* [Estimate PI in parallel](./examples/tutorial/estimate-pi-in-parallel)
+* [Recursive Fibonacci with multiple JavaScript threads](./examples/tutorial/recursive-fibonacci)
+* [Max sub-matrix of 1s with layered parallelism](./examples/tutorial/max-square-sub-matrix)
 
 ## Features
 - Multi-threaded JavaScript runtime
@@ -52,6 +54,7 @@ More examples:
 
 ## Documentation
 - [Napa.js Home](https://github.com/Microsoft/napajs/wiki)
+- [API Reference](./docs/api/index.md)
 
 # Contribute
 You can contribute to Napa.js in following ways:
