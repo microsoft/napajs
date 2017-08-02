@@ -1,4 +1,4 @@
-# namespace `zone`
+# Namespace `zone`
 
 ## Table of Contents
 - [Introduction](#intro)
