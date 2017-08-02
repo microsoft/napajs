@@ -1,6 +1,24 @@
 # Napa.js Modules
 
-## Introduction
+## Table of Contents
+- [Introduction](#intro)
+- [Developing Modules](#develop-modules)
+  - [Module: JavaScript vs C++](#js-vs-cpp)
+- [Quick Reference](#quick-ref)
+  - [JavaScript module](#ref-js-module)
+  - [C++ module](#ref-cpp-module)
+- [API](#api)
+  - [JavaScript API](#js-api)
+  - [C++ API](#cpp-api)
+    - [Exporting JavaScript class from C++ modules](#export-class)
+    - [V8 helpers](#v8helpers)
+    - [Using STL with custom allocators](#stl-with-allocator)
+- [Special Topics](#topics)
+  - [Topic #1: Make objects shareable across multiple JavaScript threads](#topic-shareable-objects)
+  - [Topic #2: Asynchronous functions](#topic-async-functions)
+  - [Topic #3: Memory management in C++ modules](#topic-memory-management)
+
+## <a name="intro"></a> Introduction
 Napa.js follows [Node.js' convention](https://nodejs.org/api/modules.html) to support modules, that means:
 
 1) Both JavaScript modules and C++ modules are supported.
@@ -15,8 +33,8 @@ But there are also differences:
 4) Napa.js supports embed mode. C++ modules need separate compilation between Node mode and embed mode.
 
 
-## Developing Modules
-### Module: JavaScript vs. C++
+## <a name="develop-modules"></a> Developing Modules
+### <a name="js-vs-cpp"></a> Module: JavaScript vs. C++
 A quick glance at NPM will reveal that most modules are pure JavaScript. These are only a few reasons that you may want to create a C++ module.
 - You want to expose JavaScript API for existing C/C++ functionalities.
 - Code includes considerably amount of computation that is performance critical.
@@ -25,16 +43,16 @@ A quick glance at NPM will reveal that most modules are pure JavaScript. These a
 
 [This post](https://docs.npmjs.com/getting-started/creating-node-modules) gives a good introduction on creating a JavaScript module. For creating a Napa.JS C++ module, please refer to the [API](#api) section or checkout examples in the [quick reference](#quick-reference) section.
 
-## Quick reference
+## <a name="quick-ref"></a> Quick reference
 
-### JavaScript module
+### <a name="ref-js-module"></a> JavaScript module
 
 | Description                                                  | Transportable | Example code |
 | ------------------------------------------------------------ | ------------- | ------------ |
 | Standard JavaScript module                                   |               | [Blog post](https://www.hacksparrow.com/how-to-write-node-js-modules.html)           |
 | Share JavaScript object across isolates                      |      X        |              |
 
-### C++ module
+### <a name="ref-cpp-module"></a> C++ module
 
 | Description                                                  | ObjectWrap | Transportable | Async function | Example code |
 | ------------------------------------------------------------ | ---------- | ------------- | -------------- | ------------ |
@@ -43,24 +61,24 @@ A quick glance at NPM will reveal that most modules are pure JavaScript. These a
 | Share C++ object across isolates                             |      X     |      X        |                |  allocator-wrap [[.h](../../src/module/core-modules/napa/allocator-wrap.h) [.cpp](../../src/module/core-modules/napa/allocator-wrap.cpp)]            |
 | Export asynchronous JavaScript function                      |      X     |               |      X         |  async-number [[.md](../../examples/modules/async-number/README.md) [.cpp](../../examples/modules/async-number/node/addon.cpp) [test](../../examples/modules/async-number/test/test.ts)]            |
 
-## API
-### JavaScript
+## <a name="api"></a> API
+### <a name="js-api"></a> JavaScript
 See [API reference](./index.md).
 
-### C++
-#### Exporting JavaScript classes from C++ modules
+### <a name="cpp-api"></a> C++
+#### <a name="export-class"></a> Exporting JavaScript classes from C++ modules
 TBD
-#### V8 helpers
+#### <a name="v8helpers"></a> V8 helpers
 TBD
-#### Using STL with Napa allocators
-TBD
-
-## Special topics
-### Topic #1: Make objects shareable across multiple JavaScript threads
+#### <a name="stl-with-allocator"></a> Using STL with custom allocators
 TBD
 
-### Topic #2: Asynchronous functions
+## <a name="topics"></a> Special topics
+### <a name="topic-shareable-objects"></a> Topic #1: Make objects shareable across multiple JavaScript threads
 TBD
 
-### Topic #3: Memory management in C++ modules
+### <a name="topic-async-functions"></a> Topic #2: Asynchronous functions
+TBD
+
+### <a name="topic-memory-management"></a> Topic #3: Memory management in C++ modules
 TBD
