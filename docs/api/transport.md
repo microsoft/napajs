@@ -1,4 +1,4 @@
-# namespace `transport`
+# Namespace `transport`
 
 ## Table of Contents
 - [Introduction](#intro)
