@@ -1,4 +1,4 @@
-# namespace `sync`
+# Namespace `sync`
 ## Table of Contents
 - class [`Lock`](#class-lock)
     - [`lock.guard(func: () => any): any`](#lock-guard-func-any-any)
