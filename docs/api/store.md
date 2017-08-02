@@ -7,7 +7,7 @@
     - [`get(id: string): Store`](#get)
     - [`getOrCreate(id: string): Store`](#getorcreate)
     - [`count: number`](#count)
-    - interface [`Store`](#store)
+    - Interface [`Store`](#store)
         - [`store.id: string`](#store-id)
         - [`store.set(key: string, value: any): void`](#store-set)
         - [`store.get(key: string): any`](#store-get)
