@@ -39,6 +39,3 @@ We got results under environment:
 |**System Type**    |x64-based PC                                                                           |
 |**Physical Memory**|32.0 GB                                                                                |
 |**OS version**     |Microsoft Windows Server 2016 Datacenter                                               |
-
-
-The purpose of this example is to demonstrate shared data access across different isolates. It's not performance efficient. Your code should minimize shared data access since it comes with an overload. Please refer to [Benchmark](https://github.com/Microsoft/napajs/blob/master/benchmark/README.md) to see performance details.
