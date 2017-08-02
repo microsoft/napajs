@@ -19,9 +19,8 @@ Napa.js requires C++ compiler that supports [C++14](https://en.wikipedia.org/wik
 ### Install Napa.js
 ```
 npm install napajs
-
 ```
-\* you can also [build napajs from source](https://github.com/Microsoft/napajs/wiki/build-'napajs'-from-source).
+\* *You can also [build napajs from source](https://github.com/Microsoft/napajs/wiki/build-'napajs'-from-source).*
 
 ## Quick Start
 ```js
