@@ -1,4 +1,4 @@
-# Napa.js Modules
+# Napa.js Module
 
 ## Table of Contents
 - [Introduction](#intro)
