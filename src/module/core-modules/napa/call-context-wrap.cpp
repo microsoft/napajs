@@ -129,7 +129,8 @@ void CallContextWrap::GetTransportContextCallback(v8::Local<v8::String> /*proper
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<CallContextWrap>(args.Holder());
 
     auto& transportContext = thisObject->GetRef().GetTransportContext();
-    auto wrap = TransportContextWrapImpl::NewInstance(&transportContext);
+    // Create a non-owning transport context wrap, since transport context is always owned by call context. 
+    auto wrap = TransportContextWrapImpl::NewInstance(false, &transportContext);
     args.GetReturnValue().Set(wrap);
 }
 
@@ -139,7 +140,7 @@ void CallContextWrap::GetOptionsCallback(v8::Local<v8::String> /*propertyName*/,
     
     // Prepare execute options.
     // NOTE: export necessary fields from CallContext.GetOptions to jsOptions object here. Now it's empty.
-    auto jsOptions = v8::ObjectTemplate::New(isolate)->NewInstance();
+    auto jsOptions = v8::Object::New(isolate);
 
     args.GetReturnValue().Set(jsOptions);
 }
