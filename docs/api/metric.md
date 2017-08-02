@@ -1,23 +1,23 @@
 # namespace `metric`
 
 ## Table of Contents
-- [Metric basics](#metric-basics)
-- [C++ API](#c-api)
-    - interface [`Metric`](#interface-metric)
-    - interface [`MetricProvider`](#interface-metric-provider)
-    - function [`MetricProvider& GetMetricProvider()`](#metricprovider-getmetricprovider)
-- [JavaScript API](#javascript-api)(#javascript-api)
+- [Introduction](#intro)
+- [C++ API](#cpp-api)
+    - interface [`Metric`](#cpp-metric)
+    - interface [`MetricProvider`](#cpp-metricprovider)
+    - function [`MetricProvider& GetMetricProvider()`](#cpp-getmetricprovider)
+- [JavaScript API](#js-api)
     - enum [`MetricType`](#metrictype)
-    - class [`Metric`](#class-metric)
-        - [`set(value: number, dimensions?: string[]): void`](#set-value-number-dimensions-string)
-        - [`increment(dimensions?: string[]): void`]();
-        - [`decrement(dimensions?: string[]): void`]();
-    - function [`get(section: string, name: string, type: MetricType, dimensionNames: string[])`]()
+    - class [`Metric`](#metric)
+        - [`set(value: number, dimensions?: string[]): void`](#metric-set)
+        - [`increment(dimensions?: string[]): void`](#metric-increment);
+        - [`decrement(dimensions?: string[]): void`](#metric-decrement);
+    - function [`get(section: string, name: string, type: MetricType, dimensionNames: string[])`](#get)
 
-- [Using custom metric providers](#using-custom-metric-providers)
-- [Developing custom metric providers](#developing-custom-metric-providers)
+- [Using custom metric providers](#use-custom-providers)
+- [Developing custom metric providers](#develop-custom-providers)
 
-## Metric basics
+## <a name="intro"></a> Introduction
 Similar as logging, metric a basic requirement for creating monitorable services. `napajs` metric API enables developers to use their own metric system in both JavaScript and C++ (addon) world.
 
 A metric may contain following information:
@@ -29,8 +29,8 @@ A metric may contain following information:
     - Percentile: A absolute number that needs to be sampled by percentiles, e.g: SuccessLatency.
 - (Required) Dimensions: A metric can have multiple dimensions, each dimension can bind with a string value at runtime. e.g: IncomingRequestRate can have 2 dimensions: ['client-id', 'request-type'].
 
-## C++ API
-### Interface Metric
+## <a name="cpp-api"></a> C++ API
+### <a name="cpp-metric"></a> Interface Metric
 ```cpp
  /// <summary> Enumeration of metric type. </summary>
     enum class MetricType {
@@ -95,7 +95,7 @@ A metric may contain following information:
         virtual ~Metric() = default;
     };
 ```
-### Interface MetricProvider
+### <a name="cpp-metricprovider"></a> Interface MetricProvider
 ```cpp
 
     /// <summary> Interface for a generic metric provider. </summary>
@@ -139,47 +139,79 @@ A metric may contain following information:
         virtual ~MetricProvider() = default;
     };
 ```
-### function `MetricProvider& GetMetricProvider()`
+### <a name="cpp-getmetricprovider"></a> function `MetricProvider& GetMetricProvider()`
 ```cpp
 /// <summary> Exports a getter function for retrieves the configured metric provider. </summary>
 NAPA_API MetricProvider& GetMetricProvider();
 ```
-## JavaScript API
+## <a name="js-api"></a> JavaScript API
+
+### <a name="metrictype"></a> enum `MetricType`
 ```ts
 export enum MetricType {
     Number = 0,
     Rate,
     Percentile,
 }
-
-export interface Metric {
-    section: string;
-    name: string;
-
-    set(value: number, dimensions?: string[]): void;
-    increment(dimensions?: string[]): void;
-    decrement(dimensions?: string[]): void;
-}
-
-export function get(
-    section: string, 
-    name: string, 
-    type: MetricType, 
-    dimensions: string[] = []) : Metric;
 ```
+### <a name="metric"></a> Interface `Metric`
+
+Interface to manipulate metrics.
+
+### <a name="metric-set"></a> `set(value: number, dimensions?: string[]): void`
+
+Set absolute value of this metric on an instance constrained by dimension values.
+Example:
+```js
+// Create a percentile metric to measure end-to-end latency, with 1 dimension of client-id.
+latency = napa.metric.get(
+    'app1',
+    'end-to-end-latency',
+    napa.metric.MetricType.Percentile, 
+    ['client-id']);
+
+// Set end-to-end latency of current request to 100, with client-id 'client1'.
+latency.set(100, ['client1']);
+```
+
+#### <a name="metric-increment"></a> `increment(dimensions?: string[]): void`
+
+Increment the value of this metric on an instance constrained by dimension values.
+
+Example:
+```js
+// Create a percentile metric to measure end-to-end latency, with 1 dimension of client-id.
+latency = napa.metric.get(
+    'app1',
+    'qps',
+    napa.metric.MetricType.Rate, 
+    ['client-id']);
+
+// Increment QPS of client-id 'client1'.
+latency.increment(['client1']);
+```
+#### <a name="metric-decrement"></a> `decrement(dimensions?: string[]): void`
+Decrement the value of this metric on an instance constrained by dimension values.
+
+### <a name="get"></a> function `get(section: string, name: string, type: MetricType, dimensions: string[] = []): Metric`
+Allocate a metric with specified section, name, type and dimensions. If a metric already exists with given parameters, returns the existing one.
 
 Example:
 ```ts
 import * as napa from 'napajs';
-let metric = napa.metric.get('app1', 'counter1', napa.metric.MetricType.Number, []);
+let metric = napa.metric.get(
+    'app1', 
+    'counter1', 
+    napa.metric.MetricType.Number, 
+    []);
 metric.increment([]);
 ```
-## Using custom metric providers
+## <a name="use-custom-providers"></a> Using custom metric providers
 Developers can hook up custom metric provider by calling the following before creation of any zones:
 ```ts
 napa.runtime.setPlatformSettings({
     "metricProvider": "<custom-metric-provider-module-name>"
 }
 ```
-## Developing custom metric providers
+## <a name="develop-custom-providers"></a> Developing custom metric providers
 TBD

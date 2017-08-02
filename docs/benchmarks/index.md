@@ -1,3 +1,0 @@
-# Napa.JS Benchmarks
-
-TODO:

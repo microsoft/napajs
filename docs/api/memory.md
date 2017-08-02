@@ -1,58 +1,55 @@
 # namespace `memory`
 
 ## Table of Contents
-- type [`Handle`](#type-handle)
-- class [`Buffer`](#class-buffer)
-- interface [`Shareable`](#interface-shareable)
-- interface [`Allocator`](#interface allocator)
-    - [`allocator.allocate(size: number): Handle`](#allocator-allocate-size-number-handle)
-    - [`allocator.deallocate(handle: Handle, sizeHint: number): void`](#allocator-deallocate-handle-handle-sizehint-number-void)
-    - [`allocator.type: string`](#allocator-type-string)
-- interface [`AllocatorDebugger`](#interface-allocatordebugger)
-    - [`allocatorDebugger.debugInfo: string`](#allocatordebugger-debugInfo-string)
-- function [`debugAllocator(allocator: Allocator): AllocatorDebugger`](#debugallocator-allocator-allocator-allocatordebugger)
-- object [`crtAllocator`](#object-crtallocator)
-- object [`defaultAllocator`](#object-defaultallocator)
-- [Memory allocation in C++ addon](#memory-allocation-in-c-addon)
+- [API](#api)
+    - type [`Handle`](#handle)
+    - interface [`Shareable`](#shareable)
+    - interface [`Allocator`](#allocator)
+        - [`allocator.allocate(size: number): Handle`](#allocator-allocate)
+        - [`allocator.deallocate(handle: Handle, sizeHint: number): void`](#allocator-deallocate)
+        - [`allocator.type: string`](#allocator-type)
+    - interface [`AllocatorDebugger`](#allocatordebugger)
+        - [`allocatorDebugger.getDebugInfo(): string`](#allocatordebugger-getdebuginfo)
+    - function [`debugAllocator(allocator: Allocator): AllocatorDebugger`](#debugallocator)
+    - object [`crtAllocator`](#crtallocator)
+    - object [`defaultAllocator`](#defaultallocator)
+    - [Memory allocation in C++ addon](#memory-allocation-in-cpp-addon)
 
-## APIs
-## Type `Handle`
+## <a name="api"></a> API
+## <a name="handle"></a> Type `Handle`
 Handle is defined in TypeScript as below:
 ```ts
 type Handle = [number, number]
 ``` 
 It is a standard way to represent a 64-bit pointer in Napa.
 
-## Class `Buffer`
-TBD
-
-## Interface `Shareable`
+## <a name="shareable"></a> Interface `Shareable`
 Interface for native object wrap that can be shared across multiple JavaScript threads.
 
-## Interface `Allocator`
+## <a name="allocator"></a> Interface `Allocator`
 Interface for memory allocator that allocates memory for native objects. 
 
-### allocator.allocate(size: number): Handle
+### <a name="allocator-allocate"></a> allocator.allocate(size: number): Handle
 It allocates memory of requested size.
 
-```ts
-let handle = allocator.allocate(10);
+```js
+var handle = allocator.allocate(10);
 ```
-### allocator.deallocate(handle: Handle, sizeHint: number): void
+### <a name="allocator-deallocate"></a> allocator.deallocate(handle: Handle, sizeHint: number): void
 It deallocates memory from a input handle, with a size hint which is helpful for some C++ allocator implementations for deallocating memory.
-```ts
+```js
 allocator.deallocate(handle, 10);
 ```
-### allocator.type: string
+### <a name="allocator-type"></a> allocator.type: string
 It gets a string type identifier for the allocator, which will be useful during debugging purpose.
 
-## Interface `AllocatorDebugger`
+## <a name="allocatordebugger"></a> Interface `AllocatorDebugger`
 `AllocatorDebugger` extends interface `Allocator`, with a readonly property `debugInfo` to expose debug information. Basically an allocator debugger will use a pass-in allocator for memory allocation, meanwhile intercepting it to keep track of allocation count and size. 
 
-### allocatorDebugger.debugInfo: string
+### <a name="allocatordebugger-getdebuginfo"></a> allocatorDebugger.getDebugInfo(): string
 It gets the debug information for allocation.
 
-## debugAllocator(allocator: Allocator): AllocatorDebugger
+## <a name="debugallocator"></a> debugAllocator(allocator: Allocator): AllocatorDebugger
 It returns a simple allocator debugger, which returns debug information like below:
 ```json
 {
@@ -62,13 +59,13 @@ It returns a simple allocator debugger, which returns debug information like bel
     "deallocateSize": 912
 }
 ```
-## Object `crtAllocator`
+## <a name="crtallocator"></a> Object `crtAllocator`
 It returns a C-runtime allocator from napa.dll. Its corresponding C++ part is `napa::memory::GetCrtAllocator()`.
 
-## Object `defaultAllocator`
+## <a name="defaultallocator"></a> Object `defaultAllocator`
 It returns the default allocator from napa.dll. Its corresponding C++ part is `napa::memory::GetDefaultAllocator()`. Users can set default allocation/deallocation callback in `napa_allocator_set` API.
 
-## Memory allocation in C++ addon
+## <a name="memory-allocation-in-cpp-addon"></a> Memory allocation in C++ addon
 Memory allocation in C++ addon is tricky. A common pitfall is to allocate memory in one dll, but deallocate in another. This can cause issue if C-runtime in these 2 dlls are not compiled the same way. 
 
 There are also advanced scenarios that user want to customize memory allocation. Napa provides APIs for customizing memory allocator as well.
