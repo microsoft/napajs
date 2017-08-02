@@ -42,9 +42,9 @@ zone1.execute(
     });
 ```
 More examples:
-* [Estimate PI in parallel]()
-* [Recursive Fibonacci]()
-* [Max sub-matrix of 1s in parallel]()
+* [Estimate PI in parallel](./examples/tutorial/estimate-pi-in-parallel)
+* [Recursive Fibonacci with multiple JavaScript threads](./examples/tutorial/recursive-fibonacci)
+* [Max sub-matrix of 1s with layered parallelism](./examples/tutorial/max-square-sub-matrix)
 
 ## Features
 - Multi-threaded JavaScript runtime
@@ -55,6 +55,7 @@ More examples:
 
 ## Documentation
 - [Napa.js Home](https://github.com/Microsoft/napajs/wiki)
+- [API Reference](./docs/api/index.md)
 
 # Contribute
 You can contribute to Napa.js in following ways:
