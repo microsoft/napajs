@@ -2,9 +2,9 @@
 
 ## Table of Contents
 - [Introduction](#intro)
-- [Developing Modules](#develop-modules)
+- [Developing modules](#develop-modules)
   - [Module: JavaScript vs C++](#js-vs-cpp)
-- [Quick Reference](#quick-ref)
+- [Quick reference](#quick-ref)
   - [JavaScript module](#ref-js-module)
   - [C++ module](#ref-cpp-module)
 - [API](#api)
@@ -13,7 +13,7 @@
     - [Exporting JavaScript class from C++ modules](#export-class)
     - [V8 helpers](#v8helpers)
     - [Using STL with custom allocators](#stl-with-allocator)
-- [Special Topics](#topics)
+- [Special topics](#topics)
   - [Topic #1: Make objects shareable across multiple JavaScript threads](#topic-shareable-objects)
   - [Topic #2: Asynchronous functions](#topic-async-functions)
   - [Topic #3: Memory management in C++ modules](#topic-memory-management)
@@ -33,7 +33,7 @@ But there are also differences:
 4) Napa.js supports embed mode. C++ modules need separate compilation between Node mode and embed mode.
 
 
-## <a name="develop-modules"></a> Developing Modules
+## <a name="develop-modules"></a> Developing modules
 ### <a name="js-vs-cpp"></a> Module: JavaScript vs. C++
 A quick glance at NPM will reveal that most modules are pure JavaScript. These are only a few reasons that you may want to create a C++ module.
 - You want to expose JavaScript API for existing C/C++ functionalities.
