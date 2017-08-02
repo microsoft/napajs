@@ -1,17 +1,19 @@
 # Max square sub matrix
-This example demonstrates data communication across workers by using napa store.
+This example implements an algorithm to solve [Max square sub-matrix of all 1s](http://www.geeksforgeeks.org/maximum-size-sub-matrix-with-all-1s-in-a-binary-matrix/) using dynamic programming. It demonstrates parallelism among multiple JavaScript threads via [zone](https://github.com/Microsoft/napajs/wiki/introduction#zone) and cross-thread data sharing via [store](https://github.com/Microsoft/napajs/wiki/introduction#cross-worker-storage).
 
-In a dynamic programming implementation of this example, all nodes to be evaluated were divided into 2 * size of the square matrix + 1 layers. The nodes in next layer are evaluated based the results of the nodes in the previous nodes. Different layers are evaluated in sequence by napa zone. Results from previous layers were cached and shared across isolates via a store, which are accessed later to evaluate of the nodes in the next layer. There are no dependencies between evaluation of the nodes in the same layer, so evaluation of the nodes in the same layer are performed asynchronously and concurrently by workers of napa zone.
+In this implementation, all units to be evaluated were divided into 2 * size of the square matrix + 1 layers. Units in next layer were evaluated based on results of units from previous layers. Different layers are evaluated in sequence, while units within the same layer are evaluated in parallel for there is no dependency between units in the same layer. Results from previous layers were communicated by a store. 
+
+Please note that this example is to demostrate the programming paradigm, while itself is NOT performance efficient, since each worker does too little CPU operation and major overhead is on communication.
 
 ## How to run
-1. go to directory of "examples/tutorial/max-square-sub-matrix"
-2. run "npm install" to install napajs
-3. run "node max-square-sub-matrix.js"
+1. Go to directory of "examples/tutorial/max-square-sub-matrix"
+2. Run "npm install" to install napajs
+3. Run "node max-square-sub-matrix.js"
 
-This example uses the js syntax of 'async / await', so we recommend to use the newest version of node.js (newer than v7.6.0) to run it.
+\**Note: This example uses 'async / await', so Node version that supports ES6 is required. (newer than v7.6.0).
 
 ## Program output
-The below output shows the result of the implementation. By a napa zone with 4 workers, it took 15 ms to find out the max square sub matrix with all 1s for the given 6 * 6 square binary matrix.
+The output below shows the result of the implementation. By a napa zone with 4 workers, it took 15 ms to find out the max square sub matrix with all 1s for the given 6 * 6 square binary matrix.
 ```
         [ [ 0, 1, 1, 0, 1, 1 ],
           [ 1, 1, 0, 1, 0, 1 ],
