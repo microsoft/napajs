@@ -4,6 +4,6 @@
     "author": "napajs",
     "main": "./estimate-pi-in-parallel.js",
     "dependencies": {
-        "napajs": ">= 0.4.18"
+        "napajs": ">= 0.1.0"
     }
 }
