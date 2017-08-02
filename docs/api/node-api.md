@@ -1,6 +1,6 @@
-# Node.JS Compatibility
+# Node.js Compatibility
 
-Napa doesn't support full compatibility with node.js and necessary core modules will be added incrementally. Here are the list of what Napa currently supports. Please, refer to https://nodejs.org/api/all.html for details.
+Napa.js doesn't support full compatibility with node.js and necessary core modules will be added incrementally. Here are the list of what Napa.js currently supports. Please refer to https://nodejs.org/api/all.html for details.
 
 ## Assert
 
