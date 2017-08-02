@@ -15,7 +15,7 @@
         - [`store.size: number`](#store-size)
 
 ## <a name="intro"></a> Introduction
-Store API is introduced as a necessary complement of sharing [transportable](transport.md#transportable-types) objects across JavaScript threads, on top of passing objects via arguments. During [`store.set`](#store-set), values marshalled into JSON and stored in process heap, so all threads can access it, and unmarshalled while users retrieve them via [`store.get`](#store-get).
+Store API is a necessary complement of sharing [transportable](transport.md#transportable-types) objects across JavaScript threads, on top of passing objects via arguments. During [`store.set`](#store-set), values marshalled into JSON and stored in process heap, so all threads can access it, and unmarshalled while users retrieve them via [`store.get`](#store-get).
 
 Though very convenient, it's not recommended to use store to pass values within a transaction or request, since its overhead is more than passing objects by arguments (there are extra locking, etc.). Besides, developers have the obligation to delete the key after usage, while it's automatically managed by reference counting in passing arguments.
 
