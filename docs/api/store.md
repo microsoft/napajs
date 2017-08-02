@@ -1,4 +1,4 @@
-# namespace `store`
+# Namespace `store`
 
 ## Table of Contents
 - [Introduction](#intro)
