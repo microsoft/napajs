@@ -43,13 +43,6 @@ A quick glance at NPM will reveal that most modules are pure JavaScript. These a
 | Share C++ object across isolates                             |      X     |      X        |                |  allocator-wrap [[.h](../../src/module/core-modules/napa/allocator-wrap.h) [.cpp](../../src/module/core-modules/napa/allocator-wrap.cpp)]            |
 | Export asynchronous JavaScript function                      |      X     |               |      X         |  async-number [[.md](../../examples/modules/async-number/README.md) [.cpp](../../examples/modules/async-number/node/addon.cpp) [test](../../examples/modules/async-number/test/test.ts)]            |
 
-## Special topics
-### Topic #1: Make objects shareable across multiple JavaScript threads
-
-### Topic #2: Asynchronous functions
-
-### Topic #3: Memory management in C++ modules
-
 ## API
 ### JavaScript
 See [API reference](./index.md).
@@ -60,4 +53,14 @@ TBD
 #### V8 helpers
 TBD
 #### Using STL with Napa allocators
+TBD
+
+## Special topics
+### Topic #1: Make objects shareable across multiple JavaScript threads
+TBD
+
+### Topic #2: Asynchronous functions
+TBD
+
+### Topic #3: Memory management in C++ modules
 TBD
