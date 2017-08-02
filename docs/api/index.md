@@ -2,11 +2,11 @@
 
 ## Core modules
 - namespace [`zone`](./zone.md): Multi-thread JavaScript runtime
-- namespace [`transport`](./transport.md): Passing objects across JavaScript threads
-- namespace [`store`](./store.md): Sharing objects across JavaScript threads
-- namespace [`memory`](./memory.md): Handling native objects and memories
-- namespace [`metric`](./metric.md): API for pluggable metrics.
-- function [`log`](./log.md): API for pluggable logging.
+- namespace [`transport`](./transport.md): Passing JavaScript values across threads
+- namespace [`store`](./store.md): Sharing JavaScript values across threads
+- namespace [`memory`](./memory.md): Handling native objects and memory
+- namespace [`metric`](./metric.md): Pluggable metrics.
+- function [`log`](./log.md): Pluggable logging.
 
 ## Node compatibility
 - [List of supported Node APIs](./node-api.md)
