@@ -153,9 +153,9 @@ export enum MetricType {
     Percentile,
 }
 ```
-### <a name="metric"></a> Interface `Metric`
+### <a name="metric"></a> Class `Metric`
 
-Interface to manipulate metrics.
+Class to manipulate metrics in JavaScript.
 
 ### <a name="metric-set"></a> `set(value: number, dimensions?: string[]): void`
 
