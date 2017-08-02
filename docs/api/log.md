@@ -1,4 +1,4 @@
-# function `log`
+# Function `log`
 
 ## Table of Contents
 - [Introduction](#intro)
