@@ -13,21 +13,20 @@
         - [`increment(dimensions?: string[]): void`](#metric-increment);
         - [`decrement(dimensions?: string[]): void`](#metric-decrement);
     - function [`get(section: string, name: string, type: MetricType, dimensionNames: string[])`](#get)
-
 - [Using custom metric providers](#use-custom-providers)
 - [Developing custom metric providers](#develop-custom-providers)
 
 ## <a name="intro"></a> Introduction
-Similar as logging, metric a basic requirement for creating monitorable services. `napajs` metric API enables developers to use their own metric system in both JavaScript and C++ (addon) world.
+Similar as logging, metric is a basic requirement for creating monitorable services. Metric API enables developers to use their own metric system in both JavaScript and C++ (addon) world.
 
-A metric may contain following information:
-- (Required) Section: The group or category of the metric.
-- (Required) Name: Name of the metric. Section/Name combination should be unique in the system.
-- (Required) Metric type: Type of the metric, which can be
-    - Number: A absolute number, e.g: PrivateBytes.
-    - Rate: A flowing volume in number, e.g: QueryPerSecond.
-    - Percentile: A absolute number that needs to be sampled by percentiles, e.g: SuccessLatency.
-- (Required) Dimensions: A metric can have multiple dimensions, each dimension can bind with a string value at runtime. e.g: IncomingRequestRate can have 2 dimensions: ['client-id', 'request-type'].
+A metric has its identity containing following information:
+- **Section**: The group or category of the metric.
+- **Name**: Name of the metric. Section/Name combination should be unique in the system.
+- **Type**: Type of the metric, which can be
+    - *Number*: A absolute number, e.g: PrivateBytes.
+    - *Rate*: A flowing volume in number, e.g: QueryPerSecond.
+    - *Percentile*: A absolute number that needs to be sampled by percentiles, e.g: SuccessLatency.
+- **Dimensions**: A metric can have multiple dimensions, each dimension can bind with a string value at runtime. e.g: IncomingRequestRate can have 2 dimensions: ['client-id', 'request-type'].
 
 ## <a name="cpp-api"></a> C++ API
 ### <a name="cpp-metric"></a> Interface Metric
@@ -160,7 +159,7 @@ Interface to manipulate metrics.
 
 ### <a name="metric-set"></a> `set(value: number, dimensions?: string[]): void`
 
-Set absolute value of this metric on an instance constrained by dimension values.
+Set absolute value on an instance of the metric constrained by dimension values.
 Example:
 ```js
 // Create a percentile metric to measure end-to-end latency, with 1 dimension of client-id.
@@ -176,7 +175,7 @@ latency.set(100, ['client1']);
 
 #### <a name="metric-increment"></a> `increment(dimensions?: string[]): void`
 
-Increment the value of this metric on an instance constrained by dimension values.
+Increment the value of an instance of the metric constrained by dimension values.
 
 Example:
 ```js
@@ -191,10 +190,10 @@ latency = napa.metric.get(
 latency.increment(['client1']);
 ```
 #### <a name="metric-decrement"></a> `decrement(dimensions?: string[]): void`
-Decrement the value of this metric on an instance constrained by dimension values.
+Decrement the value of an instance of the metric constrained by dimension values.
 
 ### <a name="get"></a> function `get(section: string, name: string, type: MetricType, dimensions: string[] = []): Metric`
-Allocate a metric with specified section, name, type and dimensions. If a metric already exists with given parameters, returns the existing one.
+Create a metric with an identity consisting of section, name, type and dimensions. If a metric already exists with given parameters, returns existing one.
 
 Example:
 ```ts
