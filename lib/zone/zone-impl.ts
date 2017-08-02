@@ -78,7 +78,7 @@ export class ZoneImpl implements zone.Zone {
                 if (result.code === 0) {
                     resolve(new ExecuteResult(
                         result.returnValue,
-                        transport.createTransportContext(result.contextHandle)));
+                        transport.createTransportContext(true, result.contextHandle)));
                 } else {
                     reject(result.errorMessage);
                 }
@@ -136,7 +136,8 @@ export class ZoneImpl implements zone.Zone {
             options = arg4;
         }
 
-        let transportContext: transport.TransportContext = transport.createTransportContext();
+        // Create a non-owning transport context which will be passed to execute call.
+        let transportContext: transport.TransportContext = transport.createTransportContext(false);
         return {
             module: moduleName,
             function: functionName,
