@@ -7,7 +7,7 @@
     - [`log(message: string): void`](#log)
     - [`log(section: string, message: string): void`](#log-with-section)
     - [`log(section: string, traceId: string, message: string): void`](#log-with-traceid)
-    - [`log.err(...)`](#log-error)
+    - [`log.err(...)`](#log-err)
     - [`log.warn(...)`](#log-warn)
     - [`log.info(...)`](#log-info)
     - [`log.debug(...)`](#log-debug)
@@ -18,14 +18,14 @@
 Logging is a basic requirement for building services. `napajs` logging API enables developers to integrate their own logging capabilities in both JavaScript and C++ (addon) world.
 
 A log row may contain following information:
-- (Optional) Section: Useful as filter to treat different rows of logs. The treatment is defined by logging providers.
+- (Optional) Section: Useful field to filter log rows. Treatment is defined by logging providers.
 - (Optional) Trace ID: Useful field to join logs in the same transaction or request.
 - (Required) Message: Log message.
 - (Required) Logging level: 
     - Error: for application error.
     - Warn: for warining information.
-    - Info: usually used for notifying service state change 
-    - Debug: for debugging purpose
+    - Info: for notification. 
+    - Debug: for debugging purpose.
 
 ## <a name="cpp-api"></a> C++ API
 Include header: `<napa.h>`
@@ -53,7 +53,8 @@ void MyFunction() {
 
 ### <a name="log"></a> log(message: string): void
 It logs a message. Using info level. 
-*Functions `log` are shortcuts for `log.info`.
+
+*`log` is a shortcut for `log.info`.*
 
 Example:
 ```js
@@ -63,6 +64,7 @@ napa.log('program started');
 
 ### <a name="log-with-section"></a> log(section: string, message: string): void
 It logs a message with a section. Using info level. 
+
 Example:
 ```js
 napa.log('init', 'program started');
@@ -76,13 +78,13 @@ Example:
 napa.log('request', 'A1B2C3D4', 'request received');
 ```
 ### <a name="log-err"></a> log.err(...)
-It logs an error message. Three combinations of arguments are the same with `log`.
+It logs an error message. Three variation of arguments are the same with `log`.
 
 ### <a name="log-warn"></a> log.warn(...)
-It logs a warning message. Three combinations of arguments are the same with `log`.
+It logs a warning message. Three variation of arguments are the same with `log`.
 
 ### <a name="log-info"></a>log.info(...)
-It logs an info message. Three combinations of arguments are the same with `log`.
+It logs an info message. Three variation of arguments are the same with `log`.
 
 ### <a name="log-debug"></a> log.debug(...)
 It logs a debug message. Three combinations of arguments are the same with `log`.
