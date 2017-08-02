@@ -2,9 +2,9 @@
 
 ## Table of Contents
 - [Introduction](#intro)
-    - [Multiple Workers vs Multiple Zones](#worker-vs-zone)
-    - [Zone Types](#zone-types)
-    - [Zone Operations](#zone-operations)
+    - [Multiple workers vs Multiple zones](#worker-vs-zone)
+    - [Zone types](#zone-types)
+    - [Zone operations](#zone-operations)
 - [API](#api)
     - [`create(id: string, settings: ZoneSettings = DEFAULT_SETTINGS): Zone`](#create)
     - [`get(id: string): Zone`](#get)
@@ -29,17 +29,17 @@
 ## <a name="intro"></a> Introduction
 Zone is a key concept of napajs that exposes multi-thread capabilities in JavaScript world. 
 
-### <a name="worker-vs-zone"></a> Multiple Workers vs Multiple Zones
+### <a name="worker-vs-zone"></a> Multiple workers vs. Multiple zones
 Zone consists of one or multiple JavaScript threads, we name each thread `worker`. Workers within a zone are symetric, which means execute on any worker from the zone should return the same result, and the internal state of every worker should be the same from long running point of view. 
  
 Multiple zones can co-exist in the same process, with each loading different code, bearing different states or applying different policies, like heap size, etc. The purpose of having multiple zone is to allow multiple roles of a complex work, each role loads the minimum resource for its own usage.
  
-### <a name="zone-types"></a> Zone Types
+### <a name="zone-types"></a> Zone types
 There are two types of zone:
 - **Napa zone** - zone consists of Napa.js managed JavaScript workers (V8 isolates). Can be multiple, each may contain multiple workers. Workers in Napa zone support partial Node.JS APIs.
 - **Node zone** - a 'virtual' zone which exposes Node.js eventloop, has access to full Node.js capabilities.
 
-### <a name="zone-operations"><a> Zone Operations 
+### <a name="zone-operations"><a> Zone operations 
 There are two operations, designed to reinforce the symetricity of workers within a zone:
  1) **Broadcast** - run code that changes worker state on all workers, returning a promise for pending operation. Through the promise, we can only know if operation succeed or failed. Usually we use `broadcast` to bootstrap application, pre-cache objects, or change application settings.
  2) **Execute** - run code that doesn't change worker state on an abitrary worker, returning a promise of getting the result. Execute is designed for doing the real work.
