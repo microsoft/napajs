@@ -44,10 +44,10 @@ allocator.deallocate(handle, 10);
 It gets a string type identifier for the allocator, which will be useful during debugging purpose.
 
 ## <a name="allocatordebugger"></a> Interface `AllocatorDebugger`
-`AllocatorDebugger` extends interface `Allocator`, with a readonly property `debugInfo` to expose debug information. Basically an allocator debugger will use a pass-in allocator for memory allocation, meanwhile intercepting it to keep track of allocation count and size. 
+`AllocatorDebugger` extends interface `Allocator`, with a member function `getDebugInfo` to expose debug information. Basically an allocator debugger will use a pass-in allocator for memory allocation, meanwhile intercepting it to keep track of allocation count and size. 
 
 ### <a name="allocatordebugger-getdebuginfo"></a> allocatorDebugger.getDebugInfo(): string
-It gets the debug information for allocation.
+It gets the debug information for allocation. Implementations of interface `AllocatorDebugger` can have different schema on debug info.
 
 ## <a name="debugallocator"></a> debugAllocator(allocator: Allocator): AllocatorDebugger
 It returns a simple allocator debugger, which returns debug information like below:
@@ -60,15 +60,17 @@ It returns a simple allocator debugger, which returns debug information like bel
 }
 ```
 ## <a name="crtallocator"></a> Object `crtAllocator`
-It returns a C-runtime allocator from napa.dll. Its corresponding C++ part is `napa::memory::GetCrtAllocator()`.
+It returns a C-runtime allocator from Napa.js shared library. Its corresponding C++ part is `napa::memory::GetCrtAllocator()`.
 
 ## <a name="defaultallocator"></a> Object `defaultAllocator`
-It returns the default allocator from napa.dll. Its corresponding C++ part is `napa::memory::GetDefaultAllocator()`. Users can set default allocation/deallocation callback in `napa_allocator_set` API.
+It returns the default allocator from Napa.js shared library. Its corresponding C++ part is `napa::memory::GetDefaultAllocator()`. 
+
+Users can set default allocation/deallocation callback in `napa_allocator_set` API.
 
 ## <a name="memory-allocation-in-cpp-addon"></a> Memory allocation in C++ addon
 Memory allocation in C++ addon is tricky. A common pitfall is to allocate memory in one dll, but deallocate in another. This can cause issue if C-runtime in these 2 dlls are not compiled the same way. 
 
-There are also advanced scenarios that user want to customize memory allocation. Napa provides APIs for customizing memory allocator as well.
+There are also advanced scenarios that user want to customize memory allocation. Napa.js provides APIs for customizing memory allocator as well.
 
 ### Recommended way of allocate memory.
 TBD
