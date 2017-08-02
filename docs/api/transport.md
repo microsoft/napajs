@@ -1,7 +1,7 @@
 # namespace `transport`
 
 ## Table of Contents
-- [Transporting JavaScript values](#transporting-javascript-values)
+- [Introduction](#intro)
     - [Transportable types](#transportable-types)
     - [Constructor ID](#constructor-id)
     - [Transport context](#transport-context)
@@ -26,7 +26,7 @@
         - abstract [`transportableObject.load(payload: object, context: TransportContext): void`](#transportableobject-load)
     - decorator [`cid`](#decorator-cid)
 
-## <a name="transporting-javascript-values"></a> Transporting JavaScript values
+## <a name="intro"></a> Introduction
 Existing JavaScript engines are not designed for running JavaScript across multiple VMs, which means every VM manages their own heap. Passing values from one VM to another has to be marshalled/unmarshalled. The size of payload and complexity of object will greatly impact communication efficiency. In Napa, we try to work out a design pattern for efficient object sharing, based on the fact that all JavaScript VMs (exposed as workers) reside in the same process, and native objects can be wrapped and exposed as JavaScripts objects.
 
 Following concepts are introduced to implement this pattern:
