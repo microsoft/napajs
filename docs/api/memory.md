@@ -1,4 +1,4 @@
-# namespace `memory`
+# Namespace `memory`
 
 ## Table of Contents
 - [API](#api)
