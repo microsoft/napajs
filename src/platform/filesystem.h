@@ -69,8 +69,8 @@ namespace filesystem {
         const CharType* c_str() const;
 
         /// <summary> 
-        ///	    Append a path to current path
-        ///	    Or return the path if it's absolute.
+        ///     Append a path to current path
+        ///     Or return the path if it's absolute.
         /// </summary>
         Path& Append(const Path& path);
 
