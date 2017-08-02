@@ -2,17 +2,17 @@
 
 ## Table of Contents
 - [API](#api)
-    - type [`Handle`](#handle)
-    - interface [`Shareable`](#shareable)
-    - interface [`Allocator`](#allocator)
+    - Type [`Handle`](#handle)
+    - Interface [`Shareable`](#shareable)
+    - Interface [`Allocator`](#allocator)
         - [`allocator.allocate(size: number): Handle`](#allocator-allocate)
         - [`allocator.deallocate(handle: Handle, sizeHint: number): void`](#allocator-deallocate)
         - [`allocator.type: string`](#allocator-type)
-    - interface [`AllocatorDebugger`](#allocatordebugger)
+    - Interface [`AllocatorDebugger`](#allocatordebugger)
         - [`allocatorDebugger.getDebugInfo(): string`](#allocatordebugger-getdebuginfo)
-    - function [`debugAllocator(allocator: Allocator): AllocatorDebugger`](#debugallocator)
-    - object [`crtAllocator`](#crtallocator)
-    - object [`defaultAllocator`](#defaultallocator)
+    - Function [`debugAllocator(allocator: Allocator): AllocatorDebugger`](#debugallocator)
+    - Object [`crtAllocator`](#crtallocator)
+    - Object [`defaultAllocator`](#defaultallocator)
     - [Memory allocation in C++ addon](#memory-allocation-in-cpp-addon)
 
 ## <a name="api"></a> API
