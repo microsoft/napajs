@@ -30,9 +30,9 @@ public:
         std::lock_guard<std::mutex> lock(_storeAccess);
         auto it = _valueMap.find(key);
         if (it != _valueMap.end()) {
-            it->second = value;
+            it->second = std::move(value);
         } else {
-            _valueMap.emplace(std::string(key), value);
+            _valueMap.emplace(std::string(key), std::move(value));
         }
     }
 
