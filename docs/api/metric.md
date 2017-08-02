@@ -3,16 +3,16 @@
 ## Table of Contents
 - [Introduction](#intro)
 - [C++ API](#cpp-api)
-    - interface [`Metric`](#cpp-metric)
-    - interface [`MetricProvider`](#cpp-metricprovider)
-    - function [`MetricProvider& GetMetricProvider()`](#cpp-getmetricprovider)
+    - Interface [`Metric`](#cpp-metric)
+    - Interface [`MetricProvider`](#cpp-metricprovider)
+    - Function [`MetricProvider& GetMetricProvider()`](#cpp-getmetricprovider)
 - [JavaScript API](#js-api)
-    - enum [`MetricType`](#metrictype)
-    - class [`Metric`](#metric)
+    - Enum [`MetricType`](#metrictype)
+    - Class [`Metric`](#metric)
         - [`set(value: number, dimensions?: string[]): void`](#metric-set)
         - [`increment(dimensions?: string[]): void`](#metric-increment);
         - [`decrement(dimensions?: string[]): void`](#metric-decrement);
-    - function [`get(section: string, name: string, type: MetricType, dimensionNames: string[])`](#get)
+    - Function [`get(section: string, name: string, type: MetricType, dimensionNames: string[])`](#get)
 - [Using custom metric providers](#use-custom-providers)
 - [Developing custom metric providers](#develop-custom-providers)
 
@@ -27,6 +27,8 @@ A metric has its identity containing following information:
     - *Rate*: A flowing volume in number, e.g: QueryPerSecond.
     - *Percentile*: A absolute number that needs to be sampled by percentiles, e.g: SuccessLatency.
 - **Dimensions**: A metric can have multiple dimensions, each dimension can bind with a string value at runtime. e.g: IncomingRequestRate can have 2 dimensions: ['client-id', 'request-type'].
+
+Metrics are process-wise objects, which can be used across [zones](./zone.md#intro).
 
 ## <a name="cpp-api"></a> C++ API
 ### <a name="cpp-metric"></a> Interface Metric
