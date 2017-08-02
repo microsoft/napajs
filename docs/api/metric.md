@@ -1,4 +1,4 @@
-# namespace `metric`
+# Namespace `metric`
 
 ## Table of Contents
 - [Introduction](#intro)
