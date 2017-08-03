@@ -8,6 +8,8 @@ benchmark/tsconfig.json
 lib/**/*.ts
 lib/tsconfig.json
 test/**/*.ts
+test/module/test-dir
+test/module/test-file
 test/tsconfig.json
 
 .vscode
