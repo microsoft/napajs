@@ -3,14 +3,14 @@ Napa.js is a multi-threaded JavaScript runtime built on [V8](https://github.com/
 
 ## Supported OS and Compilers
 Napa.js requires C++ compiler that supports [C++14](https://en.wikipedia.org/wiki/C%2B%2B14), currently we have tested following OS/compiler combinations: 
-* Windows: 7+ with Visual Studio 2015 or 2017
+* Windows: 7+ with VC 2015+ (MSVC14.0+)
 * Linux: Ubuntu 14.04 LTS, 16.04 TLS, with gcc 5.4+ 
 * OSX: 10.11 (Yosemite), Apple LLVM 7.0.2 (clang-700.1.18)
 
 ## Installation
 ### Prerequisites
-* Install C++ compilers that support VC14: 
-    * Windows: [VC 2015 Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools) or [VS 2017 Build Tools](https://www.visualstudio.com/downloads/#build-tools-for-visual-studio-2017)
+* Install C++ compilers:
+    * Windows: Visual C++ Build Tools [2015](http://landinghub.visualstudio.com/visual-cpp-build-tools) / [2017](https://www.visualstudio.com/downloads/#build-tools-for-visual-studio-2017), or [Visual Studio](https://www.visualstudio.com/vs/cplusplus/)
     * Linux: [via Apt-get](https://askubuntu.com/questions/618474/how-to-install-the-latest-gcurrently-5-1-in-ubuntucurrently-14-04)
     * OSX: `xcode-select --install`
 * Install CMake: [Download or build](https://cmake.org/install/), [Apt-get (Linux/Ubuntu)](https://askubuntu.com/questions/355565/how-to-install-latest-cmake-version-in-linux-ubuntu-from-command-line)
