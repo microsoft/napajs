@@ -17,7 +17,7 @@
     "markdown-table": "1.1.0"
   },
   "scripts": {
-    "benchmark": "tsc -p benchmark & node benchmark/bench.js",
+    "benchmark": "tsc -p benchmark && node benchmark/bench.js",
     "buildd": "cmake-js compile --debug",
     "install": "cmake-js compile",
     "prepare": "tsc -p lib",
