@@ -13,7 +13,7 @@ namespace napa {
 namespace store {
 
     /// <summary> Class for memory store, which stores transportable JS objects across isolates. </summary>
-    /// <remarks> Store is not thread-safe, and is intended to be used by StoreWrap. 
+    /// <remarks> Store is intended to be used by StoreWrap. 
     /// We expose Store in napa.dll instead of napa-binding for sharing memory between Napa and Node.JS. </remarks>
     class Store {
     public:
@@ -31,13 +31,14 @@ namespace store {
 
         /// <summary> Set value with a key. </summary>
         /// <param name="key"> Case-sensitive key to set. </param>
-        /// <param name="value"> Pair of payload and transport context. </returns>
-        virtual void Set(const char* key, ValueType value) = 0;
+        /// <param name="value"> A shared pointer of ValueType,
+        /// which is composed by a pair of payload and transport context. </returns>
+        virtual void Set(const char* key, std::shared_ptr<ValueType> value) = 0;
 
         /// <summary> Get value by a key. </summary>
         /// <param name="key"> Case-sensitive key to get. </param>
-        /// <returns> ValueType pointer, null if not found. </returns>
-        virtual const ValueType* Get(const char* key) const = 0;
+        /// <returns> A ValueType shared pointer, empty if not found. </returns>
+        virtual std::shared_ptr<ValueType> Get(const char* key) const = 0;
 
         /// <summary> Check if this store has a key. </summary>
         /// <param name="key"> Case-sensitive key. </param>
