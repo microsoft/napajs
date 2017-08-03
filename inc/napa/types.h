@@ -6,7 +6,7 @@
 #include "stddef.h"
 #include "stdint.h"
 
-/// <summary> Simple non ownning string. Should only be used for binding. </summary>
+/// <summary> Simple non owning string. Should only be used for binding. </summary>
 typedef struct {
     const char* data;
     size_t size;
@@ -87,7 +87,7 @@ namespace napa {
 
 #endif // __cplusplus
 
-/// <summary> Represents a function to run within a zone, with binded aruments . </summary>
+/// <summary> Represents a function to run within a zone, with binded arguments . </summary>
 typedef struct {
 
     /// <summary> The module that exports the function to execute. </summary>

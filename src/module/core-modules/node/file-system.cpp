@@ -11,15 +11,15 @@ using namespace napa::module;
 
 namespace {
 
-    /// <summary> Read file synchronoulsy. </summary>
+    /// <summary> Read file synchronously. </summary>
     /// <param name="args"> It holds filename. </param>
     void ReadFileSyncCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-    /// <summary> Write file synchronoulsy. </summary>
+    /// <summary> Write file synchronously. </summary>
     /// <param name="args"> It holds filename and string to write. </param>
     void WriteFileSyncCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-    /// <summary> Make directory synchronoulsy. </summary>
+    /// <summary> Make directory synchronously. </summary>
     /// <param name="args"> It holds directory to make. </param>
     void MkdirSyncCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 

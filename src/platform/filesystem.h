@@ -52,13 +52,13 @@ namespace filesystem {
         Path& operator=(StringType&& path);
         Path& operator=(Path&& path);
 
-        /// <summary> Operator to append a relative path. </summmary>
+        /// <summary> Operator to append a relative path. </summary>
         Path& operator/=(const Path& path);
 
-        /// <summary> Operator to append a relative path. </summmary>
+        /// <summary> Operator to append a relative path. </summary>
         Path operator/(const Path& path) const;
 
-        /// <summary> Compare two paths. </summmary>
+        /// <summary> Compare two paths. </summary>
         int Compare(const Path& path) const;
 
         /// <summary> Get unnormalized path string. </summary>

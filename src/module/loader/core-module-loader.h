@@ -15,7 +15,7 @@ namespace module {
     public:
 
         /// <summary> Constructor. </summary>
-        /// <param name="builtsInSetter"> Built-in modules registerer. </param>
+        /// <param name="builtInSetter"> Built-in modules registerer. </param>
         /// <param name="moduleCache"> Cache for all modules. </param>
         /// <param name="bindingCache"> Cache for binding core binary modules. </param>
         CoreModuleLoader(BuiltInModulesSetter builtInModulesSetter,

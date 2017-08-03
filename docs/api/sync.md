@@ -38,7 +38,7 @@ let lock = new napa.sync.ReadWriteLock();
 ```
 
 ### rwlock.guardRead(func: () => any): any
-Run input function synchronously and obtain the read (shared) lock during its execution, returns what the function returns, or throws error if input function throws. Read lock will be released once execution finishes. Multiple guardRead across threads can enter simutenously while no pending guardWrite.
+Run input function synchronously and obtain the read (shared) lock during its execution, returns what the function returns, or throws error if input function throws. Read lock will be released once execution finishes. Multiple guardRead across threads can enter simultaneously while no pending guardWrite.
 
 ```ts
 try {
@@ -55,7 +55,7 @@ catch(error) {
 
 ### rwlock.guardWrite(func: () => any): any
 
-Run input function synchronously and obtain the write (exclusive) lock during its execution, returns what the function returns, or throws error if input function throws. Write lock will be released once execution finishes. Multiple guardWrite across threads cannot entered simutenously, and will always wait if there is any pending guardRead.
+Run input function synchronously and obtain the write (exclusive) lock during its execution, returns what the function returns, or throws error if input function throws. Write lock will be released once execution finishes. Multiple guardWrite across threads cannot entered simultaneously, and will always wait if there is any pending guardRead.
 
 ```ts
 try {

@@ -23,7 +23,7 @@ A log row may contain following information:
 - (Required) Message: Log message.
 - (Required) Logging level: 
     - Error: for application error.
-    - Warn: for warining information.
+    - Warn: for warning information.
     - Info: for notification. 
     - Debug: for debugging purpose.
 

@@ -31,7 +31,7 @@ namespace module {
         /// <summary> It implements Allocator.allocate(size: number): napajs.memory.Handle </summary>
         static void DeallocateCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-        /// <summary> It implments readonly Allocator.type: string </summary>
+        /// <summary> It implements readonly Allocator.type: string </summary>
         static void GetTypeCallback(v8::Local<v8::String> propertyName, const v8::PropertyCallbackInfo<v8::Value>& args);
     };
 }

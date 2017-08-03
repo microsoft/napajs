@@ -15,7 +15,7 @@
 namespace napa {
 namespace zone {
     
-    /// <summary> Class holding asynchonous callbacks. </summary>
+    /// <summary> Class holding asynchronous callbacks. </summary>
     struct AsyncContext {
         /// <summary> Zone instance issueing asynchronous work. </summary>
         NapaZone* zone = nullptr;
