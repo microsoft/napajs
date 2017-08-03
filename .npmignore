@@ -2,7 +2,16 @@ bin
 build
 examples
 
+# Exclude TypeScript source files.
+benchmark/**/*.ts
+benchmark/tsconfig.json
+lib/**/*.ts
+lib/tsconfig.json
+test/**/*.ts
+test/tsconfig.json
 
+.vscode
 .npmrc
 .npmignore
 .taskkey
+.travis.yml
