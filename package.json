@@ -24,7 +24,8 @@
     "test": "mocha test --recursive",
     "rebuild": "cmake-js rebuild && tsc -p lib",
     "rebuildd": "cmake-js rebuild --debug && tsc -p lib",
-    "retest": "cmake-js compile -d test/module/addon && tsc -p test && mocha test --recursive",
+    "retest": "cmake-js rebuild -d test/module/addon && tsc -p test && mocha test --recursive",
+    "reunittest": "cmake-js rebuild -d unittest && node unittest/run.js",
     "unittest": "cmake-js compile -d unittest && node unittest/run.js"
   }
 }
