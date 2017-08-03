@@ -1,6 +1,6 @@
 {
   "name": "napajs",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "author": "napajs",
   "main": "./lib/index.js",
   "types": "./types/index.d.ts",
@@ -18,13 +18,12 @@
   },
   "scripts": {
     "benchmark": "node benchmark/bench.js",
-    "buildscripts": "tsc -p lib && tsc -p test && tsc -p benchmark",
     "install": "cmake-js compile",
-    "prepublishOnly": "tsc -p lib && tsc -p test && tsc -p benchmark",
+    "prepare": "tsc -p lib && tsc -p test && tsc -p benchmark",
     "pretest": "cmake-js compile -d test/module/addon",
     "test": "mocha test --recursive",
-    "rebuild": "cmake-js rebuild",
-    "rebuildd": "cmake-js rebuild --debug",
+    "rebuild": "cmake-js rebuild && tsc -p lib",
+    "rebuildd": "cmake-js rebuild --debug && tsc -p lib",
     "retest": "cmake-js compile -d test/module/addon && tsc -p test && mocha test --recursive",
     "unittest": "cmake-js compile -d unittest && node unittest/run.js"
   }
