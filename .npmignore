@@ -12,6 +12,10 @@ test/module/test-dir
 test/module/test-file
 test/tsconfig.json
 
+# Exclude test generated files.
+test/module/test-dir
+test/module/test-file
+
 .vscode
 .npmrc
 .npmignore
