@@ -146,11 +146,16 @@ void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
 }
 
 static v8::Isolate* CreateIsolate(const settings::ZoneSettings& settings) {
-    // The allocator is a global V8 setting.
-    static napa::v8_extensions::ArrayBufferAllocator commonAllocator;
-
     v8::Isolate::CreateParams createParams;
+
+    // The allocator is a global V8 setting.
+#if (V8_MAJOR_VERSION == 5 && V8_MINOR_VERSION >= 5) || V8_MAJOR_VERSION > 5
+    static std::unique_ptr<v8::ArrayBuffer::Allocator> defaultArrayBufferAllocator(v8::ArrayBuffer::Allocator::NewDefaultAllocator());
+    createParams.array_buffer_allocator = defaultArrayBufferAllocator.get();
+#else
+    static napa::v8_extensions::ArrayBufferAllocator commonAllocator;
     createParams.array_buffer_allocator = &commonAllocator;
+#endif
 
     // Set the maximum V8 heap size.
     createParams.constraints.set_max_old_space_size(settings.maxOldSpaceSize);

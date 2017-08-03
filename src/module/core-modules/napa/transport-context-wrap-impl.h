@@ -17,7 +17,10 @@ namespace module {
         static void Init();
 
         /// <summary> Create a non-owning transport context wrap. </summary>
-        static v8::Local<v8::Object> NewInstance(napa::transport::TransportContext* context);
+        static v8::Local<v8::Object> NewInstance(bool owning = true, napa::transport::TransportContext* context = nullptr);
+
+        /// <summary> Destructor. </summary>
+        ~TransportContextWrapImpl(); 
 
         /// <summary> Get transport context. </summary>
         napa::transport::TransportContext* Get() override;
@@ -30,7 +33,7 @@ namespace module {
 
     private:
         /// <summary> Constructor. </summary>
-        TransportContextWrapImpl(napa::transport::TransportContext* context);
+        TransportContextWrapImpl(napa::transport::TransportContext* context, bool owning);
 
         /// <summary> No copy allowed. </summary>
         TransportContextWrapImpl(const TransportContextWrapImpl&) = delete;
@@ -48,8 +51,11 @@ namespace module {
         /// <summary> It implements TransportContext.loadShared(handle: Handle): napajs.memory.ShareableWrap) </summary>
         static void LoadSharedCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-        /// <summary> Non-owning transport context. </summary>
+        /// <summary> Transport context. </summary>
         napa::transport::TransportContext* _context;
+
+        /// <summary> Own context or not. </summary>
+        bool _owning;
     };
 }
 }

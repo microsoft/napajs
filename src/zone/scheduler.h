@@ -117,7 +117,7 @@ namespace zone {
         // Signal scheduler callbacks to not process anymore tasks.
         _shouldStop = true;
 
-        // Wait for synchornizer to finish his book-keeping.
+        // Wait for synchronizer to finish his book-keeping.
         _synchronizer = nullptr;
 
         // Wait for all workers to finish processing remaining tasks.

@@ -1,13 +1,13 @@
 {
   "name": "napajs",
-  "version": "0.0.1",
+  "version": "0.0.12",
   "author": "napajs",
   "main": "./lib/index.js",
   "types": "./types/index.d.ts",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Microsoft/napajs"
+    "url": "https://github.com/Microsoft/napajs.git"
   },
   "devDependencies": {
     "mocha": ">= 3.4.2",
@@ -17,12 +17,15 @@
     "markdown-table": "1.1.0"
   },
   "scripts": {
-    "benchmark": "tsc -p benchmark & node benchmark/bench.js",
-    "buildd": "cmake-js compile --debug",
+    "benchmark": "node benchmark/bench.js",
     "install": "cmake-js compile",
-    "prepare": "tsc -p lib",
-    "pretest": "cmake-js compile -d test/module/addon && tsc -p test",
+    "prepare": "tsc -p lib && tsc -p test && tsc -p benchmark",
+    "pretest": "cmake-js compile -d test/module/addon",
     "test": "mocha test --recursive",
+    "rebuild": "cmake-js rebuild && tsc -p lib",
+    "rebuildd": "cmake-js rebuild --debug && tsc -p lib",
+    "retest": "cmake-js rebuild -d test/module/addon && tsc -p test && mocha test --recursive",
+    "reunittest": "cmake-js rebuild -d unittest && node unittest/run.js",
     "unittest": "cmake-js compile -d unittest && node unittest/run.js"
   }
 }

@@ -32,7 +32,7 @@ namespace demo {
         double _value;
     };
 
-}  // napespace demo
+}  // namespace demo
 }  // namespace napa
 ```
 
@@ -192,7 +192,7 @@ NAPA_MODULE(addon, InitAll);
  constructor instance creation.
   * *NAPA_DECLARE_PERSISTENT_CONSTRUCTOR* declares constructor instance.
   * *NAPA_DEFINE_PERSISTENT_CONSTRUCTOR* defines constructor instance.
-  * *NAPA_SET_PERSISTENT_CONSTRUCTOR* makes a local consturctor as persistent. Napa stores it into thread local storage
+  * *NAPA_SET_PERSISTENT_CONSTRUCTOR* makes a local constructor as persistent. Napa stores it into thread local storage
    to allow one instance per V8 isolate.
   * *NAPA_GET_PERSISTENT_CONSTRUCTOR* return stored constructor instance.
 * *NAPA_SET_PROTOTYPE_METHOD* is equivalent to *NODE_SET_PROTOTYPE_METHOD*, which add a prototype method to Javascript

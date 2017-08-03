@@ -4,11 +4,8 @@
 #pragma once
 
 #include <napa/module.h>
-#include <napa/module/common.h>
 
 #include <store/store.h>
-
-#include <mutex>
 
 namespace napa {
 namespace module {
@@ -67,9 +64,6 @@ namespace module {
 
         /// <summary> Store. </summary>
         std::shared_ptr<napa::store::Store> _store;
-
-        /// <summary> Mutex to value map access. (use std::shared_mutex when it's public) </summary>
-        std::mutex _storeAccess;
     };
 }
 }

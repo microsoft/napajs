@@ -12,17 +12,17 @@ namespace module {
 /// <summary> Helper APIs for file system operations. </summary>
 namespace file_system_helpers {
 
-    /// <summary> Read file synchronoulsy. </summary>
+    /// <summary> Read file synchronously. </summary>
     /// <param name="filename"> Filename to read. </param>
     std::string ReadFileSync(const std::string& filename);
 
-    /// <summary> Write file synchronoulsy. </summary>
+    /// <summary> Write file synchronously. </summary>
     /// <param name="filename"> Filename to write. </param>
     /// <param name="data"> Buffer of data to write. </param>
     /// <param name="length"> Length of data to write. </param>
     void WriteFileSync(const std::string& filename, const char* data, size_t length);
 
-    /// <summary> Make directory synchronoulsy. </summary>
+    /// <summary> Make directory synchronously. </summary>
     /// <param name="directory"> Directory to make. </param>
     void MkdirSync(const std::string& directory);
 

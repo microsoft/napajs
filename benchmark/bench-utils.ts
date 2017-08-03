@@ -45,6 +45,6 @@ export function formatTimeDiff(diff: number | [number, number], printUnit: boole
     return message;
 }
 
-export function formatRatio(divident: number, divider: number): string {
-    return "(" + (divident / divider).toFixed(2) + "x)";
+export function formatRatio(dividend: number, divider: number): string {
+    return "(" + (dividend / divider).toFixed(2) + "x)";
 }

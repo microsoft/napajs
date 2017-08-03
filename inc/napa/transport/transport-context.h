@@ -40,7 +40,7 @@ namespace transport {
         TransportContext& operator=(const TransportContext&) = delete;
 
         /// <summary> It saves a shared pointer that can be loaded later. </summary>
-        /// <param name="pointer"> Shared pointer to transfer owership to another isolate. </param>
+        /// <param name="pointer"> Shared pointer to transfer ownership to another isolate. </param>
         template <typename T>
         void SaveShared(std::shared_ptr<T> pointer) {
             _sharedDepot[reinterpret_cast<uintptr_t>(pointer.get())] = std::move(pointer);
