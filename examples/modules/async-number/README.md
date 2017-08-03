@@ -25,12 +25,12 @@ void napa::module::DoAsyncWork(v8::Local<v8::Function> jsCallback,
 If you have a function already supporting async, use this API.
 
 * *jsCallback*: Javascript callback given at Javascript land.
-* *asyncWork*: Fuction to wrap C++ function supporting async, which callback must call Napa completion callback given as argument.
+* *asyncWork*: Function to wrap C++ function supporting async, which callback must call Napa completion callback given as argument.
 * *asyncCompleteCallback*: C++ callback function, which has isolate instance and *jsCallback* as arguments. It's called at the same isolate with caller's one after *asyncWork* completes.
 
 ### Diagram
 
-This diagram shows how asynchoronous call is working corresponding to the below example,
+This diagram shows how asynchronous call is working corresponding to the below example,
 
 ```diagram
                 |-------------------------|     |------------------------|                   |------------------------------------|     |-------------------|

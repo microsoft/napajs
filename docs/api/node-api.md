@@ -4,7 +4,7 @@ Napa.js doesn't support full compatibility with node.js and necessary core modul
 
 ## Assert
 
-Since Napa doesn't suport *Buffer* yet, assert is not working on *Buffer*.
+Since Napa doesn't support *Buffer* yet, assert is not working on *Buffer*.
 
 * assert(value[, message])
 * assert.deepEqual(actual, expected[, message])

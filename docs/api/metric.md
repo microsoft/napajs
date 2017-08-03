@@ -44,7 +44,7 @@ Metrics are process-wise objects, which can be used across [zones](./zone.md#int
     class Metric {
     public:
 
-        /// <summary> Sets a metric value with varidic dimension arguments. </summary>
+        /// <summary> Sets a metric value with variadic dimension arguments. </summary>
         /// <param name="value"> Int64 value. </param>
         /// <param name="numberOfDimensions"> Number of dimensions being set. </param>
         /// <param name="dimensionValues"> Array of dimension value names. </param>
@@ -70,7 +70,7 @@ Metrics are process-wise objects, which can be used across [zones](./zone.md#int
         virtual bool Increment(uint64_t value, size_t numberOfDimensions, const char* dimensionValues[]) = 0;
 
         /// <summary>
-        ///     Decrements metric value with varidic dimension arguments.
+        ///     Decrements metric value with variadic dimension arguments.
         ///     Use mainly to simplify rate counters.
         /// </summary>
         /// <param name="value"> UInt64 value to decrement. </param>

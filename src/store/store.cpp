@@ -12,7 +12,7 @@ using namespace napa::store;
 
 class StoreImpl: public Store {
 public:
-    /// <summary> Consturctor. </summary>
+    /// <summary> Constructor. </summary>
     explicit StoreImpl(const char* id)
         : _id(id) {
     }

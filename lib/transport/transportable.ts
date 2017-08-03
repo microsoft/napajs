@@ -180,7 +180,7 @@ function extractModuleName(moduleId: string): string {
         return moduleId.substr(moduleRootStart + NODE_MODULE_PREFIX.length);
     }
     else {
-        // module is located using absoluate or relative path.
+        // module is located using absolute or relative path.
         return path.relative(process.cwd(), moduleId).replace('\\\\', '/');
     }
 }

@@ -66,14 +66,14 @@ export interface Result {
 /// <summary>
 ///     Interface for Zone (for both Napa zone and Node zone)
 ///     A `zone` consists of one or multiple JavaScript threads, we name each thread `worker`.
-///     Workers within a zone are symetric, which means execute on any worker from the zone should return the same result,
+///     Workers within a zone are symmetric, which means execute on any worker from the zone should return the same result,
 ///     and the internal state of every worker should be the same from long lasting point of view.
 ///
-///     There are 2 operations, designed to reinforce the symetricity of workers:
+///     There are 2 operations, designed to reinforce the symmetry of workers:
 ///     1) Broadcast - run code that changes worker state on all workers, returning a promise for pending operation. 
 ///        Through the promise, we can only know if operation succeed or failed. Usually we use `broadcast` to bootstrap
 ///        application, pre-cache objects, or change application settings.
-///     2) Execute - run code that doesn't change worker state on an abitrary worker, returning a promise of getting the result.
+///     2) Execute - run code that doesn't change worker state on an arbitrary worker, returning a promise of getting the result.
 ///        Execute is designed for doing the real work.
 /// 
 ///     Zone operations are on a basis of first-come-first-serve, while `broadcast` takes higher priority over `execute`.

@@ -27,7 +27,7 @@ using namespace napa::providers;
 static LoggingProvider* LoadLoggingProvider(const std::string& providerName);
 static MetricProvider* LoadMetricProvider(const std::string& providerName);
 
-// Providers - Initilally assigned to defaults.
+// Providers - Initially assigned to defaults.
 static LoggingProvider* _loggingProvider = LoadLoggingProvider("");
 static MetricProvider* _metricProvider = LoadMetricProvider("");
 
@@ -60,7 +60,7 @@ MetricProvider& napa::providers::GetMetricProvider() {
 template <typename ProviderType>
 static ProviderType* LoadProvider(
     const std::string& providerName,
-    const std::string& jsonProperyPath,
+    const std::string& jsonPropertyPath,
     const std::string& functionName) {
 
     napa::module::ModuleResolver moduleResolver;
@@ -78,12 +78,12 @@ static ProviderType* LoadProvider(
     rapidjson::IStreamWrapper isw(ifs);
     NAPA_ASSERT(!package.ParseStream(isw).HasParseError(), rapidjson::GetParseError_En(package.GetParseError()));
 
-    NAPA_ASSERT(package.HasMember(jsonProperyPath.c_str()),
+    NAPA_ASSERT(package.HasMember(jsonPropertyPath.c_str()),
                 "missing property '%s' in '%s'",
-                jsonProperyPath.c_str(),
+                jsonPropertyPath.c_str(),
                 moduleInfo.packageJsonPath.c_str());
 
-    auto providerRelativePath = package[jsonProperyPath.c_str()].GetString();
+    auto providerRelativePath = package[jsonPropertyPath.c_str()].GetString();
 
     // Full path to provider dll
     auto providerPath = (modulePath / providerRelativePath).Normalize();

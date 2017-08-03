@@ -5,7 +5,7 @@
 - `zone.execute` scales linearly on number of workers, which is expected.
 - The overhead of calling `zone.execute` from node is around 0.1ms after warm-up, `zone.executeSync` is around 0.2ms. The cost of using anonymous function is neglectable.
 - `transport.marshall` cost on small plain JavaScript values is about 3x of JSON.stringify.
-- The overhead of `store.set` and `store.get` is around 0.06ms plus transport overhead on the objecs.
+- The overhead of `store.set` and `store.get` is around 0.06ms plus transport overhead on the objects.
 
 ## Napa vs. Node on JavaScript execution 
 Please refer to [node-napa-perf-comparison.ts](node-napa-perf-comparison.ts).
@@ -50,7 +50,7 @@ Average overhead is around 0.06ms to 0.12ms for `zone.execute`, and around 0.16m
 | 10000    | 810.687           | 1799.866              |
 | 50000    | 3387.361          | 8169.023              |
 
-*10000 times of zone.executeSync on anonymouse function is 1780.241ms. The gap is within range of bench noise.
+*10000 times of zone.executeSync on anonymous function is 1780.241ms. The gap is within range of bench noise.
 
 ### Overhead during warm-up:
 
@@ -130,7 +130,7 @@ The overhead of `store.get` includes
 1. overhead of getting marshalled data and transport context from C++ map (with shared_lock).
 2. overhead of calling `transport.unmarshall` on marshalled data.
 
-For `store.set`, numbers below indicates the cost beyond marshall is around 0.07~0.4ms varies per payload size. (10B to 18KB). `store.get` takes a bit more: 0.06~0.9ms with the same payload size varance. If the value in store is not updated frequently, it's always good to cache it in JavaScript world.
+For `store.set`, numbers below indicates the cost beyond marshall is around 0.07~0.4ms varies per payload size. (10B to 18KB). `store.get` takes a bit more: 0.06~0.9ms with the same payload size variance. If the value in store is not updated frequently, it's always good to cache it in JavaScript world.
 
 Please refer to [store-overhead.ts](./store-overhead.ts) for test details.
 

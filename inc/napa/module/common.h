@@ -27,7 +27,7 @@ namespace module {
         args.GetReturnValue().Set(args.This());
     }
 
-    /// <summary> Create an instance of WrapType with arugments. </summary> 
+    /// <summary> Create an instance of WrapType with arguments. </summary> 
     /// <remarks> There are 2 requirements on WrapType:
     /// 1) static const char* WrapType::exportName must be present as a public member, or add NewInstance as a friend function.
     /// 2) WrapType must put NAPA_DECLARE_PERSISTENT_CONSTRUCTOR in public, or add NewInstance as a friend function. 

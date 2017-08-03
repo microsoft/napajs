@@ -30,7 +30,7 @@
 Zone is a key concept of napajs that exposes multi-thread capabilities in JavaScript world. 
 
 ### <a name="worker-vs-zone"></a> Multiple workers vs. Multiple zones
-Zone consists of one or multiple JavaScript threads, we name each thread `worker`. Workers within a zone are symetric, which means execute on any worker from the zone should return the same result, and the internal state of every worker should be the same from long running point of view. 
+Zone consists of one or multiple JavaScript threads, we name each thread `worker`. Workers within a zone are symmetric, which means execute on any worker from the zone should return the same result, and the internal state of every worker should be the same from long running point of view. 
  
 Multiple zones can co-exist in the same process, with each loading different code, bearing different states or applying different policies, like heap size, etc. The purpose of having multiple zone is to allow multiple roles of a complex work, each role loads the minimum resource for its own usage.
  
@@ -40,9 +40,9 @@ There are two types of zone:
 - **Node zone** - a 'virtual' zone which exposes Node.js eventloop, has access to full Node.js capabilities.
 
 ### <a name="zone-operations"><a> Zone operations 
-There are two operations, designed to reinforce the symetricity of workers within a zone:
+There are two operations, designed to reinforce the symmetry of workers within a zone:
  1) **Broadcast** - run code that changes worker state on all workers, returning a promise for pending operation. Through the promise, we can only know if operation succeed or failed. Usually we use `broadcast` to bootstrap application, pre-cache objects, or change application settings.
- 2) **Execute** - run code that doesn't change worker state on an abitrary worker, returning a promise of getting the result. Execute is designed for doing the real work.
+ 2) **Execute** - run code that doesn't change worker state on an arbitrary worker, returning a promise of getting the result. Execute is designed for doing the real work.
 
  Zone operations are on a basis of first-come-first-serve, while `broadcast` takes higher priority over `execute`.
 
@@ -120,7 +120,7 @@ zone.broadcast('var state = 0;')
     });
 ```
 ### <a name="broadcast-function"></a> zone.broadcast(function: (...args: any[]) => void, args: any[]): Promise\<void\>
-It asynchronously broadcasts an annoymous function with its arguments to all workers, which returns a Promise of void. If any of the workers failed to execute the code, promise will be rejected with an error message.
+It asynchronously broadcasts an anonymous function with its arguments to all workers, which returns a Promise of void. If any of the workers failed to execute the code, promise will be rejected with an error message.
 
 *Please note that Napa doesn't support closure in 'function' during broadcast.
 

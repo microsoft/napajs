@@ -31,7 +31,7 @@ EXTERN_C NAPA_API napa_zone_handle napa_zone_get(napa_string_ref id);
 /// </remarks>
 EXTERN_C NAPA_API napa_zone_handle napa_zone_get_current();
 
-/// <summary> Releases the zone handle. When all handles for a zone are released the zone is destoryed. </summary>
+/// <summary> Releases the zone handle. When all handles for a zone are released the zone is destroyed. </summary>
 /// <param name="handle"> The zone handle. </param>
 EXTERN_C NAPA_API napa_result_code napa_zone_release(napa_zone_handle handle);
 
@@ -61,7 +61,7 @@ EXTERN_C NAPA_API void napa_zone_broadcast(
     napa_zone_broadcast_callback callback,
     void* context);
 
-/// <summary> Executes a pre-loaded function asynchronously in a single zone wroker. </summary>
+/// <summary> Executes a pre-loaded function asynchronously in a single zone worker. </summary>
 /// <param name="handle"> The zone handle. </param>
 /// <param name="spec"> The function spec to call. </param>
 /// <param name="callback"> A callback that is triggered when execution is done. </param>
