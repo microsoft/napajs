@@ -18,7 +18,7 @@ namespace module {
     public:
 
         /// <summary> Constructor. </summary>
-        /// <param name="builtsInSetter"> Built-in modules registerer. </param>
+        /// <param name="builtInSetter"> Built-in modules registerer. </param>
         BinaryModuleLoader(BuiltInModulesSetter builtInModulesSetter);
 
         /// <summary> It loads a module from binary file. </summary>

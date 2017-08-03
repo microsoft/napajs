@@ -4,15 +4,15 @@
 #include "store.h"
 
 #include <napa/memory.h>
-#include <napa/stl/unordered_map.h>
 
 #include <mutex>
+#include <unordered_map>
 
 using namespace napa::store;
 
 class StoreImpl: public Store {
 public:
-    /// <summary> Consturctor. </summary>
+    /// <summary> Constructor. </summary>
     explicit StoreImpl(const char* id)
         : _id(id) {
     }
@@ -24,23 +24,26 @@ public:
 
     /// <summary> Set value with a key. </summary>
     /// <param name="key"> Case-sensitive key to set. </param>
-    /// <param name="value"> Pair of payload and transport context. </returns>
-    void Set(const char* key, Store::ValueType value) override {
+    /// <param name="value"> A shared pointer of ValueType,
+    /// which is composed by a pair of payload and transport context. </returns>
+    void Set(const char* key, std::shared_ptr<Store::ValueType> value) override {
+        std::lock_guard<std::mutex> lock(_storeAccess);
         auto it = _valueMap.find(key);
         if (it != _valueMap.end()) {
             it->second = std::move(value);
         } else {
-            _valueMap.emplace(napa::stl::String(key), std::move(value));
+            _valueMap.emplace(std::string(key), std::move(value));
         }
     }
 
     /// <summary> Get value by a key. </summary>
     /// <param name="key"> Case-sensitive key to get. </param>
-    /// <returns> ValueType pointer, null if not found. </returns>
-    const ValueType* Get(const char* key) const override {
+    /// <returns> A ValueType shared pointer, empty if not found. </returns>
+    std::shared_ptr<ValueType> Get(const char* key) const override {
+        std::lock_guard<std::mutex> lock(_storeAccess);
         auto it = _valueMap.find(key);
         if (it != _valueMap.end()) {
-            return &(it->second);
+            return it->second;
         }
         return nullptr;
     }
@@ -49,25 +52,31 @@ public:
     /// <param name="key"> Case-sensitive key. </param>
     /// <returns> True if the key exists in store. </returns>
     bool Has(const char* key) const override {
+        std::lock_guard<std::mutex> lock(_storeAccess);
         return _valueMap.find(key) != _valueMap.end();
     }
 
     /// <summary> Delete a key. No-op if key is not found in store. </summary>
     void Delete(const char* key) override {
+        std::lock_guard<std::mutex> lock(_storeAccess);
         _valueMap.erase(key);
     }
 
     /// <summary> Return size of the store. </summary>
     size_t Size() const override {
+        std::lock_guard<std::mutex> lock(_storeAccess);
         return _valueMap.size();
     }
 
 private:
     /// <summary> ID. Case sensitive. </summary>
-    napa::stl::String _id;
+    std::string _id;
 
     /// <summary> Key to value map. </summary>
-    napa::stl::UnorderedMap<napa::stl::String, Store::ValueType> _valueMap;
+    std::unordered_map<std::string, std::shared_ptr<Store::ValueType>> _valueMap;
+
+    /// <summary> Mutex to value map access. (use std::shared_mutex when it's public) </summary>
+    mutable std::mutex _storeAccess;
 };
 
 namespace napa {

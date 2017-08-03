@@ -4,6 +4,9 @@
 #pragma once
 
 #include <napa/module/module-internal.h>
+#include <vector>
+
+#include <vector>
 
 namespace napa {
 namespace module {

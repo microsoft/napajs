@@ -215,7 +215,7 @@ namespace {
 
         CHECK_ARG(isolate,
             args.Length() == 1 || args.Length() == 2,
-            "path.basename takes 1 required arugment of file path and 1 optional argument of extension");
+            "path.basename takes 1 required argument of file path and 1 optional argument of extension");
         
         CHECK_ARG(isolate,
             args[0]->IsString() ,

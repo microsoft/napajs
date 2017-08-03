@@ -14,7 +14,7 @@
 #include <module/core-modules/core-modules.h>
 #include <utils/debug.h>
 
-// TODO: decouple dependencies between moduler-loader and zone.
+// TODO: decouple dependencies between module-loader and zone.
 #include <zone/worker-context.h>
 
 #include <napa/log.h>

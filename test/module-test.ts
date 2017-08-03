@@ -69,7 +69,7 @@ describe('napajs/module', function () {
     });
 
     describe('resolve', function () {
-        // TODO: support correct __dirname in annoymous function and move tests from 'esolution-tests.js' here.
+        // TODO: support correct __dirname in anonymous function and move tests from 'resolution-tests.js' here.
         it('require.resolve', () => {
             return napaZone.execute(__dirname + "/module/resolution-tests.js", "run", []);
         });

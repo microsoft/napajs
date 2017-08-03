@@ -46,7 +46,7 @@ std::shared_ptr<NapaZone> NapaZone::Create(const settings::ZoneSettings& setting
     // Fail to create Napa zone is not expected, will always trigger crash.
     auto zone = std::make_shared<MakeSharedEnabler>(settings);
     _zones[settings.id] = zone;
-	
+
     NAPA_DEBUG("Zone", "Napa zone \"%s\" created.", settings.id.c_str());
 
     return zone;

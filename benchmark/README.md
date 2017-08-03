@@ -3,9 +3,19 @@
 ## Summary
 - JavaScript execution in napajs is on par with node, using the same version of V8, which is expected.
 - `zone.execute` scales linearly on number of workers, which is expected.
-- The overhead of calling `zone.execute` from node is around 0.1ms after warm-up, `zone.executeSync` is around 0.2ms. The cost of using anonymous function is neglectable.
+- The overhead of calling `zone.execute` from node is around 0.1ms after warm-up. The cost of using anonymous function is neglectable.
 - `transport.marshall` cost on small plain JavaScript values is about 3x of JSON.stringify.
-- The overhead of `store.set` and `store.get` is around 0.06ms plus transport overhead on the objecs.
+- The overhead of `store.set` and `store.get` is around 0.06ms plus transport overhead on the objects.
+
+We got this report on environment below:
+
+| Name              | Value                                                                                 |
+|-------------------|---------------------------------------------------------------------------------------|
+|**Processor**      |Intel(R) Xeon(R) CPU L5640 @ 2.27GHz, 8 virtual procesors                              |
+|**System Type**    |x64-based PC                                                                           |
+|**Physical Memory**|16.0 GB                                                                                |
+|**OS version**     |Microsoft Windows Server 2012 R2                                                       |
+
 
 ## Napa vs. Node on JavaScript execution 
 Please refer to [node-napa-perf-comparison.ts](node-napa-perf-comparison.ts).
@@ -30,27 +40,26 @@ The overhead of `zone.execute` includes
 2. queuing time before a worker can execute.
 3. unmarshalling cost of arguments in target worker.
 4. marshalling cost of return value from target worker.
-5. (executeSync only) internal delay in waiting for execute finish.
-6. queuing time before caller callback is notified. 
-7. unmarshalling cost of return value in caller thread.
+5. queuing time before caller callback is notified. 
+6. unmarshalling cost of return value in caller thread.
 
-In this section we will examine #2, #5 and #6. So we use empty function with no arguments and no return value.
+In this section we will examine #2 and #5. So we use empty function with no arguments and no return value.
 
-Transport overhead (#1, #3, #4, #7) varies by size and complexity of payload, will be benchmarked separately in [Transport Overhead](#transport-overhead) section.
+Transport overhead (#1, #3, #4, #6) varies by size and complexity of payload, will be benchmarked separately in [Transport Overhead](#transport-overhead) section.
 
 Please refer to [execute-overhead.ts](./execute-overhead.ts) for test details.
 
 ### Overhead after warm-up
-Average overhead is around 0.06ms to 0.12ms for `zone.execute`, and around 0.16ms for `zone.executeSync`.
+Average overhead is around 0.06ms to 0.12ms for `zone.execute`.
 
-| repeat   | zone.execute (ms) | zone.executeSync (ms) |
-|----------|-------------------|-----------------------|
-| 200      | 24.932            | 31.55                 |
-| 5000     | 456.893           | 905.972               |
-| 10000    | 810.687           | 1799.866              |
-| 50000    | 3387.361          | 8169.023              |
+| repeat   | zone.execute (ms) |
+|----------|-------------------|
+| 200      | 24.932            |
+| 5000     | 456.893           |
+| 10000    | 810.687           |
+| 50000    | 3387.361          |
 
-*10000 times of zone.executeSync on anonymouse function is 1780.241ms. The gap is within range of bench noise.
+*10000 times of zone.execute on anonymous function is 807.241ms. The gap is within range of bench noise.
 
 ### Overhead during warm-up:
 
@@ -130,7 +139,7 @@ The overhead of `store.get` includes
 1. overhead of getting marshalled data and transport context from C++ map (with shared_lock).
 2. overhead of calling `transport.unmarshall` on marshalled data.
 
-For `store.set`, numbers below indicates the cost beyond marshall is around 0.07~0.4ms varies per payload size. (10B to 18KB). `store.get` takes a bit more: 0.06~0.9ms with the same payload size varance. If the value in store is not updated frequently, it's always good to cache it in JavaScript world.
+For `store.set`, numbers below indicates the cost beyond marshall is around 0.07~0.4ms varies per payload size. (10B to 18KB). `store.get` takes a bit more: 0.06~0.9ms with the same payload size variance. If the value in store is not updated frequently, it's always good to cache it in JavaScript world.
 
 Please refer to [store-overhead.ts](./store-overhead.ts) for test details.
 
