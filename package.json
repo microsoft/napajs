@@ -19,7 +19,7 @@
   "scripts": {
     "benchmark": "node benchmark/bench.js",
     "buildscripts": "tsc -p lib && tsc -p test && tsc -p benchmark",
-    "install": "cmake-js compile && ",
+    "install": "cmake-js compile",
     "prepublishOnly": "tsc -p lib && tsc -p test && tsc -p benchmark",
     "pretest": "cmake-js compile -d test/module/addon",
     "test": "mocha test --recursive",
