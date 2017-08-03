@@ -98,7 +98,7 @@ namespace module {
             args.GetReturnValue().Set(v8_helpers::PtrToV8Uint32Array(isolate, thisObject->_object.get()));
         }
 
-        /// <summary> It implments Shareable.refCount(): boolean </summary>
+        /// <summary> It implements Shareable.refCount(): boolean </summary>
         static void RefCountCallback(v8::Local<v8::String> /*propertyName*/, const v8::PropertyCallbackInfo<v8::Value>& args){
             auto isolate = v8::Isolate::GetCurrent();
             v8::HandleScope scope(isolate);

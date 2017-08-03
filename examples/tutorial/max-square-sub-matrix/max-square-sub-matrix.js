@@ -95,7 +95,7 @@ async function max_square_sub_matrix_with_all_1s(squareMatrix) {
     var n = squareMatrix.length;
     var layer = 0;
 
-    // All the layers are evaluted in sequence from upp-left to low-right.
+    // All the layers are evaluated in sequence from upp-left to low-right.
     while (layer < 2 * n - 1) {
         await zone.execute('',
             'max_square_sub_matrix_with_all_1s_at_layer',
@@ -133,8 +133,8 @@ function max_square_sub_matrix_with_all_1s_at_layer(squareMatrix, layer) {
         });
 }
 
-// Evaluate the szie of max square sub matrix with all 1s
-// whose lowest-rightest element is the squareMatix[i, j].
+// Evaluate the size of max square sub matrix with all 1s
+// whose lowest-rightest element is the squareMatrix[i, j].
 function max_square_sub_matrix_with_all_1s_ended_at(squareMatrix, i, j) {
     if (i === 0 || j === 0) {
         store.set(get_key_of_store(i, j), squareMatrix[i][j]);

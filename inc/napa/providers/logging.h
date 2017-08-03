@@ -31,7 +31,7 @@ namespace providers {
         /// <param name="level"> Logging verboseness level. </param>
         /// <param name="traceId"> Trace ID. </param>
         /// <param name="file"> The source file this log message originated from. </param>
-        /// <param name="line"> The source line this log message origiated from. </param>
+        /// <param name="line"> The source line this log message originated from. </param>
         /// <param name="message"> The message. </param>
         virtual void LogMessage(
             const char* section,

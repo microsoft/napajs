@@ -19,7 +19,7 @@ void SimpleThreadPool::Worker::operator()() {
                 });
             }
 
-            // Drain all existing tasks before actualy stopping.
+            // Drain all existing tasks before actually stopping.
             if (_pool._isStopped && _pool._taskQueue.empty()) {
                 break;
             }

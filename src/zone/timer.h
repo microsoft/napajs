@@ -21,7 +21,7 @@ namespace zone {
         /// <param name="timeout"> The timeout in millisecond after which the callback will be triggered. </param>
         Timer(Callback callback, std::chrono::milliseconds timeout);
 
-        /// <summary> Destrutor. Stops the timer. </summary>
+        /// <summary> Destructor. Stops the timer. </summary>
         ~Timer();
 
         /// <summary> Activates the timer to trigger the callback after specified milliseconds. </summary>

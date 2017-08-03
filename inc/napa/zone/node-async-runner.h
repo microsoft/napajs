@@ -30,7 +30,7 @@ namespace zone {
     /// </summary>
     using AsyncCompleteCallback = std::function<void(v8::Local<v8::Function>, void*)>;
 
-    /// <summary> Class holding asynchonous callbacks and libuv request. </summary>
+    /// <summary> Class holding asynchronous callbacks and libuv request. </summary>
     struct AsyncContext {
         /// <summary> libuv request. </summary>
         uv_work_t work;

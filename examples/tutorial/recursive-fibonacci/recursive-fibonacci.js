@@ -66,7 +66,7 @@ zone.broadcast(' \
 // Broadcast function declaration of 'fibonacci' to napa workers.
 zone.broadcast(fibonacci.toString());
 
-// Run fibonacci eavluation in sequence.
+// Run fibonacci evaluation in sequence.
 run(10)
 .then(result => { run(11)
 .then(result => { run(12)

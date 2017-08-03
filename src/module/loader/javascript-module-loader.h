@@ -18,7 +18,7 @@ namespace module {
     public:
 
         /// <summary> Constructor. </summary>
-        /// <param name="builtsInSetter"> Built-in modules registerer. </param>
+        /// <param name="builtInSetter"> Built-in modules registerer. </param>
         /// <param name="moduleCache"> Cache for all modules. </param>
         JavascriptModuleLoader(BuiltInModulesSetter builtInModulesSetter, ModuleCache& moduleCache);
 

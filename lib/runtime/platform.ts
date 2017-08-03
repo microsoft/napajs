@@ -25,7 +25,7 @@ let _initializationNeeded: boolean = (typeof __in_napa === 'undefined');
 /// <summary> Empty platform settings. </summary>
 let _platformSettings: PlatformSettings = {};
 
-/// <summary> Sets the platform settings. Must be called fron node before the first container is created. </summary>
+/// <summary> Sets the platform settings. Must be called from node before the first container is created. </summary>
 export function setPlatformSettings(settings: PlatformSettings) {
     if (!_initializationNeeded) {
         // If we don't need to initialize we can't set platform settings.
@@ -39,7 +39,7 @@ export function setPlatformSettings(settings: PlatformSettings) {
 
 export function initialize() {
     if (_initializationNeeded) {
-        // Guard initializtion, should only be called once.
+        // Guard initialization, should only be called once.
         binding.initialize(_platformSettings);
         _initializationNeeded = false;
     }

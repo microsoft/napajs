@@ -3,7 +3,7 @@ This example implements an algorithm to solve [Max square sub-matrix of all 1s](
 
 In this implementation, all units to be evaluated were divided into 2 * size of the square matrix + 1 layers. Units in next layer were evaluated based on results of units from previous layers. Different layers were evaluated in sequence, while units within the same layer were evaluated in parallel, for there is no dependency between them. Results from previous layers were communicated by a store. 
 
-Please note that this example is to demostrate the programming paradigm, while itself is NOT performance efficient, since each worker does too little CPU operation and major overhead is on communication.
+Please note that this example is to demonstrate the programming paradigm, while itself is NOT performance efficient, since each worker does too little CPU operation and major overhead is on communication.
 
 ## How to run
 1. Go to directory of "examples/tutorial/max-square-sub-matrix"

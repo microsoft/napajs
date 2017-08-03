@@ -4,7 +4,7 @@ This example implements an algorithm to [estimate PI using Monte Carlo method](h
 In the implementation, multiple batches of points are evaluated simultaneously in a [napa zone](https://github.com/Microsoft/napajs/wiki/introduction#zone) of 4 workers. Results are aggregated to calculate the final PI after all batches finishes.
 
 ## How to run
-1. Go to directory of "examples/tutorial/estimate-pi-in-parrallel"
+1. Go to directory of "examples/tutorial/estimate-pi-in-parallel"
 2. Run "npm install" to install napajs
 3. Run "node estimate-pi-in-parallel.js"
 

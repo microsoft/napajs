@@ -12,7 +12,7 @@ namespace v8_helpers {
     /// <summary> Unified method signature for convert V8 value to C++ types. </summary>
     template <typename T>
     inline T V8ValueTo(const v8::Local<v8::Value>& value) {
-        static_assert(sizeof(T) == -1, "No specilization exists for this type");
+        static_assert(sizeof(T) == -1, "No specialization exists for this type");
     }
 
     /// <summary> Convert a v8 value to std::string. </summary>
