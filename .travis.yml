@@ -39,6 +39,7 @@ before_install:
 install:
 - npm install cmake-js -g
 - npm install
+- npm run buildscripts
 script:
 - npm test
 - npm run unittest
