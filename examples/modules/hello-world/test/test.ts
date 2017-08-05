@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 var assert = require('assert');
-var helloWorld = require('hello-world');
+var helloWorld = require('..');
 
 describe('Test suite for hello-word', function() {
     it('prints the string "world"', function() {
