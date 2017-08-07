@@ -50,7 +50,7 @@ describe('napajs/transport', () => {
         });
         
         it('@napa: simple types', () => {
-            napaZone.execute(NAPA_ZONE_TEST_MODULE, "simpleTypeTransportTest", []);
+            napaZone.execute(NAPA_ZONE_TEST_MODULE, "simpleTypeTransportTest");
         }).timeout(3000);
 
         it('@node: JS transportable', () => {
@@ -58,7 +58,7 @@ describe('napajs/transport', () => {
         });
 
         it('@napa: JS transportable', () => {
-            napaZone.execute(NAPA_ZONE_TEST_MODULE, "jsTransportTest", []);
+            napaZone.execute(NAPA_ZONE_TEST_MODULE, "jsTransportTest");
         });
 
         it('@node: addon transportable', () => {
@@ -66,7 +66,7 @@ describe('napajs/transport', () => {
         });
 
         it('@napa: addon transportable', () => {
-            napaZone.execute(NAPA_ZONE_TEST_MODULE, "addonTransportTest", []);
+            napaZone.execute(NAPA_ZONE_TEST_MODULE, "addonTransportTest");
         });
 
         it('@node: function transportable', () => {
@@ -74,7 +74,7 @@ describe('napajs/transport', () => {
         });
 
         it('@napa: function transportable', () => {
-            napaZone.execute(NAPA_ZONE_TEST_MODULE, "functionTransportTest", []);
+            napaZone.execute(NAPA_ZONE_TEST_MODULE, "functionTransportTest");
         });
 
         it('@node: composite transportable', () => {
@@ -82,7 +82,7 @@ describe('napajs/transport', () => {
         });
 
         it('@napa: composite transportable', () => {
-            napaZone.execute(NAPA_ZONE_TEST_MODULE, "compositeTransportTest", []);
+            napaZone.execute(NAPA_ZONE_TEST_MODULE, "compositeTransportTest");
         });
 
         it('@node: non-transportable', () => {
@@ -90,7 +90,7 @@ describe('napajs/transport', () => {
         });
 
         it('@napa: non-transportable', () => {
-            napaZone.execute(NAPA_ZONE_TEST_MODULE, "nontransportableTest", []);
+            napaZone.execute(NAPA_ZONE_TEST_MODULE, "nontransportableTest");
         });
     });
 });

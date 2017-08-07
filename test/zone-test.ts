@@ -102,7 +102,7 @@ describe('napajs/zone', function () {
         });
 
         it('@napa', async () => {
-            let result = await napaZone1.execute(napaZoneTestModule, "getCurrentZone", []);
+            let result = await napaZone1.execute(napaZoneTestModule, "getCurrentZone");
             assert.strictEqual(result.value.id, 'napa-zone1');
         });
     });
@@ -212,7 +212,7 @@ describe('napajs/zone', function () {
             return shouldFail(() => {
                 return napa.zone.current.broadcast(() => {
                     console.log(napaZone1.id);
-                }, []);
+                });
             });
         });
 
@@ -220,7 +220,7 @@ describe('napajs/zone', function () {
             return shouldFail(() => {
                 return napaZone1.broadcast(() => {
                     console.log(napaZone1.id);
-                }, []);
+                });
             });
         });
 
@@ -438,12 +438,12 @@ describe('napajs/zone', function () {
         });
 
         it('@node: -> node zone with anonymous function having closure (should success)', () => {
-            return napa.zone.current.execute(() => { return napaZone1; }, []);
+            return napa.zone.current.execute(() => { return napaZone1; });
         });
 
         it('@node: -> napa zone with anonymous function having closure (should fail)', () => {
             return shouldFail(() => {
-                return napaZone1.execute(() => { return napaZone1; }, []);
+                return napaZone1.execute(() => { return napaZone1; });
             });
         });
 

@@ -35,7 +35,7 @@ describe('napajs/memory', function() {
         });
         
         it('@napa: crtAllocator', () => {
-            napaZone.execute(NAPA_ZONE_TEST_MODULE, "crtAllocatorTest", []);
+            napaZone.execute(NAPA_ZONE_TEST_MODULE, "crtAllocatorTest");
         });
     
         it('@node: defaultAllocator', () => {
@@ -45,7 +45,7 @@ describe('napajs/memory', function() {
         });
 
         it('@napa: defaultAllocator', () => {
-            napaZone.execute(NAPA_ZONE_TEST_MODULE, "defaultAllocatorTest", []);
+            napaZone.execute(NAPA_ZONE_TEST_MODULE, "defaultAllocatorTest");
         });
 
         it('@node: debugAllocator', () => {
@@ -63,7 +63,7 @@ describe('napajs/memory', function() {
         });
 
         it('@napa: debugAllocator', () => {
-            napaZone.execute(NAPA_ZONE_TEST_MODULE, "debugAllocatorTest", []);
+            napaZone.execute(NAPA_ZONE_TEST_MODULE, "debugAllocatorTest");
         });
     });
 });

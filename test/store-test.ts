@@ -32,7 +32,7 @@ describe('napajs/store', function () {
     let store2CreationComplete: Promise<napa.zone.Result>;
 
     it('@napa: store.getOrCreate', () => {
-        store2CreationComplete = napaZone.execute(NAPA_ZONE_TEST_MODULE, "getOrCreateStoreTest", []);
+        store2CreationComplete = napaZone.execute(NAPA_ZONE_TEST_MODULE, "getOrCreateStoreTest");
     });
 
     it('@node: store.get', async () => {
@@ -46,7 +46,7 @@ describe('napajs/store', function () {
     });
 
     it('@napa: store.get', () => {
-        napaZone.execute(NAPA_ZONE_TEST_MODULE, "getStoreTest", []);
+        napaZone.execute(NAPA_ZONE_TEST_MODULE, "getStoreTest");
     });
 
     it('simple types: set in node, get in node', () => {

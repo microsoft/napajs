@@ -1,6 +1,7 @@
 # API References
 
 ## Core modules
+- Napa.js specific [`global`](./napa-globals.md) variables
 - Namespace [`zone`](./zone.md): Multi-thread JavaScript runtime
 - Namespace [`transport`](./transport.md): Passing JavaScript values across threads
 - Namespace [`store`](./store.md): Sharing JavaScript values across threads
