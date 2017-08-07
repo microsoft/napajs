@@ -4,7 +4,6 @@
 import * as assert from "assert";
 import * as path from "path";
 import * as napa from "../lib/index";
-let napaDir: string = path.resolve(__dirname, '..');
 
 type Zone = napa.zone.Zone;
 
@@ -460,19 +459,17 @@ describe('napajs/zone', function () {
         });
 
         it('@node: -> node zone with transportable args', () => {
-            return napa.zone.current.execute((allocator: napa.memory.Allocator, napaDir: string) => {
+            return napa.zone.current.execute((allocator: napa.memory.Allocator) => {
                 var assert = require("assert");
-                var napa = require(napaDir);
-                assert.deepEqual(allocator.handle, napa.memory.crtAllocator.handle);
-            }, [napa.memory.crtAllocator, napaDir]);
+                assert.deepEqual(allocator.handle, (<any>global).napa.memory.crtAllocator.handle);
+            }, [napa.memory.crtAllocator]);
         });
 
         it('@node: -> napa zone with transportable args', () => {
-            return napaZone1.execute((allocator: napa.memory.Allocator, napaDir: string) => {
+            return napaZone1.execute((allocator: napa.memory.Allocator) => {
                 var assert = require("assert");
-                var napa = require(napaDir);
-                assert.deepEqual(allocator.handle, napa.memory.crtAllocator.handle);
-            }, [napa.memory.crtAllocator, napaDir]);
+                assert.deepEqual(allocator.handle, (<any>global).napa.memory.crtAllocator.handle);
+            }, [napa.memory.crtAllocator]);
         });
 
         it('@napa: -> napa zone with transportable args', () => {
