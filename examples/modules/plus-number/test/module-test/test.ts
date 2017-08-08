@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 var assert = require('assert');
-var plusNumber = require('plus-number');
+var plusNumber = require('../..');
 
 describe('Test suite for plus-number', function() {
     it('adds a given value', function() {
