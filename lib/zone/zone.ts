@@ -97,7 +97,7 @@ export interface Zone {
     /// <param name="func"> The JS function. </param>
     /// <param name="args"> The arguments that will pass to the function. </param>
     /// <returns> A promise which is resolved when broadcast completes and rejected when failed. </returns>
-    broadcast(func: (...args: any[]) => void, args: any[]) : Promise<void>;
+    broadcast(func: (...args: any[]) => void, args?: any[]) : Promise<void>;
 
     /// <summary> Executes the function on one of the zone workers. </summary>
     /// <param name="module"> The module name that contains the function to execute. </param>
@@ -105,13 +105,13 @@ export interface Zone {
     /// <param name="args"> The arguments that will pass to the function. </param>
     /// <param name="options"> Call options, defaults to DEFAULT_CALL_OPTIONS. </param>
     /// <returns> A promise of result which is resolved when execute completes, and rejected when failed. </returns>
-    execute(module: string, func: string, args: any[], options?: CallOptions) : Promise<Result>;
+    execute(module: string, func: string, args?: any[], options?: CallOptions) : Promise<Result>;
 
     /// <summary> Executes the function on one of the zone workers. </summary>
     /// <param name="func"> The JS function to execute. </param>
     /// <param name="args"> The arguments that will pass to the function. </param>
     /// <param name="options"> Call options, defaults to DEFAULT_CALL_OPTIONS. </param>
     /// <returns> A promise of result which is resolved when execute completes, and rejected when failed. </returns>
-    execute(func: (...args: any[]) => any, args: any[], options?: CallOptions) : Promise<Result>;
+    execute(func: (...args: any[]) => any, args?: any[], options?: CallOptions) : Promise<Result>;
 }
 

@@ -14,3 +14,6 @@ export { log, memory, metric, runtime, store, transport, zone };
 // Add execute proxy to global context.
 import { call } from './zone/function-call';
 (<any>(global))["__napa_zone_call__"] = call;
+
+// Export 'napa' in global for all isolates that require napajs.
+(<any>(global))["napa"] = exports;
