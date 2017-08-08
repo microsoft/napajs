@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "experimentalDecorators": true,
+        "noImplicitAny": true,
+        "declaration": true,
+        "sourceMap": false,
+        "lib": ["es2015"],
+        "declarationDir": "../types"
+    }
+}

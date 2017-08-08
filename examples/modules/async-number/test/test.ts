@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 var assert = require('assert');
-var asyncNumber = require('async-number');
+var asyncNumber = require('../lib/async-number');
 
 describe('Test suite for async-number', function() {
     it('change number asynchronously on separate thread', (done: () => void) => {
@@ -24,21 +24,21 @@ describe('Test suite for async-number', function() {
 
     it('change number synchronously on current thread', (done: () => void) => {
         let now = asyncNumber.now();
-        assert.equal(now, 0);
+        assert.equal(now, 6);
 
         asyncNumber.increaseSync(3, (value: number) => {
             // This must be called after the last statement of *it* block is executed.
-            assert.equal(value, 3);
+            assert.equal(value, 9);
 
             now = asyncNumber.now();
-            assert.equal(now, 6);
+            assert.equal(now, 12);
 
             done();
         });
 
         now = asyncNumber.now();
-        // 'now' should be 3.
-        assert.equal(now, 3);
+        // 'now' should be 9.
+        assert.equal(now, 9);
 
         asyncNumber.increaseSync(3, (value: number) => {} );
     });

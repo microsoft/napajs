@@ -1,0 +1,24 @@
+{
+  "name": "async-number",
+  "version": "0.0.1",
+  "author": "napajs",
+  "description": "Example of an async napa module.",
+  "main": "./lib/async-number.js",
+  "types": "./types/async-number.d.ts",
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": ">= 3.4.2",
+    "typescript": ">= 2.2.1",
+    "@types/node": ">= 7.0.8",
+    "@types/mocha": ">= 2.2.0",
+    "markdown-table": "1.1.0"
+  },
+  "dependencies": {
+    "napajs": "0.0.11"
+  },
+  "scripts": {
+    "install": "cmake-js compile && tsc -p lib",
+    "pretest": "tsc -p test",
+    "test": "mocha test --recursive"
+  }
+}
