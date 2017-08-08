@@ -16,9 +16,9 @@
     - Interface [`Zone`](#zone)
         - [`zone.id: string`](#zone-id)
         - [`zone.broadcast(code: string): Promise<void>`](#broadcast-code)
-        - [`zone.broadcast(function: (...args: any[]) => void, args: any[]): Promise<void>`](#broadcast-function)
-        - [`zone.execute(moduleName: string, functionName: string, args: any[], options?: CallOptions): Promise<Result>`](#execute-by-name)
-        - [`zone.execute(function: (...args[]) => any, args: any[], options?: CallOptions): Promise<Result>`](#execute-anonymous-function)
+        - [`zone.broadcast(function: (...args: any[]) => void, args?: any[]): Promise<void>`](#broadcast-function)
+        - [`zone.execute(moduleName: string, functionName: string, args?: any[], options?: CallOptions): Promise<Result>`](#execute-by-name)
+        - [`zone.execute(function: (...args[]) => any, args?: any[], options?: CallOptions): Promise<Result>`](#execute-anonymous-function)
     - Interface [`CallOptions`](#call-options)
         - [`options.timeout: number`](#call-options-timeout)
     - Interface [`Result`](#result)
@@ -119,7 +119,7 @@ zone.broadcast('var state = 0;')
         console.log('broadcast failed.')
     });
 ```
-### <a name="broadcast-function"></a> zone.broadcast(function: (...args: any[]) => void, args: any[]): Promise\<void\>
+### <a name="broadcast-function"></a> zone.broadcast(function: (...args: any[]) => void, args?: any[]): Promise\<void\>
 It asynchronously broadcasts an anonymous function with its arguments to all workers, which returns a Promise of void. If any of the workers failed to execute the code, promise will be rejected with an error message.
 
 *Please note that Napa doesn't support closure in 'function' during broadcast.
@@ -137,7 +137,7 @@ zone.broadcast((state) => {
         console.log('broadcast failed:', error)
     });
 ```
-### <a name="execute-by-name"></a> zone.execute(moduleName: string, functionName: string, args: any[], options?: CallOptions): Promise\<any\>
+### <a name="execute-by-name"></a> zone.execute(moduleName: string, functionName: string, args?: any[], options?: CallOptions): Promise\<any\>
 Execute a function asynchronously on arbitrary worker via module name and function name. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns a Promise of [`Result`](#result). If error happens, either bad code, user exception, or timeout is reached, promise will be rejected.
 
 Example: Execute function 'bar' in module 'foo', with arguments [1, 'hello', { field1: 1 }]. 300ms timeout is applied.
@@ -156,7 +156,7 @@ zone.execute(
 
 ```
 
-### <a name="execute-anonymous-function"></a> zone.execute(function: (...args: any[]) => any, args: any[], options?: CallOptions): Promise\<any\>
+### <a name="execute-anonymous-function"></a> zone.execute(function: (...args: any[]) => any, args?: any[], options?: CallOptions): Promise\<any\>
 
 Execute an anonymous function asynchronously on arbitrary worker. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns a Promise of [`Result`](#result). If error happens, either bad code, user exception, or timeout is reached, promise will be rejected.
 

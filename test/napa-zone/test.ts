@@ -4,7 +4,6 @@
 import * as assert from 'assert';
 import * as path from "path";
 import * as napa from '../../lib/index';
-let napaDir: string = path.resolve(__dirname, '../..');
 
 export function bar(input: any) {
     return input;
@@ -95,12 +94,11 @@ export function executeTestFunctionWithTimeout(id: string, waitTimeInMS: number,
 export function executeWithTransportableArgs(id: string): Promise<any> {
     let zone = napa.zone.get(id);
     return new Promise((resolve, reject) => {
-        zone.execute((allocator: napa.memory.Allocator, napaDir: string) => {
+        zone.execute((allocator: napa.memory.Allocator) => {
                 var assert = require("assert");
-                var napa = require(napaDir);
-                assert.deepEqual(allocator.handle, napa.memory.crtAllocator.handle);
+                assert.deepEqual(allocator.handle, (<any>global).napa.memory.crtAllocator.handle);
                 return 1;
-            }, [napa.memory.crtAllocator, napaDir])
+            }, [napa.memory.crtAllocator])
             .then ((result: napa.zone.Result) => resolve(result.value))
             .catch((error: any) => reject(error));
     });

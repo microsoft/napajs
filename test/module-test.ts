@@ -71,7 +71,7 @@ describe('napajs/module', function () {
     describe('resolve', function () {
         // TODO: support correct __dirname in anonymous function and move tests from 'resolution-tests.js' here.
         it('require.resolve', () => {
-            return napaZone.execute(__dirname + "/module/resolution-tests.js", "run", []);
+            return napaZone.execute(__dirname + "/module/resolution-tests.js", "run");
         });
     });
 
@@ -83,7 +83,7 @@ describe('napajs/module', function () {
                 
                     assert(process.argv.length > 0);
                     assert(process.argv[0].includes('node'));
-                }, []);
+                });
             });
 
             it('execPath', () => {
@@ -91,7 +91,7 @@ describe('napajs/module', function () {
                     var assert = require("assert");
                 
                     assert(process.execPath.includes('node'));
-                }, []);
+                });
             });
 
             it('env', () => {
@@ -100,7 +100,7 @@ describe('napajs/module', function () {
                 
                     process.env.test = "napa-test";
                     assert.equal(process.env.test, "napa-test");
-                }, []);
+                });
             });
 
             it('platform', () => {
@@ -111,7 +111,7 @@ describe('napajs/module', function () {
                            process.platform == 'darwin' || 
                            process.platform == 'linux' || 
                            process.platform == 'freebsd');
-                }, []);
+                });
             });
 
             it('umask', () => {
@@ -120,7 +120,7 @@ describe('napajs/module', function () {
                     
                     var old = process.umask(0);
                     assert.equal(process.umask(old), 0);
-                }, []);
+                });
             });
 
             it('chdir', () => {
@@ -133,7 +133,7 @@ describe('napajs/module', function () {
                     assert(cwd.includes(process.cwd()));
                     process.chdir(cwd);
                     assert.equal(cwd, process.cwd());
-                }, []);
+                });
             });
 
             it('pid', () => {
@@ -142,7 +142,7 @@ describe('napajs/module', function () {
                     
                     assert.notEqual(typeof process.pid, undefined);
                     assert(!isNaN(process.pid));
-                }, []);
+                });
             });
         });
 
@@ -234,7 +234,7 @@ describe('napajs/module', function () {
                     } else {
                         assert.equal(path.normalize('a\\b\\..\\c/./d/././.'), "a/c/d");
                     }
-                }, []);
+                });
             });
 
             it('resolve', () => {
@@ -253,7 +253,7 @@ describe('napajs/module', function () {
                         assert.equal(path.resolve("abc", "efg", "../hij", "./xyz.txt"), process.cwd() + "/abc/hij/xyz.txt");
                         assert.equal(path.resolve("abc", "/a.txt"), "/a.txt");
                     }
-                }, []);
+                });
             });
 
             it('join', () => {
@@ -266,7 +266,7 @@ describe('napajs/module', function () {
                     } else {
                         assert.equal(path.join("/foo", "bar", "baz/asdf", "quux", ".."), "/foo/bar/baz/asdf");
                     }
-                }, []);
+                });
             });
 
             // TODO: fix bugs
@@ -286,7 +286,7 @@ describe('napajs/module', function () {
                         assert.equal(path.dirname("/etc"), "/");
                         assert.equal(path.dirname("/etc/passwd"), "/etc");
                     }
-                }, []);
+                });
             });
 
             it('basename', () => {
@@ -305,7 +305,7 @@ describe('napajs/module', function () {
                         assert.equal(path.basename("/test/abc.txt", ".txt"), "abc");
                         assert.equal(path.basename("/windows/abc.txt", ".Txt"), "abc.txt");
                     }
-                }, []);
+                });
             });
 
             // TODO: fix bugs
@@ -324,7 +324,7 @@ describe('napajs/module', function () {
                         assert.equal(path.extname("/test/a.json.txt"), ".txt");
                         assert.equal(path.extname("/test/a."), ".");
                     }
-                }, []);
+                });
             });
 
             it('isAbsolute', () => {
@@ -345,7 +345,7 @@ describe('napajs/module', function () {
                         assert.equal(path.isAbsolute("./abc"), false);
                         assert.equal(path.isAbsolute("abc"), false);
                     }
-                }, []);
+                });
             });
 
             it('relative', () => {
@@ -364,7 +364,7 @@ describe('napajs/module', function () {
                         assert.equal(path.relative("/test/a", "a.txt"), "../.." + process.cwd() + "/a.txt");
                         assert.equal(path.relative("/test/a", "/test/"), "..");
                     }
-                }, []);
+                });
             });
 
             it('sep', () => {
@@ -377,7 +377,7 @@ describe('napajs/module', function () {
                     } else {
                         assert.equal(path.sep, "/");
                     }
-                }, []);
+                });
             });
         });
 
@@ -388,7 +388,7 @@ describe('napajs/module', function () {
                     var os = require("os");
                     
                     assert(os.type() == "Windows_NT" || os.type() == "Darwin" || os.type() == "Linux");
-                }, []);
+                });
             });
         });
     });
