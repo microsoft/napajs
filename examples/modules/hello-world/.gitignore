@@ -1,5 +1,5 @@
 # ignore all js files under script
-script/**/*.js
+lib/*.js
 
 # ignore all js files under test
 test/*.js
