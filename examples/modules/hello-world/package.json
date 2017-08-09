@@ -1,6 +1,6 @@
 {
   "name": "hello-world",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "napajs",
   "description": "Example of a simple napa module.",
   "main": "./lib/hello-world.js",
@@ -14,7 +14,7 @@
     "markdown-table": "1.1.0"
   },
   "dependencies": {
-    "napajs": "0.0.11"
+    "napajs": ">= 0.1.0"
   },
   "scripts": {
     "install": "cmake-js compile && tsc -p lib",

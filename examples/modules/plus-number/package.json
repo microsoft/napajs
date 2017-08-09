@@ -1,6 +1,6 @@
 {
   "name": "plus-number",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "napajs",
   "description": "Example of a napa module wrapping a class.",
   "main": "./lib/plus-number.js",
@@ -14,11 +14,11 @@
     "markdown-table": "1.1.0"
   },
   "dependencies": {
-    "napajs": "0.0.11"
+    "napajs": ">= 0.1.0"
   },
   "scripts": {
     "install": "cmake-js compile && tsc -p lib",
-    "pretest": "bin/plus-number-library-test && tsc -p test/module-test",
-    "test": "mocha test/module-test --recursive"
+    "pretest": "tsc -p test/module-test",
+    "test": "node test/library-test/run.js && mocha test/module-test --recursive"
   }
 }

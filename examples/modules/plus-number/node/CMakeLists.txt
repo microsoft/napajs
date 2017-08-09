@@ -21,5 +21,5 @@ target_compile_definitions(${TARGET_NAME} PRIVATE NAPA_BINDING_EXPORTS BUILDING_
 
 # Link libraries
 target_link_libraries(${TARGET_NAME} PRIVATE
-    ${CMAKE_JS_LIB}
-    ${PROJECT_SOURCE_DIR}/bin/plus-number.lib)
+    plus-number
+    ${CMAKE_JS_LIB})

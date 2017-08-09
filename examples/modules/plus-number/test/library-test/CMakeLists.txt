@@ -14,5 +14,5 @@ target_include_directories(${TARGET_NAME} PRIVATE
     ${PROJECT_SOURCE_DIR}/node_modules/napajs/third-party)
 
 # Link libraries
-target_link_libraries(${TARGET_NAME} PRIVATE
-    ${PROJECT_SOURCE_DIR}/bin/plus-number.lib)
+target_link_libraries(${TARGET_NAME} PRIVATE plus-number)
+
