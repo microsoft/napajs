@@ -1,21 +1,42 @@
 language: node_js
-node_js:
-- '8'
-- '6'
-- '4.5.0'
-os:
-- linux
-- osx
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - g++-5
-
 matrix:
-  include:
+  # Node 4.5.0          Linux (Precise)     G++5.x
   - os: linux
+    dist: precise
+    node_js: '4.5.0'
+    compiler: g++-5
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        - george-edison55-precise-backports
+        packages:
+        - g++-5
+        - cmake-data
+        - cmake
+    env:
+    - COMPILER_OVERRIDE="CXX=g++-5 CC=gcc-5"
+  # Node 4.5.0          OS X (Yosemite)     G++5.x
+  - os: osx
+    node_js: '4.5.0'
+    osx_image: xcode6.4
+  # Node LTS (6.x)      Linux (Trusty)      G++5.x
+  - os: linux
+    dist: trusty
+    node_js: '6'
+    compiler: g++-5
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-5
+    env:
+    - COMPILER_OVERRIDE="CXX=g++-5 CC=gcc-5"
+  # Node LTS (8.x)      Linux (Trusty)      G++6.x
+  - os: linux
+    dist: trusty
+    node_js: '8'
     compiler: g++-6
     addons:
       apt:
@@ -25,16 +46,15 @@ matrix:
         - g++-6
     env:
     - COMPILER_OVERRIDE="CXX=g++-6 CC=gcc-6"
+  # Node LTS (8.x)      OS X (Sierra)       G++5.x
+  - os: osx
+    node_js: '8'
+    osx_image: xcode8.3
 
 before_install:
 - |
   if [ $TRAVIS_OS_NAME == linux ]; then
-    if [ "$COMPILER_OVERRIDE" == "" ]; then
-      #use g++5 by default
-      export CXX="g++-5" CC="gcc-5"
-    else
-      export ${COMPILER_OVERRIDE}
-    fi
+    export ${COMPILER_OVERRIDE}
   fi
 install:
 - npm install cmake-js -g
