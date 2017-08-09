@@ -1,5 +1,10 @@
 language: node_js
+compiler: default
 matrix:
+  exclude:
+  # Disable the default build and use customized matrix only.
+  - compiler: default
+  include:
   # Node 4.5.0          Linux (Precise)     G++5.x
   - os: linux
     dist: precise
