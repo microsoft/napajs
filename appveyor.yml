@@ -1,0 +1,26 @@
+environment:
+  matrix:
+    # Windows Server 2012 R2       Visual C++ Build Tools 2015
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      nodejs_version: 4.5.0
+    # Windows Server 2012 R2       Visual C++ Build Tools 2015
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      nodejs_version: LTS
+    # Windows Server 2016          Visual C++ Build Tools 2017
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      nodejs_version: Stable
+
+platform:
+- x64
+
+install:
+- ps: Install-Product node $env:nodejs_version $env:platform
+- npm install cmake-js -g
+- npm install
+
+# Skip MSBuild stage
+build: off
+
+test_script:
+- npm test
+- npm run unittest
