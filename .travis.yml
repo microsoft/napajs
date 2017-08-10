@@ -51,18 +51,10 @@ matrix:
         - g++-6
     env:
     - COMPILER_OVERRIDE="CXX=g++-6 CC=gcc-6"
-  # Node LTS (8.x)      OS X (Sierra)       AppleClang 8.1
-  - os: osx
-    node_js: '8'
-    osx_image: xcode8.3
   # Node LTS (8.x)      OS X (Sierra)       AppleClang
   - os: osx
     node_js: '8'
     osx_image: xcode8.2
-  # Node LTS (8.x)      OS X (Sierra)       AppleClang
-  - os: osx
-    node_js: '8'
-    osx_image: xcode8.1
 
 before_install:
 - |
