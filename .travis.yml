@@ -12,6 +12,8 @@ matrix:
     compiler: g++-5
     addons:
       apt:
+        # The apt source 'ubuntu-toolchain-r-test' is for GCC 5+
+        # The apt source 'george-edison55-precise-backports' is for CMake 3.2+
         sources:
         - ubuntu-toolchain-r-test
         - george-edison55-precise-backports
