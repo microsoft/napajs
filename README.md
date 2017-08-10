@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/Microsoft/napajs.svg?branch=master)](https://travis-ci.org/Microsoft/napajs)
+[![npm version](https://badge.fury.io/js/napajs.svg)](https://www.npmjs.com/package/napajs)
+[![Downloads](https://img.shields.io/npm/dm/napajs.svg)](https://www.npmjs.com/package/napajs)
+
 # Napa.js
 Napa.js is a multi-threaded JavaScript runtime built on [V8](https://github.com/v8/v8), which was originally designed to develop highly iterative services with non-compromised performance in Bing. As it evolves, we find it useful to complement [Node.js](https://nodejs.org) in CPU-bound tasks, with the capability of executing JavaScript in multiple V8 isolates and communicating between them. Napa.js is exposed as a Node.js module, while it can also be embedded in a host process without Node.js dependency.
 
