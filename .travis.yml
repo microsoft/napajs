@@ -5,7 +5,7 @@ matrix:
   # Disable the default build and use customized matrix only.
   - compiler: default
   include:
-  # Node 4.5.0          Linux (Precise)     G++5.x
+  # Node 4.5.0          Linux (Precise)     G++5.4.1
   - os: linux
     dist: precise
     node_js: '4.5.0'
@@ -21,11 +21,7 @@ matrix:
         - cmake
     env:
     - COMPILER_OVERRIDE="CXX=g++-5 CC=gcc-5"
-  # Node 4.5.0          OS X (Yosemite)     G++5.x
-  - os: osx
-    node_js: '4.5.0'
-    osx_image: xcode6.4
-  # Node LTS (6.x)      Linux (Trusty)      G++5.x
+  # Node LTS (6.x)      Linux (Trusty)      G++5.4.1
   - os: linux
     dist: trusty
     node_js: '6'
@@ -38,7 +34,11 @@ matrix:
         - g++-5
     env:
     - COMPILER_OVERRIDE="CXX=g++-5 CC=gcc-5"
-  # Node LTS (8.x)      Linux (Trusty)      G++6.x
+  # Node LTS (6.x)      OS X (Yosemite)     AppleClang 6.1
+  - os: osx
+    node_js: '6'
+    osx_image: xcode6.4
+  # Node LTS (8.x)      Linux (Trusty)      G++6.3.0
   - os: linux
     dist: trusty
     node_js: '8'
@@ -51,10 +51,18 @@ matrix:
         - g++-6
     env:
     - COMPILER_OVERRIDE="CXX=g++-6 CC=gcc-6"
-  # Node LTS (8.x)      OS X (Sierra)       G++5.x
+  # Node LTS (8.x)      OS X (Sierra)       AppleClang 8.1
   - os: osx
     node_js: '8'
     osx_image: xcode8.3
+  # Node LTS (8.x)      OS X (Sierra)       AppleClang
+  - os: osx
+    node_js: '8'
+    osx_image: xcode8.2
+  # Node LTS (8.x)      OS X (Sierra)       AppleClang
+  - os: osx
+    node_js: '8'
+    osx_image: xcode8.1
 
 before_install:
 - |
