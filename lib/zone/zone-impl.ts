@@ -12,7 +12,7 @@ interface FunctionSpec {
     transportContext: transport.TransportContext;
 }
 
-class ExecuteResult implements zone.Result{
+class Result implements zone.Result{
 
      constructor(payload: string, transportContext: transport.TransportContext) {
           this._payload = payload;
@@ -70,13 +70,13 @@ export class ZoneImpl implements zone.Zone {
         });
     }
 
-    public execute(arg1: any, arg2: any, arg3?: any, arg4?: any) : Promise<zone.Result> {
+    public execute(arg1: any, arg2?: any, arg3?: any, arg4?: any) : Promise<zone.Result> {
         let spec : FunctionSpec = this.createExecuteRequest(arg1, arg2, arg3, arg4);
         
         return new Promise<zone.Result>((resolve, reject) => {
             this._nativeZone.execute(spec, (result: any) => {
                 if (result.code === 0) {
-                    resolve(new ExecuteResult(
+                    resolve(new Result(
                         result.returnValue,
                         transport.createTransportContext(true, result.contextHandle)));
                 } else {
@@ -134,6 +134,10 @@ export class ZoneImpl implements zone.Zone {
             functionName = arg2;
             args = arg3;
             options = arg4;
+        }
+
+        if (args == null) {
+            args = [];
         }
 
         // Create a non-owning transport context which will be passed to execute call.
