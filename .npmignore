@@ -17,3 +17,4 @@ test/tsconfig.json
 .npmignore
 .taskkey
 .travis.yml
+appveyor.yml
