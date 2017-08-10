@@ -2,10 +2,16 @@
 // Licensed under the MIT license.
 
 var assert = require('assert');
-var asyncNumber = require('../lib/async-number');
+import * as path from "path";
+let asyncNumberDir: string = path.resolve(__dirname, '..');
+var asyncNumber = require(asyncNumberDir);
+var napa = require('napajs');
+var zone = napa.zone.create('zone');
 
 describe('Test suite for async-number', function() {
-    it('change number asynchronously on separate thread', (done: () => void) => {
+    this.timeout(0);
+
+    it('change number asynchronously on separate thread', () => {
         let now = asyncNumber.now();
         assert.equal(now, 0);
 
@@ -15,14 +21,12 @@ describe('Test suite for async-number', function() {
 
             now = asyncNumber.now();
             assert.equal(now, 6);
-
-            done();
         });
 
         asyncNumber.increaseSync(3, (value: number) => {} );
     });
 
-    it('change number synchronously on current thread', (done: () => void) => {
+    it('change number synchronously on current thread', () => {
         let now = asyncNumber.now();
         assert.equal(now, 6);
 
@@ -32,8 +36,6 @@ describe('Test suite for async-number', function() {
 
             now = asyncNumber.now();
             assert.equal(now, 12);
-
-            done();
         });
 
         now = asyncNumber.now();
@@ -41,5 +43,47 @@ describe('Test suite for async-number', function() {
         assert.equal(now, 9);
 
         asyncNumber.increaseSync(3, (value: number) => {} );
+    });
+
+    it('change number asynchronously on separate thread in napa zone', () => {
+        return zone.execute((asyncNumberDir: string) => {
+            var assert = require('assert');
+            var asyncNumber = require(asyncNumberDir);
+            let now = asyncNumber.now();
+            assert.equal(now, 0);
+
+            asyncNumber.increase(3, (value: number) => {
+                // This must be called after the last statement of *it* block is executed.
+                assert(value == 3 || value == 6);
+
+                now = asyncNumber.now();
+                assert.equal(now, 6);
+            });
+
+            asyncNumber.increaseSync(3, (value: number) => {} );
+        }, [asyncNumberDir]);
+    });
+
+    it('change number synchronously on current thread in napa zone', () => {
+        zone.execute((asyncNumberDir: string) => {
+            var assert = require('assert');
+            var asyncNumber = require(asyncNumberDir);
+            let now = asyncNumber.now();
+            assert.equal(now, 0);
+
+            asyncNumber.increaseSync(3, (value: number) => {
+                // This must be called after the last statement of *it* block is executed.
+                assert.equal(value, 3);
+
+                now = asyncNumber.now();
+                assert.equal(now, 6);
+            });
+
+            now = asyncNumber.now();
+            // 'now' should be 3.
+            assert.equal(now, 3);
+            asyncNumber.increaseSync(3, (value: number) => {} );
+            return 1;
+        }, [asyncNumberDir]);
     });
 })

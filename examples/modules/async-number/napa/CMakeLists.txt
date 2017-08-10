@@ -13,7 +13,7 @@ set_target_properties(${TARGET_NAME} PROPERTIES PREFIX "" SUFFIX "")
 # Include directories
 target_include_directories(${TARGET_NAME} PRIVATE
     ${CMAKE_JS_INC}
-    ${PROJECT_SOURCE_DIR}/node_modules/napajs/inc)
+    ${NAPAJS_ROOT}/inc)
 
 # Compiler definitions
 target_compile_definitions(${TARGET_NAME} PRIVATE NAPA_EXPORTS NAPA_BINDING_EXPORTS BUILDING_NAPA_EXTENSION)
@@ -21,4 +21,4 @@ target_compile_definitions(${TARGET_NAME} PRIVATE NAPA_EXPORTS NAPA_BINDING_EXPO
 # Link libraries
 target_link_libraries(${TARGET_NAME} PRIVATE
     ${CMAKE_JS_LIB}
-    ${PROJECT_SOURCE_DIR}/node_modules/napajs/bin/napa.lib)
+    ${NAPAJS_ROOT}/bin/napa.lib)

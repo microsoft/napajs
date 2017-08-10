@@ -19,6 +19,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN)
 
+execute_process(COMMAND cmd /c "node -e process.stdout.write(require.resolve('napajs'))" RESULT_VARIABLE ERR OUTPUT_VARIABLE NAPAJS_PATH)
+if(ERR)
+    message(FATAL_ERROR "Failed to get NAPAJS_PATH")
+endif(ERR)
+string(REGEX MATCH ^.*napajs NAPAJS_ROOT ${NAPAJS_PATH})
+
 # Build plus-number library.
 add_subdirectory(src)
 

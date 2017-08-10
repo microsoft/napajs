@@ -14,7 +14,7 @@ set_target_properties(${TARGET_NAME} PROPERTIES PREFIX "" SUFFIX "")
 target_include_directories(${TARGET_NAME} PRIVATE
     ${CMAKE_JS_INC}
     ${PROJECT_SOURCE_DIR}/inc
-    ${PROJECT_SOURCE_DIR}/node_modules/napajs/inc)
+    ${NAPAJS_ROOT}/inc)
 
 # Compiler definitions
 target_compile_definitions(${TARGET_NAME} PRIVATE NAPA_BINDING_EXPORTS BUILDING_NODE_EXTENSION)
