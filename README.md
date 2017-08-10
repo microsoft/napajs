@@ -15,7 +15,7 @@ Napa.js requires C++ compiler that supports [C++14](https://en.wikipedia.org/wik
     * OSX: `xcode-select --install`
 * Install CMake: 
     * Linux: [via Apt-get](https://askubuntu.com/questions/355565/how-to-install-latest-cmake-version-in-linux-ubuntu-from-command-line)
-    * OSX: `brew install cmake`
+    * OSX: [via brew](http://macappstore.org/cmake/)
     * [Download or build](https://cmake.org/install/)
 * Install cmake-js: `npm install -g cmake-js`
 
