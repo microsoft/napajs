@@ -5,6 +5,7 @@
   "description": "Example of a simple napa module.",
   "main": "./lib/hello-world.js",
   "types": "./types/hello-world.d.ts",
+  "gypfile": true,
   "license": "MIT",
   "devDependencies": {
     "mocha": ">= 3.4.2",
@@ -17,7 +18,7 @@
     "napajs": ">= 0.1.0"
   },
   "scripts": {
-    "install": "cmake-js compile && tsc -p lib",
+    "install": "node-gyp rebuild && tsc -p lib",
     "pretest": "tsc -p test",
     "test": "mocha test --recursive"
   }

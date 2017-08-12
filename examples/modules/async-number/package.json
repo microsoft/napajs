@@ -5,6 +5,7 @@
   "description": "Example of an async napa module.",
   "main": "./lib/async-number.js",
   "types": "./types/async-number.d.ts",
+  "gypfile": true,
   "license": "MIT",
   "devDependencies": {
     "mocha": ">= 3.4.2",
@@ -17,7 +18,7 @@
     "napajs": ">= 0.1.0"
   },
   "scripts": {
-    "install": "cmake-js compile && tsc -p lib",
+    "install": "node-gyp rebuild && tsc -p lib",
     "pretest": "tsc -p test",
     "test": "mocha test --recursive"
   }
