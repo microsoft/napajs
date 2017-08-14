@@ -37,9 +37,10 @@ public:
     /// <summary> It resolves a full module path from a given argument of require(). </summary>
     /// <param name="name"> Module name or path. </param>
     /// <param name="path"> Current context path. </param>
+    /// <param name="fromContent"> Whether module is loaded is from content in string. </param>
     /// <returns> Module resolution details. </returns>
     /// <remarks> It also searches NODE_PATH directories. </remarks>
-    ModuleInfo Resolve(const char* name, const char* path);
+    ModuleInfo Resolve(const char* name, const char* path, bool fromContent);
 
     /// <summary> It registers core modules, so they are resolved first. </summary>
     /// <param name="name"> Module name. </param>
@@ -62,6 +63,12 @@ private:
     /// <param name="path"> Base path. </param>
     /// <returns> Module resolution details. </returns>
     ModuleInfo ResolveFromEnv(const filesystem::Path& name, const filesystem::Path& path);
+
+    /// <summary> It resolves a full module path for user provided path name and content. </summary>
+    /// <param name="name"> Module name or path. </param>
+    /// <param name="path"> Base path. </param>
+    /// <returns> Module resolution details. </returns>
+    ModuleInfo ResolveFromContent(const filesystem::Path& name, const filesystem::Path& path);
 
     /// <summary> It checks whether a module exists or not. </summary>
     /// <param name="name"> Module name. </param>
@@ -114,8 +121,8 @@ ModuleResolver::ModuleResolver() : _impl(std::make_unique<ModuleResolver::Module
 
 ModuleResolver::~ModuleResolver() = default;
 
-ModuleInfo ModuleResolver::Resolve(const char* name, const char* path) {
-    return _impl->Resolve(name, path);
+ModuleInfo ModuleResolver::Resolve(const char* name, const char* path, bool fromContent) {
+    return _impl->Resolve(name, path, fromContent);
 }
 
 bool ModuleResolver::SetAsCoreModule(const char* name) {
@@ -144,7 +151,7 @@ ModuleResolver::ModuleResolverImpl::ModuleResolverImpl() {
         }                                           \
     } while (false);
 
-ModuleInfo ModuleResolver::ModuleResolverImpl::Resolve(const char* name, const char* path) {
+ModuleInfo ModuleResolver::ModuleResolverImpl::Resolve(const char* name, const char* path, bool fromContent) {
     // If name is a core modules, return it.
     if (IsCoreModule(name)) {
         return ModuleInfo{ModuleType::CORE, std::string(name), std::string()};
@@ -153,7 +160,11 @@ ModuleInfo ModuleResolver::ModuleResolverImpl::Resolve(const char* name, const c
     // Normalize module context path.
     filesystem::Path basePath =
         (path == nullptr) ? filesystem::CurrentDirectory() : filesystem::Path(path);
-    
+
+    if (fromContent) {
+        return ResolveFromContent(name, basePath);
+    }
+
     // Look up from the given path.
     RETURN_IF_NOT_EMPTY(ResolveFromPath(name, basePath));
 
@@ -192,6 +203,12 @@ ModuleInfo ModuleResolver::ModuleResolverImpl::ResolveFromEnv(const filesystem::
     }
 
     return ModuleInfo{ModuleType::NONE, std::string(), std::string()};
+}
+
+ModuleInfo ModuleResolver::ModuleResolverImpl::ResolveFromContent(const filesystem::Path& name,
+                                                                  const filesystem::Path& path) {
+    auto fullPath = path.IsEmpty() ? path : (path / name).Normalize();
+    return ModuleInfo{ModuleType::JAVASCRIPT, fullPath.String(), ""};
 }
 
 bool ModuleResolver::ModuleResolverImpl::IsCoreModule(const std::string& module) {

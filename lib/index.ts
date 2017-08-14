@@ -7,9 +7,10 @@ import * as metric from './metric';
 import * as runtime from './runtime';
 import * as store from './store';
 import * as transport from './transport';
+import * as v8 from './v8';
 import * as zone from './zone';
 
-export { log, memory, metric, runtime, store, transport, zone };
+export { log, memory, metric, runtime, store, transport, v8, zone };
 
 // Add execute proxy to global context.
 import { call } from './zone/function-call';

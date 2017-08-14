@@ -100,14 +100,21 @@ function callFunction(
     options: CallOptions): any {
 
     let module: any = null;
-    if (moduleName == null || moduleName.length === 0) {
+    let useAnonymousFunction: boolean = false;
+
+    if (moduleName == null || moduleName.length === 0 || moduleName === 'global') {
         module = global;
-    } else if (moduleName !== '__function') {
+    } else if (moduleName === '__function') {
+        useAnonymousFunction = true;
+    } else {
         module = require(moduleName);
     }
 
     let func = null;
-    if (module != null) {
+    if (!useAnonymousFunction) {
+        if (module == null) {
+            throw new Error(`Cannot load module \"${moduleName}\".`);
+        }
         func = module;
         if (functionName != null && functionName.length != 0) {
             var path = functionName.split('.');

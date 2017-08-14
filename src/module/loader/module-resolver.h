@@ -66,8 +66,9 @@ namespace module {
         /// <summary> It resolves a full module path from a given argument of require(). </summary>
         /// <param name="name"> Module name or path. </param>
         /// <param name="path"> Current context path. If nullptr, it'll be current path. </param>
+        /// <param name="fromContent"> Whether module is loaded is from content in string. </param>
         /// <returns> Module resolution information. </returns>
-        ModuleInfo Resolve(const char* name, const char* path = nullptr);
+        ModuleInfo Resolve(const char* name, const char* path = nullptr, bool fromContent = false);
 
         /// <summary> It registers built-in or core modules, so they are resolved first. </summary>
         /// <param name="name"> Module name. </param>
