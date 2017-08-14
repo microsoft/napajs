@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
-project("addon")
+project("library-test")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/bin)
@@ -25,10 +25,25 @@ if(ERR)
 endif(ERR)
 string(REGEX MATCH ^.*napajs NAPAJS_ROOT ${NAPAJS_PATH})
 
-# Build napa addon.
-add_subdirectory(napa)
+file(COPY ../bin/plus-number.dll DESTINATION ${PROJECT_SOURCE_DIR}/bin/)
+file(COPY ../bin/plus-number.exp DESTINATION ${PROJECT_SOURCE_DIR}/bin/)
+file(COPY ../bin/plus-number.lib DESTINATION ${PROJECT_SOURCE_DIR}/bin/)
 
-if (CMAKE_JS_VERSION)
-    # Build napa addon for node.
-    add_subdirectory(node)
-endif()
+# Files to compile
+file(GLOB SOURCE_FILES 
+    "main.cpp")
+
+# The executable name
+set(TARGET_NAME "library-test")
+
+# The generated library
+add_executable(${TARGET_NAME} ${SOURCE_FILES})
+
+# Include directories
+target_include_directories(${TARGET_NAME} PRIVATE
+    ../inc
+    ${NAPAJS_ROOT}/third-party)
+
+# Link libraries
+target_link_libraries(${TARGET_NAME} PRIVATE
+    ${PROJECT_SOURCE_DIR}/bin/plus-number.lib)

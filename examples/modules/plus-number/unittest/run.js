@@ -6,10 +6,10 @@ var childProcess = require('child_process');
 
 try {
     childProcess.execFileSync(
-        path.join(__dirname, '../../bin/', process.platform === 'win32'? 'library-test.exe': 'library-test'),
+        path.join(__dirname, 'bin', process.platform === 'win32'? 'library-test.exe': 'library-test'),
         [],
         {
-            cwd: path.join(__dirname, '../../bin'),
+            cwd: path.join(__dirname, 'bin'),
             stdio: 'inherit'
         }
     );

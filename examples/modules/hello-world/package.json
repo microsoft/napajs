@@ -18,7 +18,8 @@
     "napajs": ">= 0.1.0"
   },
   "scripts": {
-    "install": "node-gyp rebuild && tsc -p lib",
+    "install": "node-gyp configure && node-gyp build",
+    "prepare": "tsc -p lib",
     "pretest": "tsc -p test",
     "test": "mocha test --recursive"
   }

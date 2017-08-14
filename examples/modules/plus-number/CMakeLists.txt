@@ -25,16 +25,69 @@ if(ERR)
 endif(ERR)
 string(REGEX MATCH ^.*napajs NAPAJS_ROOT ${NAPAJS_PATH})
 
+############################################################################
 # Build plus-number library.
-add_subdirectory(src)
+set(LIBRARY_TARGET_NAME "plus-number")
 
+# The generated library
+add_library(${LIBRARY_TARGET_NAME} SHARED "src/plus-number.cpp")
+
+# Include directories
+target_include_directories(${LIBRARY_TARGET_NAME} PRIVATE inc)
+
+# Compiler definitions
+target_compile_definitions(${LIBRARY_TARGET_NAME} PRIVATE NAPA_EXAMPLE_API)
+
+#############################################################################
 # Build napa addon.
-add_subdirectory(napa)
+set(NAPA_ADDON_TARGET_NAME "${PROJECT_NAME}.napa")
 
+# The generated library
+add_library(${NAPA_ADDON_TARGET_NAME} SHARED "src/addon.cpp")
+
+set_target_properties(${NAPA_ADDON_TARGET_NAME} PROPERTIES PREFIX "" SUFFIX "")
+
+# Include directories
+target_include_directories(${NAPA_ADDON_TARGET_NAME} PRIVATE
+    inc
+    ${CMAKE_JS_INC}
+    ${NAPAJS_ROOT}/inc)
+
+# Compiler definitions
+target_compile_definitions(${NAPA_ADDON_TARGET_NAME} PRIVATE
+    NAPA_EXPORTS
+    NAPA_BINDING_EXPORTS
+    BUILDING_NAPA_EXTENSION)
+
+# Link libraries
+target_link_libraries(${NAPA_ADDON_TARGET_NAME} PRIVATE
+    plus-number
+    ${CMAKE_JS_LIB}
+    ${NAPAJS_ROOT}/bin/napa.lib)
+
+#############################################################################
 if (CMAKE_JS_VERSION)
     # Build napa addon for node.
-    add_subdirectory(node)
-endif()
+    set(NODE_ADDON_TARGET_NAME "${PROJECT_NAME}.node")
 
-# Build plus-number library.
-add_subdirectory(test/library-test)
+    # The generated library
+    add_library(${NODE_ADDON_TARGET_NAME} SHARED "src/addon.cpp")
+
+    set_target_properties(${NODE_ADDON_TARGET_NAME} PROPERTIES PREFIX "" SUFFIX "")
+
+    # Include directories
+    target_include_directories(${NODE_ADDON_TARGET_NAME} PRIVATE
+        inc
+        ${CMAKE_JS_INC}
+        ${NAPAJS_ROOT}/inc)
+
+    # Compiler definitions
+    target_compile_definitions(${NODE_ADDON_TARGET_NAME} PRIVATE
+        NAPA_BINDING_EXPORTS
+        BUILDING_NODE_EXTENSION)
+
+    # Link libraries
+    target_link_libraries(${NODE_ADDON_TARGET_NAME} PRIVATE
+        plus-number
+        ${CMAKE_JS_LIB})
+endif()

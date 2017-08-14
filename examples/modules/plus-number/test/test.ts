@@ -3,7 +3,7 @@
 
 var assert = require('assert');
 import * as path from "path";
-let plusNumberDir: string = path.resolve(__dirname, '../..');
+let plusNumberDir: string = path.resolve(__dirname, '..');
 var plusNumber = require(plusNumberDir);
 var napa = require('napajs');
 var zone = napa.zone.create('zone');

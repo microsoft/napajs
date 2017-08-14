@@ -17,8 +17,9 @@
     "napajs": ">= 0.1.0"
   },
   "scripts": {
-    "install": "cmake-js compile && tsc -p lib",
-    "pretest": "tsc -p test/module-test",
-    "test": "node test/library-test/run.js && mocha test/module-test --recursive"
+    "install": "cmake-js compile",
+    "prepare": "tsc -p lib",
+    "pretest": "cmake-js compile -d unittest && tsc -p test",
+    "test": "node unittest/run.js && mocha test --recursive"
   }
 }

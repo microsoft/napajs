@@ -11,7 +11,7 @@
       "type": "<(library)",
       "product_extension": "",
       "product_dir": "<(PRODUCT_DIR)/../../bin",
-      "sources": [ "node/addon.cpp"],
+      "sources": [ "src/addon.cpp"],
       "defines": [
         "NAPA_BINDING_EXPORTS",
         "BUILDING_NODE_EXTENSION"
@@ -23,7 +23,7 @@
       "type": "<(library)",
       "product_extension": "",
       "product_dir": "<(PRODUCT_DIR)/../../bin",
-      "sources": [ "node/addon.cpp" ],
+      "sources": [ "src/addon.cpp" ],
       "defines": [
         "NAPA_EXPORTS",
         "NAPA_BINDING_EXPORTS",
