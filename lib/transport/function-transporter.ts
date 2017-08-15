@@ -67,7 +67,7 @@ export function load(hash: string): (...args: any[]) => any {
         if (def == null) {
             throw new Error(`Function hash cannot be found: ${hash}`);
         }
-        func = loadFunction(hash, def);
+        func = loadFunction(def);
         cacheFunction(hash, func);
     }
     return func;
@@ -97,8 +97,8 @@ function getFunctionHash(signature: string): string {
 declare var __in_napa: boolean;
 
 /// <summary> Load function from definition. </summary>
-function loadFunction(hash: string, def: FunctionDef): (...args: any[]) => any {
-    let moduleId = def.origin + "#" + hash;
+function loadFunction(def: FunctionDef): (...args: any[]) => any {
+    let moduleId = def.origin;
     let script = "module.exports = " + def.body + ";";
     let func: any = null;
 

@@ -158,7 +158,12 @@ zone.execute(
 
 ### <a name="execute-anonymous-function"></a> zone.execute(function: (...args: any[]) => any, args?: any[], options?: CallOptions): Promise\<any\>
 
-Execute an anonymous function asynchronously on arbitrary worker. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns a Promise of [`Result`](#result). If error happens, either bad code, user exception, or timeout is reached, promise will be rejected.
+Execute a function object asynchronously on arbitrary worker. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns a Promise of [`Result`](#result). If error happens, either bad code, user exception, or timeout is reached, promise will be rejected.
+
+Here are a few restricitions on executing a function object:
+
+- The function object cannot access variables from closure
+- Unless the function object has `origin` property, it will use current file as `origin`, which will be used to set `__filename` and `__dirname`. (See [transporting functions](./transport.md#transporting-functions))
 
 Example:
 ```js
@@ -172,6 +177,20 @@ zone.execute((a: number, b: string, c: object) => {
         console.log('execute failed:', error);
     });
 
+```
+Output:
+```
+execute succeeded: 1hello{"field1":1}
+
+```
+Another example demonstrates accessing `__filename` when executing an anonymous function:
+```js
+// File: /usr/file1.js
+zone.execute(() => { console.log(__filename);});
+```
+Output:
+```
+/usr/file1.js
 ```
 ## <a name="call-options"></a> Interface `CallOptions`
 Interface for options to call function in `zone.execute`.
