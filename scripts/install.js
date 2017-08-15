@@ -57,7 +57,7 @@ if (errorCode == 0) {
 		// We have to run it explicitly in this script.
 
 		try {
-			log.info('NAPA_INSTALL', `Current NPM version={npmVersion}. NPM below 4.x does not recognize script 'prepare'.`);
+			log.info('NAPA_INSTALL', `Current NPM version=${npmVersion}. NPM below 4.x does not recognize script 'prepare'.`);
 			log.info('NAPA_INSTALL', 'running "npm run prepare"...');
 			execSync('npm run prepare', { 'stdio': 'inherit' });
 		} catch (e) {
