@@ -27,9 +27,6 @@
     "@types/mocha": ">= 2.2.0",
     "markdown-table": "1.1.0"
   },
-  "bundledDependencies": [
-    "node-pre-gyp"
-  ],
   "scripts": {
     "benchmark": "node benchmark/bench.js",
     "install": "node scripts/install.js",
