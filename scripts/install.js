@@ -29,7 +29,7 @@ if (!skipFetch) {
 		execSync(fetchCommand, { 'stdio': 'inherit' });
 
 		log.info('NAPA_INSTALL', 'done successfully by download.');
-		process.exit();
+		skipBuild = true;
 	} catch (e) {
 		errorCode = e.status;
 	}
@@ -42,9 +42,27 @@ if (!skipBuild) {
 		execSync(buildCommand, { 'stdio': 'inherit' });
 
 		log.info('NAPA_INSTALL', 'done successfully by build.');
-		process.exit();
 	} catch (e) {
 		errorCode = e.status;
+	}
+}
+
+// ==== Compile Typescript files ====
+if (errorCode == 0) {
+	var npmVersion = execSync('npm --version').toString().trim();
+	var npmMajorVersion = npmVersion.split('.')[0];
+	var npmMajorVersionNumber = parseInt(npmMajorVersion);
+	if (npmMajorVersionNumber < 4) {
+		// Before npm 4.x, the 'prepare' script will not run automatically by npm.
+		// We have to run it explicitly in this script.
+
+		try {
+			log.info('NAPA_INSTALL', `Current NPM version={npmVersion}. NPM below 4.x does not recognize script 'prepare'.`);
+			log.info('NAPA_INSTALL', 'running "npm run prepare"...');
+			execSync('npm run prepare', { 'stdio': 'inherit' });
+		} catch (e) {
+			errorCode = e.status;
+		}
 	}
 }
 
