@@ -111,7 +111,9 @@ function callFunction(
     }
 
     let func = null;
-    if (!useAnonymousFunction) {
+    if (useAnonymousFunction) {
+        func = transport.loadFunction(functionName);
+    } else {
         if (module == null) {
             throw new Error(`Cannot load module \"${moduleName}\".`);
         }
@@ -128,9 +130,6 @@ function callFunction(
         if (typeof func !== 'function') {
             throw new Error("'" + functionName + "' in module '" + moduleName + "' is not a function");
         }
-    } else {
-        // Anonymous function.
-        func = transport.loadFunction(functionName);
     }
 
     let args = marshalledArgs.map((arg) => { return transport.unmarshall(arg, transportContext); });

@@ -12,6 +12,7 @@
 #include "module-resolver.h"
 
 #include <module/core-modules/core-modules.h>
+#include <platform/filesystem.h>
 #include <utils/debug.h>
 
 // TODO: decouple dependencies between module-loader and zone.
@@ -213,7 +214,7 @@ void ModuleLoader::ModuleLoaderImpl::ResolveCallback(const v8::FunctionCallbackI
     v8::String::Utf8Value path(args[0]);
     auto contextDir = module_loader_helpers::GetCurrentContextDirectory();
 
-    auto resolvedPath = moduleLoader->_impl->_resolver.Resolve(*path, contextDir.c_str(), false);
+    auto resolvedPath = moduleLoader->_impl->_resolver.Resolve(*path, contextDir.c_str());
     args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, resolvedPath.fullPath));
 }
 
@@ -261,12 +262,20 @@ void ModuleLoader::ModuleLoaderImpl::RequireModule(const char* path, const v8::F
         contextDir = module_loader_helpers::GetCurrentContextDirectory();
     }
 
-    auto moduleInfo = _resolver.Resolve(path, contextDir.c_str(), fromContent);
-    if (moduleInfo.type == ModuleType::NONE) {
-        NAPA_DEBUG("ModuleLoader", "Cannot resolve module path \"%s\".", path);
-
-        args.GetReturnValue().SetUndefined();
-        return;
+    ModuleInfo moduleInfo;
+    if (fromContent) {
+        moduleInfo = ModuleInfo { 
+            ModuleType::JAVASCRIPT, 
+            (filesystem::Path(contextDir) / path).Normalize().String(),    // Module id
+            ""                                                             // No package.json
+        };
+    } else {
+        moduleInfo = _resolver.Resolve(path, contextDir.c_str());
+        if (moduleInfo.type == ModuleType::NONE) {
+            NAPA_DEBUG("ModuleLoader", "Cannot resolve module path \"%s\".", path);
+            args.GetReturnValue().SetUndefined();
+            return;
+        }
     }
 
     v8::Local<v8::Object> module;
