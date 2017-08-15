@@ -214,8 +214,10 @@ void ModuleLoader::ModuleLoaderImpl::ResolveCallback(const v8::FunctionCallbackI
     v8::String::Utf8Value path(args[0]);
     auto contextDir = module_loader_helpers::GetCurrentContextDirectory();
 
-    auto resolvedPath = moduleLoader->_impl->_resolver.Resolve(*path, contextDir.c_str());
-    args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, resolvedPath.fullPath));
+    auto moduleInfo = moduleLoader->_impl->_resolver.Resolve(*path, contextDir.c_str());
+    JS_ENSURE(isolate, moduleInfo.type != ModuleType::NONE, "Cannot find module \"%s\"", *path);
+
+    args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, moduleInfo.fullPath));
 }
 
 void ModuleLoader::ModuleLoaderImpl::BindingCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
