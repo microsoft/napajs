@@ -23,7 +23,7 @@ function run() {
     assert(require.resolve('./sub-folder/.././sub-folder/file.js'), __dirname + '/sub-folder/file.js');
 
     // Relative path without extension to napa addon
-    assert(require.resolve('./addon/build/simple-napa-addon'), __dirname + '/addon/build/simple-napa-addon.napa');
+    assert(require.resolve('./sub-folder/addon/mock-addon'), __dirname + '/sub-folder/addon/mock-addon.napa');
 
     // From node_modules with extension
     assert(require.resolve('file.js'), __dirname + '/node_modules/file.js');

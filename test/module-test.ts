@@ -36,7 +36,7 @@ describe('napajs/module', function () {
         it('napa module', () => {
             return napaZone.execute((thisFilePath: string) => {
                 var assert = require("assert");
-                var napaModule = require(thisFilePath + '/module/addon/build/simple-napa-addon.napa');
+                var napaModule = require(thisFilePath + '/../bin/simple-napa-addon.napa');
                 
                 assert.notEqual(napaModule, undefined);
                 assert.equal(napaModule.getModuleName(), "simple-napa-addon");
@@ -46,7 +46,7 @@ describe('napajs/module', function () {
         it('object wrap module', () => {
             return napaZone.execute((thisFilePath: string) => {
                 var assert = require("assert");
-                var napaModule = require(thisFilePath + '/module/addon/build/simple-napa-addon.napa');
+                var napaModule = require(thisFilePath + '/../bin/simple-napa-addon.napa');
                 
                 var obj = napaModule.createSimpleObjectWrap();
                 assert.notEqual(obj, undefined);
@@ -397,7 +397,7 @@ describe('napajs/module', function () {
         it('post async work', () => {
             return napaZone.execute((thisFilePath: string) => {
                 var assert = require("assert");
-                var napaModule = require(thisFilePath + '/module/addon/build/simple-napa-addon.napa');
+                var napaModule = require(thisFilePath + '/../bin/simple-napa-addon.napa');
 
                 var obj = napaModule.createSimpleObjectWrap();
                 obj.setValue(3);
@@ -420,7 +420,7 @@ describe('napajs/module', function () {
         it('do async work', () => {
             return napaZone.execute((thisFilePath: string) => {
                 var assert = require("assert");
-                var napaModule = require(thisFilePath + '/module/addon/build/simple-napa-addon.napa');
+                var napaModule = require(thisFilePath + '/../bin/simple-napa-addon.napa');
 
                 var obj = napaModule.createSimpleObjectWrap();
                 obj.setValue(8);
