@@ -19,13 +19,29 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN)
 
-execute_process(COMMAND cmd /c "node -e process.stdout.write(require.resolve('napajs'))" RESULT_VARIABLE ERR OUTPUT_VARIABLE NAPAJS_PATH)
+# Prefix an suffix of Library name for different OS.
+if (WIN32)
+    set(LIBRARY_PREFIX "")
+    set(LIBRARY_SUFFIX ".lib")
+elseif (APPLE)
+    set(LIBRARY_PREFIX "lib")
+    set(LIBRARY_SUFFIX ".dylib")
+else()
+    set(LIBRARY_PREFIX "lib")
+    set(LIBRARY_SUFFIX ".so")
+endif()
+
+execute_process(COMMAND cmd /c
+    "node -e process.stdout.write(require.resolve('napajs'))"
+    RESULT_VARIABLE ERR
+    OUTPUT_VARIABLE NAPAJS_PATH)
+
 if(ERR)
     message(FATAL_ERROR "Failed to get NAPAJS_PATH")
 endif(ERR)
 string(REGEX MATCH ^.*napajs NAPAJS_ROOT ${NAPAJS_PATH})
 
-############################################################################
+#######################################################################################
 # Build plus-number library.
 set(LIBRARY_TARGET_NAME "plus-number")
 
@@ -38,7 +54,7 @@ target_include_directories(${LIBRARY_TARGET_NAME} PRIVATE inc)
 # Compiler definitions
 target_compile_definitions(${LIBRARY_TARGET_NAME} PRIVATE NAPA_EXAMPLE_API)
 
-#############################################################################
+#######################################################################################
 # Build napa addon.
 set(NAPA_ADDON_TARGET_NAME "${PROJECT_NAME}.napa")
 
@@ -63,9 +79,9 @@ target_compile_definitions(${NAPA_ADDON_TARGET_NAME} PRIVATE
 target_link_libraries(${NAPA_ADDON_TARGET_NAME} PRIVATE
     plus-number
     ${CMAKE_JS_LIB}
-    ${NAPAJS_ROOT}/bin/napa.lib)
+    ${NAPAJS_ROOT}/bin/${LIBRARY_PREFIX}napa${LIBRARY_SUFFIX})
 
-#############################################################################
+#######################################################################################
 if (CMAKE_JS_VERSION)
     # Build napa addon for node.
     set(NODE_ADDON_TARGET_NAME "${PROJECT_NAME}.node")

@@ -15,8 +15,8 @@ The source codes can be organized as the structure below.
     +-- test
     |   +-- test.ts
     |   +-- tsconfig.json
-    +-- binding.gyp (when build configuration in node-gyp)
-    +-- CMakeLists.txt (when build configuration in cmake-js)
+    +-- binding.gyp (when build configuration is given in node-gyp)
+    +-- CMakeLists.txt (when build configuration is given in cmake-js)
     +-- package.json
     +-- README.md
 ```

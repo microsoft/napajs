@@ -19,15 +19,30 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN)
 
-execute_process(COMMAND cmd /c "node -e process.stdout.write(require.resolve('napajs'))" RESULT_VARIABLE ERR OUTPUT_VARIABLE NAPAJS_PATH)
+# Prefix an suffix of Library name for different OS.
+if (WIN32)
+    set(LIBRARY_PREFIX "")
+    set(LIBRARY_SUFFIX ".lib")
+elseif (APPLE)
+    set(LIBRARY_PREFIX "lib")
+    set(LIBRARY_SUFFIX ".dylib")
+else()
+    set(LIBRARY_PREFIX "lib")
+    set(LIBRARY_SUFFIX ".so")
+endif()
+
+execute_process(COMMAND cmd /c
+    "node -e process.stdout.write(require.resolve('napajs'))"
+    RESULT_VARIABLE ERR
+    OUTPUT_VARIABLE NAPAJS_PATH)
+
 if(ERR)
     message(FATAL_ERROR "Failed to get NAPAJS_PATH")
 endif(ERR)
 string(REGEX MATCH ^.*napajs NAPAJS_ROOT ${NAPAJS_PATH})
 
-file(COPY ../bin/plus-number.dll DESTINATION ${PROJECT_SOURCE_DIR}/bin/)
-file(COPY ../bin/plus-number.exp DESTINATION ${PROJECT_SOURCE_DIR}/bin/)
-file(COPY ../bin/plus-number.lib DESTINATION ${PROJECT_SOURCE_DIR}/bin/)
+file(GLOB LIBRARY-FILES "../bin/*plus-number.*")
+file(COPY ${LIBRARY-FILES} DESTINATION ${PROJECT_SOURCE_DIR}/bin/)
 
 # Files to compile
 file(GLOB SOURCE_FILES 
@@ -46,4 +61,4 @@ target_include_directories(${TARGET_NAME} PRIVATE
 
 # Link libraries
 target_link_libraries(${TARGET_NAME} PRIVATE
-    ${PROJECT_SOURCE_DIR}/bin/plus-number.lib)
+    ${PROJECT_SOURCE_DIR}/bin/${LIBRARY_PREFIX}plus-number${LIBRARY_SUFFIX})

@@ -31,7 +31,7 @@
       ],
       "include_dirs": ["<(napajs_root)/inc"],
       "link_settings": {
-        "libraries": ["<(napajs_root)/bin/napa.lib"]
+        "libraries": ["<(napajs_root)/bin/napa"]
       }
     }
   ]
