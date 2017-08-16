@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-var assert = require('assert');
+let assert = require('assert');
 import * as path from "path";
 let asyncNumberDir: string = path.resolve(__dirname, '..');
-var asyncNumber = require(asyncNumberDir);
-var napa = require('napajs');
-var zone = napa.zone.create('zone');
+let asyncNumber = require(asyncNumberDir);
+let napa = require('napajs');
+let zone = napa.zone.create('zone');
 
 describe('Test suite for async-number', function() {
     this.timeout(0);
@@ -47,8 +47,8 @@ describe('Test suite for async-number', function() {
 
     it('change number asynchronously on separate thread in napa zone', () => {
         return zone.execute((asyncNumberDir: string) => {
-            var assert = require('assert');
-            var asyncNumber = require(asyncNumberDir);
+            let assert = require('assert');
+            let asyncNumber = require(asyncNumberDir);
             let now = asyncNumber.now();
             assert.equal(now, 0);
 
@@ -66,8 +66,8 @@ describe('Test suite for async-number', function() {
 
     it('change number synchronously on current thread in napa zone', () => {
         zone.execute((asyncNumberDir: string) => {
-            var assert = require('assert');
-            var asyncNumber = require(asyncNumberDir);
+            let assert = require('assert');
+            let asyncNumber = require(asyncNumberDir);
             let now = asyncNumber.now();
             assert.equal(now, 0);
 

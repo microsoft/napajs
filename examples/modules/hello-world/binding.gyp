@@ -3,7 +3,21 @@
     "napajs_root": "<!(node -e \" \
       var path = require('path'); \
       process.stdout.write(path.resolve(path.dirname(require.resolve('napajs')), '..')); \
-    \")"
+    \")",
+    'conditions': [
+      ['OS=="win"', {
+        "library_prefix": "",
+        "library_suffix": ".lib"
+      }],
+      ['OS=="linux"', {
+        "library_prefix": "lib",
+        "library_suffix": ".dylib"
+      }],
+      ['OS=="max"', {
+        "library_prefix": "lib",
+        "library_suffix": ".so"
+      }]
+    ]
   },
   "targets": [
     {
@@ -31,7 +45,7 @@
       ],
       "include_dirs": ["<(napajs_root)/inc"],
       "link_settings": {
-        "libraries": ["<(napajs_root)/bin/napa"]
+        "libraries": ["<(napajs_root)/bin/<(library_prefix)napa<(library_suffix)"]
       }
     }
   ]

@@ -31,15 +31,13 @@ else()
     set(LIBRARY_SUFFIX ".so")
 endif()
 
-execute_process(COMMAND cmd /c
-    "node -e process.stdout.write(require.resolve('napajs'))"
+execute_process(COMMAND node -e
+    "var path = require('path'); process.stdout.write(path.resolve(path.dirname(require.resolve('napajs')), '..'));"
     RESULT_VARIABLE ERR
-    OUTPUT_VARIABLE NAPAJS_PATH)
-
+    OUTPUT_VARIABLE NAPAJS_ROOT)
 if(ERR)
-    message(FATAL_ERROR "Failed to get NAPAJS_PATH")
+    message(FATAL_ERROR "Failed to get NAPAJS_ROOT")
 endif(ERR)
-string(REGEX MATCH ^.*napajs NAPAJS_ROOT ${NAPAJS_PATH})
 
 file(GLOB LIBRARY-FILES "../bin/*plus-number.*")
 file(COPY ${LIBRARY-FILES} DESTINATION ${PROJECT_SOURCE_DIR}/bin/)
