@@ -12,7 +12,6 @@ namespace demo {
     /// <summary> Napa example module wrapping PlusNumber class. </summary>
     class PlusNumberWrap : public NAPA_OBJECTWRAP {
     public:
-
         /// <summary> Register this class into V8. </summary>
         static void Init();
 
@@ -21,7 +20,6 @@ namespace demo {
         static void NewInstance(const v8::FunctionCallbackInfo<v8::Value>& args);
 
     private:
-
         /// <summary> Exported class name. </summary>
         static const char* _exportName;
 
@@ -37,11 +35,12 @@ namespace demo {
         static void Add(const v8::FunctionCallbackInfo<v8::Value>& args);
 
         /// <summary> Declare persistent constructor to create PlusNumber instance. </summary>
-        /// <remarks> Napa creates persistent constructor at each isolate while node.js creates the static instance. </remarks>
+        /// <remarks> Napa creates persistent constructor at each isolate while node.js creates the static instance.
+        /// </remarks>
         NAPA_DECLARE_PERSISTENT_CONSTRUCTOR
 
         PlusNumber _plusNumber;
     };
 
-}  // namespace demo
-}  // namespace napa
+} // namespace demo
+} // namespace napa

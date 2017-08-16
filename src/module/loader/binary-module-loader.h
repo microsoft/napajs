@@ -16,7 +16,6 @@ namespace module {
     /// <summary> It loads a module from binary file. </summary>
     class BinaryModuleLoader : public ModuleFileLoader {
     public:
-
         /// <summary> Constructor. </summary>
         /// <param name="builtInSetter"> Built-in modules registerer. </param>
         BinaryModuleLoader(BuiltInModulesSetter builtInModulesSetter);
@@ -28,7 +27,6 @@ namespace module {
         bool TryGet(const std::string& path, v8::Local<v8::Object>& module) override;
 
     private:
-
         /// Built-in modules registerer.
         BuiltInModulesSetter _builtInModulesSetter;
 
@@ -36,5 +34,5 @@ namespace module {
         std::vector<std::shared_ptr<dll::SharedLibrary>> _modules;
     };
 
-}   // End of namespace module.
-}   // End of namespace napa.
+} // End of namespace module.
+} // End of namespace napa.

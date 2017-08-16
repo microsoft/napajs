@@ -13,10 +13,7 @@ namespace module {
     // It comes from node_object_wrap.h.
     class ObjectWrap {
     public:
-
-        ObjectWrap() {
-            _refs = 0;
-        }
+        ObjectWrap() { _refs = 0; }
 
         virtual ~ObjectWrap() {
             if (persistent().IsEmpty()) {
@@ -40,20 +37,13 @@ namespace module {
             return static_cast<T*>(wrap);
         }
 
-        v8::Local<v8::Object> handle() {
-            return handle(v8::Isolate::GetCurrent());
-        }
+        v8::Local<v8::Object> handle() { return handle(v8::Isolate::GetCurrent()); }
 
-        v8::Local<v8::Object> handle(v8::Isolate* isolate) {
-            return v8::Local<v8::Object>::New(isolate, persistent());
-        }
+        v8::Local<v8::Object> handle(v8::Isolate* isolate) { return v8::Local<v8::Object>::New(isolate, persistent()); }
 
-        v8::Persistent<v8::Object>& persistent() {
-            return _handle;
-        }
+        v8::Persistent<v8::Object>& persistent() { return _handle; }
 
     protected:
-
         void Wrap(v8::Local<v8::Object> handle) {
             assert(persistent().IsEmpty());
             assert(handle->InternalFieldCount() > 0);
@@ -99,7 +89,6 @@ namespace module {
         int _refs;
 
     private:
-
         static void WeakCallback(const v8::WeakCallbackInfo<ObjectWrap>& data) {
             ObjectWrap* wrap = data.GetParameter();
             assert(wrap->_refs == 0);
@@ -110,5 +99,5 @@ namespace module {
         v8::Persistent<v8::Object> _handle;
     };
 
-}   // End of namespace module.
-}   // End of namespace napa.
+} // End of namespace module.
+} // End of namespace napa.

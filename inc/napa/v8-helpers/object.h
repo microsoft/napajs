@@ -11,9 +11,8 @@ namespace napa {
 namespace v8_helpers {
     /// <summary> Convert a V8 object to an map. </summary>
     template <typename ValueType>
-    inline std::unordered_map<std::string, ValueType> V8ObjectToMap(
-        v8::Isolate* isolate,
-        const v8::Local<v8::Object>& obj) {
+    inline std::unordered_map<std::string, ValueType> V8ObjectToMap(v8::Isolate* isolate,
+                                                                    const v8::Local<v8::Object>& obj) {
 
         auto context = isolate->GetCurrentContext();
         std::unordered_map<std::string, ValueType> res;

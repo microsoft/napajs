@@ -79,10 +79,11 @@ namespace zone {
 
         auto context = static_cast<AsyncContext*>(work->data);
 
-        std::unique_ptr<AsyncContext, std::function<void(AsyncContext*)>> deferred(context, [](auto context) {
-            context->jsCallback.Reset();
-            delete context;
-        });
+        std::unique_ptr<AsyncContext, std::function<void(AsyncContext*)>> deferred(context,
+                                                                                   [](auto context) {
+                                                                                       context->jsCallback.Reset();
+                                                                                       delete context;
+                                                                                   });
 
         if (status != 0) {
             return;
@@ -103,17 +104,20 @@ namespace zone {
         auto jsCallback = v8::Local<v8::Function>::New(isolate, context->jsCallback);
         context->asyncCompleteCallback(jsCallback, context->result);
 
-        uv_close(reinterpret_cast<uv_handle_t*>(work), [](auto work) {
-            auto context = static_cast<CompletionContext*>(work->data);
-            context->jsCallback.Reset();
-            delete context;
-        });
+        uv_close(reinterpret_cast<uv_handle_t*>(work),
+                 [](auto work) {
+                     auto context = static_cast<CompletionContext*>(work->data);
+                     context->jsCallback.Reset();
+                     delete context;
+                 });
     }
 
-    /// <summary> It runs a synchronous function in a separate thread and posts a completion into the current V8 execution loop. </summary>
+    /// <summary> It runs a synchronous function in a separate thread and posts a completion into the current V8
+    /// execution loop. </summary>
     /// <param name="jsCallback"> Javascript callback. </summary>
     /// <param name="asyncWork"> Function to run asynchronously in separate thread. </param>
-    /// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous callback completes. </param>
+    /// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous callback completes.
+    /// </param>
     /// <remarks> Return value from 'asyncWork' will be the input to 'asyncCompleteCallback'. </remarks>
     inline void PostAsyncWork(v8::Local<v8::Function> jsCallback,
                               AsyncWork asyncWork,
@@ -134,7 +138,8 @@ namespace zone {
     /// <summary> It runs an asynchronous function and post a completion into the current V8 execution loop. </summary>
     /// <param name="jsCallback"> Javascript callback. </summary>
     /// <param name="asyncWork"> Function to wrap async-supporting function. </param>
-    /// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous function completes. </param>
+    /// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous function completes.
+    /// </param>
     /// <remarks> Argument at 'asyncWork' completion callback will be the input to 'asyncCompleteCallback'. </remarks>
     inline void DoAsyncWork(v8::Local<v8::Function> jsCallback,
                             const CompletionWork& asyncWork,
@@ -157,5 +162,5 @@ namespace zone {
         });
     }
 
-}   // End of namespace module.
-}   // End of namespace napa.
+} // End of namespace module.
+} // End of namespace napa.

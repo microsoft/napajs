@@ -17,9 +17,10 @@ namespace v8_helpers {
             auto context = isolate->GetCurrentContext();
 
             auto json = context->Global()
-                ->Get(context, v8::String::NewFromUtf8(isolate, "JSON"))
-                .ToLocalChecked()->ToObject(context)
-                .ToLocalChecked();
+                            ->Get(context, v8::String::NewFromUtf8(isolate, "JSON"))
+                            .ToLocalChecked()
+                            ->ToObject(context)
+                            .ToLocalChecked();
 
             constexpr int argc = 1;
             v8::Local<v8::Value> argv[] = { value };

@@ -9,7 +9,6 @@ using namespace napa;
 using namespace napa::test;
 using namespace napa::module;
 
-
 void GetModuleName(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);

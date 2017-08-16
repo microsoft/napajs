@@ -13,7 +13,7 @@ namespace napa {
 namespace store {
 
     /// <summary> Class for memory store, which stores transportable JS objects across isolates. </summary>
-    /// <remarks> Store is intended to be used by StoreWrap. 
+    /// <remarks> Store is intended to be used by StoreWrap.
     /// We expose Store in napa.dll instead of napa-binding for sharing memory between Napa and Node.JS. </remarks>
     class Store {
     public:

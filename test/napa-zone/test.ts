@@ -11,9 +11,7 @@ export function bar(input: any) {
 
 export namespace ns1 {
     export namespace ns2 {
-        export function foo(input: any) {
-            return input;
-        }
+        export function foo(input: any) { return input; }
     }
 }
 
@@ -27,22 +25,16 @@ export function broadcast(id: string, code: string): Promise<void> {
 }
 
 export function broadcastTestFunction(id: string): Promise<void> {
-    return napa.zone.get(id).broadcast((input: string) => {
-            console.log(input);
-        }, ["hello world"]);
+    return napa.zone.get(id).broadcast((input: string) => { console.log(input); }, [ "hello world" ]);
 }
 
 export function broadcastTransportable(id: string): Promise<void> {
-    return napa.zone.get(id).broadcast((input: any) => {
-            console.log(input);
-        }, [napa.memory.crtAllocator]);
+    return napa.zone.get(id).broadcast((input: any) => { console.log(input); }, [ napa.memory.crtAllocator ]);
 }
 
 export function broadcastClosure(id: string): Promise<void> {
     let zone = napa.zone.get(id);
-    return zone.broadcast(() => {
-            console.log(zone);
-        }, []);
+    return zone.broadcast(() => { console.log(zone); }, []);
 }
 
 export function execute(id: string, moduleName: string, functionName: string, args?: any[]): Promise<any> {
@@ -57,7 +49,7 @@ export function execute(id: string, moduleName: string, functionName: string, ar
 export function executeTestFunction(id: string): Promise<any> {
     let zone = napa.zone.get(id);
     return new Promise((resolve, reject) => {
-        zone.execute((input: string) => { return input; }, ['hello world'])
+        zone.execute((input: string) => { return input; }, [ 'hello world' ])
             .then((result: napa.zone.Result) => resolve(result.value))
             .catch((error: any) => reject(error));
     });
@@ -66,9 +58,9 @@ export function executeTestFunction(id: string): Promise<any> {
 export function executeTestFunctionWithClosure(id: string): Promise<any> {
     let zone = napa.zone.get(id);
     return new Promise((resolve, reject) => {
-        zone.execute(() => { return zone; }, [])
-            .then((result: napa.zone.Result) => resolve(result.value))
-            .catch((error: any) => reject(error));
+        zone.execute(() => {
+                return zone;
+            }, []).then((result: napa.zone.Result) => resolve(result.value)).catch((error: any) => reject(error));
     });
 }
 
@@ -85,7 +77,7 @@ export function executeTestFunctionWithTimeout(id: string, waitTimeInMS: number,
     timeoutInMS = timeoutInMS ? timeoutInMS : Number.MAX_SAFE_INTEGER;
     let zone = napa.zone.get(id);
     return new Promise((resolve, reject) => {
-        zone.execute(waitMS, [waitTimeInMS], {timeout: timeoutInMS})
+        zone.execute(waitMS, [ waitTimeInMS ], { timeout : timeoutInMS })
             .then((result: napa.zone.Result) => resolve(result.value))
             .catch((error: any) => reject(error));
     });
@@ -94,12 +86,14 @@ export function executeTestFunctionWithTimeout(id: string, waitTimeInMS: number,
 export function executeWithTransportableArgs(id: string): Promise<any> {
     let zone = napa.zone.get(id);
     return new Promise((resolve, reject) => {
-        zone.execute((allocator: napa.memory.Allocator) => {
-                var assert = require("assert");
-                assert.deepEqual(allocator.handle, (<any>global).napa.memory.crtAllocator.handle);
-                return 1;
-            }, [napa.memory.crtAllocator])
-            .then ((result: napa.zone.Result) => resolve(result.value))
+        zone.execute(
+                (allocator: napa.memory.Allocator) => {
+                    var assert = require("assert");
+                    assert.deepEqual(allocator.handle, (<any>global).napa.memory.crtAllocator.handle);
+                    return 1;
+                },
+                [ napa.memory.crtAllocator ])
+            .then((result: napa.zone.Result) => resolve(result.value))
             .catch((error: any) => reject(error));
     });
 }
@@ -107,10 +101,8 @@ export function executeWithTransportableArgs(id: string): Promise<any> {
 export function executeWithTransportableReturns(id: string): Promise<any> {
     let zone = napa.zone.get(id);
     return new Promise((resolve, reject) => {
-        zone.execute((allocator: napa.memory.Allocator) => {
-                return allocator;
-            }, [napa.memory.crtAllocator])
-            .then ((result: napa.zone.Result) => resolve(result.value))
+        zone.execute((allocator: napa.memory.Allocator) => { return allocator; }, [ napa.memory.crtAllocator ])
+            .then((result: napa.zone.Result) => resolve(result.value))
             .catch((error: any) => reject(error));
     });
 }
@@ -134,12 +126,7 @@ export function debugAllocatorTest(): void {
     assert(!napa.memory.isEmpty(handle));
     allocator.deallocate(handle, 10);
     let debugInfo = JSON.parse(allocator.getDebugInfo());
-    assert.deepEqual(debugInfo, {
-            allocate: 1,
-            allocatedSize: 10,
-            deallocate: 1,
-            deallocatedSize: 10
-        });
+    assert.deepEqual(debugInfo, { allocate : 1, allocatedSize : 10, deallocate : 1, deallocatedSize : 10 });
 }
 
 let store2: napa.store.Store = null;
@@ -191,15 +178,15 @@ export class CannotPass {
     field2: number;
 }
 
-@napa.transport.cid(module.id)
-export class CanPass extends napa.transport.TransportableObject {
+@napa
+    .transport.cid(module.id) export class CanPass extends napa.transport.TransportableObject {
     constructor(allocator: napa.memory.Allocator) {
         super();
         this._allocator = allocator;
     }
-    
+
     save(payload: any, tc: napa.transport.TransportContext): void {
-        payload['_allocator'] = this._allocator.marshall(tc) 
+        payload['_allocator'] = this._allocator.marshall(tc)
     }
 
     load(payload: any, tc: napa.transport.TransportContext): void {
@@ -217,12 +204,7 @@ function testMarshallUnmarshall(input: any) {
 }
 
 export function simpleTypeTransportTest() {
-    testMarshallUnmarshall({ 
-        a: 'hello',
-        b: {
-            c: [0, 1]
-        }
-    });
+    testMarshallUnmarshall({ a : 'hello', b : { c : [ 0, 1 ] } });
 }
 
 export function jsTransportTest() {
@@ -239,12 +221,9 @@ export function addonTransportTest() {
 
 export function compositeTransportTest() {
     testMarshallUnmarshall({
-        a: napa.memory.debugAllocator(napa.memory.crtAllocator),
-        b: [1, 2],
-        c: {
-            d: napa.memory.defaultAllocator,
-            e: 1
-        }
+        a : napa.memory.debugAllocator(napa.memory.crtAllocator),
+        b : [ 1, 2 ],
+        c : { d : napa.memory.defaultAllocator, e : 1 }
     });
 }
 
@@ -255,8 +234,7 @@ export function nontransportableTest() {
     try {
         napa.transport.marshall(input, tc);
         success = true;
-    }
-    catch(error) {
+    } catch (error) {
     }
     assert(!success);
 }

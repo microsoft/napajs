@@ -5,9 +5,7 @@
 
 using namespace napa::demo;
 
-PlusNumber::PlusNumber(double value)
-    : _value(value) {
-}
+PlusNumber::PlusNumber(double value) : _value(value) {}
 
 double PlusNumber::Add(double value) {
     return _value + value;

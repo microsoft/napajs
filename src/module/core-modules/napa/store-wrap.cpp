@@ -7,7 +7,7 @@
 using namespace napa::module;
 
 NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(StoreWrap)
-    
+
 void StoreWrap::Init() {
     auto isolate = v8::Isolate::GetCurrent();
     auto constructorTemplate = v8::FunctionTemplate::New(isolate, DefaultConstructorCallback<StoreWrap>);
@@ -38,7 +38,7 @@ napa::store::Store& StoreWrap::Get() {
 void StoreWrap::SetCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
-    
+
     CHECK_ARG(isolate, args.Length() == 2, "2 arguments are required for \"set\".");
     CHECK_ARG(isolate, args[0]->IsString(), "Argument \"key\" must be string.");
 
@@ -48,15 +48,12 @@ void StoreWrap::SetCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     // Marshall value object into payload.
     napa::transport::TransportContext transportContext;
     auto payload = napa::transport::Marshall(args[1], &transportContext);
-    
+
     RETURN_ON_PENDING_EXCEPTION(payload);
-    
-    store.Set(
-        v8_helpers::V8ValueTo<std::string>(args[0]).c_str(),
-        std::make_shared<napa::store::Store::ValueType>(napa::store::Store::ValueType {
-            v8_helpers::V8ValueTo<std::string>(payload.ToLocalChecked()),
-            std::move(transportContext)
-        }));
+
+    store.Set(v8_helpers::V8ValueTo<std::string>(args[0]).c_str(),
+              std::make_shared<napa::store::Store::ValueType>(napa::store::Store::ValueType{
+                  v8_helpers::V8ValueTo<std::string>(payload.ToLocalChecked()), std::move(transportContext) }));
 }
 
 void StoreWrap::GetCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -73,9 +70,8 @@ void StoreWrap::GetCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto key = v8_helpers::V8ValueTo<std::string>(args[0]);
     auto storeValue = store.Get(key.c_str());
     if (storeValue != nullptr) {
-        auto value = napa::transport::Unmarshall(
-            v8_helpers::MakeExternalV8String(isolate, storeValue->payload), 
-            &(storeValue->transportContext));
+        auto value = napa::transport::Unmarshall(v8_helpers::MakeExternalV8String(isolate, storeValue->payload),
+                                                 &(storeValue->transportContext));
 
         RETURN_ON_PENDING_EXCEPTION(value);
         args.GetReturnValue().Set(value.ToLocalChecked());
@@ -85,7 +81,7 @@ void StoreWrap::GetCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
 void StoreWrap::HasCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
-    
+
     CHECK_ARG(isolate, args.Length() == 1, "1 argument are required for \"has\".");
     CHECK_ARG(isolate, args[0]->IsString(), "Argument 'key' must be string.");
 
@@ -98,7 +94,7 @@ void StoreWrap::HasCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
 void StoreWrap::DeleteCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
-    
+
     CHECK_ARG(isolate, args.Length() == 1, "1 argument are required for \"delete\".");
     CHECK_ARG(isolate, args[0]->IsString(), "Argument 'key' must be string.");
 
@@ -111,7 +107,7 @@ void StoreWrap::DeleteCallback(const v8::FunctionCallbackInfo<v8::Value>& args) 
 void StoreWrap::GetIdCallback(v8::Local<v8::String>, const v8::PropertyCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
-    
+
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<StoreWrap>(args.Holder());
     auto& store = thisObject->Get();
 
@@ -121,10 +117,9 @@ void StoreWrap::GetIdCallback(v8::Local<v8::String>, const v8::PropertyCallbackI
 void StoreWrap::GetSizeCallback(v8::Local<v8::String>, const v8::PropertyCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
-    
+
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<StoreWrap>(args.Holder());
     auto& store = thisObject->Get();
 
     args.GetReturnValue().Set(static_cast<uint32_t>(store.Size()));
 }
-

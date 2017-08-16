@@ -36,8 +36,8 @@ export interface CallOptions {
     /// <summary> Timeout in milliseconds. By default set to 0 if timeout is not needed. </summary>
     timeout?: number,
 
-    /// <summary> Transport option on passing arguments. By default set to TransportOption.AUTO </summary>
-    transport?: TransportOption
+        /// <summary> Transport option on passing arguments. By default set to TransportOption.AUTO </summary>
+        transport?: TransportOption
 }
 
 /// <summary> Default execution options. </summary>
@@ -46,40 +46,43 @@ export let DEFAULT_CALL_OPTIONS: CallOptions = {
     /// <summary> No timeout. </summary>
     timeout: 0,
 
-    /// <summary> Set argument transport option to automatic. </summary>
-    transport: TransportOption.AUTO
+        /// <summary> Set argument transport option to automatic. </summary>
+        transport: TransportOption.AUTO
 }
 
 /// <summary> Represent the result of an execute call. </summary>
 export interface Result {
 
     /// <summary> The unmarshalled result value. </summary>
-    readonly value : any;
+    readonly value: any;
 
     /// <summary> A marshalled result. </summary>
-    readonly payload : string;
+    readonly payload: string;
 
     /// <summary> Transport context carries additional information needed to unmarshall. </summary>
-    readonly transportContext : transport.TransportContext;
+    readonly transportContext: transport.TransportContext;
 }
 
 /// <summary>
 ///     Interface for Zone (for both Napa zone and Node zone)
 ///     A `zone` consists of one or multiple JavaScript threads, we name each thread `worker`.
-///     Workers within a zone are symmetric, which means execute on any worker from the zone should return the same result,
+///     Workers within a zone are symmetric, which means execute on any worker from the zone should return the same
+///     result,
 ///     and the internal state of every worker should be the same from long lasting point of view.
 ///
 ///     There are 2 operations, designed to reinforce the symmetry of workers:
-///     1) Broadcast - run code that changes worker state on all workers, returning a promise for pending operation. 
+///     1) Broadcast - run code that changes worker state on all workers, returning a promise for pending operation.
 ///        Through the promise, we can only know if operation succeed or failed. Usually we use `broadcast` to bootstrap
 ///        application, pre-cache objects, or change application settings.
-///     2) Execute - run code that doesn't change worker state on an arbitrary worker, returning a promise of getting the result.
+///     2) Execute - run code that doesn't change worker state on an arbitrary worker, returning a promise of getting
+///     the result.
 ///        Execute is designed for doing the real work.
-/// 
-///     Zone operations are on a basis of first-come-first-serve, while `broadcast` takes higher priority over `execute`.
+///
+///     Zone operations are on a basis of first-come-first-serve, while `broadcast` takes higher priority over
+///     `execute`.
 /// </summary>
 export interface Zone {
-    
+
     /// <summary> The zone id. </summary>
     readonly id: string;
 
@@ -88,16 +91,16 @@ export interface Zone {
     /// <returns> A promise which is resolved when broadcast completes, and rejected when failed. </returns>
     /// <remarks>
     ///     Broadcast is designed for the purpose of bootstrapping/changing internal state on all workers.
-    ///     It returns a promise of void, telling whether the operation succeeded or failed. 
+    ///     It returns a promise of void, telling whether the operation succeeded or failed.
     ///     Promise will be rejected on failure from any worker, though most likely all workers will fail if one fails.
     /// </remarks>
-    broadcast(source: string) : Promise<void>;
+    broadcast(source: string): Promise<void>;
 
     /// <summary> Compiles the function on all workers and runs it with the given arguments. </summary>
     /// <param name="func"> The JS function. </param>
     /// <param name="args"> The arguments that will pass to the function. </param>
     /// <returns> A promise which is resolved when broadcast completes and rejected when failed. </returns>
-    broadcast(func: (...args: any[]) => void, args?: any[]) : Promise<void>;
+    broadcast(func: (...args: any[]) => void, args?: any[]): Promise<void>;
 
     /// <summary> Executes the function on one of the zone workers. </summary>
     /// <param name="module"> The module name that contains the function to execute. </param>
@@ -105,13 +108,12 @@ export interface Zone {
     /// <param name="args"> The arguments that will pass to the function. </param>
     /// <param name="options"> Call options, defaults to DEFAULT_CALL_OPTIONS. </param>
     /// <returns> A promise of result which is resolved when execute completes, and rejected when failed. </returns>
-    execute(module: string, func: string, args?: any[], options?: CallOptions) : Promise<Result>;
+    execute(module: string, func: string, args?: any[], options?: CallOptions): Promise<Result>;
 
     /// <summary> Executes the function on one of the zone workers. </summary>
     /// <param name="func"> The JS function to execute. </param>
     /// <param name="args"> The arguments that will pass to the function. </param>
     /// <param name="options"> Call options, defaults to DEFAULT_CALL_OPTIONS. </param>
     /// <returns> A promise of result which is resolved when execute completes, and rejected when failed. </returns>
-    execute(func: (...args: any[]) => any, args?: any[], options?: CallOptions) : Promise<Result>;
+    execute(func: (...args: any[]) => any, args?: any[], options?: CallOptions): Promise<Result>;
 }
-

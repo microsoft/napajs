@@ -19,9 +19,9 @@ export interface Metric {
 }
 
 /// <summary> A cache for metric wraps. </summary>
-var _metricsCache: { [key: string]: Metric } = {};
+var _metricsCache: { [key: string] : Metric } = {};
 
-export function get(section: string, name: string, type: MetricType, dimensions: string[] = []) : Metric {
+export function get(section: string, name: string, type: MetricType, dimensions: string[] = []): Metric {
     let key: string = (section ? section : "") + "\\" + (name ? name : "");
 
     // Check cache first

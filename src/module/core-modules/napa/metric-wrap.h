@@ -14,7 +14,6 @@ namespace module {
     /// <summary> An object wrap to expose metric APIs. </summary>
     class MetricWrap : public NAPA_OBJECTWRAP {
     public:
-
         /// <summary> Initializes the wrap. </summary>
         static void Init();
 
@@ -25,7 +24,6 @@ namespace module {
         NAPA_DECLARE_PERSISTENT_CONSTRUCTOR;
 
     private:
-
         /// <summary> The underlying metric. </summary>
         napa::providers::Metric* _metric;
 
@@ -51,7 +49,7 @@ namespace module {
         static void Decrement(const v8::FunctionCallbackInfo<v8::Value>& args);
 
         /// <summary>
-        ///     Helper method that extracts the dimensions and metric from args and calls the func 
+        ///     Helper method that extracts the dimensions and metric from args and calls the func
         ///     with these arguments.
         /// </summary>
         template <typename Func>

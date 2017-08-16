@@ -70,26 +70,23 @@ void SimpleObjectWrap::DoIncrementWork(const v8::FunctionCallbackInfo<v8::Value>
 
     auto wrap = ObjectWrap::Unwrap<SimpleObjectWrap>(args.Holder());
 
-    napa::zone::DoAsyncWork(
-        v8::Local<v8::Function>::Cast(args[0]),
-        [wrap](auto complete) {
-            // This runs at the same thread.
-            auto newValue = ++wrap->value;
+    napa::zone::DoAsyncWork(v8::Local<v8::Function>::Cast(args[0]),
+                            [wrap](auto complete) {
+                                // This runs at the same thread.
+                                auto newValue = ++wrap->value;
 
-            complete(reinterpret_cast<void*>(static_cast<uintptr_t>(newValue)));
-        },
-        [](auto jsCallback, void* result) {
-            // This runs at the same thread as one DoIncrementWork() is called.
-            auto isolate = v8::Isolate::GetCurrent();
+                                complete(reinterpret_cast<void*>(static_cast<uintptr_t>(newValue)));
+                            },
+                            [](auto jsCallback, void* result) {
+                                // This runs at the same thread as one DoIncrementWork() is called.
+                                auto isolate = v8::Isolate::GetCurrent();
 
-            int32_t argc = 1;
-            v8::Local<v8::Value> argv[] = {
-                v8::Integer::NewFromUnsigned(isolate, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(result)))
-            };
+                                int32_t argc = 1;
+                                v8::Local<v8::Value> argv[] = { v8::Integer::NewFromUnsigned(
+                                    isolate, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(result))) };
 
-            jsCallback->Call(isolate->GetCurrentContext()->Global(), argc, argv);
-        }
-    );
+                                jsCallback->Call(isolate->GetCurrentContext()->Global(), argc, argv);
+                            });
 }
 
 void SimpleObjectWrap::PostIncrementWork(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -99,31 +96,28 @@ void SimpleObjectWrap::PostIncrementWork(const v8::FunctionCallbackInfo<v8::Valu
 
     auto wrap = ObjectWrap::Unwrap<SimpleObjectWrap>(args.Holder());
 
-    napa::zone::PostAsyncWork(
-        v8::Local<v8::Function>::Cast(args[0]),
-        [wrap]() {
-            #ifdef _WIN32
-                Sleep(10);
-            #else
-                // Sleep 10 ms.
-                usleep(10 * 1000);
-            #endif
+    napa::zone::PostAsyncWork(v8::Local<v8::Function>::Cast(args[0]),
+                              [wrap]() {
+#ifdef _WIN32
+                                  Sleep(10);
+#else
+                                  // Sleep 10 ms.
+                                  usleep(10 * 1000);
+#endif
 
-            // This runs at the separate thread.
-            auto newValue = ++wrap->value;
+                                  // This runs at the separate thread.
+                                  auto newValue = ++wrap->value;
 
-            return reinterpret_cast<void*>(static_cast<uintptr_t>(newValue));
-        },
-        [](auto jsCallback, void* result) {
-            // This runs at the same thread as one PostIncrementWork() is called.
-            auto isolate = v8::Isolate::GetCurrent();
+                                  return reinterpret_cast<void*>(static_cast<uintptr_t>(newValue));
+                              },
+                              [](auto jsCallback, void* result) {
+                                  // This runs at the same thread as one PostIncrementWork() is called.
+                                  auto isolate = v8::Isolate::GetCurrent();
 
-            int32_t argc = 1;
-            v8::Local<v8::Value> argv[] = { 
-                v8::Integer::NewFromUnsigned(isolate, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(result)))
-            };
+                                  int32_t argc = 1;
+                                  v8::Local<v8::Value> argv[] = { v8::Integer::NewFromUnsigned(
+                                      isolate, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(result))) };
 
-            jsCallback->Call(isolate->GetCurrentContext()->Global(), argc, argv);
-        }
-    );
+                                  jsCallback->Call(isolate->GetCurrentContext()->Global(), argc, argv);
+                              });
 }

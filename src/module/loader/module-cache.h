@@ -13,7 +13,6 @@ namespace module {
     /// <summary> Module cache to avoid module loading overhead. </summary>
     class ModuleCache {
     public:
-
         /// <summary> Constructor. </summary>
         ModuleCache();
 
@@ -40,11 +39,10 @@ namespace module {
         bool TryGet(const std::string& path, v8::Local<v8::Object>& module) const;
 
     private:
-
         /// <summary> Implementation of module cache. </summary>
         struct ModuleCacheImpl;
         std::unique_ptr<ModuleCacheImpl> _impl;
     };
 
-}   // End of namespace module.
-}   // End of namespace napa.
+} // End of namespace module.
+} // End of namespace napa.

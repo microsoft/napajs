@@ -42,7 +42,6 @@ using namespace napa::module;
 /// </remarks>
 class ModuleLoader::ModuleLoaderImpl {
 public:
-
     /// <summary> Constructor. </summary>
     ModuleLoaderImpl();
 
@@ -54,7 +53,6 @@ public:
     void Bootstrap();
 
 private:
-
     /// <summary> Global callback function for require(). </summary>
     /// <param name="args"> V8 argument to return module object. </param>
     static void RequireCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -70,16 +68,14 @@ private:
     /// <summary> It loads a module. </summary>
     /// <param name="path"> Module path called by require(). </param>
     /// <param name="args"> V8 argument to return module object. </param>
-    void RequireModule(const char* path,
-                       const v8::FunctionCallbackInfo<v8::Value>& args);
+    void RequireModule(const char* path, const v8::FunctionCallbackInfo<v8::Value>& args);
 
     /// <summary> It registers a binary core module. </summary>
     /// <param name="name"> Module name. </param>
     /// <param name="isBuiltInModule"> True if it's a built-in module, which doesn't need require() to call. </param>
     /// <param name="initializer"> Module initialization function. </param>
-    void LoadBinaryCoreModule(const char* name,
-                              bool isBuiltInModule,
-                              const napa::module::ModuleInitializer& initializer);
+    void
+    LoadBinaryCoreModule(const char* name, bool isBuiltInModule, const napa::module::ModuleInitializer& initializer);
 
     /// <summary> It sets up built-in modules at each module's' context. </summary>
     /// <param name="context"> V8 context. </param>
@@ -111,7 +107,8 @@ private:
 };
 
 void ModuleLoader::CreateModuleLoader() {
-    auto moduleLoader = reinterpret_cast<ModuleLoader*>(zone::WorkerContext::Get(zone::WorkerContextItem::MODULE_LOADER));
+    auto moduleLoader =
+        reinterpret_cast<ModuleLoader*>(zone::WorkerContext::Get(zone::WorkerContextItem::MODULE_LOADER));
     if (moduleLoader == nullptr) {
         moduleLoader = new ModuleLoader();
         zone::WorkerContext::Set(zone::WorkerContextItem::MODULE_LOADER, moduleLoader);
@@ -133,13 +130,11 @@ ModuleLoader::ModuleLoaderImpl::ModuleLoaderImpl() {
     };
 
     // Set up module loaders for each module type.
-    _loaders = {{
-        nullptr,
-        std::make_unique<CoreModuleLoader>(builtInModulesSetter, _moduleCache, _bindingCache),
-        std::make_unique<JavascriptModuleLoader>(builtInModulesSetter, _moduleCache),
-        std::make_unique<JsonModuleLoader>(),
-        std::make_unique<BinaryModuleLoader>(builtInModulesSetter)
-    }};
+    _loaders = { { nullptr,
+                   std::make_unique<CoreModuleLoader>(builtInModulesSetter, _moduleCache, _bindingCache),
+                   std::make_unique<JavascriptModuleLoader>(builtInModulesSetter, _moduleCache),
+                   std::make_unique<JsonModuleLoader>(),
+                   std::make_unique<BinaryModuleLoader>(builtInModulesSetter) } };
 }
 
 void ModuleLoader::ModuleLoaderImpl::Bootstrap() {
@@ -178,9 +173,7 @@ void ModuleLoader::ModuleLoaderImpl::Bootstrap() {
         if (coreModuleLoader->TryGet(name, module)) {
             // If javascript core module exists, replace the existing one.
             _moduleCache.Upsert(name, module);
-            (void)context->Global()->Set(context,
-                                         v8_helpers::MakeV8String(isolate, name),
-                                         module);
+            (void)context->Global()->Set(context, v8_helpers::MakeV8String(isolate, name), module);
         }
     }
     NAPA_DEBUG("ModuleLoader", "JavaScript core modules are loaded.");
@@ -190,11 +183,10 @@ void ModuleLoader::ModuleLoaderImpl::RequireCallback(const v8::FunctionCallbackI
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
-    CHECK_ARG(isolate,
-        args.Length() == 1 || args.Length() == 2 || args[0]->IsString(),
-        "Invalid arguments");
+    CHECK_ARG(isolate, args.Length() == 1 || args.Length() == 2 || args[0]->IsString(), "Invalid arguments");
 
-    auto moduleLoader = reinterpret_cast<ModuleLoader*>(zone::WorkerContext::Get(zone::WorkerContextItem::MODULE_LOADER));
+    auto moduleLoader =
+        reinterpret_cast<ModuleLoader*>(zone::WorkerContext::Get(zone::WorkerContextItem::MODULE_LOADER));
     JS_ENSURE(isolate, moduleLoader != nullptr, "Module loader is not initialized");
 
     v8::String::Utf8Value path(args[0]);
@@ -207,7 +199,8 @@ void ModuleLoader::ModuleLoaderImpl::ResolveCallback(const v8::FunctionCallbackI
 
     CHECK_ARG(isolate, args.Length() == 1 && args[0]->IsString(), "Invalid arguments");
 
-    auto moduleLoader = reinterpret_cast<ModuleLoader*>(zone::WorkerContext::Get(zone::WorkerContextItem::MODULE_LOADER));
+    auto moduleLoader =
+        reinterpret_cast<ModuleLoader*>(zone::WorkerContext::Get(zone::WorkerContextItem::MODULE_LOADER));
     JS_ENSURE(isolate, moduleLoader != nullptr, "Module loader is not initialized");
 
     v8::String::Utf8Value path(args[0]);
@@ -223,7 +216,8 @@ void ModuleLoader::ModuleLoaderImpl::BindingCallback(const v8::FunctionCallbackI
 
     CHECK_ARG(isolate, args.Length() == 1 && args[0]->IsString(), "Invalid arguments");
 
-    auto moduleLoader = reinterpret_cast<ModuleLoader*>(zone::WorkerContext::Get(zone::WorkerContextItem::MODULE_LOADER));
+    auto moduleLoader =
+        reinterpret_cast<ModuleLoader*>(zone::WorkerContext::Get(zone::WorkerContextItem::MODULE_LOADER));
     JS_ENSURE(isolate, moduleLoader != nullptr, "Module loader is not initialized");
 
     v8::String::Utf8Value name(args[0]);
@@ -288,10 +282,9 @@ void ModuleLoader::ModuleLoaderImpl::RequireModule(const char* path, const v8::F
     args.GetReturnValue().Set(module);
 }
 
-void ModuleLoader::ModuleLoaderImpl::LoadBinaryCoreModule(
-        const char* name,
-        bool isBuiltInModule,
-        const napa::module::ModuleInitializer& initializer) {
+void ModuleLoader::ModuleLoaderImpl::LoadBinaryCoreModule(const char* name,
+                                                          bool isBuiltInModule,
+                                                          const napa::module::ModuleInitializer& initializer) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
@@ -332,9 +325,7 @@ void ModuleLoader::ModuleLoaderImpl::SetupBuiltInModules(v8::Local<v8::Context> 
     for (const auto& name : _builtInNames) {
         v8::Local<v8::Object> module;
         if (_moduleCache.TryGet(name, module)) {
-            (void)context->Global()->CreateDataProperty(context,
-                                                        v8_helpers::MakeV8String(isolate, name),
-                                                        module);
+            (void)context->Global()->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, name), module);
         }
     }
 
@@ -348,17 +339,15 @@ void ModuleLoader::ModuleLoaderImpl::SetupRequire(v8::Local<v8::Context> context
 
     // Set up require().
     auto requireFunctionTemplate = v8::FunctionTemplate::New(isolate, RequireCallback);
-    (void)context->Global()->CreateDataProperty(context,
-                                                v8_helpers::MakeV8String(isolate, "require"),
-                                                requireFunctionTemplate->GetFunction());
+    (void)context->Global()->CreateDataProperty(
+        context, v8_helpers::MakeV8String(isolate, "require"), requireFunctionTemplate->GetFunction());
 
     // Set up require.resolve().
-    auto require = context->Global()->Get(context,
-                                          v8_helpers::MakeV8String(isolate, "require")).ToLocalChecked()->ToObject();
+    auto require =
+        context->Global()->Get(context, v8_helpers::MakeV8String(isolate, "require")).ToLocalChecked()->ToObject();
     auto resolveFunctionTemplate = v8::FunctionTemplate::New(isolate, ResolveCallback);
-    (void)require->CreateDataProperty(context,
-                                      v8_helpers::MakeV8String(isolate, "resolve"),
-                                      resolveFunctionTemplate->GetFunction());
+    (void)require->CreateDataProperty(
+        context, v8_helpers::MakeV8String(isolate, "resolve"), resolveFunctionTemplate->GetFunction());
 }
 
 // If we have more decorations, move them out from this class.
@@ -367,12 +356,11 @@ void ModuleLoader::ModuleLoaderImpl::DecorateBuiltInModules(v8::Local<v8::Contex
     v8::HandleScope scope(isolate);
 
     // Add process.binding()
-    auto process = context->Global()->Get(context,
-                                          v8_helpers::MakeV8String(isolate, "process")).ToLocalChecked()->ToObject();
+    auto process =
+        context->Global()->Get(context, v8_helpers::MakeV8String(isolate, "process")).ToLocalChecked()->ToObject();
     JS_ENSURE(isolate, !process.IsEmpty(), "Process built-in module doesn't exist");
 
     auto bindingFunctionTemplate = v8::FunctionTemplate::New(isolate, BindingCallback);
-    (void)process->CreateDataProperty(context,
-                                      v8_helpers::MakeV8String(isolate, "binding"),
-                                      bindingFunctionTemplate->GetFunction());
+    (void)process->CreateDataProperty(
+        context, v8_helpers::MakeV8String(isolate, "binding"), bindingFunctionTemplate->GetFunction());
 }

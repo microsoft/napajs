@@ -24,7 +24,7 @@ namespace zone {
         /// <summary> Resolve current spec. </summary>
         /// <param name="result"> marshalled return value. </param>
         /// <returns> True if operation is successful, otherwise if task is already finished before. </returns>
-        //bool Resolve(v8::Local<v8::Value> result);
+        // bool Resolve(v8::Local<v8::Value> result);
         bool Resolve(std::string result);
 
         /// <summary> Reject current spec. </summary>
@@ -70,7 +70,7 @@ namespace zone {
         /// <summary> Transport context. </summary>
         std::unique_ptr<napa::transport::TransportContext> _transportContext;
 
-         /// <summary> Callback when task completes. </summary>
+        /// <summary> Callback when task completes. </summary>
         napa::ExecuteCallback _callback;
 
         /// <summary> Whether this task is finished. </summary>

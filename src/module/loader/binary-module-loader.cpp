@@ -21,11 +21,7 @@ bool BinaryModuleLoader::TryGet(const std::string& path, v8::Local<v8::Object>& 
     auto library = std::make_shared<dll::SharedLibrary>(path);
     auto napaModule = library->Import<NapaModule>(napa::module::NAPA_MODULE_EXPORT);
 
-    JS_ENSURE_WITH_RETURN(isolate,
-                          napaModule != nullptr,
-                          false,
-                          "Can't import napa module: \"%s\"", 
-                          path.c_str());
+    JS_ENSURE_WITH_RETURN(isolate, napaModule != nullptr, false, "Can't import napa module: \"%s\"", path.c_str());
 
     JS_ENSURE_WITH_RETURN(isolate,
                           napaModule->version == MODULE_VERSION,
@@ -38,7 +34,8 @@ bool BinaryModuleLoader::TryGet(const std::string& path, v8::Local<v8::Object>& 
     auto context = isolate->GetCurrentContext();
 
     auto moduleContext = v8::Context::New(isolate);
-    JS_ENSURE_WITH_RETURN(isolate, !moduleContext.IsEmpty(), false, "Can't create module context for \"%s\"", path.c_str());
+    JS_ENSURE_WITH_RETURN(
+        isolate, !moduleContext.IsEmpty(), false, "Can't create module context for \"%s\"", path.c_str());
 
     // We set an empty security token so callee can access caller's context.
     moduleContext->SetSecurityToken(v8::Undefined(isolate));

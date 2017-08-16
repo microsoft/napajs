@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import { Handle } from './handle';
-import { Shareable } from './shareable';
+import {Handle} from './handle';
+import {Shareable} from './shareable';
 
 /// <summary> Javascript interface for allocator.
 /// An allocator must be a native object shared by all isolates, which allocate memory.
-/// </summary> 
+/// </summary>
 export interface Allocator extends Shareable {
     /// <summary> Allocate memory of requested size in bytes. </summary>
     /// <param name="size"> Size in bytes to allocate. </param>

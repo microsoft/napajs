@@ -8,15 +8,15 @@
 
 namespace napa {
 namespace transport {
-    
-    /// <summary> It facilitates transportation of C++ objects 
-    /// which need to transfer/extend their ownership across isolates by assignment operator. 
+
+    /// <summary> It facilitates transportation of C++ objects
+    /// which need to transfer/extend their ownership across isolates by assignment operator.
     ///
     /// Known cases are:
     /// 1) Transfer/extend ownership via passing shared objects in arguments to Zone::execute.
     /// 2) Extend ownership by cross-isolate sharing via memory.global.set/get or Zone.global.set/get.
     ///
-    /// At this time, only transport std::shared_ptr is supported of transfering ownership. 
+    /// At this time, only transport std::shared_ptr is supported of transfering ownership.
     /// </summary>
     class TransportContext {
 
@@ -25,9 +25,7 @@ namespace transport {
         TransportContext() = default;
 
         /// <summary> Move constructor. </summary>
-        TransportContext(TransportContext&& other) 
-            : _sharedDepot(std::move(other._sharedDepot)) {
-        }
+        TransportContext(TransportContext&& other) : _sharedDepot(std::move(other._sharedDepot)) {}
 
         /// <summary> Move assignment. </summary>
         TransportContext& operator=(TransportContext&& other) {
@@ -58,16 +56,12 @@ namespace transport {
             return std::shared_ptr<T>();
         }
 
-        /// <summary> Get count of saved shared_ptr. </summary> 
-        uint32_t GetSharedCount() {
-            return static_cast<uint32_t>(_sharedDepot.size());
-        }
+        /// <summary> Get count of saved shared_ptr. </summary>
+        uint32_t GetSharedCount() { return static_cast<uint32_t>(_sharedDepot.size()); }
 
     private:
-
         /// <summary> shared_ptr depot. </summary>
         napa::stl::UnorderedMap<uintptr_t, std::shared_ptr<void>> _sharedDepot;
     };
 }
 }
-    

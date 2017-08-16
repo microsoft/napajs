@@ -14,13 +14,13 @@ declare var __in_napa: boolean;
 /// <summary> Creates a new zone. </summary>
 /// <summary> A unique id to identify the zone. </summary>
 /// <param name="settings"> The settings of the new zone. </param>
-export function create(id: string, settings: zone.ZoneSettings = zone.DEFAULT_SETTINGS) : zone.Zone {
+export function create(id: string, settings: zone.ZoneSettings = zone.DEFAULT_SETTINGS): zone.Zone {
     platform.initialize();
     return new impl.ZoneImpl(binding.createZone(id, settings));
 }
 
 /// <summary> Returns the zone associated with the provided id. </summary>
-export function get(id: string) : zone.Zone {
+export function get(id: string): zone.Zone {
     platform.initialize();
     return new impl.ZoneImpl(binding.getZone(id));
 }
@@ -29,20 +29,24 @@ export function get(id: string) : zone.Zone {
 
 /// <summary> Define a getter property 'current' to retrieve the current zone. </summary>
 export declare let current: zone.Zone;
-Object.defineProperty(exports, "current", {
-    get: function () : zone.Zone {
-        platform.initialize();
-        return new impl.ZoneImpl(binding.getCurrentZone());
-    }
-});
+Object.defineProperty(exports,
+                      "current",
+                      {
+                        get : function() : zone.Zone {
+                            platform.initialize();
+                            return new impl.ZoneImpl(binding.getCurrentZone());
+                        }
+                      });
 
 /// <summary> Define a getter property 'node' to retrieve node zone. </summary>
 export declare let node: zone.Zone;
-Object.defineProperty(exports, "node", {
-    get: function () : zone.Zone {
-        platform.initialize();
-        return new impl.ZoneImpl(binding.getZone('node'));
-    }
-});
+Object.defineProperty(exports,
+                      "node",
+                      {
+                        get : function() : zone.Zone {
+                            platform.initialize();
+                            return new impl.ZoneImpl(binding.getZone('node'));
+                        }
+                      });
 
 export * from './zone/zone';

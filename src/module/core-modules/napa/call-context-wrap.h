@@ -11,11 +11,11 @@
 namespace napa {
 namespace module {
 
-    /// <summary> 
-    ///     Class that wraps zone::CallContext, which enables JavaScript world to 
+    /// <summary>
+    ///     Class that wraps zone::CallContext, which enables JavaScript world to
     ///     resolve or reject a function call.
     /// </summary>
-    class CallContextWrap: public ShareableWrap {
+    class CallContextWrap : public ShareableWrap {
     public:
         /// <summary> It creates a persistent constructor for CallContextWrap instance. </summary>
         static void Init();
@@ -40,26 +40,32 @@ namespace module {
         static void RejectCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 
         /// <summary> It implements CallContext.finished: boolean </summary>
-        static void IsFinishedCallback(v8::Local<v8::String> propertyName, const v8::PropertyCallbackInfo<v8::Value>& args);
+        static void IsFinishedCallback(v8::Local<v8::String> propertyName,
+                                       const v8::PropertyCallbackInfo<v8::Value>& args);
 
         /// <summary> It implements CallContext.module: string </summary>
-        static void GetModuleCallback(v8::Local<v8::String> propertyName, const v8::PropertyCallbackInfo<v8::Value>& args);
+        static void GetModuleCallback(v8::Local<v8::String> propertyName,
+                                      const v8::PropertyCallbackInfo<v8::Value>& args);
 
         /// <summary> It implements CallContext.function: string </summary>
-        static void GetFunctionCallback(v8::Local<v8::String> propertyName, const v8::PropertyCallbackInfo<v8::Value>& args);
+        static void GetFunctionCallback(v8::Local<v8::String> propertyName,
+                                        const v8::PropertyCallbackInfo<v8::Value>& args);
 
         /// <summary> It implements CallContext.args: string[] </summary>
-        static void GetArgumentsCallback(v8::Local<v8::String> propertyName, const v8::PropertyCallbackInfo<v8::Value>& args);
+        static void GetArgumentsCallback(v8::Local<v8::String> propertyName,
+                                         const v8::PropertyCallbackInfo<v8::Value>& args);
 
         /// <summary> It implements CallContext.transportContext: TransportContext </summary>
-        static void GetTransportContextCallback(v8::Local<v8::String> propertyName, const v8::PropertyCallbackInfo<v8::Value>& args);
+        static void GetTransportContextCallback(v8::Local<v8::String> propertyName,
+                                                const v8::PropertyCallbackInfo<v8::Value>& args);
 
         /// <summary> It implements CallContext.options: CallOptions </summary>
-        static void GetOptionsCallback(v8::Local<v8::String> propertyName, const v8::PropertyCallbackInfo<v8::Value>& args);
+        static void GetOptionsCallback(v8::Local<v8::String> propertyName,
+                                       const v8::PropertyCallbackInfo<v8::Value>& args);
 
         /// <summary> It implements CallContext.elapse: [number, number] (precision in nano-second) </summary>
-        static void GetElapseCallback(v8::Local<v8::String> propertyName, const v8::PropertyCallbackInfo<v8::Value>& args);
+        static void GetElapseCallback(v8::Local<v8::String> propertyName,
+                                      const v8::PropertyCallbackInfo<v8::Value>& args);
     };
 }
 }
-    

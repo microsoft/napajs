@@ -64,7 +64,7 @@ TEST_CASE("filesystem::Path", "[Path]") {
 
         REQUIRE(path.String() == "../a/c");
 #endif
-        
+
         REQUIRE(path.GenericForm() == "../a/c");
         REQUIRE(path.DriveSpec().IsEmpty());
         REQUIRE(!path.HasUncPrefix());
@@ -86,16 +86,16 @@ TEST_CASE("filesystem::Path", "[Path]") {
 
         REQUIRE(path.ReplaceExtension(".exe").Extension() == ".exe");
 
-#ifdef _WIN32   
+#ifdef _WIN32
         REQUIRE(path.Normalize() == "a\\b\\d\\e.exe");
         REQUIRE(path.Parent().Normalize() == "a\\b\\d");
-        
+
         REQUIRE(path.Relative("a/b/./e") == "..\\d\\e.exe");
         REQUIRE(path.Relative("b/c/../e") == "..\\..\\a\\b\\d\\e.exe");
         REQUIRE(path.Relative(filesystem::CurrentDirectory() / "e" / "f") == "..\\..\\a\\b\\d\\e.exe");
         REQUIRE(path.Relative("F:\\a\\b") == path.Absolute().Normalize());
         REQUIRE(path.String() == "a\\b\\d\\e.exe");
-#else   
+#else
         REQUIRE(path.Normalize() == "a/b/d/e.exe");
         REQUIRE(path.Parent().Normalize() == "a/b/d");
 
@@ -105,7 +105,7 @@ TEST_CASE("filesystem::Path", "[Path]") {
 
         REQUIRE(path.String() == "a/b/d/e.exe");
 #endif
-        
+
         REQUIRE(path.Parent().Parent().Parent().Normalize() == "a");
         REQUIRE(path.Parent().Parent().Parent().Parent().Normalize() == ".");
         REQUIRE(path.Parent().Parent().Parent().Parent().Parent().Normalize() == "..");
@@ -114,7 +114,6 @@ TEST_CASE("filesystem::Path", "[Path]") {
         REQUIRE(path.DriveSpec().IsEmpty());
         REQUIRE(!path.HasUncPrefix());
     }
-
 
     SECTION("Absolute path (posix)") {
         // /a
@@ -133,16 +132,16 @@ TEST_CASE("filesystem::Path", "[Path]") {
 
         REQUIRE(path.ReplaceExtension(".exe").Extension().IsEmpty());
 
-#ifdef _WIN32   
+#ifdef _WIN32
         REQUIRE(path.Normalize() == "\\a");
         REQUIRE(path.Parent().Normalize().String() == "\\");
         REQUIRE(path.String() == "\\a");
-#else     
+#else
         REQUIRE(path.Normalize() == "/a");
         REQUIRE(path.Parent().Normalize().String() == "/");
         REQUIRE(path.String() == "/a");
 #endif
-        
+
         REQUIRE(path.Parent().Parent().Normalize().IsEmpty());
 
         REQUIRE(path.Relative("/") == "a");
@@ -215,7 +214,7 @@ TEST_CASE("filesystem::Path", "[Path]") {
         REQUIRE(path.DriveSpec() == "c:");
         REQUIRE(path.HasUncPrefix());
     }
-#endif    
+#endif
 }
 
 TEST_CASE("filesystem::PathIterator", "[PathIterator]") {
@@ -240,7 +239,7 @@ TEST_CASE("filesystem::PathIterator", "[PathIterator]") {
         do {
             REQUIRE(!it->IsEmpty());
             REQUIRE(it->Dirname().Absolute().Normalize() == exeDir);
-             
+
             if (it->IsFilenameDot()) {
                 hasDot = true;
             }
@@ -265,13 +264,9 @@ TEST_CASE("filesystem", "[Operations]") {
         REQUIRE(filesystem::Exists(filesystem::ProgramPath()));
     }
 
-    SECTION("IsDirectory") {
-        REQUIRE(filesystem::IsDirectory("."));
-    }
+    SECTION("IsDirectory") { REQUIRE(filesystem::IsDirectory(".")); }
 
-    SECTION("IsRegularFile") {
-        REQUIRE(filesystem::IsRegularFile(filesystem::ProgramPath()));
-    }
+    SECTION("IsRegularFile") { REQUIRE(filesystem::IsRegularFile(filesystem::ProgramPath())); }
 
     SECTION("MakeDirectory") {
         REQUIRE(filesystem::MakeDirectory("./abc"));

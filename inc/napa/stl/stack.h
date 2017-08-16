@@ -7,8 +7,8 @@
 #include <stack>
 
 namespace napa {
-    namespace stl {
-        template <typename T>
-        using Stack = std::priority_queue<T, std::deque<T, napa::stl::Allocator<T>>>;
-    }
+namespace stl {
+    template <typename T>
+    using Stack = std::priority_queue<T, std::deque<T, napa::stl::Allocator<T>>>;
+}
 }

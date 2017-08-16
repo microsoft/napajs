@@ -12,14 +12,12 @@
 #include <string>
 #include <unordered_map>
 
-
 namespace napa {
 namespace zone {
 
     /// <summary> Concrete implementation of a Napa zone. </summary>
     class NapaZone : public Zone {
     public:
-
         /// <summary> Creates a new zone with the provided id and settings. </summary>
         static std::shared_ptr<NapaZone> Create(const settings::ZoneSettings& settings);
 

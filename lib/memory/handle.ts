@@ -1,15 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-export type Handle = [number, number] | [number, number, number];
+export type Handle = [ number, number ] | [number, number, number];
 
 /// <summary> nullptr. </summary>
-export const EMPTY_HANDLE: Handle = [0, 0];
+export const EMPTY_HANDLE: Handle = [ 0, 0 ];
 
 /// <summary> Tell if pointer is nullptr. </summary>
 export function isEmpty(handle: Handle): boolean {
-    return handle == null ||
-        (handle[0] === 0 && handle[1] === 0);
+    return handle == null || (handle[0] === 0 && handle[1] === 0);
 }
 
 /// <summary> Tell if a pointer has type information. </summary>

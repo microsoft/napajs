@@ -14,12 +14,12 @@ export function bench(): Promise<void> {
     storeOverhead.bench();
 
     // Create zones for execute related benchmark.
-    let singleWorkerZone = napa.zone.create('single-worker-zone', { workers: 1});
-    let multiWorkerZone = napa.zone.create('multi-worker-zone', { workers: 8 });
+    let singleWorkerZone = napa.zone.create('single-worker-zone', { workers : 1 });
+    let multiWorkerZone = napa.zone.create('multi-worker-zone', { workers : 8 });
 
     return nodeNapaPerfComp.bench(singleWorkerZone)
         .then(() => { return executeOverhead.bench(singleWorkerZone); })
-        .then(() => { return executeScalability.bench(multiWorkerZone);});
+        .then(() => { return executeScalability.bench(multiWorkerZone); });
 }
 
 bench();

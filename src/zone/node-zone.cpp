@@ -16,8 +16,8 @@ void NodeZone::Init(BroadcastDelegate broadcast, ExecuteDelegate execute) {
     _instance.reset(new NodeZone(broadcast, execute));
 }
 
-NodeZone::NodeZone(BroadcastDelegate broadcast, ExecuteDelegate execute):
-    _broadcast(std::move(broadcast)), _execute(std::move(execute)), _id("node") {
+NodeZone::NodeZone(BroadcastDelegate broadcast, ExecuteDelegate execute)
+    : _broadcast(std::move(broadcast)), _execute(std::move(execute)), _id("node") {
 
     NAPA_ASSERT(_broadcast, "Broadcast delegate must be a valid function.");
     NAPA_ASSERT(_execute, "Execute delegate must be a valid function.");

@@ -56,9 +56,7 @@ TEST_CASE("utils", "[string]") {
         REQUIRE(str == "this is a test");
     }
 
-    SECTION("ToLowerCopy") {
-        REQUIRE(utils::string::ToLowerCopy("THIs Is A TesT") == "this is a test");
-    }
+    SECTION("ToLowerCopy") { REQUIRE(utils::string::ToLowerCopy("THIs Is A TesT") == "this is a test"); }
 
     SECTION("ToUpper") {
         std::string str = "This Is A Test";
@@ -66,9 +64,7 @@ TEST_CASE("utils", "[string]") {
         REQUIRE(str == "THIS IS A TEST");
     }
 
-    SECTION("ToUpperCopy") {
-        REQUIRE(utils::string::ToUpperCopy("THIs Is A TesT") == "THIS IS A TEST");
-    }
+    SECTION("ToUpperCopy") { REQUIRE(utils::string::ToUpperCopy("THIs Is A TesT") == "THIS IS A TEST"); }
 
     SECTION("CaseInsensitiveCompare") {
         REQUIRE(utils::string::CaseInsensitiveCompare("abc", "abd") < 0);

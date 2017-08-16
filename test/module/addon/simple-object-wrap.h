@@ -13,7 +13,6 @@ namespace test {
     /// <summary> A simple object wrap for testing. </summary>
     class SimpleObjectWrap : public NAPA_OBJECTWRAP {
     public:
-
         /// <summary> Exported class name. </summary>
         static constexpr const char* exportName = "SimpleObjectWrap";
 
@@ -26,7 +25,6 @@ namespace test {
         std::atomic<uint32_t> value = { 0 };
 
     private:
-
         /// <summary> Declare persistent constructor to create Zone Javascript wrapper instance. </summary>
         NAPA_DECLARE_PERSISTENT_CONSTRUCTOR;
 

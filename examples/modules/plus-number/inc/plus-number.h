@@ -15,7 +15,6 @@ namespace demo {
     /// <summary> Example class to show how to create Napa module using a wrapped C++ class. </summary>
     class NAPA_EXAMPLE_EXPORT PlusNumber {
     public:
-
         /// <summary> Constructor with initial value. </summary>
         explicit PlusNumber(double value = 0.0);
 
@@ -23,9 +22,8 @@ namespace demo {
         double Add(double value);
 
     private:
-
         double _value;
     };
 
-}  // napespace demo
-}  // namespace napa
+} // napespace demo
+} // namespace napa

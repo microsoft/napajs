@@ -26,7 +26,6 @@ namespace zone {
     template <typename WorkerType>
     class SchedulerImpl {
     public:
-
         /// <summary> Constructor. </summary>
         /// <param name="settings"> A settings object. </param>
         /// <param name="workerSetupCallback"> Callback to setup the isolate after worker created its isolate. </param>
@@ -57,7 +56,6 @@ namespace zone {
         void ScheduleOnAllWorkers(std::shared_ptr<Task> task);
 
     private:
-
         /// <summary> The logic invoked when a worker is idle. </summary>
         void IdleWorkerNotificationCallback(WorkerId workerId);
 
@@ -86,18 +84,18 @@ namespace zone {
     typedef SchedulerImpl<Worker> Scheduler;
 
     template <typename WorkerType>
-    SchedulerImpl<WorkerType>::SchedulerImpl(const settings::ZoneSettings& settings, std::function<void(WorkerId)> workerSetupCallback) :
-        _idleWorkersFlags(settings.workers),
-        _synchronizer(std::make_unique<SimpleThreadPool>(1)),
-        _shouldStop(false),
-        _beingScheduled(0) {
+    SchedulerImpl<WorkerType>::SchedulerImpl(const settings::ZoneSettings& settings,
+                                             std::function<void(WorkerId)> workerSetupCallback)
+        : _idleWorkersFlags(settings.workers), _synchronizer(std::make_unique<SimpleThreadPool>(1)), _shouldStop(false),
+          _beingScheduled(0) {
 
         _workers.reserve(settings.workers);
 
         for (WorkerId i = 0; i < settings.workers; i++) {
-            _workers.emplace_back(i, settings, workerSetupCallback, [this](WorkerId workerId) {
-                IdleWorkerNotificationCallback(workerId);
-            });
+            _workers.emplace_back(i,
+                                  settings,
+                                  workerSetupCallback,
+                                  [this](WorkerId workerId) { IdleWorkerNotificationCallback(workerId); });
 
             // All workers are idle initially.
             auto iter = _idleWorkers.emplace(_idleWorkers.end(), i);
@@ -149,7 +147,6 @@ namespace zone {
             }
             _beingScheduled--;
         });
-        
     }
 
     template <typename WorkerType>

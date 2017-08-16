@@ -30,7 +30,6 @@ namespace filesystem {
     /// <summary> Helper class for path manipulation. </summary>
     class Path {
     public:
-
         // We only support ANSI path for now.
         // TODO: consider use wchar_t for Windows.
         typedef char CharType;
@@ -68,7 +67,7 @@ namespace filesystem {
         /// <summary> Get unnormalized path string buffer. </summary>
         const CharType* c_str() const;
 
-        /// <summary> 
+        /// <summary>
         ///     Append a path to current path
         ///     Or return the path if it's absolute.
         /// </summary>
@@ -105,42 +104,28 @@ namespace filesystem {
         bool HasUncPrefix() const;
 
         /// <summary> Has drive specification like c: (Windows). </summary>
-        bool HasDriveSpec() const {
-            return !DriveSpec().IsEmpty();
-        }
+        bool HasDriveSpec() const { return !DriveSpec().IsEmpty(); }
 
         /// <summary> Tell if path has file name. </summary>
-        bool HasFilename() const {
-            return !Filename().IsEmpty();
-        }
+        bool HasFilename() const { return !Filename().IsEmpty(); }
 
         /// <summary> Tell if path has extension. </summary>
-        bool HasExtension() const {
-            return !Extension().IsEmpty();
-        }
+        bool HasExtension() const { return !Extension().IsEmpty(); }
 
         /// <summary> Tell if current path is empty. </summary>
-        bool IsEmpty() const {
-            return _pathname.empty();
-        }
+        bool IsEmpty() const { return _pathname.empty(); }
 
         /// <summary> Tell if current path is an absolute path. </summary>
         bool IsAbsolute() const;
 
         /// <summary> Tell if current path is relative or not. </summary>
-        bool IsRelative() const {
-            return !IsAbsolute();
-        }
+        bool IsRelative() const { return !IsAbsolute(); }
 
         /// <summary> Tell if current file name is '.'. </summary>
-        bool IsFilenameDot() const {
-            return Filename().String() == ".";
-        }
+        bool IsFilenameDot() const { return Filename().String() == "."; }
 
         /// <summary> Tell if current file name is '..'. </summary>
-        bool IsFilenameDotDot() const {
-            return Filename().String() == "..";
-        }
+        bool IsFilenameDotDot() const { return Filename().String() == ".."; }
 
         /// <summary> Get relative path to a base. </summary>
         Path Relative(const Path& base) const;
@@ -205,7 +190,6 @@ namespace filesystem {
         bool Next();
 
     private:
-
 #ifdef SUPPORT_POSIX
         DIR* _dir;
 #else

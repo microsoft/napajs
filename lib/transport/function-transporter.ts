@@ -4,11 +4,11 @@
 ////////////////////////////////////////////////////////////////////////
 // Module to support function transport.
 
-import { Store } from '../store/store';
+import {Store} from '../store/store';
 import * as assert from 'assert';
 
 /// <summary> Function hash to function cache. </summary>
-let _hashToFunctionCache: {[hash: string]: (...args: any[]) => any} = {};
+let _hashToFunctionCache: { [hash: string] : (...args: any[]) => any } = {};
 
 /// <summary> Function to hash cache. </summary>
 /// <remarks> Function cannot be used as a key in TypeScript. </remarks>
@@ -23,8 +23,7 @@ function getStore(): Store {
         // Lazy creation function store
         // 1) avoid circular runtime dependency between store and transport.
         // 2) avoid unnecessary cost when function transport is not used.
-        _store = require('../store/store-api')
-            .getOrCreate('__napajs_marshalled_functions');
+        _store = require('../store/store-api').getOrCreate('__napajs_marshalled_functions');
     }
     return _store;
 }
@@ -63,8 +62,8 @@ function cacheFunction(hash: string, func: (...args: any[]) => any) {
     _hashToFunctionCache[hash] = func;
 }
 
-/// <summary> Generate hash for function definition using DJB2 algorithm. 
-/// See: https://en.wikipedia.org/wiki/DJB2 
+/// <summary> Generate hash for function definition using DJB2 algorithm.
+/// See: https://en.wikipedia.org/wiki/DJB2
 /// </summary>
 function getFunctionHash(functionDef: string): string {
     let hash = 5381;

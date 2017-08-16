@@ -55,21 +55,13 @@ namespace tls {
             TlsSet(object);
         }
 
-        T& operator*() {
-            return *TlsGet();
-        }
+        T& operator*() { return *TlsGet(); }
 
-        T* operator->() {
-            return TlsGet();
-        }
+        T* operator->() { return TlsGet(); }
 
-        const T& operator*() const {
-            return *TlsGet();
-        }
+        const T& operator*() const { return *TlsGet(); }
 
-        const T* operator->() const {
-            return TlsGet();
-        }
+        const T* operator->() const { return TlsGet(); }
 
         /// <summary> Reset current Tls slot with another pointer. </summary>
         void Reset(T* object) {

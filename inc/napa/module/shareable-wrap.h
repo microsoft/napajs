@@ -13,11 +13,11 @@
 namespace napa {
 namespace module {
 
-    /// <summary> Abstract class for wraps that contains a C++ std::shared_ptr<T> and allow it be shared across isolates. </summary>
+    /// <summary> Abstract class for wraps that contains a C++ std::shared_ptr<T> and allow it be shared across
+    /// isolates. </summary>
     /// <remarks> see napajs/lib/memory/shareable.ts </remarks>
     class ShareableWrap : public NAPA_OBJECTWRAP {
     public:
-
         /// <summary> It initialize constructor template of a sub-class of ShareableWrap. </summary>
         /// <param name="constructorTemplate"> Constructor template of wrap class. </param>
         /// <remarks> Should call this method in sub-class Init. </remarks>
@@ -66,7 +66,8 @@ namespace module {
             return *std::static_pointer_cast<T>(_object);
         }
 
-        /// <summary> It creates a new instance of WrapType of shared_ptr<T>, WrapType is a sub-class of ShareableWrap. </summary>
+        /// <summary> It creates a new instance of WrapType of shared_ptr<T>, WrapType is a sub-class of ShareableWrap.
+        /// </summary>
         /// <param name="object"> shared_ptr of object. </summary>
         /// <returns> V8 object of type ShareableWrap. </summary>
         template <typename WrapType, typename T>
@@ -91,7 +92,8 @@ namespace module {
         virtual ~ShareableWrap() = default;
 
         /// <summary> It implements readonly Shareable.handle : Handle </summary>
-        static void GetHandleCallback(v8::Local<v8::String> /*propertyName*/, const v8::PropertyCallbackInfo<v8::Value>& args){
+        static void GetHandleCallback(v8::Local<v8::String> /*propertyName*/,
+                                      const v8::PropertyCallbackInfo<v8::Value>& args) {
             auto isolate = v8::Isolate::GetCurrent();
             v8::HandleScope scope(isolate);
             auto thisObject = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(args.Holder());
@@ -99,7 +101,8 @@ namespace module {
         }
 
         /// <summary> It implements Shareable.refCount(): boolean </summary>
-        static void RefCountCallback(v8::Local<v8::String> /*propertyName*/, const v8::PropertyCallbackInfo<v8::Value>& args){
+        static void RefCountCallback(v8::Local<v8::String> /*propertyName*/,
+                                     const v8::PropertyCallbackInfo<v8::Value>& args) {
             auto isolate = v8::Isolate::GetCurrent();
             v8::HandleScope scope(isolate);
             auto thisObject = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(args.Holder());
@@ -114,7 +117,8 @@ namespace module {
             args.GetReturnValue().Set(thisObject->_object.get() == nullptr);
         }
 
-        /// <summary> It implements TransportableObject.load(payload: object, transportContext: TransportContext): void </summary>
+        /// <summary> It implements TransportableObject.load(payload: object, transportContext: TransportContext): void
+        /// </summary>
         static void LoadCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
             auto isolate = v8::Isolate::GetCurrent();
             v8::HandleScope scope(isolate);
@@ -122,41 +126,51 @@ namespace module {
 
             CHECK_ARG(isolate, args.Length() == 2, "2 arguments are required for \"load\".");
             CHECK_ARG(isolate, args[0]->IsObject(), "Argument \"payload\" shall be 'Object' type.");
-            CHECK_ARG(isolate, args[1]->IsObject(), "Argument \"transportContext\" shall be 'TransportContextWrap' type.");
+            CHECK_ARG(
+                isolate, args[1]->IsObject(), "Argument \"transportContext\" shall be 'TransportContextWrap' type.");
 
             auto payload = v8::Local<v8::Object>::Cast(args[0]);
             auto numberArray = payload->Get(v8_helpers::MakeV8String(isolate, "handle"));
-            
+
             auto result = v8_helpers::V8ValueToUintptr(isolate, numberArray);
-            JS_ENSURE(isolate, result.second, "Unable to cast \"handle\" to pointer. Please check if it's in valid handle format.");
-            
-            auto transportContextWrap = NAPA_OBJECTWRAP::Unwrap<TransportContextWrap>(v8::Local<v8::Object>::Cast(args[1]));
-            JS_ENSURE(isolate, transportContextWrap != nullptr, "Argument \"transportContext\" should be 'TransportContextWrap' type.");
-    
+            JS_ENSURE(isolate,
+                      result.second,
+                      "Unable to cast \"handle\" to pointer. Please check if it's in valid handle format.");
+
+            auto transportContextWrap =
+                NAPA_OBJECTWRAP::Unwrap<TransportContextWrap>(v8::Local<v8::Object>::Cast(args[1]));
+            JS_ENSURE(isolate,
+                      transportContextWrap != nullptr,
+                      "Argument \"transportContext\" should be 'TransportContextWrap' type.");
+
             // Load object from transport context.
             auto thisObject = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(args.Holder());
             thisObject->_object = transportContextWrap->Get()->LoadShared<void>(result.first);
         }
 
-        /// <summary> It implements TransportableObject.save(payload: object, transportContext: TransportContext): void </summary>
+        /// <summary> It implements TransportableObject.save(payload: object, transportContext: TransportContext): void
+        /// </summary>
         static void SaveCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
             auto isolate = v8::Isolate::GetCurrent();
             v8::HandleScope scope(isolate);
             auto context = isolate->GetCurrentContext();
-            
+
             CHECK_ARG(isolate, args.Length() == 2, "2 arguments are required for \"save\".");
             CHECK_ARG(isolate, args[0]->IsObject(), "Argument \"payload\" should be 'Object' type.");
-            CHECK_ARG(isolate, args[1]->IsObject(), "Argument \"transportContext\" should be 'TransportContextWrap' type.");
+            CHECK_ARG(
+                isolate, args[1]->IsObject(), "Argument \"transportContext\" should be 'TransportContextWrap' type.");
 
             auto payload = v8::Local<v8::Object>::Cast(args[0]);
-            auto transportContextWrap = NAPA_OBJECTWRAP::Unwrap<TransportContextWrap>(v8::Local<v8::Object>::Cast(args[1]));
-            JS_ENSURE(isolate, transportContextWrap != nullptr, "Argument \"transportContext\" should be 'TransportContextWrap' type.");
+            auto transportContextWrap =
+                NAPA_OBJECTWRAP::Unwrap<TransportContextWrap>(v8::Local<v8::Object>::Cast(args[1]));
+            JS_ENSURE(isolate,
+                      transportContextWrap != nullptr,
+                      "Argument \"transportContext\" should be 'TransportContextWrap' type.");
 
             auto thisObject = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(args.Holder());
-            payload->CreateDataProperty(
-                context,
-                v8_helpers::MakeV8String(isolate, "handle"),
-                v8_helpers::PtrToV8Uint32Array(isolate, thisObject->_object.get()));
+            payload->CreateDataProperty(context,
+                                        v8_helpers::MakeV8String(isolate, "handle"),
+                                        v8_helpers::PtrToV8Uint32Array(isolate, thisObject->_object.get()));
 
             // Save object to transport context.
             transportContextWrap->Get()->SaveShared(thisObject->_object);

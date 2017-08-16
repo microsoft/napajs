@@ -9,10 +9,10 @@
 
 namespace napa {
 namespace module {
-    
+
     /// <summary> It wraps napa::store::Store. </summary>
     /// <remarks> Reference: napajs/lib/store.ts#Store </remarks>
-    class StoreWrap: public NAPA_OBJECTWRAP {
+    class StoreWrap : public NAPA_OBJECTWRAP {
     public:
         /// <summary> Init this wrap. </summary>
         static void Init();
@@ -48,7 +48,7 @@ namespace module {
 
         /// <summary> It implements Store.size </summary>
         static void GetSizeCallback(v8::Local<v8::String>, const v8::PropertyCallbackInfo<v8::Value>& args);
-        
+
         /// <summary> Friend default constructor callback. </summary>
         template <typename T>
         friend void napa::module::DefaultConstructorCallback(const v8::FunctionCallbackInfo<v8::Value>&);
