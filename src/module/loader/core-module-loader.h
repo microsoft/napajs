@@ -13,7 +13,6 @@ namespace module {
     /// <summary> It loads a core module. </summary>
     class CoreModuleLoader : public JavascriptModuleLoader {
     public:
-
         /// <summary> Constructor. </summary>
         /// <param name="builtInSetter"> Built-in modules registerer. </param>
         /// <param name="moduleCache"> Cache for all modules. </param>
@@ -29,10 +28,9 @@ namespace module {
         bool TryGet(const std::string& name, v8::Local<v8::Object>& module) override;
 
     private:
-
         /// Cache instance for binding binary core modules.
         ModuleCache& _bindingCache;
     };
 
-}   // End of namespace module.
-}   // End of namespace napa.
+} // End of namespace module.
+} // End of namespace napa.

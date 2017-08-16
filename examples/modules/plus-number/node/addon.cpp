@@ -11,9 +11,7 @@ const char* PlusNumberWrap::_exportName = "PlusNumberWrap";
 // Define persistent constructor.
 NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(PlusNumberWrap)
 
-PlusNumberWrap::PlusNumberWrap(double value)
-    : _plusNumber(value) {
-}
+PlusNumberWrap::PlusNumberWrap(double value) : _plusNumber(value) {}
 
 void PlusNumberWrap::Init() {
     auto isolate = Isolate::GetCurrent();
@@ -48,18 +46,12 @@ void PlusNumberWrap::NewCallback(const FunctionCallbackInfo<Value>& args) {
     auto isolate = args.GetIsolate();
     HandleScope scope(isolate);
 
-    CHECK_ARG(isolate,
-        args.IsConstructCall(),
-        "PlusNumberWrap instance must be created by the factory.");
+    CHECK_ARG(isolate, args.IsConstructCall(), "PlusNumberWrap instance must be created by the factory.");
 
-    CHECK_ARG(isolate,
-        args.Length() == 0 || args.Length() == 1,
-        "Only one or no argument is allowed.");
+    CHECK_ARG(isolate, args.Length() == 0 || args.Length() == 1, "Only one or no argument is allowed.");
 
     if (args.Length() == 1) {
-        CHECK_ARG(isolate,
-            args[0]->IsNumber(),
-            "The first argument must be a number.");
+        CHECK_ARG(isolate, args[0]->IsNumber(), "The first argument must be a number.");
     }
 
     double value = args[0]->IsUndefined() ? 0.0 : args[0]->NumberValue();
@@ -74,9 +66,7 @@ void PlusNumberWrap::Add(const FunctionCallbackInfo<Value>& args) {
     auto isolate = args.GetIsolate();
     HandleScope scope(isolate);
 
-    CHECK_ARG(isolate,
-        args.Length() == 1 && args[0]->IsNumber(),
-        "Number must be given as argument.");
+    CHECK_ARG(isolate, args.Length() == 1 && args[0]->IsNumber(), "Number must be given as argument.");
 
     auto wrap = NAPA_OBJECTWRAP::Unwrap<PlusNumberWrap>(args.Holder());
     auto value = wrap->_plusNumber.Add(args[0]->NumberValue());

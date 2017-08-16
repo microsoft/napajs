@@ -14,15 +14,12 @@ export function generateObject(keys: number, depth: number, valueType: string = 
         let value: any = null;
         if (depth > 1) {
             value = generateObject(keys, depth - 1, valueType, valueLength);
-        }
-        else if (valueType === 'string') {
+        } else if (valueType === 'string') {
             // We try to make each string different.
             value = generateString(valueLength - 1) + (depth * keys + i);
-        }
-        else if (valueType === 'number') {
+        } else if (valueType === 'number') {
             value = i;
-        }
-        else if (valueType === 'boolean') {
+        } else if (valueType === 'boolean') {
             value = i % 2 == 0;
         }
         object[key] = value;
@@ -30,7 +27,7 @@ export function generateObject(keys: number, depth: number, valueType: string = 
     return object;
 }
 
-export function timeDiffInMs(diff: [number, number]): number {
+export function timeDiffInMs(diff:[ number, number ]): number {
     return (diff[0] * 1e9 + diff[1]) / 1e6;
 }
 

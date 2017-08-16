@@ -14,7 +14,7 @@
 
 namespace napa {
 namespace zone {
-    
+
     /// <summary> Class holding asynchronous callbacks. </summary>
     struct AsyncContext {
         /// <summary> Zone instance issueing asynchronous work. </summary>
@@ -42,5 +42,5 @@ namespace zone {
         AsyncCompleteCallback asyncCompleteCallback;
     };
 
-}   // End of namespace zone.
-}   // End of namespace napa.
+} // End of namespace zone.
+} // End of namespace napa.

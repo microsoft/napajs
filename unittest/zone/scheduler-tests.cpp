@@ -14,17 +14,12 @@ using namespace napa::settings;
 
 class TestTask : public Task {
 public:
-    TestTask(std::function<void()> callback = []() {}) : 
-        numberOfExecutions(0),
-        lastExecutedWorkerId(99),
-        _callback(std::move(callback)) {}
+    TestTask(std::function<void()> callback = []() {})
+        : numberOfExecutions(0), lastExecutedWorkerId(99), _callback(std::move(callback)) {}
 
-    void SetCurrentWorkerId(WorkerId id) {
-        lastExecutedWorkerId = id;
-    }
+    void SetCurrentWorkerId(WorkerId id) { lastExecutedWorkerId = id; }
 
-    virtual void Execute() override
-    {
+    virtual void Execute() override {
         numberOfExecutions++;
         _callback();
     }
@@ -36,16 +31,15 @@ private:
     std::function<void()> _callback;
 };
 
-
 template <uint32_t I>
 class TestWorker {
 public:
-
     TestWorker(WorkerId id,
-               const ZoneSettings &settings,
+               const ZoneSettings& settings,
                std::function<void(WorkerId)> setupCompleteCallback,
-               std::function<void(WorkerId)> idleCallback) : _id(id) {
-        
+               std::function<void(WorkerId)> idleCallback)
+        : _id(id) {
+
         numberOfWorkers++;
         _idleNotificationCallback = idleCallback;
         setupCompleteCallback(id);
@@ -61,10 +55,11 @@ public:
         auto testTask = std::dynamic_pointer_cast<TestTask>(task);
         testTask->SetCurrentWorkerId(_id);
 
-        _futures.emplace_back(std::async(std::launch::async, [this, task]() {
-            task->Execute();
-            _idleNotificationCallback(_id);
-        }));
+        _futures.emplace_back(std::async(std::launch::async,
+                                         [this, task]() {
+                                             task->Execute();
+                                             _idleNotificationCallback(_id);
+                                         }));
     }
 
     static uint32_t numberOfWorkers;
@@ -77,7 +72,6 @@ private:
 
 template <uint32_t I>
 uint32_t TestWorker<I>::numberOfWorkers = 0;
-
 
 TEST_CASE("scheduler creates correct number of worker", "[scheduler]") {
     ZoneSettings settings;
@@ -92,9 +86,7 @@ TEST_CASE("scheduler dispatches worker setup complete callback correctly", "[sch
     ZoneSettings settings;
     settings.workers = 3;
     WorkerId idSum = 0;
-    auto scheduler = std::make_unique<SchedulerImpl<TestWorker<1>>>(settings, [&idSum](WorkerId id) {
-        idSum += id;
-    });
+    auto scheduler = std::make_unique<SchedulerImpl<TestWorker<1>>>(settings, [&idSum](WorkerId id) { idSum += id; });
 
     REQUIRE(idSum == settings.workers * (settings.workers - 1) / 2);
 }
@@ -151,13 +143,13 @@ TEST_CASE("scheduler distributes and schedules all tasks", "[scheduler]") {
         if (tasks[i]->numberOfExecutions == 0) {
             ++notRun;
         }
-        //REQUIRE(tasks[i]->numberOfExecutions == 1);
+        // REQUIRE(tasks[i]->numberOfExecutions == 1);
         scheduledWorkersFlags[tasks[i]->lastExecutedWorkerId] = true;
     }
     REQUIRE(notRun == 0);
 
     // Make sure that all workers were participating
-    for (auto flag: scheduledWorkersFlags) {
+    for (auto flag : scheduledWorkersFlags) {
         REQUIRE(flag);
     }
 }

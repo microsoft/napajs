@@ -20,9 +20,7 @@ namespace zone {
         /// <param name="source"> The JS source code to load on the isolate the runs this task. </param>
         /// <param name="sourceOrigin"> The origin of the source code. </param>
         /// <param name="callback"> A callback that is triggered when the task execution completed. </param>
-        EvalTask(std::string source,
-            std::string sourceOrigin = "",
-            BroadcastCallback callback = [](ResultCode) {});
+        EvalTask(std::string source, std::string sourceOrigin = "", BroadcastCallback callback = [](ResultCode) {});
 
         /// <summary> Overrides Task.Execute to define loading execution logic. </summary>
         virtual void Execute() override;

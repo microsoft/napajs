@@ -19,10 +19,8 @@
 using namespace napa;
 using namespace napa::zone;
 
-EvalTask::EvalTask(std::string source, std::string sourceOrigin, BroadcastCallback callback) :
-    _source(std::move(source)),
-    _sourceOrigin(std::move(sourceOrigin)),
-    _callback(std::move(callback)) {}
+EvalTask::EvalTask(std::string source, std::string sourceOrigin, BroadcastCallback callback)
+    : _source(std::move(source)), _sourceOrigin(std::move(sourceOrigin)), _callback(std::move(callback)) {}
 
 void EvalTask::Execute() {
     auto isolate = v8::Isolate::GetCurrent();
@@ -59,7 +57,7 @@ void EvalTask::Execute() {
             return;
         }
     }
-    
+
     NAPA_DEBUG("EvalTask", "Script compiled successfully");
     auto script = compileResult.ToLocalChecked();
 

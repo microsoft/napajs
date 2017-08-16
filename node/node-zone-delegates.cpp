@@ -22,10 +22,11 @@ void Run(uv_async_t* work) {
 
     context->callback();
 
-    uv_close(reinterpret_cast<uv_handle_t*>(work), [](auto work) {
-        auto context = static_cast<AsyncContext*>(work->data);
-        delete context;
-    });
+    uv_close(reinterpret_cast<uv_handle_t*>(work),
+             [](auto work) {
+                 auto context = static_cast<AsyncContext*>(work->data);
+                 delete context;
+             });
 }
 
 /// <summary> Schedule a function in Node event loop. </summary>
@@ -40,7 +41,7 @@ void ScheduleInNode(std::function<void()> callback) {
 
 void napa::node_zone::Broadcast(const std::string& source, napa::BroadcastCallback callback) {
     std::string sourceCopy = source;
-    ScheduleInNode([sourceCopy = std::move(sourceCopy), callback = std::move(callback)]() {
+    ScheduleInNode([ sourceCopy = std::move(sourceCopy), callback = std::move(callback) ]() {
         napa::zone::EvalTask task(std::move(sourceCopy), "", std::move(callback));
         task.Execute();
     });

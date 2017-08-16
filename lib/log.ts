@@ -39,40 +39,34 @@ enum LogLevel {
 function dispatchLog(level: LogLevel, arg1: string, arg2?: string, arg3?: string) {
     if (arg3 != undefined) {
         binding.log(level, arg1, arg2, arg3);
-    }
-    else if (arg2 != undefined) {
+    } else if (arg2 != undefined) {
         binding.log(level, arg1, undefined, arg2);
-    }
-    else {
+    } else {
         binding.log(level, undefined, undefined, arg1);
     }
 }
 
-function createLogObject() : Log {
+function createLogObject(): Log {
     // napa.log()
-    let logObj: any = function(arg1: string, arg2?: string, arg3?: string) {
-        dispatchLog(LogLevel.Info, arg1, arg2, arg3);
-    }
-    
-    // napa.log.err()
-    logObj.err = function(arg1: string, arg2?: string, arg3?: string) {
-        dispatchLog(LogLevel.Error, arg1, arg2, arg3);
-    }
+    let logObj: any = function(
+                          arg1: string, arg2?: string, arg3?: string) { dispatchLog(LogLevel.Info, arg1, arg2, arg3); }
 
-    // napa.log.warn()
-    logObj.warn = function(arg1: string, arg2?: string, arg3?: string) {
-        dispatchLog(LogLevel.Warning, arg1, arg2, arg3);
-    }
+                      // napa.log.err()
+                      logObj.err = function(arg1: string,
+                                            arg2?: string,
+                                            arg3?: string) { dispatchLog(LogLevel.Error, arg1, arg2, arg3); }
 
-    // napa.log.info()
-    logObj.info = function(arg1: string, arg2?: string, arg3?: string) {
-        dispatchLog(LogLevel.Info, arg1, arg2, arg3);
-    }
+                                   // napa.log.warn()
+                                   logObj.warn =
+        function(arg1: string, arg2?: string, arg3?: string) { dispatchLog(LogLevel.Warning, arg1, arg2, arg3); }
 
-    // napa.log.debug()
-    logObj.debug = function(arg1: string, arg2?: string, arg3?: string) {
-        dispatchLog(LogLevel.Debug, arg1, arg2, arg3);
-    }
+        // napa.log.info()
+        logObj.info = function(
+                          arg1: string, arg2?: string, arg3?: string) { dispatchLog(LogLevel.Info, arg1, arg2, arg3); }
+
+                      // napa.log.debug()
+                      logObj.debug = function(
+            arg1: string, arg2?: string, arg3?: string) { dispatchLog(LogLevel.Debug, arg1, arg2, arg3); }
 
     return logObj;
 }

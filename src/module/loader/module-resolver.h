@@ -48,7 +48,6 @@ namespace module {
     /// </summary>
     class ModuleResolver {
     public:
-
         /// <summary> Constructor. </summary>
         ModuleResolver();
 
@@ -78,11 +77,10 @@ namespace module {
         bool SetAsCoreModule(const char* name);
 
     private:
-
         /// <summary> Implementation of module resolver. </summary>
         class ModuleResolverImpl;
         std::unique_ptr<ModuleResolverImpl> _impl;
     };
 
-}   // End of namespace module.
-}   // End of namespace napa.
+} // End of namespace module.
+} // End of namespace napa.

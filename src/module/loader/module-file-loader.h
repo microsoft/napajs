@@ -11,12 +11,11 @@
 namespace napa {
 namespace module {
 
-    using BuiltInModulesSetter = std::function<void (v8::Local<v8::Context> context)>;
+    using BuiltInModulesSetter = std::function<void(v8::Local<v8::Context> context)>;
 
     /// <summary> Interface to load a module from file. </summary>
     class ModuleFileLoader {
     public:
-
         virtual ~ModuleFileLoader() = default;
 
         /// <summary> It loads a module from file. </summary>
@@ -26,5 +25,5 @@ namespace module {
         virtual bool TryGet(const std::string& path, v8::Local<v8::Object>& module) = 0;
     };
 
-}   // End of namespace module.
-}   // End of namespace napa.
+} // End of namespace module.
+} // End of namespace napa.

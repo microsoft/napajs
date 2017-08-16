@@ -2,12 +2,12 @@
 // Licensed under the MIT license.
 
 let binding = require('../binding');
-import { log } from '../log';
+import {log} from '../log';
 
 // This variable is either defined by napa runtime, or not defined (hence node runtime)
 declare var __in_napa: boolean;
 
-/// <summary> 
+/// <summary>
 ///     Describes the available platform settings.
 /// </summary>
 export interface PlatformSettings {

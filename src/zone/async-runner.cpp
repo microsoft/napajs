@@ -12,18 +12,18 @@ using namespace napa::zone;
 
 namespace {
 
-    /// <summary> Prepare asynchronous work. </summary>
-    /// <param name="jsCallback"> Javascript callback. </summary>
-    /// <param name="asyncWork"> Function to run asynchronously in separate thread. </param>
-    /// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous callback completes. </param>
-    /// <returns> AsyncContext instance. </summary>
-    std::shared_ptr<AsyncContext> PrepareAsyncWork(v8::Local<v8::Function> jsCallback,
-                                                   AsyncWork asyncWork,
-                                                   AsyncCompleteCallback asyncCompleteCallback);
+/// <summary> Prepare asynchronous work. </summary>
+/// <param name="jsCallback"> Javascript callback. </summary>
+/// <param name="asyncWork"> Function to run asynchronously in separate thread. </param>
+/// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous callback completes. </param>
+/// <returns> AsyncContext instance. </summary>
+std::shared_ptr<AsyncContext>
+PrepareAsyncWork(v8::Local<v8::Function> jsCallback, AsyncWork asyncWork, AsyncCompleteCallback asyncCompleteCallback);
 
-}   // End of anonymous namespace.
+} // End of anonymous namespace.
 
-/// <summary> It runs a synchronous function in the separate thread and posts a completion into the current V8 execution loop. </summary>
+/// <summary> It runs a synchronous function in the separate thread and posts a completion into the current V8 execution
+/// loop. </summary>
 /// <param name="jsCallback"> Javascript callback. </summary>
 /// <param name="asyncWork"> Function to run asynchronously in separate thread. </param>
 /// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous callback completes. </param>
@@ -35,12 +35,14 @@ void napa::zone::PostAsyncWork(v8::Local<v8::Function> jsCallback,
         return;
     }
 
-    context->future = std::async(std::launch::async, [context]() {
-        context->result = context->asyncWork();
+    context->future =
+        std::async(std::launch::async,
+                   [context]() {
+                       context->result = context->asyncWork();
 
-        auto asyncCompleteTask = std::make_shared<AsyncCompleteTask>(context);
-        context->zone->GetScheduler()->ScheduleOnWorker(context->workerId, asyncCompleteTask);
-    });
+                       auto asyncCompleteTask = std::make_shared<AsyncCompleteTask>(context);
+                       context->zone->GetScheduler()->ScheduleOnWorker(context->workerId, asyncCompleteTask);
+                   });
 }
 
 /// <summary> It runs an asynchronous function and post a completion into the current V8 execution loop. </summary>
@@ -65,28 +67,27 @@ void napa::zone::DoAsyncWork(v8::Local<v8::Function> jsCallback,
 
 namespace {
 
-    std::shared_ptr<AsyncContext> PrepareAsyncWork(v8::Local<v8::Function> jsCallback,
-                                                   AsyncWork asyncWork,
-                                                   AsyncCompleteCallback asyncCompleteCallback) {
-        auto isolate = v8::Isolate::GetCurrent();
-        v8::HandleScope scope(isolate);
+std::shared_ptr<AsyncContext>
+PrepareAsyncWork(v8::Local<v8::Function> jsCallback, AsyncWork asyncWork, AsyncCompleteCallback asyncCompleteCallback) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
 
-        auto context = std::make_shared<zone::AsyncContext>();
+    auto context = std::make_shared<zone::AsyncContext>();
 
-        context->zone = reinterpret_cast<NapaZone*>(WorkerContext::Get(WorkerContextItem::ZONE));
-        if (context->zone == nullptr) {
-            return nullptr;
-        }
-
-        context->scheduler = context->zone->GetScheduler();
-        context->workerId = static_cast<WorkerId>(
-            reinterpret_cast<uintptr_t>(WorkerContext::Get(WorkerContextItem::WORKER_ID)));
-
-        context->jsCallback.Reset(isolate, jsCallback);
-        context->asyncWork = std::move(asyncWork);
-        context->asyncCompleteCallback = std::move(asyncCompleteCallback);
-
-        return context;
+    context->zone = reinterpret_cast<NapaZone*>(WorkerContext::Get(WorkerContextItem::ZONE));
+    if (context->zone == nullptr) {
+        return nullptr;
     }
 
-}   // End of anonymous namespace.
+    context->scheduler = context->zone->GetScheduler();
+    context->workerId =
+        static_cast<WorkerId>(reinterpret_cast<uintptr_t>(WorkerContext::Get(WorkerContextItem::WORKER_ID)));
+
+    context->jsCallback.Reset(isolate, jsCallback);
+    context->asyncWork = std::move(asyncWork);
+    context->asyncCompleteCallback = std::move(asyncCompleteCallback);
+
+    return context;
+}
+
+} // End of anonymous namespace.

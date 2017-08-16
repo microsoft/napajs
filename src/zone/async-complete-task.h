@@ -15,7 +15,6 @@ namespace zone {
     /// <summary> A task to run Javascript callback after asynchronous callback completes. </summary>
     class AsyncCompleteTask : public Task {
     public:
-
         /// <summary> Constructor. </summary>
         /// <param name="context"> Structure containing asynchronous work's context. </param>
         AsyncCompleteTask(std::shared_ptr<AsyncContext> context);
@@ -24,9 +23,7 @@ namespace zone {
         virtual void Execute() override;
 
     private:
-
         std::shared_ptr<AsyncContext> _context;
     };
-
 }
 }

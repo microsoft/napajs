@@ -21,11 +21,12 @@ namespace zone {
     /// <summary> Concrete implementation of a Node zone. </summary>
     class NodeZone : public Zone {
     public:
-        /// <summary> Set delegate function for Broadcast and Execute on node zone. This is intended to be called from napa-binding.node. </summary>
+        /// <summary> Set delegate function for Broadcast and Execute on node zone. This is intended to be called from
+        /// napa-binding.node. </summary>
         static NAPA_API void Init(BroadcastDelegate broadcast, ExecuteDelegate execute);
 
-        /// <summary> 
-        ///    Retrieves an existing zone. 
+        /// <summary>
+        ///    Retrieves an existing zone.
         ///    If Node is not applicable (like in embed mode), a nullptr will be returned.
         /// </summary>
         static std::shared_ptr<NodeZone> Get();

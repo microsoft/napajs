@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import { Store } from './store';
+import {Store} from './store';
 
 let binding = require('../binding');
 
 /// <summary> Create a store with an id. </summary>
 /// <param name="id"> String identifier which can be used to get the store from all isolates. </summary>
 /// <returns> A store object or throws Error if store with this id already exists. </returns>
-/// <remarks> Store object will be destroyed when reference from all isolates are unreferenced. 
+/// <remarks> Store object will be destroyed when reference from all isolates are unreferenced.
 /// It's usually a best practice to keep a long-living reference in user modules or global scope. </remarks>
 export function create(id: string): Store {
     return binding.createStore(id);
@@ -24,7 +24,7 @@ export function get(id: string): Store {
 /// <summary> Get a store with an id, or create it if not exist. </summary>
 /// <param name="id"> String identifier which can be used to get the store from all isolates. </summary>
 /// <returns> A store object associated with the id. </returns>
-/// <remarks> Store object will be destroyed when reference from all isolates are unreferenced. 
+/// <remarks> Store object will be destroyed when reference from all isolates are unreferenced.
 /// It's usually a best practice to keep a long-living reference in user modules or global scope. </remarks>
 export function getOrCreate(id: string): Store {
     return binding.getOrCreateStore(id);

@@ -10,17 +10,13 @@
 
 using namespace napa::store;
 
-class StoreImpl: public Store {
+class StoreImpl : public Store {
 public:
     /// <summary> Constructor. </summary>
-    explicit StoreImpl(const char* id)
-        : _id(id) {
-    }
+    explicit StoreImpl(const char* id) : _id(id) {}
 
     /// <summary> Get ID of this store. </summary>
-    const char* GetId() const override {
-        return _id.c_str();
-    }
+    const char* GetId() const override { return _id.c_str(); }
 
     /// <summary> Set value with a key. </summary>
     /// <param name="key"> Case-sensitive key to set. </param>
@@ -89,7 +85,7 @@ namespace store {
 
     std::shared_ptr<Store> CreateStore(const char* id) {
         std::lock_guard<std::mutex> lockWrite(_registryAccess);
-        
+
         std::shared_ptr<Store> store;
         auto it = _storeRegistry.find(id);
         if (it == _storeRegistry.end()) {
@@ -122,7 +118,7 @@ namespace store {
 
     size_t GetStoreCount() {
         std::lock_guard<std::mutex> lockWrite(_registryAccess);
-        for (auto it = _storeRegistry.begin(); it != _storeRegistry.end(); ) {
+        for (auto it = _storeRegistry.begin(); it != _storeRegistry.end();) {
             if (it->second.use_count() == 0) {
                 _storeRegistry.erase(it++);
             } else {

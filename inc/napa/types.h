@@ -12,7 +12,7 @@ typedef struct {
     size_t size;
 } napa_string_ref;
 
-#define NAPA_STRING_REF_WITH_SIZE(data, size) (napa_string_ref { (data), (size) })
+#define NAPA_STRING_REF_WITH_SIZE(data, size) (napa_string_ref{ (data), (size) })
 #define NAPA_STRING_REF(data) NAPA_STRING_REF_WITH_SIZE(data, strlen(data))
 
 const napa_string_ref EMPTY_NAPA_STRING_REF = NAPA_STRING_REF_WITH_SIZE(0, 0);
@@ -20,10 +20,10 @@ const napa_string_ref EMPTY_NAPA_STRING_REF = NAPA_STRING_REF_WITH_SIZE(0, 0);
 #ifdef __cplusplus
 
 namespace napa {
-    typedef napa_string_ref StringRef;
+typedef napa_string_ref StringRef;
 }
 
-#define STD_STRING_TO_NAPA_STRING_REF(str) (napa_string_ref { (str).data(), (str).size() })
+#define STD_STRING_TO_NAPA_STRING_REF(str) (napa_string_ref{ (str).data(), (str).size() })
 #define NAPA_STRING_REF_TO_STD_STRING(str) (std::string((str).data, (str).size))
 
 #endif // __cplusplus
@@ -42,7 +42,7 @@ typedef enum {
 #ifdef __cplusplus
 
 namespace napa {
-    typedef napa_result_code ResultCode;
+typedef napa_result_code ResultCode;
 }
 
 #endif // __cplusplus
@@ -50,7 +50,7 @@ namespace napa {
 /// <summary> Represents option for transporting objects in zone.execute. </summary>
 typedef enum {
 
-    /// <summary> 
+    /// <summary>
     ///     transport.marshall/unmarshall will be done by `napajs` automatically.
     ///     This is the most common way, but may not be performance optimal with objects
     ///     that will be shared in multiple zone.execute.
@@ -64,7 +64,7 @@ typedef enum {
 #ifdef __cplusplus
 
 namespace napa {
-    typedef napa_transport_option TransportOption;
+typedef napa_transport_option TransportOption;
 }
 
 #endif // __cplusplus
@@ -82,7 +82,7 @@ typedef struct {
 #ifdef __cplusplus
 
 namespace napa {
-    typedef napa_zone_call_options CallOptions;
+typedef napa_zone_call_options CallOptions;
 }
 
 #endif // __cplusplus
@@ -117,24 +117,24 @@ typedef struct {
 #include <vector>
 
 namespace napa {
-    /// <summary> Represents a function to call with its arguments. </summary>
-    struct FunctionSpec {
+/// <summary> Represents a function to call with its arguments. </summary>
+struct FunctionSpec {
 
-        /// <summary> The module that exports the function to execute. </summary>
-        StringRef module = EMPTY_NAPA_STRING_REF;
+    /// <summary> The module that exports the function to execute. </summary>
+    StringRef module = EMPTY_NAPA_STRING_REF;
 
-        /// <summary> The function to execute. </summary>
-        StringRef function = EMPTY_NAPA_STRING_REF;
+    /// <summary> The function to execute. </summary>
+    StringRef function = EMPTY_NAPA_STRING_REF;
 
-        /// <summary> The function arguments. </summary>
-        std::vector<StringRef> arguments;
+    /// <summary> The function arguments. </summary>
+    std::vector<StringRef> arguments;
 
-        /// <summary> Execute options. </summary>
-        CallOptions options = { 0, AUTO };
+    /// <summary> Execute options. </summary>
+    CallOptions options = { 0, AUTO };
 
-        /// <summary> Used for transporting shared_ptr and unique_ptr across zones/workers. </summary>
-        mutable std::unique_ptr<napa::transport::TransportContext> transportContext;
-    };
+    /// <summary> Used for transporting shared_ptr and unique_ptr across zones/workers. </summary>
+    mutable std::unique_ptr<napa::transport::TransportContext> transportContext;
+};
 }
 
 #endif // __cplusplus
@@ -158,42 +158,42 @@ typedef struct {
 #ifdef __cplusplus
 
 namespace napa {
-    /// <summary> Represents a function call result. </summary>
-    struct Result {
+/// <summary> Represents a function call result. </summary>
+struct Result {
 
-        /// <summary> A result code. </summary>
-        ResultCode code;
+    /// <summary> A result code. </summary>
+    ResultCode code;
 
-        /// <summary> The error message in case of an error. </summary>
-        std::string errorMessage;
+    /// <summary> The error message in case of an error. </summary>
+    std::string errorMessage;
 
-        /// <summary> The return value in case of success. </summary>
-        std::string returnValue;
+    /// <summary> The return value in case of success. </summary>
+    std::string returnValue;
 
-        /// <summary> Used for transporting shared_ptr and unique_ptr across zones/workers. </summary>
-        mutable std::unique_ptr<napa::transport::TransportContext> transportContext;
-    };
+    /// <summary> Used for transporting shared_ptr and unique_ptr across zones/workers. </summary>
+    mutable std::unique_ptr<napa::transport::TransportContext> transportContext;
+};
 }
 
 #endif // __cplusplus
 
 /// <summary> Callback signatures. </summary>
-typedef void(*napa_zone_broadcast_callback)(napa_result_code code, void* context);
-typedef void(*napa_zone_execute_callback)(napa_zone_result result, void* context);
+typedef void (*napa_zone_broadcast_callback)(napa_result_code code, void* context);
+typedef void (*napa_zone_execute_callback)(napa_zone_result result, void* context);
 
 #ifdef __cplusplus
 
 #include <functional>
 
 namespace napa {
-    typedef std::function<void(ResultCode)> BroadcastCallback;
-    typedef std::function<void(Result)> ExecuteCallback;
+typedef std::function<void(ResultCode)> BroadcastCallback;
+typedef std::function<void(Result)> ExecuteCallback;
 }
 
 #endif // __cplusplus
 
 /// <summary> Zone handle type. </summary>
-typedef struct napa_zone *napa_zone_handle;
+typedef struct napa_zone* napa_zone_handle;
 
 /// <summary> Callback for customized memory allocator. </summary>
 typedef void* (*napa_allocate_callback)(size_t);

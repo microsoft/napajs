@@ -6,22 +6,18 @@
 #include "task.h"
 
 namespace v8 {
-    class Isolate;
+class Isolate;
 }
 
 namespace napa {
 namespace zone {
 
     /// <summary> Specifies the possible reasons for termination. </summary>
-    enum class TerminationReason {
-        UNKNOWN,
-        TIMEOUT
-    };
+    enum class TerminationReason { UNKNOWN, TIMEOUT };
 
     /// <summary> Base class for tasks that can be terminated. </summary>
     class TerminableTask : public Task {
     public:
-
         /// <summary> Use this to terminate a currently running task. </summary>
         /// <param name="reason"> The reason for the termination. </param>
         /// <param name="isolate"> The isolate this task currently runs on. </param>

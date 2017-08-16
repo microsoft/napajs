@@ -9,7 +9,7 @@ namespace napa {
 namespace providers {
 
     /// <summary> Interface for a generic logging provider. </summary>
-    /// <remarks> 
+    /// <remarks>
     ///     Ownership of this logging provider belongs to the shared library which created it. Hence the explicit
     ///     Destroy method in this class. To simplify memory management across multiple shared libraries, this class
     ///     can only be created via a factory method provided by the shared library. When it is no longer needed,
@@ -17,14 +17,8 @@ namespace providers {
     /// </remarks>
     class LoggingProvider {
     public:
-
         /// <summary> Represents verboseness for logging. </summary>
-        enum class Verboseness {
-            Error = 0,
-            Warning,
-            Info,
-            Debug
-        };
+        enum class Verboseness { Error = 0, Warning, Info, Debug };
 
         /// <summary> Logs a message. </summary>
         /// <param name="section"> Logging section. </param>
@@ -33,13 +27,12 @@ namespace providers {
         /// <param name="file"> The source file this log message originated from. </param>
         /// <param name="line"> The source line this log message originated from. </param>
         /// <param name="message"> The message. </param>
-        virtual void LogMessage(
-            const char* section,
-            Verboseness level,
-            const char* traceId,
-            const char* file,
-            int line,
-            const char* message) = 0;
+        virtual void LogMessage(const char* section,
+                                Verboseness level,
+                                const char* traceId,
+                                const char* file,
+                                int line,
+                                const char* message) = 0;
 
         /// <summary> Returns if logging is enabled for section/level/title. </summary>
         /// <param name="section"> Logging section. </param>
@@ -51,7 +44,6 @@ namespace providers {
         virtual void Destroy() = 0;
 
     protected:
-
         /// <summary> Prevent calling delete on the interface. Must use Destroy! </summary>
         virtual ~LoggingProvider() = default;
     };

@@ -10,7 +10,7 @@
 namespace napa {
 namespace module {
     /// <summary> Interface for AllocatorWrap. </summary>
-    class AllocatorWrap: public ShareableWrap {
+    class AllocatorWrap : public ShareableWrap {
     public:
         /// <summary> It creates a persistent constructor for AllocatorWrap instance. </summary>
         static void Init();
@@ -32,8 +32,8 @@ namespace module {
         static void DeallocateCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 
         /// <summary> It implements readonly Allocator.type: string </summary>
-        static void GetTypeCallback(v8::Local<v8::String> propertyName, const v8::PropertyCallbackInfo<v8::Value>& args);
+        static void GetTypeCallback(v8::Local<v8::String> propertyName,
+                                    const v8::PropertyCallbackInfo<v8::Value>& args);
     };
 }
 }
-    

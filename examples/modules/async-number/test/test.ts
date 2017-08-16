@@ -4,42 +4,48 @@
 var assert = require('assert');
 var asyncNumber = require('async-number');
 
-describe('Test suite for async-number', function() {
-    it('change number asynchronously on separate thread', (done: () => void) => {
-        let now = asyncNumber.now();
-        assert.equal(now, 0);
+describe('Test suite for async-number',
+         function() {
+             it('change number asynchronously on separate thread',
+                (done: () => void) => {
+                    let now = asyncNumber.now();
+                    assert.equal(now, 0);
 
-        asyncNumber.increase(3, (value: number) => {
-            // This must be called after the last statement of *it* block is executed.
-            assert(value == 3 || value == 6);
+                    asyncNumber.increase(3,
+                                         (value: number) => {
+                                             // This must be called after the last statement of *it* block is executed.
+                                             assert(value == 3 || value == 6);
 
-            now = asyncNumber.now();
-            assert.equal(now, 6);
+                                             now = asyncNumber.now();
+                                             assert.equal(now, 6);
 
-            done();
-        });
+                                             done();
+                                         });
 
-        asyncNumber.increaseSync(3, (value: number) => {} );
-    });
+                    asyncNumber.increaseSync(3, (value: number) => {});
+                });
 
-    it('change number synchronously on current thread', (done: () => void) => {
-        let now = asyncNumber.now();
-        assert.equal(now, 0);
+             it('change number synchronously on current thread',
+                (done: () => void) => {
+                    let now = asyncNumber.now();
+                    assert.equal(now, 0);
 
-        asyncNumber.increaseSync(3, (value: number) => {
-            // This must be called after the last statement of *it* block is executed.
-            assert.equal(value, 3);
+                    asyncNumber.increaseSync(3,
+                                             (value: number) => {
+                                                 // This must be called after the last statement of *it* block is
+                                                 // executed.
+                                                 assert.equal(value, 3);
 
-            now = asyncNumber.now();
-            assert.equal(now, 6);
+                                                 now = asyncNumber.now();
+                                                 assert.equal(now, 6);
 
-            done();
-        });
+                                                 done();
+                                             });
 
-        now = asyncNumber.now();
-        // 'now' should be 3.
-        assert.equal(now, 3);
+                    now = asyncNumber.now();
+                    // 'now' should be 3.
+                    assert.equal(now, 3);
 
-        asyncNumber.increaseSync(3, (value: number) => {} );
-    });
-})
+                    asyncNumber.increaseSync(3, (value: number) => {});
+                });
+         })

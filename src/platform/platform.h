@@ -31,7 +31,7 @@
 
 namespace napa {
 namespace platform {
-    /// <summary> Platform. </summary>
+/// <summary> Platform. </summary>
 #if defined(OS_LINUX)
     constexpr const char* PLATFORM = "linux";
 #elif defined(OS_MAC)
@@ -43,5 +43,5 @@ namespace platform {
 #else
     constexpr const char* PLATFORM = "unknown";
 #endif
-}   // End of namespce platform.
-}   // End of namespce napa.
+} // End of namespce platform.
+} // End of namespce napa.

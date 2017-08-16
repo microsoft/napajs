@@ -33,6 +33,5 @@ namespace platform {
     /// <summary> Return nonzero value if a descriptor is associated with a character device. </summary>
     /// <param name="fd"> File descriptor. </param>
     int32_t Isatty(int32_t fd);
-
 }
 }

@@ -18,7 +18,6 @@ namespace zone {
     /// <summary> Simple thread pool. </summary>
     class SimpleThreadPool {
     public:
-
         /// <summary> Constructor. </summary>
         /// <param name="numberOfWorkers"> Number of workers. </param>
         explicit SimpleThreadPool(uint32_t numberOfWorkers);
@@ -33,11 +32,9 @@ namespace zone {
         void Execute(T&& function, Args&&... args);
 
     private:
-
         /// <summary> Class for worker main loop. </summary>
         class Worker {
         public:
-
             /// <summary> Constructor. </summary>
             Worker(SimpleThreadPool& pool);
 
@@ -45,7 +42,6 @@ namespace zone {
             void operator()();
 
         private:
-
             /// <summary> Thread pool instance. </summary>
             SimpleThreadPool& _pool;
         };
@@ -61,7 +57,6 @@ namespace zone {
         bool _isStopped;
     };
 
-
     template <typename T, typename... Args>
     void SimpleThreadPool::Execute(T&& function, Args&&... args) {
         auto task = std::bind(std::forward<T>(function), std::forward<Args>(args)...);
@@ -73,6 +68,5 @@ namespace zone {
 
         _queueCondition.notify_one();
     }
-
 }
 }

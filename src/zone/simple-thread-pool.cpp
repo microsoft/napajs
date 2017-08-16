@@ -14,9 +14,7 @@ void SimpleThreadPool::Worker::operator()() {
         {
             std::unique_lock<std::mutex> lock(_pool._queueLock);
             if (!_pool._isStopped) {
-                _pool._queueCondition.wait(lock, [this]() {
-                    return _pool._isStopped || !_pool._taskQueue.empty();
-                });
+                _pool._queueCondition.wait(lock, [this]() { return _pool._isStopped || !_pool._taskQueue.empty(); });
             }
 
             // Drain all existing tasks before actually stopping.

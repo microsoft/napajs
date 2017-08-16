@@ -42,9 +42,7 @@ EXTERN_C NAPA_API napa_result_code napa_zone_release(napa_zone_handle handle);
 /// </summary>
 /// <param name="handle"> The zone handle. </param>
 /// <param name="settings"> The settings string. </param>
-EXTERN_C NAPA_API napa_result_code napa_zone_init(
-    napa_zone_handle handle,
-    napa_string_ref settings);
+EXTERN_C NAPA_API napa_result_code napa_zone_init(napa_zone_handle handle, napa_string_ref settings);
 
 /// <summary> Retrieves the zone id. </summary>
 /// <param name="handle"> The zone handle. </param>
@@ -55,22 +53,20 @@ EXTERN_C NAPA_API napa_string_ref napa_zone_get_id(napa_zone_handle handle);
 /// <param name="source"> The JavaScript source code. </param>
 /// <param name="callback"> A callback that is triggered when broadcast is done. </param>
 /// <param name="context"> An opaque pointer that is passed back in the callback. </param>
-EXTERN_C NAPA_API void napa_zone_broadcast(
-    napa_zone_handle handle,
-    napa_string_ref source,
-    napa_zone_broadcast_callback callback,
-    void* context);
+EXTERN_C NAPA_API void napa_zone_broadcast(napa_zone_handle handle,
+                                           napa_string_ref source,
+                                           napa_zone_broadcast_callback callback,
+                                           void* context);
 
 /// <summary> Executes a pre-loaded function asynchronously in a single zone worker. </summary>
 /// <param name="handle"> The zone handle. </param>
 /// <param name="spec"> The function spec to call. </param>
 /// <param name="callback"> A callback that is triggered when execution is done. </param>
 /// <param name="context"> An opaque pointer that is passed back in the callback. </param>
-EXTERN_C NAPA_API void napa_zone_execute(
-    napa_zone_handle handle,
-    napa_zone_function_spec spec,
-    napa_zone_execute_callback callback,
-    void* context);
+EXTERN_C NAPA_API void napa_zone_execute(napa_zone_handle handle,
+                                         napa_zone_function_spec spec,
+                                         napa_zone_execute_callback callback,
+                                         void* context);
 
 /// <summary>
 ///     Global napa initialization. Invokes initialization steps that are cross zones.
@@ -86,9 +82,7 @@ EXTERN_C NAPA_API napa_result_code napa_initialize(napa_string_ref settings);
 /// </summary>
 /// <param name="argc"> Number of arguments. </param>
 /// <param name="argv"> The arguments. </param>
-EXTERN_C NAPA_API napa_result_code napa_initialize_from_console(
-    int argc,
-    char* argv[]);
+EXTERN_C NAPA_API napa_result_code napa_initialize_from_console(int argc, char* argv[]);
 
 /// <summary> Invokes napa shutdown steps. All non released zones will be destroyed. </summary>
 EXTERN_C NAPA_API napa_result_code napa_shutdown();
@@ -99,18 +93,21 @@ EXTERN_C NAPA_API const char* napa_result_code_to_string(napa_result_code code);
 
 /// <summary> Set customized allocator, which will be used for napa_allocate and napa_deallocate.
 /// If user doesn't call napa_allocator_set, C runtime malloc/free from napa.dll will be used. </summary>
-/// <param name="allocate_callback"> Function pointer for allocating memory, which should be valid during the entire process. </param>
-/// <param name="deallocate_callback"> Function pointer for deallocating memory, which should be valid during the entire process. </param>
-EXTERN_C NAPA_API void napa_allocator_set(
-    napa_allocate_callback allocate_callback, 
-    napa_deallocate_callback deallocate_callback);
+/// <param name="allocate_callback"> Function pointer for allocating memory, which should be valid during the entire
+/// process. </param>
+/// <param name="deallocate_callback"> Function pointer for deallocating memory, which should be valid during the entire
+/// process. </param>
+EXTERN_C NAPA_API void napa_allocator_set(napa_allocate_callback allocate_callback,
+                                          napa_deallocate_callback deallocate_callback);
 
-/// <summary> Allocate memory using napa allocator from napa_allocator_set, which is using C runtime ::malloc if not called. </summary>
+/// <summary> Allocate memory using napa allocator from napa_allocator_set, which is using C runtime ::malloc if not
+/// called. </summary>
 /// <param name="size"> Size of memory requested in byte. </param>
 /// <returns> Allocated memory. </returns>
 EXTERN_C NAPA_API void* napa_allocate(size_t size);
 
-/// <summary> Free memory using napa allocator from napa_allocator_set, which is using C runtime ::free if not called. </summary>
+/// <summary> Free memory using napa allocator from napa_allocator_set, which is using C runtime ::free if not called.
+/// </summary>
 /// <param name="pointer"> Pointer to memory to be freed. </param>
 /// <param name="size_hint"> Hint of size to deallocate. </param>
 EXTERN_C NAPA_API void napa_deallocate(void* pointer, size_t size_hint);

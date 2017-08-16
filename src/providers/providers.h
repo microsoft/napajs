@@ -8,7 +8,6 @@
 
 #include "settings/settings.h"
 
-
 namespace napa {
 namespace providers {
 

@@ -10,10 +10,10 @@
 
 namespace napa {
 namespace module {
-    
+
     /// <summary> It wraps napa::memory::AllocatorDebugger. </summary>
     /// <remarks> Reference: napajs/lib/memory/allocator.ts#AllocatorDebugger </remarks>
-    class AllocatorDebuggerWrap: public AllocatorWrap {
+    class AllocatorDebuggerWrap : public AllocatorWrap {
     public:
         /// <summary> Init this wrap. </summary>
         static void Init();

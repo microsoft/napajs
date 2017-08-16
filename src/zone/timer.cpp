@@ -66,9 +66,7 @@ bool TimersScheduler::StartMainLoop() {
 
         // Timers main loop.
         while (running) {
-            cv.wait(lock, [this]() {
-                return !activeTimers.empty() || !running;
-            });
+            cv.wait(lock, [this]() { return !activeTimers.empty() || !running; });
 
             if (!running) {
                 return;
@@ -82,8 +80,7 @@ bool TimersScheduler::StartMainLoop() {
                         // The callback is assumed to be very fast as it is meant to dispatch to appropriate
                         // callback queues.
                         timers[topTimer.index].callback();
-                    }
-                    catch (const std::exception &ex) {
+                    } catch (const std::exception& ex) {
                         LOG_ERROR("Timers", "Timer callback threw an exception. %s", ex.what());
                     }
 
@@ -93,12 +90,12 @@ bool TimersScheduler::StartMainLoop() {
 
                 // Timer expired, so it's no longer active.
                 activeTimers.pop();
-            }
-            else {
+            } else {
                 // Wait for timer expiration.
-                cv.wait_until(lock, topTimer.expirationTime, [&topTimer]() {
-                    return topTimer.expirationTime <= std::chrono::high_resolution_clock::now();
-                });
+                cv.wait_until(
+                    lock,
+                    topTimer.expirationTime,
+                    [&topTimer]() { return topTimer.expirationTime <= std::chrono::high_resolution_clock::now(); });
             }
         }
     });
@@ -107,7 +104,6 @@ bool TimersScheduler::StartMainLoop() {
 }
 
 static TimersScheduler _timersScheduler;
-
 
 Timer::Timer(Callback callback, std::chrono::milliseconds timeout) {
     // Start the timers scheduler if this is the first timer created.
@@ -122,8 +118,7 @@ Timer::Timer(Callback callback, std::chrono::milliseconds timeout) {
         _timersScheduler.freeSlots.pop();
 
         _timersScheduler.timers[_index] = std::move(timerInfo);
-    }
-    else {
+    } else {
         _index = static_cast<Timer::Index>(_timersScheduler.timers.size());
         _timersScheduler.timers.emplace_back(timerInfo);
     }
@@ -141,7 +136,7 @@ Timer::~Timer() {
 void Timer::Start() {
     {
         std::lock_guard<std::mutex> lock(_timersScheduler.mutex);
-        
+
         auto& timerInfo = _timersScheduler.timers[_index];
         timerInfo.active = true;
 

@@ -11,7 +11,7 @@ using namespace napa;
 using namespace napa::module;
 
 JavascriptModuleLoader::JavascriptModuleLoader(BuiltInModulesSetter builtInModulesSetter, ModuleCache& moduleCache)
-    : _builtInModulesSetter(std::move(builtInModulesSetter)) , _moduleCache(moduleCache) {}
+    : _builtInModulesSetter(std::move(builtInModulesSetter)), _moduleCache(moduleCache) {}
 
 bool JavascriptModuleLoader::TryGet(const std::string& path, v8::Local<v8::Object>& module) {
     auto isolate = v8::Isolate::GetCurrent();
@@ -23,7 +23,8 @@ bool JavascriptModuleLoader::TryGet(const std::string& path, v8::Local<v8::Objec
     auto context = isolate->GetCurrentContext();
 
     auto moduleContext = v8::Context::New(isolate);
-    JS_ENSURE_WITH_RETURN(isolate, !moduleContext.IsEmpty(), false, "Can't create module context for: \"%s\"", path.c_str());
+    JS_ENSURE_WITH_RETURN(
+        isolate, !moduleContext.IsEmpty(), false, "Can't create module context for: \"%s\"", path.c_str());
 
     // We set an empty security token so callee can access caller's context.
     moduleContext->SetSecurityToken(v8::Undefined(isolate));

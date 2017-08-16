@@ -7,7 +7,7 @@ var napa = require("napajs");
 const NUMBER_OF_WORKERS = 4;
 
 // Create a napa zone with number_of_workers napa workers.
-var zone = napa.zone.create('zone', { workers: NUMBER_OF_WORKERS });
+var zone = napa.zone.create('zone', { workers : NUMBER_OF_WORKERS });
 
 // Create a napa store with 'sub-matrix-size-store' as its key.
 // It is used to communicate max sub binary matrix size across isolates.
@@ -15,12 +15,12 @@ var subMatrixSizeStore = napa.store.create('sub-matrix-size-store');
 
 function run() {
     var squareMatrix = [
-        [0, 1, 1, 0, 1, 1],
-        [1, 1, 0, 1, 0, 1],
-        [0, 1, 1, 1, 0, 1],
-        [1, 1, 1, 1, 0, 0],
-        [1, 1, 1, 1, 1, 1],
-        [0, 0, 0, 0, 0, 0]
+        [ 0, 1, 1, 0, 1, 1 ],
+        [ 1, 1, 0, 1, 0, 1 ],
+        [ 0, 1, 1, 1, 0, 1 ],
+        [ 1, 1, 1, 1, 0, 0 ],
+        [ 1, 1, 1, 1, 1, 1 ],
+        [ 0, 0, 0, 0, 0, 0 ]
     ];
 
     // Setup all workers with functions to be executed.
@@ -37,14 +37,12 @@ function run() {
     var start = Date.now();
 
     // Start to execute.
-    return zone.execute('', 'max_square_sub_matrix_with_all_1s', [squareMatrix])
-        .then(result => {
-            print_result(squareMatrix, Date.now() - start);
-        });
+    return zone.execute('', 'max_square_sub_matrix_with_all_1s', [ squareMatrix ])
+        .then(result => { print_result(squareMatrix, Date.now() - start); });
 }
 
 /*
-Given a binary square matrix, find out the maximum square sub matrix with all 1s. 
+Given a binary square matrix, find out the maximum square sub matrix with all 1s.
 For example, consider the below binary matrix [example_matrix],
 
     0   1   1   0   1   1
@@ -83,7 +81,7 @@ Notation:
 
 Algorithm:
     1. SubMatrixSize[i, j] = example_matrix[i, j] when i === 0 or j === 0;
-    2. SubMatrixSize[i, j] = example_matrix[i, j] === 0 ? 0 : 
+    2. SubMatrixSize[i, j] = example_matrix[i, j] === 0 ? 0 :
        Min(SubMatrixSize[i - 1, j], SubMatrixSize[i - 1, j - 1], SubMatrixSize[i, j - 1]) + 1;
 
 By the above algorithm, the lower-righter layer (with larger layer #)
@@ -97,9 +95,7 @@ async function max_square_sub_matrix_with_all_1s(squareMatrix) {
 
     // All the layers are evaluated in sequence from upp-left to low-right.
     while (layer < 2 * n - 1) {
-        await zone.execute('',
-            'max_square_sub_matrix_with_all_1s_at_layer',
-            [squareMatrix, layer]);
+        await zone.execute('', 'max_square_sub_matrix_with_all_1s_at_layer', [ squareMatrix, layer ]);
         layer++;
     }
 }
@@ -112,25 +108,17 @@ function max_square_sub_matrix_with_all_1s_at_layer(squareMatrix, layer) {
     // Evaluate the elements in the current layer in parallel.
     if (layer < n) {
         for (var i = 0; i <= layer; i++) {
-            promises[promiseIndex++] = 
-                zone.execute('',
-                    'max_square_sub_matrix_with_all_1s_ended_at',
-                    [squareMatrix, i, layer - i]
-                );
+            promises[promiseIndex++] =
+                zone.execute('', 'max_square_sub_matrix_with_all_1s_ended_at', [ squareMatrix, i, layer - i ]);
         }
-    }
-    else {
+    } else {
         for (var j = layer - n + 1; j < n; j++) {
-            promises[promiseIndex++] = 
-                zone.execute('',
-                    'max_square_sub_matrix_with_all_1s_ended_at',
-                    [squareMatrix, layer - j, j]
-                );
+            promises[promiseIndex++] =
+                zone.execute('', 'max_square_sub_matrix_with_all_1s_ended_at', [ squareMatrix, layer - j, j ]);
         }
     }
 
-    return Promise.all(promises).then(result => {
-        });
+    return Promise.all(promises).then(result => {});
 }
 
 // Evaluate the size of max square sub matrix with all 1s
@@ -138,18 +126,12 @@ function max_square_sub_matrix_with_all_1s_at_layer(squareMatrix, layer) {
 function max_square_sub_matrix_with_all_1s_ended_at(squareMatrix, i, j) {
     if (i === 0 || j === 0) {
         store.set(get_key_of_store(i, j), squareMatrix[i][j]);
-    }
-    else {
-        store.set(get_key_of_store(i, j), 
-            squareMatrix[i][j] === 0 ?
-                0
-                :
-                Math.min(
-                    store.get(get_key_of_store(i - 1, j)),
-                    store.get(get_key_of_store(i, j - 1)),
-                    store.get(get_key_of_store(i - 1, j - 1))
-                ) + 1
-        );
+    } else {
+        store.set(get_key_of_store(i, j),
+                  squareMatrix[i][j] === 0 ? 0 : Math.min(store.get(get_key_of_store(i - 1, j)),
+                                                          store.get(get_key_of_store(i, j - 1)),
+                                                          store.get(get_key_of_store(i - 1, j - 1))) +
+                                                     1);
     }
 }
 

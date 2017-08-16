@@ -6,14 +6,9 @@ var childProcess = require('child_process');
 
 try {
     childProcess.execFileSync(
-        path.join(__dirname, 'build/test/', process.platform === 'win32'? 'napa-unittest.exe': 'napa-unittest'),
+        path.join(__dirname, 'build/test/', process.platform === 'win32' ? 'napa-unittest.exe' : 'napa-unittest'),
         [],
-        {
-            cwd: path.join(__dirname, 'build/test'),
-            stdio: 'inherit'
-        }
-    );
-}
-catch(err) {
+        { cwd : path.join(__dirname, 'build/test'), stdio : 'inherit' });
+} catch (err) {
     process.exit(1); // Error
 }

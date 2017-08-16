@@ -29,146 +29,142 @@
 namespace napa {
 namespace platform {
 
-namespace {
+    namespace {
 #ifdef SUPPORT_POSIX
-    static size_t ReadBuffer(const char* filename, char* buffer, size_t length) {
-        FILE* source = fopen(filename, "rb");
-        if (source == nullptr) {
-            return 0;
+        static size_t ReadBuffer(const char* filename, char* buffer, size_t length) {
+            FILE* source = fopen(filename, "rb");
+            if (source == nullptr) {
+                return 0;
+            }
+
+            std::unique_ptr<FILE, std::function<void(FILE*)>> deferred(source, [](auto file) { fclose(file); });
+
+            return fread(buffer, 1, length, source);
         }
 
-        std::unique_ptr<FILE, std::function<void(FILE*)>> deferred(source, [](auto file) {
-            fclose(file);
-        });
+        struct CommandLineArgs {
+            int argc;
+            std::vector<char*> argv;
 
-        return fread(buffer, 1, length, source);
-    }
+            CommandLineArgs() {
+                size_t length = ReadBuffer("/proc/self/cmdline", commandLine, PATH_MAX);
+                commandLine[length] = '\0';
 
-    struct CommandLineArgs {
-        int argc;
-        std::vector<char*> argv;
+                ParseCommandLine(length);
+            }
 
-        CommandLineArgs() {
-            size_t length = ReadBuffer("/proc/self/cmdline", commandLine, PATH_MAX);
-            commandLine[length] = '\0';
+        private:
+            void ParseCommandLine(size_t length) {
+                argc = 0;
+                argv.clear();
 
-            ParseCommandLine(length);
-        }
-
-    private:
-        void ParseCommandLine(size_t length) {
-            argc = 0;
-            argv.clear();
-
-            bool start = true;
-            for (size_t i = 0; i < length; i++) {
-                if (start && commandLine[i] != '\0') {
-                    start = false;
-                    argv.push_back(commandLine + i);
-                    argc++;
-                }
-                else if (commandLine[i] == '\0') {
-                    start = true;
+                bool start = true;
+                for (size_t i = 0; i < length; i++) {
+                    if (start && commandLine[i] != '\0') {
+                        start = false;
+                        argv.push_back(commandLine + i);
+                        argc++;
+                    } else if (commandLine[i] == '\0') {
+                        start = true;
+                    }
                 }
             }
+
+            char commandLine[PATH_MAX + 1];
+        };
+
+        static const CommandLineArgs& GetCommandLineArgs() {
+            static CommandLineArgs commandLineArgs;
+            return commandLineArgs;
+        }
+#endif
+    }
+
+    int GetArgc() {
+#ifdef SUPPORT_POSIX
+        return GetCommandLineArgs().argc;
+#else
+        return __argc;
+#endif
+    }
+
+    /// <summary> Get the process arguments. </summary>
+    char** GetArgv() {
+#ifdef SUPPORT_POSIX
+        return const_cast<char**>(&GetCommandLineArgs().argv[0]);
+#else
+        return __argv;
+#endif
+    }
+
+    bool SetEnv(const char* name, const char* value) {
+#ifdef SUPPORT_POSIX
+        return 0 == setenv(name, value, 1);
+#else
+        std::ostringstream oss;
+        oss << name << "=" << value;
+        return _putenv(oss.str().c_str()) == 0;
+#endif
+    }
+
+    std::string GetEnv(const char* name) {
+#ifdef SUPPORT_POSIX
+        std::string value;
+
+        char* buffer = getenv(name);
+        if (buffer != nullptr) {
+            value.assign(buffer);
         }
 
-        char commandLine[PATH_MAX + 1];
-    };
-
-    static const CommandLineArgs& GetCommandLineArgs() {
-        static CommandLineArgs commandLineArgs;
-        return commandLineArgs;
-    }
-#endif
-}
-
-int GetArgc() {
-#ifdef SUPPORT_POSIX
-    return GetCommandLineArgs().argc;
+        return value;
 #else
-    return __argc;
+        std::string value;
+
+        char* buffer = nullptr;
+        size_t size = 0;
+        if (_dupenv_s(&buffer, &size, name) == 0 && buffer != nullptr) {
+            value.assign(buffer, size - 1);
+            free(buffer);
+        }
+
+        return value;
 #endif
-}
-
-/// <summary> Get the process arguments. </summary>
-char** GetArgv() {
-#ifdef SUPPORT_POSIX
-    return const_cast<char**>(&GetCommandLineArgs().argv[0]);
-#else
-    return __argv;
-#endif
-}
-
-bool SetEnv(const char* name, const char* value) {
-#ifdef SUPPORT_POSIX
-    return 0 == setenv(name, value, 1);
-#else
-    std::ostringstream oss;
-    oss << name << "=" << value;
-    return _putenv(oss.str().c_str()) == 0;
-#endif
-}
-
-std::string GetEnv(const char* name) {
-#ifdef SUPPORT_POSIX
-    std::string value;
-
-    char* buffer = getenv(name);
-    if (buffer != nullptr) {
-        value.assign(buffer);
     }
 
-    return value;
+    int32_t Umask(int32_t mode) {
+#ifdef SUPPORT_POSIX
+        return static_cast<int32_t>(umask(mode));
 #else
-    std::string value;
-
-    char* buffer = nullptr;
-    size_t size = 0;
-    if (_dupenv_s(&buffer, &size, name) == 0 && buffer != nullptr) {
-        value.assign(buffer, size - 1);
-        free(buffer);
+        int32_t oldMask;
+        if (_umask_s(mode, &oldMask)) {
+            throw std::runtime_error("Error setting umask");
+        }
+        return oldMask;
+#endif
     }
 
-    return value;
-#endif
-}
-
-int32_t Umask(int32_t mode) {
+    int32_t Getpid() {
 #ifdef SUPPORT_POSIX
-    return static_cast<int32_t>(umask(mode));
+        return static_cast<int32_t>(getpid());
 #else
-    int32_t oldMask;
-    if (_umask_s(mode, &oldMask)) {
-        throw std::runtime_error("Error setting umask");
+        return _getpid();
+#endif
     }
-    return oldMask;
-#endif
-}
 
-int32_t Getpid() {
+    int32_t Gettid() {
 #ifdef SUPPORT_POSIX
-    return static_cast<int32_t>(getpid());
+        return static_cast<int32_t>(syscall(SYS_gettid));
 #else
-    return _getpid();
+        return static_cast<int32_t>(GetCurrentThreadId());
 #endif
-}
+    }
 
-int32_t Gettid() {
+    int32_t Isatty(int32_t fd) {
 #ifdef SUPPORT_POSIX
-    return static_cast<int32_t>(syscall(SYS_gettid));
+        return static_cast<int32_t>(isatty(fd));
 #else
-    return static_cast<int32_t>(GetCurrentThreadId());
+        return _isatty(fd);
 #endif
-}
-
-int32_t Isatty(int32_t fd) {
-#ifdef SUPPORT_POSIX
-    return static_cast<int32_t>(isatty(fd));
-#else
-    return _isatty(fd);
-#endif
-}
-
+    }
 }
 }

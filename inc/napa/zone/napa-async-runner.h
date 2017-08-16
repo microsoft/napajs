@@ -29,21 +29,23 @@ namespace zone {
     /// </summary>
     using AsyncCompleteCallback = std::function<void(v8::Local<v8::Function>, void*)>;
 
-    /// <summary> It runs a synchronous function in a separate thread and posts a completion into the current V8 execution loop. </summary>
+    /// <summary> It runs a synchronous function in a separate thread and posts a completion into the current V8
+    /// execution loop. </summary>
     /// <param name="jsCallback"> Javascript callback. </summary>
     /// <param name="asyncWork"> Function to run asynchronously in separate thread. </param>
-    /// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous callback completes. </param>
-    NAPA_API void PostAsyncWork(v8::Local<v8::Function> jsCallback,
-                                AsyncWork asyncWork,
-                                AsyncCompleteCallback asyncCompleteCallback);
+    /// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous callback completes.
+    /// </param>
+    NAPA_API void
+    PostAsyncWork(v8::Local<v8::Function> jsCallback, AsyncWork asyncWork, AsyncCompleteCallback asyncCompleteCallback);
 
     /// <summary> It runs an asynchronous function and post a completion into the current V8 execution loop. </summary>
     /// <param name="jsCallback"> Javascript callback. </summary>
     /// <param name="asyncWork"> Function to wrap async-supporting function. </param>
-    /// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous function completes. </param>
+    /// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous function completes.
+    /// </param>
     NAPA_API void DoAsyncWork(v8::Local<v8::Function> jsCallback,
                               const CompletionWork& asyncWork,
                               AsyncCompleteCallback asyncCompleteCallback);
 
-}   // End of namespace module.
-}   // End of namespace napa.
+} // End of namespace module.
+} // End of namespace napa.

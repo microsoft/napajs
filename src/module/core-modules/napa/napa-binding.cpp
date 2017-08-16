@@ -33,11 +33,11 @@ static void RegisterBinding(v8::Local<v8::Object> module) {
 }
 
 v8::Local<v8::Object> napa::module::binding::GetModule() {
-    auto persistentModule = 
-        reinterpret_cast<v8::Persistent<v8::Object>*>(
-            zone::WorkerContext::Get(zone::WorkerContextItem::NAPA_BINDING));
-    
-    NAPA_ASSERT(persistentModule != nullptr, "\"napajs\" must be required before napa::module::binding::GetModule() can be called from C++.");
+    auto persistentModule =
+        reinterpret_cast<v8::Persistent<v8::Object>*>(zone::WorkerContext::Get(zone::WorkerContextItem::NAPA_BINDING));
+
+    NAPA_ASSERT(persistentModule != nullptr,
+                "\"napajs\" must be required before napa::module::binding::GetModule() can be called from C++.");
     return v8::Local<v8::Object>::New(v8::Isolate::GetCurrent(), *persistentModule);
 }
 
@@ -79,8 +79,7 @@ static void GetZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
     try {
         auto zoneProxy = napa::Zone::Get(*zoneId);
         args.GetReturnValue().Set(ZoneWrap::NewInstance(std::move(zoneProxy)));
-    }
-    catch (const std::exception &ex) {
+    } catch (const std::exception& ex) {
         JS_ASSERT(isolate, false, ex.what());
     }
 }
@@ -144,16 +143,12 @@ static void GetStoreCount(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
 static void GetCrtAllocator(const v8::FunctionCallbackInfo<v8::Value>& args) {
     args.GetReturnValue().Set(binding::CreateAllocatorWrap(
-        std::shared_ptr<napa::memory::Allocator>(
-            &napa::memory::GetCrtAllocator(),
-            [](napa::memory::Allocator*){})));
+        std::shared_ptr<napa::memory::Allocator>(&napa::memory::GetCrtAllocator(), [](napa::memory::Allocator*) {})));
 }
 
 static void GetDefaultAllocator(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    args.GetReturnValue().Set(binding::CreateAllocatorWrap(
-        std::shared_ptr<napa::memory::Allocator>(
-            &napa::memory::GetDefaultAllocator(),
-            [](napa::memory::Allocator*){})));
+    args.GetReturnValue().Set(binding::CreateAllocatorWrap(std::shared_ptr<napa::memory::Allocator>(
+        &napa::memory::GetDefaultAllocator(), [](napa::memory::Allocator*) {})));
 }
 
 static void Log(const v8::FunctionCallbackInfo<v8::Value>& args) {

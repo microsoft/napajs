@@ -31,7 +31,6 @@ static MetricProvider* LoadMetricProvider(const std::string& providerName);
 static LoggingProvider* _loggingProvider = LoadLoggingProvider("");
 static MetricProvider* _metricProvider = LoadMetricProvider("");
 
-
 bool napa::providers::Initialize(const settings::PlatformSettings& settings) {
     _loggingProvider = LoadLoggingProvider(settings.loggingProvider);
     _metricProvider = LoadMetricProvider(settings.metricProvider);
@@ -43,7 +42,7 @@ void napa::providers::Shutdown() {
     if (_loggingProvider != nullptr) {
         _loggingProvider->Destroy();
     }
-    
+
     if (_metricProvider != nullptr) {
         _metricProvider->Destroy();
     }
@@ -58,10 +57,8 @@ MetricProvider& napa::providers::GetMetricProvider() {
 }
 
 template <typename ProviderType>
-static ProviderType* LoadProvider(
-    const std::string& providerName,
-    const std::string& jsonPropertyPath,
-    const std::string& functionName) {
+static ProviderType*
+LoadProvider(const std::string& providerName, const std::string& jsonPropertyPath, const std::string& functionName) {
 
     napa::module::ModuleResolver moduleResolver;
 
@@ -114,5 +111,6 @@ static MetricProvider* LoadMetricProvider(const std::string& providerName) {
         return nopMetricProvider.get();
     }
 
-    return LoadProvider<MetricProvider>(providerName, "providers.metric", "CreateMetricProvider");;
+    return LoadProvider<MetricProvider>(providerName, "providers.metric", "CreateMetricProvider");
+    ;
 }

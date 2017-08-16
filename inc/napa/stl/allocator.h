@@ -17,18 +17,19 @@ namespace stl {
     /// See specification draft: http://www.open-std.org/jtc1/sc22/open/n2356/.
     /// Also see http://www.codeguru.com/Cpp/Cpp/cpp_mfc/stl/article.php/c4079/.
     /// </summary>
-    template <typename T> class Allocator {
+    template <typename T>
+    class Allocator {
     public:
-        typedef size_t    size_type;
+        typedef size_t size_type;
         typedef ptrdiff_t difference_type;
-        typedef T*        pointer;
-        typedef const T*  const_pointer;
-        typedef T&        reference;
-        typedef const T&  const_reference;
-        typedef T         value_type;
+        typedef T* pointer;
+        typedef const T* const_pointer;
+        typedef T& reference;
+        typedef const T& const_reference;
+        typedef T value_type;
 
-        template <typename U> struct rebind
-        {
+        template <typename U>
+        struct rebind {
             typedef Allocator<U> other;
         };
 
@@ -42,7 +43,8 @@ namespace stl {
         Allocator(const Allocator& other) = default;
         Allocator& operator=(const Allocator&) = default;
 
-        template <typename U> Allocator(const Allocator<U>&) throw();
+        template <typename U>
+        Allocator(const Allocator<U>&) throw();
 
         /// The following method is in the C++98 specification but was
         /// not implemented. Keeping the declarations here to document
@@ -72,19 +74,16 @@ namespace stl {
 
     template <typename T>
     Allocator<T>::Allocator()
-        : _allocator(&napa::memory::GetDefaultAllocator()) {
-    }
+        : _allocator(&napa::memory::GetDefaultAllocator()) {}
 
     template <typename T>
     Allocator<T>::Allocator(napa::memory::Allocator& allocator)
-        : _allocator(&allocator) {
-    }
+        : _allocator(&allocator) {}
 
     template <typename T>
     template <typename U>
     Allocator<T>::Allocator(const Allocator<U>& rhs) throw()
-        : _allocator(rhs._allocator) {
-    }
+        : _allocator(rhs._allocator) {}
 
     template <typename T>
     typename Allocator<T>::pointer Allocator<T>::address(typename Allocator<T>::reference x) const {
@@ -97,7 +96,8 @@ namespace stl {
     }
 
     template <typename T>
-    typename Allocator<T>::pointer Allocator<T>::allocate(typename Allocator<T>::size_type count, const void* /*hint*/) {
+    typename Allocator<T>::pointer Allocator<T>::allocate(typename Allocator<T>::size_type count,
+                                                          const void* /*hint*/) {
         return static_cast<Allocator<T>::pointer>(_allocator->Allocate(sizeof(T) * count));
     }
 
@@ -117,7 +117,7 @@ namespace stl {
     }
 
 #pragma warning(push)
-#pragma warning(disable:4100)
+#pragma warning(disable : 4100)
     // Warning C4100 says that 'ptr' is unreferenced as a formal parameter.
     // This happens when T is a simple type like int. In this case it seems that
     // the compiler optimizes away the call to ptr->~T(), causing the ptr to

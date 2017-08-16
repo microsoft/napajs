@@ -13,44 +13,36 @@ namespace napa {
 namespace memory {
 
     /// <summary> Interface for allocator debugger. </summary>
-    class AllocatorDebugger: public Allocator {
+    class AllocatorDebugger : public Allocator {
     public:
-        /// <summary> Get allocator debug information in JSON. 
+        /// <summary> Get allocator debug information in JSON.
         /// It's up to implementation to decide the schema of JSON.
         /// </summary>
         virtual std::string GetDebugInfo() const = 0;
-    
+
     protected:
         virtual ~AllocatorDebugger() = default;
     };
 
-    /// <summary> Simple allocator debugger that reports total allocate/deallocate count and total size allocated. </summary>
-    class SimpleAllocatorDebugger: public AllocatorDebugger {
+    /// <summary> Simple allocator debugger that reports total allocate/deallocate count and total size allocated.
+    /// </summary>
+    class SimpleAllocatorDebugger : public AllocatorDebugger {
     public:
         /// <summary> Constructor </summary>
         /// <param name="allocator"> Actual allocator to allocate/deallocate memory. </summary>
         SimpleAllocatorDebugger(std::shared_ptr<Allocator> allocator)
-          : _allocator(std::move(allocator)),
-            _allocateCount(0),
-            _deallocateCount(0),
-            _allocatedSize(0),
-            _deallocatedSize(0) {
+            : _allocator(std::move(allocator)), _allocateCount(0), _deallocateCount(0), _allocatedSize(0),
+              _deallocatedSize(0) {
             std::stringstream stream;
-            stream << "SimpleAllocatorDebugger<"
-                << _allocator->GetType()
-                << ">";
+            stream << "SimpleAllocatorDebugger<" << _allocator->GetType() << ">";
             _typeName = stream.str();
         }
 
         /// <summary> Copy constructor </summary>
         SimpleAllocatorDebugger(const SimpleAllocatorDebugger& other)
-          : _allocator(other._allocator),
-            _typeName(other._typeName),
-            _allocateCount(other._allocateCount.load()),
-            _deallocateCount(other._deallocateCount.load()),
-            _allocatedSize(other._allocatedSize.load()),
-            _deallocatedSize(other._deallocatedSize.load()) {
-        }
+            : _allocator(other._allocator), _typeName(other._typeName), _allocateCount(other._allocateCount.load()),
+              _deallocateCount(other._deallocateCount.load()), _allocatedSize(other._allocatedSize.load()),
+              _deallocatedSize(other._deallocatedSize.load()) {}
 
         /// <summary> Allocate memory of given size. </summary>
         /// <param name="size"> Requested size. </summary>
@@ -72,32 +64,26 @@ namespace memory {
         }
 
         /// <summary> Get allocator type for better debuggability. </summary>
-        const char* GetType() const override {
-            return _typeName.c_str();
-        }
+        const char* GetType() const override { return _typeName.c_str(); }
 
-        /// <summary> Get allocator debug information in JSON. 
+        /// <summary> Get allocator debug information in JSON.
         /// Allocator debugger should own returned buffer.
         /// </summary>
         std::string GetDebugInfo() const override {
             std::stringstream stream;
             stream << "{ "
-                << "\"allocate\": " << _allocateCount
-                << ", "
-                << "\"deallocate\": " << _deallocateCount
-                << ", "
-                << "\"allocatedSize\": " << _allocatedSize
-                << ", "
-                << "\"deallocatedSize\": " << _deallocatedSize
-                << " }";
+                   << "\"allocate\": " << _allocateCount << ", "
+                   << "\"deallocate\": " << _deallocateCount << ", "
+                   << "\"allocatedSize\": " << _allocatedSize << ", "
+                   << "\"deallocatedSize\": " << _deallocatedSize << " }";
 
             return stream.str();
         }
 
         /// <summary> Tell if another allocator equals to this allocator. </summary>
         bool operator==(const Allocator& other) const override {
-            return strcmp(other.GetType(), GetType()) == 0
-                && (_allocator == dynamic_cast<const SimpleAllocatorDebugger*>(&other)->_allocator);
+            return strcmp(other.GetType(), GetType()) == 0 &&
+                   (_allocator == dynamic_cast<const SimpleAllocatorDebugger*>(&other)->_allocator);
         }
 
     private:

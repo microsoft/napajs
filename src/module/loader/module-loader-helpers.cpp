@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-#include "module-loader-helpers.h" 
+#include "module-loader-helpers.h"
 
 #include <module/core-modules/node/file-system-helpers.h>
 #include <platform/dll.h>
@@ -21,19 +21,19 @@ using namespace napa::module;
 
 namespace {
 
-    /// <summary> Set up __dirname and __filename at V8 context. </summary>
-    /// <param name="exports"> Object to set module paths. </param>
-    /// <param name="dirname"> Module directory name. </param>
-    /// <param name="filename"> Module file name. </param>
-    void SetupModulePath(v8::Local<v8::Object> exports, const std::string& dirname, const std::string& filename);
+/// <summary> Set up __dirname and __filename at V8 context. </summary>
+/// <param name="exports"> Object to set module paths. </param>
+/// <param name="dirname"> Module directory name. </param>
+/// <param name="filename"> Module file name. </param>
+void SetupModulePath(v8::Local<v8::Object> exports, const std::string& dirname, const std::string& filename);
 
-    /// <summary> Set up module objects at V8 context. </summary>
-    /// <param name="parentContext"> Parent context. </param>
-    /// <param name="exports"> Object to set module objects. </param>
-    /// <param name="id"> Module id. </param>
-    void SetupModuleObjects(v8::Local<v8::Context> parentContext, v8::Local<v8::Object> exports, const std::string& id);
+/// <summary> Set up module objects at V8 context. </summary>
+/// <param name="parentContext"> Parent context. </param>
+/// <param name="exports"> Object to set module objects. </param>
+/// <param name="id"> Module id. </param>
+void SetupModuleObjects(v8::Local<v8::Context> parentContext, v8::Local<v8::Object> exports, const std::string& id);
 
-}   // End of anonymous namespace.
+} // End of anonymous namespace.
 
 v8::Local<v8::Object> module_loader_helpers::ExportModule(v8::Local<v8::Object> object,
                                                           const napa::module::ModuleInitializer& initializer) {
@@ -57,9 +57,7 @@ std::string module_loader_helpers::GetCurrentContextDirectory() {
     auto contextObject = context->Global();
     auto dirPropertyName = v8_helpers::MakeV8String(isolate, "__dirname");
 
-    if (contextObject.IsEmpty() 
-        || contextObject->IsNull()
-        || !contextObject->Has(dirPropertyName)) {
+    if (contextObject.IsEmpty() || contextObject->IsNull() || !contextObject->Has(dirPropertyName)) {
         return GetCurrentWorkingDirectory();
     }
 
@@ -96,7 +94,8 @@ const std::string& module_loader_helpers::GetCurrentWorkingDirectory() {
 }
 
 const std::string& module_loader_helpers::GetLibDirectory() {
-    static std::string libDirectory = (filesystem::Path(GetNapaDllPath()).Parent().Parent() / "lib").Normalize().String();
+    static std::string libDirectory =
+        (filesystem::Path(GetNapaDllPath()).Parent().Parent() / "lib").Normalize().String();
     return libDirectory;
 }
 
@@ -129,7 +128,10 @@ void module_loader_helpers::SetupModuleContext(v8::Local<v8::Context> parentCont
         SetupModulePath(exports, current.Parent().Normalize().String(), path);
     }
 
-    auto global = parentContext->Global()->Get(parentContext, v8_helpers::MakeV8String(isolate, "global")).ToLocalChecked()->ToObject();
+    auto global = parentContext->Global()
+                      ->Get(parentContext, v8_helpers::MakeV8String(isolate, "global"))
+                      .ToLocalChecked()
+                      ->ToObject();
     (void)exports->Set(v8_helpers::MakeV8String(isolate, "global"), global);
 }
 
@@ -137,7 +139,9 @@ std::vector<module_loader_helpers::CoreModuleInfo> module_loader_helpers::ReadCo
     static const std::string CORE_MODULES_JSON_PATH =
         (filesystem::Path(GetLibDirectory()) / "core" / "core-modules.json").String();
 
-    NAPA_ASSERT(filesystem::IsRegularFile(CORE_MODULES_JSON_PATH), "Core module JSON file \"%s\" does not exist.", CORE_MODULES_JSON_PATH.c_str());
+    NAPA_ASSERT(filesystem::IsRegularFile(CORE_MODULES_JSON_PATH),
+                "Core module JSON file \"%s\" does not exist.",
+                CORE_MODULES_JSON_PATH.c_str());
 
     std::vector<CoreModuleInfo> coreModuleInfos;
 
@@ -177,53 +181,54 @@ v8::Local<v8::String> module_loader_helpers::ReadModuleFile(const std::string& p
         return scope.Escape(v8::Local<v8::String>());
     }
 
-    JS_ENSURE_WITH_RETURN(isolate,
-                          !content.empty(),
-                          scope.Escape(v8::Local<v8::String>()),
-                          "\"%s\" is empty",
-                          path.c_str());
+    JS_ENSURE_WITH_RETURN(
+        isolate, !content.empty(), scope.Escape(v8::Local<v8::String>()), "\"%s\" is empty", path.c_str());
 
     return scope.Escape(v8_helpers::MakeV8String(isolate, content));
 }
 
 namespace {
 
-    void SetupModulePath(v8::Local<v8::Object> exports, const std::string& dirname, const std::string& filename) {
-        auto isolate = v8::Isolate::GetCurrent();
-        v8::HandleScope scope(isolate);
+void SetupModulePath(v8::Local<v8::Object> exports, const std::string& dirname, const std::string& filename) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
 
-        (void)exports->Set(v8_helpers::MakeV8String(isolate, "__dirname"), v8_helpers::MakeV8String(isolate, dirname));
-        if (filename.empty()) {
-            (void)exports->Set(v8_helpers::MakeV8String(isolate, "__filename"), v8::Null(isolate));
-        } else {
-            (void)exports->Set(v8_helpers::MakeV8String(isolate, "__filename"), v8_helpers::MakeV8String(isolate, filename));
-        }
+    (void)exports->Set(v8_helpers::MakeV8String(isolate, "__dirname"), v8_helpers::MakeV8String(isolate, dirname));
+    if (filename.empty()) {
+        (void)exports->Set(v8_helpers::MakeV8String(isolate, "__filename"), v8::Null(isolate));
+    } else {
+        (void)exports->Set(v8_helpers::MakeV8String(isolate, "__filename"),
+                           v8_helpers::MakeV8String(isolate, filename));
+    }
+}
+
+void SetupModuleObjects(v8::Local<v8::Context> parentContext, v8::Local<v8::Object> exports, const std::string& id) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
+
+    auto context = isolate->GetCurrentContext();
+
+    auto module = v8::Object::New(isolate);
+    (void)module->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "exports"), v8::Object::New(isolate));
+    (void)module->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "paths"), v8::Array::New(isolate));
+    (void)module->CreateDataProperty(
+        context, v8_helpers::MakeV8String(isolate, "id"), v8_helpers::MakeV8String(isolate, id));
+    (void)module->CreateDataProperty(
+        context, v8_helpers::MakeV8String(isolate, "filename"), v8_helpers::MakeV8String(isolate, id));
+
+    // Setup 'module.require'.
+    if (!parentContext.IsEmpty()) {
+        auto requireKey = v8_helpers::MakeV8String(isolate, "require");
+        (void)module->CreateDataProperty(context, requireKey, parentContext->Global()->Get(requireKey));
     }
 
-    void SetupModuleObjects(v8::Local<v8::Context> parentContext, v8::Local<v8::Object> exports, const std::string& id) {
-        auto isolate = v8::Isolate::GetCurrent();
-        v8::HandleScope scope(isolate);
+    (void)exports->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "module"), module);
+    (void)exports->CreateDataProperty(context,
+                                      v8_helpers::MakeV8String(isolate, "exports"),
+                                      module->Get(v8_helpers::MakeV8String(isolate, "exports"))->ToObject());
 
-        auto context = isolate->GetCurrentContext();
+    // Set '__in_napa' variable in all modules context to distinguish node and napa runtime.
+    (void)exports->Set(v8_helpers::MakeV8String(isolate, "__in_napa"), v8::Boolean::New(isolate, true));
+}
 
-        auto module = v8::Object::New(isolate);
-        (void)module->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "exports"), v8::Object::New(isolate));
-        (void)module->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "paths"), v8::Array::New(isolate));
-        (void)module->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "id"), v8_helpers::MakeV8String(isolate, id));
-        (void)module->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "filename"), v8_helpers::MakeV8String(isolate, id));
-        
-        // Setup 'module.require'.
-        if (!parentContext.IsEmpty()) {
-            auto requireKey = v8_helpers::MakeV8String(isolate, "require");
-            (void)module->CreateDataProperty(context, requireKey, parentContext->Global()->Get(requireKey));
-        }
-
-        (void)exports->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "module"), module);
-        (void)exports->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "exports"),
-                                          module->Get(v8_helpers::MakeV8String(isolate, "exports"))->ToObject());
-
-        // Set '__in_napa' variable in all modules context to distinguish node and napa runtime.
-        (void)exports->Set(v8_helpers::MakeV8String(isolate, "__in_napa"), v8::Boolean::New(isolate, true));
-    }
-
-}   // End of anonymous namespace.
+} // End of anonymous namespace.

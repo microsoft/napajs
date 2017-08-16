@@ -3,15 +3,15 @@
 
 import * as napa from '../lib/index';
 import * as mdTable from 'markdown-table';
-import { formatTimeDiff } from './bench-utils';
+import {formatTimeDiff} from './bench-utils';
 
-export function timeIt(func: () => void): [number, number] {
+export function timeIt(func: () => void):[ number, number ] {
     let start = process.hrtime();
     func();
     return process.hrtime(start);
 }
 
-export function test1(): [number, number] {
+export function test1():[ number, number ] {
     return timeIt(() => {
         const REPEAT = 1000000000;
         let sum = 0;
@@ -31,11 +31,11 @@ export async function bench(zone: napa.zone.Zone): Promise<void> {
 
     // Actual test.
     let table = [];
-    table.push(["node time", "napa time"]);
+    table.push([ "node time", "napa time" ]);
     let nodeTime = formatTimeDiff(test1());
     let napaTime = formatTimeDiff((await zone.execute('', 'test1', [])).value);
-    table.push([nodeTime, napaTime]);
-        
+    table.push([ nodeTime, napaTime ]);
+
     console.log("## Node vs Napa JavaScript execution performance\n");
     console.log(mdTable(table));
     console.log('');

@@ -22,15 +22,14 @@ using namespace napa::module;
 
 namespace {
 
-    const std::string NAPA_MODULE_EXTENSION = ".napa";
-    const std::string JAVASCRIPT_MODULE_EXTENSION = ".js";
-    const std::string JSON_OBJECT_EXTENSION = ".json";
+const std::string NAPA_MODULE_EXTENSION = ".napa";
+const std::string JAVASCRIPT_MODULE_EXTENSION = ".js";
+const std::string JSON_OBJECT_EXTENSION = ".json";
 
-}   // End of anonymous namespace.
+} // End of anonymous namespace.
 
 class ModuleResolver::ModuleResolverImpl {
 public:
-
     /// <summary> Constructor. </summary>
     ModuleResolverImpl();
 
@@ -50,7 +49,6 @@ public:
     bool SetAsCoreModule(const char* name);
 
 private:
-
     /// <summary> It resolves a full module path from a given argument of require(). </summary>
     /// <param name="name"> Module name or path. </param>
     /// <param name="path"> Base path. </param>
@@ -136,24 +134,23 @@ ModuleResolver::ModuleResolverImpl::ModuleResolverImpl() {
     }
 }
 
-#define RETURN_IF_NOT_EMPTY(run)                    \
-    do {                                            \
-        auto result = run;                          \
-        if (result.type != ModuleType::NONE) {      \
-            return result;                          \
-        }                                           \
+#define RETURN_IF_NOT_EMPTY(run)                                                                                       \
+    do {                                                                                                               \
+        auto result = run;                                                                                             \
+        if (result.type != ModuleType::NONE) {                                                                         \
+            return result;                                                                                             \
+        }                                                                                                              \
     } while (false);
 
 ModuleInfo ModuleResolver::ModuleResolverImpl::Resolve(const char* name, const char* path) {
     // If name is a core modules, return it.
     if (IsCoreModule(name)) {
-        return ModuleInfo{ModuleType::CORE, std::string(name), std::string()};
+        return ModuleInfo{ ModuleType::CORE, std::string(name), std::string() };
     }
 
     // Normalize module context path.
-    filesystem::Path basePath =
-        (path == nullptr) ? filesystem::CurrentDirectory() : filesystem::Path(path);
-    
+    filesystem::Path basePath = (path == nullptr) ? filesystem::CurrentDirectory() : filesystem::Path(path);
+
     // Look up from the given path.
     RETURN_IF_NOT_EMPTY(ResolveFromPath(name, basePath));
 
@@ -191,15 +188,14 @@ ModuleInfo ModuleResolver::ModuleResolverImpl::ResolveFromEnv(const filesystem::
         RETURN_IF_NOT_EMPTY(ResolveFromPath(name, nodePath.c_str()));
     }
 
-    return ModuleInfo{ModuleType::NONE, std::string(), std::string()};
+    return ModuleInfo{ ModuleType::NONE, std::string(), std::string() };
 }
 
 bool ModuleResolver::ModuleResolverImpl::IsCoreModule(const std::string& module) {
     return _coreModules.find(module) != _coreModules.end();
 }
 
-ModuleInfo ModuleResolver::ModuleResolverImpl::LoadAsFile(const filesystem::Path& name,
-                                                          const filesystem::Path& path) {
+ModuleInfo ModuleResolver::ModuleResolverImpl::LoadAsFile(const filesystem::Path& name, const filesystem::Path& path) {
     auto fullPath = (path / name).Normalize();
 
     if (filesystem::IsRegularFile(fullPath)) {
@@ -212,7 +208,7 @@ ModuleInfo ModuleResolver::ModuleResolverImpl::LoadAsFile(const filesystem::Path
             type = ModuleType::NAPA;
         }
 
-        return ModuleInfo{type, fullPath.String(), std::string()};
+        return ModuleInfo{ type, fullPath.String(), std::string() };
     }
 
     return TryExtensions(fullPath);
@@ -240,7 +236,8 @@ ModuleInfo ModuleResolver::ModuleResolverImpl::LoadAsDirectory(const filesystem:
                 moduleInfo.packageJsonPath = packageJson.String();
                 return moduleInfo;
             }
-        } catch (...) {}    // ignore exception and continue.
+        } catch (...) {
+        } // ignore exception and continue.
     }
 
     fullPath = fullPath / "index";
@@ -250,7 +247,7 @@ ModuleInfo ModuleResolver::ModuleResolverImpl::LoadAsDirectory(const filesystem:
 ModuleInfo ModuleResolver::ModuleResolverImpl::LoadNodeModules(const filesystem::Path& name,
                                                                const filesystem::Path& path) {
     auto modulePaths = GetNodeModulesPaths(path);
-    for (const auto& modulePath :modulePaths) {
+    for (const auto& modulePath : modulePaths) {
         // Load as a file (path + name).
         RETURN_IF_NOT_EMPTY(LoadAsFile(name, modulePath));
 
@@ -258,7 +255,7 @@ ModuleInfo ModuleResolver::ModuleResolverImpl::LoadNodeModules(const filesystem:
         RETURN_IF_NOT_EMPTY(LoadAsDirectory(name, modulePath));
     }
 
-    return ModuleInfo{ModuleType::NONE, std::string(), std::string()};
+    return ModuleInfo{ ModuleType::NONE, std::string(), std::string() };
 }
 
 std::vector<std::string> ModuleResolver::ModuleResolverImpl::GetNodeModulesPaths(const filesystem::Path& path) {
@@ -285,20 +282,20 @@ ModuleInfo ModuleResolver::ModuleResolverImpl::TryExtensions(const filesystem::P
 
     auto modulePath = filesystem::Path(oss.str());
     if (filesystem::IsRegularFile(modulePath)) {
-        return ModuleInfo{ModuleType::JAVASCRIPT, modulePath.String(), std::string()};
+        return ModuleInfo{ ModuleType::JAVASCRIPT, modulePath.String(), std::string() };
     }
 
     modulePath.ReplaceExtension(JSON_OBJECT_EXTENSION);
     if (filesystem::IsRegularFile(modulePath)) {
-        return ModuleInfo{ModuleType::JSON, modulePath.String(), std::string()};
+        return ModuleInfo{ ModuleType::JSON, modulePath.String(), std::string() };
     }
 
     modulePath.ReplaceExtension(NAPA_MODULE_EXTENSION);
     if (filesystem::IsRegularFile(modulePath)) {
-        return ModuleInfo{ModuleType::NAPA, modulePath.String(), std::string()};
+        return ModuleInfo{ ModuleType::NAPA, modulePath.String(), std::string() };
     }
 
-    return ModuleInfo{ModuleType::NONE, std::string(), std::string()};
+    return ModuleInfo{ ModuleType::NONE, std::string(), std::string() };
 }
 
 bool ModuleResolver::ModuleResolverImpl::IsExplicitRelativePath(const filesystem::Path& path) const {

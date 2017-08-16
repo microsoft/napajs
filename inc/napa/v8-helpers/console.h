@@ -18,11 +18,11 @@ namespace v8_helpers {
             v8::HandleScope scope(isolate);
             auto context = isolate->GetCurrentContext();
 
-            auto console = v8::Local<v8::Object>::Cast(context->Global()->Get(
-                v8_helpers::MakeV8String(isolate, "console")));
+            auto console =
+                v8::Local<v8::Object>::Cast(context->Global()->Get(v8_helpers::MakeV8String(isolate, "console")));
 
             v8_helpers::Call(console, "log", argc, argv);
-        } 
+        }
     };
 }
 }
