@@ -15,7 +15,7 @@ var skipBuild = process.env.hasOwnProperty('npm_config_build') && !process.env['
 
 // Use debug build
 if (process.env.hasOwnProperty('npm_config_debug') && process.env['npm_config_debug']) {
-	buildCommand += " --debug";
+    buildCommand += " --debug";
 }
 
 log.info('NAPA_INSTALL', 'installing napajs...');
@@ -24,50 +24,52 @@ var errorCode = 0;
 
 // ==== Try to fetch the pre-build binaries ====
 if (!skipFetch) {
-	try {
-		log.info('NAPA_INSTALL', 'trying to download the pre-build binaries.');
-		execSync(fetchCommand, { 'stdio': 'inherit' });
+    try {
+        log.info('NAPA_INSTALL', 'downloading the pre-build binaries...');
+        execSync(fetchCommand, { 'stdio': 'inherit' });
 
-		log.info('NAPA_INSTALL', 'done successfully by download.');
-		skipBuild = true;
-	} catch (e) {
-		errorCode = e.status;
-	}
+        log.info('NAPA_INSTALL', 'completed successfully by download.');
+        skipBuild = true;
+    } catch (e) {
+        errorCode = e.status;
+    }
 }
 
 // ==== Try to build from sources ====
 if (!skipBuild) {
-	try {
-		log.info('NAPA_INSTALL', 'trying to build from sources.');
-		execSync(buildCommand, { 'stdio': 'inherit' });
+    try {
+        log.info('NAPA_INSTALL', 'building from sources...');
+        execSync(buildCommand, { 'stdio': 'inherit' });
 
-		log.info('NAPA_INSTALL', 'done successfully by build.');
-	} catch (e) {
-		errorCode = e.status;
-	}
+        log.info('NAPA_INSTALL', 'completed successfully by build.');
+    } catch (e) {
+        errorCode = e.status;
+    }
 }
 
 // ==== Compile Typescript files ====
 if (errorCode == 0) {
 	var npmVersion = execSync('npm --version').toString().trim();
-	var npmMajorVersion = npmVersion.split('.')[0];
-	var npmMajorVersionNumber = parseInt(npmMajorVersion);
-	if (npmMajorVersionNumber < 4) {
-		// Before npm 4.x, the 'prepare' script will not run automatically by npm.
-		// We have to run it explicitly in this script.
+	log.info('NAPA_INSTALL', `current NPM version=${npmVersion}.`);
 
-		try {
-			log.info('NAPA_INSTALL', `Current NPM version=${npmVersion}. NPM below 4.x does not recognize script 'prepare'.`);
-			log.info('NAPA_INSTALL', 'running "npm run prepare"...');
-			execSync('npm run prepare', { 'stdio': 'inherit' });
-		} catch (e) {
-			errorCode = e.status;
-		}
-	}
+	var npmMajorVersion = npmVersion.split('.')[0];
+    var npmMajorVersionNumber = parseInt(npmMajorVersion);
+    if (npmMajorVersionNumber < 4) {
+        // Before npm 4.x, the 'prepare' script will not run automatically by npm.
+        // We have to run it explicitly in this script.
+		log.info('NAPA_INSTALL', 'NPM below 4.x does not recognize script "prepare". We need to run it explicitly.');
+		log.info('NAPA_INSTALL', 'running "npm run prepare"...');
+		
+        try {
+            execSync('npm run prepare', { 'stdio': 'inherit' });
+        } catch (e) {
+            errorCode = e.status;
+        }
+    }
 }
 
 if (errorCode != 0) {
-	log.error('NAPA_INSTALL', 'failed to install napajs.');
+    log.error('NAPA_INSTALL', 'failed to install napajs.');
 }
 
 process.exit(errorCode);
