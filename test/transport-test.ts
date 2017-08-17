@@ -6,8 +6,6 @@ import * as assert from 'assert';
 import * as path from 'path';
 import * as t from './napa-zone/test';
 
-let NAPA_ZONE_TEST_MODULE = path.resolve(__dirname, 'napa-zone/test');
-
 describe('napajs/transport', () => {
     let napaZone = napa.zone.create('zone10');
     describe('TransportContext', () => {
@@ -50,7 +48,7 @@ describe('napajs/transport', () => {
         });
         
         it('@napa: simple types', () => {
-            napaZone.execute(NAPA_ZONE_TEST_MODULE, "simpleTypeTransportTest");
+            napaZone.execute('./napa-zone/test', "simpleTypeTransportTest");
         }).timeout(3000);
 
         it('@node: JS transportable', () => {
@@ -58,7 +56,7 @@ describe('napajs/transport', () => {
         });
 
         it('@napa: JS transportable', () => {
-            napaZone.execute(NAPA_ZONE_TEST_MODULE, "jsTransportTest");
+            napaZone.execute('./napa-zone/test', "jsTransportTest");
         });
 
         it('@node: addon transportable', () => {
@@ -66,7 +64,7 @@ describe('napajs/transport', () => {
         });
 
         it('@napa: addon transportable', () => {
-            napaZone.execute(NAPA_ZONE_TEST_MODULE, "addonTransportTest");
+            napaZone.execute('./napa-zone/test', "addonTransportTest");
         });
 
         it('@node: function transportable', () => {
@@ -74,7 +72,7 @@ describe('napajs/transport', () => {
         });
 
         it('@napa: function transportable', () => {
-            napaZone.execute(NAPA_ZONE_TEST_MODULE, "functionTransportTest");
+            napaZone.execute('./napa-zone/test', "functionTransportTest");
         });
 
         it('@node: composite transportable', () => {
@@ -82,7 +80,7 @@ describe('napajs/transport', () => {
         });
 
         it('@napa: composite transportable', () => {
-            napaZone.execute(NAPA_ZONE_TEST_MODULE, "compositeTransportTest");
+            napaZone.execute('./napa-zone/test', "compositeTransportTest");
         });
 
         it('@node: non-transportable', () => {
@@ -90,7 +88,7 @@ describe('napajs/transport', () => {
         });
 
         it('@napa: non-transportable', () => {
-            napaZone.execute(NAPA_ZONE_TEST_MODULE, "nontransportableTest");
+            napaZone.execute('./napa-zone/test', "nontransportableTest");
         });
     });
 });

@@ -25,8 +25,7 @@ describe('napajs/zone', function () {
     let napaZone1: Zone = napa.zone.create('napa-zone1');
     let napaZone2: Zone = napa.zone.create('napa-zone2');
     let napaLibPath: string = path.resolve(__dirname, '../lib');
-    let napaZoneTestModule: string = path.resolve(__dirname, 'napa-zone/test');
-
+    
     describe('create', () => {
         it('@node: default settings', () => {
             assert(napaZone1 != null);
@@ -101,7 +100,7 @@ describe('napajs/zone', function () {
         });
 
         it('@napa', async () => {
-            let result = await napaZone1.execute(napaZoneTestModule, "getCurrentZone");
+            let result = await napaZone1.execute('./napa-zone/test', "getCurrentZone");
             assert.strictEqual(result.value.id, 'napa-zone1');
         });
     });
@@ -116,15 +115,15 @@ describe('napajs/zone', function () {
         });
 
         it('@napa: -> napa zone with JavaScript code', () => {
-            return napaZone1.execute(napaZoneTestModule, "broadcast", ["napa-zone2", "var state = 0;"]);
+            return napaZone1.execute('./napa-zone/test', "broadcast", ["napa-zone2", "var state = 0;"]);
         });
 
         it('@napa: -> napa zone with JavaScript code', () => {
-            return napaZone1.execute(napaZoneTestModule, "broadcast", ["napa-zone1", "var state = 0;"]);
+            return napaZone1.execute('./napa-zone/test', "broadcast", ["napa-zone1", "var state = 0;"]);
         });
 
         it('@napa: -> node zone with JavaScript code', () => {
-            return napaZone1.execute(napaZoneTestModule, "broadcast", ["node", "var state = 0;"]);
+            return napaZone1.execute('./napa-zone/test', "broadcast", ["node", "var state = 0;"]);
         });
 
         it('@node: bad JavaScript code', () => {
@@ -135,7 +134,7 @@ describe('napajs/zone', function () {
 
         it('@napa: bad JavaScript code', () => {
             return shouldFail(() => {
-                return napaZone1.execute(napaZoneTestModule, "broadcast", ["napa-zone2", "var state() = 0;"]);
+                return napaZone1.execute('./napa-zone/test', "broadcast", ["napa-zone2", "var state() = 0;"]);
             });
         });
 
@@ -153,13 +152,13 @@ describe('napajs/zone', function () {
 
         it('@napa: -> napa zone throw runtime error', () => {
             return shouldFail(() => {
-                return napaZone1.execute(napaZoneTestModule, "broadcast", ["napa-zone2", "throw new Error();"]);
+                return napaZone1.execute('./napa-zone/test', "broadcast", ["napa-zone2", "throw new Error();"]);
             });
         });
 
         it('@napa: -> node zone throw runtime error', () => {
             return shouldFail(() => {
-                return napaZone1.execute(napaZoneTestModule, "broadcast", ["node", "throw new Error();"]);
+                return napaZone1.execute('./napa-zone/test', "broadcast", ["node", "throw new Error();"]);
             });
         });
 
@@ -176,11 +175,11 @@ describe('napajs/zone', function () {
         });
 
         it('@napa: -> napa zone with anonymous function', () => {
-            return napaZone1.execute(napaZoneTestModule, "broadcastTestFunction", ['napa-zone2']);
+            return napaZone1.execute('./napa-zone/test', "broadcastTestFunction", ['napa-zone2']);
         });
 
         it('@napa: -> node zone with anonymous function', () => {
-            return napaZone1.execute(napaZoneTestModule, "broadcastTestFunction", ['node']);
+            return napaZone1.execute('./napa-zone/test', "broadcastTestFunction", ['node']);
         });
 
         // TODO #4: support transportable args in broadcast.
@@ -199,12 +198,12 @@ describe('napajs/zone', function () {
 
         // Blocked by TODO #4.
         it.skip('@napa: -> napa zone with transportable args', () => {
-            return napaZone1.execute(napaZoneTestModule, "broadcastTransportable", ['napa-zone2']);
+            return napaZone1.execute('./napa-zone/test', "broadcastTransportable", ['napa-zone2']);
         });
 
         // Blocked by TODO #4.
         it.skip('@napa: -> node zone with transportable args', () => {
-            return napaZone1.execute(napaZoneTestModule, "broadcastTransportable", ['node']);
+            return napaZone1.execute('./napa-zone/test', "broadcastTransportable", ['node']);
         });
 
         it('@node: -> node zone with anonymous function having closure (should fail)', () => {
@@ -225,13 +224,13 @@ describe('napajs/zone', function () {
 
         it('@napa: -> napa zone with anonymous function having closure (should fail)', () => {
             return shouldFail(() => {
-                return napaZone1.execute(napaZoneTestModule, "broadcastClosure", ['napa-zone2']);
+                return napaZone1.execute('./napa-zone/test', "broadcastClosure", ['napa-zone2']);
             });
         });
 
         it('@napa: -> node zone with anonymous function having closure (should fail)', () => {
             return shouldFail(() => {
-                return napaZone1.execute(napaZoneTestModule, "broadcastClosure", ['node']);
+                return napaZone1.execute('./napa-zone/test', "broadcastClosure", ['node']);
             });
         });
     });
@@ -270,14 +269,14 @@ describe('napajs/zone', function () {
         });
 
         it('@napa: -> napa zone with global function name', () => {
-            return napaZone1.execute(napaZoneTestModule, 'execute', ["napa-zone2", "", "foo", ['hello world']])
+            return napaZone1.execute('./napa-zone/test', 'execute', ["napa-zone2", "", "foo", ['hello world']])
                 .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
         it('@napa: -> node zone with global function name', () => {
-            return napaZone1.execute(napaZoneTestModule, 'execute', ["node", "", "foo", ['hello world']])
+            return napaZone1.execute('./napa-zone/test', 'execute', ["node", "", "foo", ['hello world']])
                 .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
@@ -304,46 +303,46 @@ describe('napajs/zone', function () {
 
         it('@napa: -> napa zone with global function name not exists', () => {
             return shouldFail(() => {
-                return napaZone1.execute(napaZoneTestModule, 'execute', ["napa-zone2", "", "foo1", []]);
+                return napaZone1.execute('./napa-zone/test', 'execute', ["napa-zone2", "", "foo1", []]);
             });
         });
 
         it('@napa: -> node zone with global function name not exists', () => {
             return shouldFail(() => {
-                return napaZone1.execute(napaZoneTestModule, 'execute', ["node", "", "foo1", []]);
+                return napaZone1.execute('./napa-zone/test', 'execute', ["node", "", "foo1", []]);
             });
         });
 
         it('@node: -> node zone with module function name', () => {
-            return napa.zone.current.execute(napaZoneTestModule, "bar", ['hello world'])
+            return napa.zone.current.execute('./napa-zone/test', "bar", ['hello world'])
                 .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
         it('@node: -> napa zone with module function name', () => {
-            return napaZone1.execute(napaZoneTestModule, "bar", ['hello world'])
+            return napaZone1.execute('./napa-zone/test', "bar", ['hello world'])
                 .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
         it('@napa: -> napa zone with module function name', () => {
-            return napaZone1.execute(napaZoneTestModule, 'execute', ["napa-zone2", napaZoneTestModule, "bar", ['hello world']])
+            return napaZone1.execute('./napa-zone/test', 'execute', ["napa-zone2", path.resolve(__dirname, './napa-zone/test'), "bar", ['hello world']])
                 .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
         it('@napa: -> node zone with module function name', () => {
-            return napaZone1.execute(napaZoneTestModule, 'execute', ["node", napaZoneTestModule, "bar", ['hello world']])
+            return napaZone1.execute('./napa-zone/test', 'execute', ["node", path.resolve(__dirname, './napa-zone/test'), "bar", ['hello world']])
                 .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
         it('@node: -> napa zone with module function name: function with namespaces', () => {
-            return napaZone1.execute(napaZoneTestModule, "ns1.ns2.foo", ['hello world'])
+            return napaZone1.execute('./napa-zone/test', "ns1.ns2.foo", ['hello world'])
                 .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
@@ -370,37 +369,37 @@ describe('napajs/zone', function () {
 
         it('@napa: -> napa zone with module not exists', () => {
             return shouldFail(() => {
-                return napaZone1.execute(napaZoneTestModule, 'execute', ["napa-zone2", "abc", ".foo", []]);
+                return napaZone1.execute('./napa-zone/test', 'execute', ["napa-zone2", "abc", ".foo", []]);
             });
         });
 
         it('@napa: -> node zone with module not exists', () => {
             return shouldFail(() => {
-                return napaZone1.execute(napaZoneTestModule, 'execute', ["node", "abc", "foo.", []]);
+                return napaZone1.execute('./napa-zone/test', 'execute', ["node", "abc", "foo.", []]);
             });
         });
 
         it('@node: -> node zone with module function not exists', () => {
             return shouldFail(() => {
-                return napa.zone.current.execute(napaZoneTestModule, "foo1", ['hello world']);
+                return napa.zone.current.execute('./napa-zone/test', "foo1", ['hello world']);
             });
         });
 
         it('@node: -> napa zone with module function not exists', () => {
             return shouldFail(() => {
-                return napaZone1.execute(napaZoneTestModule, "foo1", ['hello world'])
+                return napaZone1.execute('./napa-zone/test', "foo1", ['hello world'])
             });
         });
 
         it('@napa: -> napa zone with module function not exists', () => {
             return shouldFail(() => {
-                return napaZone1.execute(napaZoneTestModule, 'execute', ["napa-zone1", napaZoneTestModule, "foo1", []]);
+                return napaZone1.execute('./napa-zone/test', 'execute', ["napa-zone1", './napa-zone/test', "foo1", []]);
             });
         });
 
         it('@napa: -> node zone with module function not exists', () => {
             return shouldFail(() => {
-                return napaZone1.execute(napaZoneTestModule, 'execute', ["node", napaZoneTestModule, "foo1", []]);
+                return napaZone1.execute('./napa-zone/test', 'execute', ["node", './napa-zone/test', "foo1", []]);
             });
         });
 
@@ -423,14 +422,14 @@ describe('napajs/zone', function () {
         });
 
         it('@napa: -> napa zone with anonymous function', () => {
-            return napaZone1.execute(napaZoneTestModule, 'executeTestFunction', ["napa-zone2"])
+            return napaZone1.execute('./napa-zone/test', 'executeTestFunction', ["napa-zone2"])
                 .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
         });
 
         it('@napa: -> node zone with anonymous function', () => {
-            return napaZone1.execute(napaZoneTestModule, 'executeTestFunction', ["node"])
+            return napaZone1.execute('./napa-zone/test', 'executeTestFunction', ["node"])
                 .then((result: napa.zone.Result) => {
                     assert.equal(result.value, 'hello world');
                 });
@@ -448,13 +447,13 @@ describe('napajs/zone', function () {
 
         it('@napa: -> napa zone with anonymous function having closure (should fail)', () => {
             return shouldFail(() => {
-                return napaZone1.execute(napaZoneTestModule, 'executeTestFunctionWithClosure', ["napa-zone2"]);
+                return napaZone1.execute('./napa-zone/test', 'executeTestFunctionWithClosure', ["napa-zone2"]);
             });
         });
 
         it('@napa: -> node zone with anonymous function having closure (should fail)', () => {
             return shouldFail(() => {
-                return napaZone1.execute(napaZoneTestModule, 'executeTestFunctionWithClosure', ["node"]);
+                return napaZone1.execute('./napa-zone/test', 'executeTestFunctionWithClosure', ["node"]);
             });
         });
 
@@ -473,11 +472,11 @@ describe('napajs/zone', function () {
         });
 
         it('@napa: -> napa zone with transportable args', () => {
-            return napaZone1.execute(napaZoneTestModule, "executeWithTransportableArgs", ['napa-zone2']);
+            return napaZone1.execute('./napa-zone/test', "executeWithTransportableArgs", ['napa-zone2']);
         });
 
         it('@napa: -> node zone with transportable args', () => {
-            return napaZone1.execute(napaZoneTestModule, "executeWithTransportableArgs", ['node']);
+            return napaZone1.execute('./napa-zone/test', "executeWithTransportableArgs", ['node']);
         });
 
         it('@node: -> node zone with transportable returns', () => {
@@ -499,36 +498,36 @@ describe('napajs/zone', function () {
         });
 
         it('@napa: -> napa zone with transportable returns', () => {
-            return napaZone1.execute(napaZoneTestModule, "executeWithTransportableReturns", ['napa-zone2'])
+            return napaZone1.execute('./napa-zone/test', "executeWithTransportableReturns", ['napa-zone2'])
                 .then((result: napa.zone.Result) => {
                     assert.deepEqual(result.value.handle, napa.memory.crtAllocator.handle);
                 });
         });
 
         it('@napa: -> node zone with transportable returns', () => {
-            return napaZone1.execute(napaZoneTestModule, "executeWithTransportableReturns", ['node'])
+            return napaZone1.execute('./napa-zone/test', "executeWithTransportableReturns", ['node'])
                 .then((result: napa.zone.Result) => {
                     assert.deepEqual(result.value.handle, napa.memory.crtAllocator.handle);
                 });
         });
 
         it.skip('@node: -> napa zone with timeout and succeed', () => {
-            return napaZone1.execute(napaZoneTestModule, 'waitMS', [1], {timeout: 100});
+            return napaZone1.execute('./napa-zone/test', 'waitMS', [1], {timeout: 100});
         });
         
         it.skip('@napa: -> napa zone with timeout and succeed', () => {
-            return napaZone1.execute(napaZoneTestModule, 'executeTestFunctionWithTimeout', ["napa-zone2", 1], {timeout: 100});
+            return napaZone1.execute('./napa-zone/test', 'executeTestFunctionWithTimeout', ["napa-zone2", 1], {timeout: 100});
         });
 
         it.skip('@node: -> napa zone with timed out in JavaScript', () => {
             return shouldFail(() => {
-                return napaZone1.execute(napaZoneTestModule, 'waitMS', [100], {timeout: 1});
+                return napaZone1.execute('./napa-zone/test', 'waitMS', [100], {timeout: 1});
             });
         });
 
         it.skip('@napa: -> napa zone with timed out in JavaScript', () => {
             return shouldFail(() => {
-                return napaZone1.execute(napaZoneTestModule, 'executeTestFunctionWithTimeout', ["napa-zone2", 100], {timeout: 1});
+                return napaZone1.execute('./napa-zone/test', 'executeTestFunctionWithTimeout', ["napa-zone2", 100], {timeout: 1});
             });
         });
 

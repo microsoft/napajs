@@ -23,9 +23,10 @@ namespace module {
 
         /// <summary> It loads a module from binary file. </summary>
         /// <param name="path"> Module path called by require(). </param>
+        /// <param name="arg"> Argument for loading the file. Passed through as arg1 from require. </param>
         /// <param name="module"> Loaded binary module if successful. </param>
         /// <returns> True if binary module is loaded, false otherwise. </returns>
-        bool TryGet(const std::string& path, v8::Local<v8::Object>& module) override;
+        bool TryGet(const std::string& path, v8::Local<v8::Value> arg, v8::Local<v8::Object>& module) override;
 
     private:
 
