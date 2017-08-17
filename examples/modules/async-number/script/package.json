@@ -1,8 +1,0 @@
-{
-    "name": "async-number",
-    "version": "0.0.1",
-    "author": "napav",
-    "description": "Example of an async napa module.",
-    "main": "./lib/async-number.js",
-    "types": "./types/async-number.d.ts"
-}

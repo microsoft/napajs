@@ -1,0 +1,12 @@
+bin
+build
+node_modules
+types
+
+# ignore all js files under lib
+lib/*.js
+
+# ignore all js files under test
+test/*.js
+
+package-lock.json
