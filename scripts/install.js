@@ -33,9 +33,9 @@ if (!skipFetch) {
     } catch (e) {
 		errorCode = e.status;
 		
-		log.warning('NAPA_INSTALL', 'failed to download the pre-build binaries.');
+		log.warn('NAPA_INSTALL', 'failed to download the pre-build binaries.');
 		if (!skipBuild) {
-			log.warning('NAPA_INSTALL', 'will fallback to build stage.');
+			log.warn('NAPA_INSTALL', 'will fallback to build stage.');
 		}
     }
 }
