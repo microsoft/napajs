@@ -31,7 +31,12 @@ if (!skipFetch) {
         log.info('NAPA_INSTALL', 'completed successfully by download.');
         skipBuild = true;
     } catch (e) {
-        errorCode = e.status;
+		errorCode = e.status;
+		
+		log.warning('NAPA_INSTALL', 'failed to download the pre-build binaries.');
+		if (!skipBuild) {
+			log.warning('NAPA_INSTALL', 'will fallback to build stage.');
+		}
     }
 }
 
@@ -43,7 +48,9 @@ if (!skipBuild) {
 
         log.info('NAPA_INSTALL', 'completed successfully by build.');
     } catch (e) {
-        errorCode = e.status;
+		errorCode = e.status;
+		
+		log.warning('NAPA_INSTALL', 'failed to build from sources.');
     }
 }
 
