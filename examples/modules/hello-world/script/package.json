@@ -1,8 +1,0 @@
-{
-    "name": "hello-world",
-    "version": "0.0.1",
-    "author": "napav",
-    "description": "Example of a simple napa module.",
-    "main": "./lib/hello-world.js",
-    "types": "./types/hello-world.d.ts"
-}
