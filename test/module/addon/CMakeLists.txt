@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
-project("simple-napa-addon")
+project("simple-addon")
 
 set(NAPA_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../..)
 
