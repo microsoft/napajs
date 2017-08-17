@@ -13,7 +13,7 @@ namespace module {
     // forward declaration.
     class ModuleCache;
 
-    /// <summary> It loads a module from javascript file. </summary>
+    /// <summary> It loads a module from javascript file or content from arg. </summary>
     class JavascriptModuleLoader : public ModuleFileLoader {
     public:
 
@@ -24,9 +24,10 @@ namespace module {
 
         /// <summary> It loads a module from javascript file. </summary>
         /// <param name="path"> Module path called by require(). </param>
+        /// <param name="arg"> Argument for loading the file. Passed through as arg1 from require. </param>
         /// <param name="module"> Loaded javascript module if successful. </param>
         /// <returns> True if the javascript module is loaded, false otherwise. </returns>
-        bool TryGet(const std::string& path, v8::Local<v8::Object>& module) override;
+        bool TryGet(const std::string& path, v8::Local<v8::Value> arg, v8::Local<v8::Object>& module) override;
 
     private:
 

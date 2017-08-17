@@ -9,7 +9,7 @@
 using namespace napa;
 using namespace napa::module;
 
-bool JsonModuleLoader::TryGet(const std::string& path, v8::Local<v8::Object>& module) {
+bool JsonModuleLoader::TryGet(const std::string& path, v8::Local<v8::Value> arg, v8::Local<v8::Object>& module) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::EscapableHandleScope scope(isolate);
 

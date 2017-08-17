@@ -12,6 +12,7 @@
 #include "module-resolver.h"
 
 #include <module/core-modules/core-modules.h>
+#include <platform/filesystem.h>
 #include <utils/debug.h>
 
 // TODO: decouple dependencies between module-loader and zone.
@@ -175,7 +176,7 @@ void ModuleLoader::ModuleLoaderImpl::Bootstrap() {
     // Override built-in modules with javascript file if exists.
     for (const auto& name : _builtInNames) {
         v8::Local<v8::Object> module;
-        if (coreModuleLoader->TryGet(name, module)) {
+        if (coreModuleLoader->TryGet(name, v8::Local<v8::Value>(), module)) {
             // If javascript core module exists, replace the existing one.
             _moduleCache.Upsert(name, module);
             (void)context->Global()->Set(context,
@@ -213,8 +214,10 @@ void ModuleLoader::ModuleLoaderImpl::ResolveCallback(const v8::FunctionCallbackI
     v8::String::Utf8Value path(args[0]);
     auto contextDir = module_loader_helpers::GetCurrentContextDirectory();
 
-    auto resolvedPath = moduleLoader->_impl->_resolver.Resolve(*path, contextDir.c_str());
-    args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, resolvedPath.fullPath));
+    auto moduleInfo = moduleLoader->_impl->_resolver.Resolve(*path, contextDir.c_str());
+    JS_ENSURE(isolate, moduleInfo.type != ModuleType::NONE, "Cannot find module \"%s\"", *path);
+
+    args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, moduleInfo.fullPath));
 }
 
 void ModuleLoader::ModuleLoaderImpl::BindingCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -247,6 +250,10 @@ void ModuleLoader::ModuleLoaderImpl::RequireModule(const char* path, const v8::F
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
+    // Set optional argument for module file loader.
+    auto arg = args.Length() == 1 ? v8::Local<v8::Value>() : args[1]; 
+    bool fromContent = !arg.IsEmpty() && arg->IsString();
+
     // If require is called with a module receiver, use module.filename to deduce context directory.
     std::string contextDir;
     if (!args.Holder().IsEmpty()) {
@@ -257,34 +264,48 @@ void ModuleLoader::ModuleLoaderImpl::RequireModule(const char* path, const v8::F
         contextDir = module_loader_helpers::GetCurrentContextDirectory();
     }
 
-    auto moduleInfo = _resolver.Resolve(path, contextDir.c_str());
-    if (moduleInfo.type == ModuleType::NONE) {
-        NAPA_DEBUG("ModuleLoader", "Cannot resolve module path \"%s\".", path);
-
-        args.GetReturnValue().SetUndefined();
-        return;
+    ModuleInfo moduleInfo;
+    if (fromContent) {
+        moduleInfo = ModuleInfo { 
+            ModuleType::JAVASCRIPT, 
+            (filesystem::Path(contextDir) / path).Normalize().String(),    // Module id
+            ""                                                             // No package.json
+        };
+    } else {
+        moduleInfo = _resolver.Resolve(path, contextDir.c_str());
+        if (moduleInfo.type == ModuleType::NONE) {
+            NAPA_DEBUG("ModuleLoader", "Cannot resolve module path \"%s\".", path);
+            args.GetReturnValue().SetUndefined();
+            return;
+        }
     }
 
     v8::Local<v8::Object> module;
-    if (_moduleCache.TryGet(moduleInfo.fullPath, module)) {
-        NAPA_DEBUG("ModuleLoader", "Retrieved module from cache: \"%s\".", path);
-        args.GetReturnValue().Set(module);
-        return;
+
+    // Module from content script is not cached.
+    if (!fromContent) {
+        if (_moduleCache.TryGet(moduleInfo.fullPath, module)) {
+            NAPA_DEBUG("ModuleLoader", "Retrieved module from cache: \"%s\".", path);
+            args.GetReturnValue().Set(module);
+            return;
+        }
     }
 
     auto& loader = _loaders[static_cast<size_t>(moduleInfo.type)];
     JS_ENSURE(isolate, loader != nullptr, "No proper module loader is defined");
 
-    auto succeeded = loader->TryGet(moduleInfo.fullPath, module);
+    auto succeeded = loader->TryGet(moduleInfo.fullPath, arg, module);
     if (!succeeded) {
         NAPA_DEBUG("ModuleLoader", "Cannot load module \"%s\".", path);
-
         args.GetReturnValue().SetUndefined();
         return;
     }
 
     NAPA_DEBUG("ModuleLoader", "Loaded module from file (first time): \"%s\".", path);
-    _moduleCache.Upsert(moduleInfo.fullPath, module);
+
+    if (!fromContent) {
+        _moduleCache.Upsert(moduleInfo.fullPath, module);
+    }
     args.GetReturnValue().Set(module);
 }
 
