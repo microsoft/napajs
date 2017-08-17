@@ -31,11 +31,10 @@ function run() {
     // From node_modules without extension
     assert(require.resolve('file'), __dirname + '/node_modules/file.js');
 
-    // TODO: Fix this issue: require.resolve should throw an exception if file doesn't exist.
     // Resolving non-existing file should throw
-    // assert.throws(() => { 
-    //     require.resolve('./sub-folder/non-existing-file.js');
-    // });
+    assert.throws(() => { 
+        require.resolve('./sub-folder/non-existing-file.js');
+    });
 }
 
 exports.run = run;

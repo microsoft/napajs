@@ -1,8 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+import * as path from 'path';
 import * as zone from './zone';
 import * as transport from '../transport';
+import * as v8 from '../v8';
 
 interface FunctionSpec {
     module: string;
@@ -125,12 +127,28 @@ export class ZoneImpl implements zone.Zone {
 
         if (typeof arg1 === 'function') {
             moduleName = "__function";
+            if (arg1.origin == null) {
+                // We get caller stack at index 2.
+                // <caller> -> execute -> createExecuteRequest
+                //   2           1               0
+                arg1.origin = v8.currentStack(3)[2].getFileName();
+            }
+
             functionName = transport.saveFunction(arg1);
             args = arg2;
             options = arg3;
         }
         else {
             moduleName = arg1;
+            // If module name is relative path, try to deduce from call site.
+            if (moduleName != null 
+                && moduleName.length != 0 
+                && !path.isAbsolute(moduleName)) {
+
+                moduleName = path.resolve(
+                    path.dirname(v8.currentStack(3)[2].getFileName()), 
+                    moduleName);
+            }
             functionName = arg2;
             args = arg3;
             options = arg4;

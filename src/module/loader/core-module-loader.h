@@ -24,9 +24,10 @@ namespace module {
 
         /// <summary> It loads a core module. </summary>
         /// <param name="name"> Core module name. </param>
+        /// <param name="arg"> Argument for loading the file. Passed through as arg1 from require. </param>
         /// <param name="module"> Loaded core module if successful. </param>
         /// <returns> True if core module is loaded, false otherwise. </returns>
-        bool TryGet(const std::string& name, v8::Local<v8::Object>& module) override;
+        bool TryGet(const std::string& name, v8::Local<v8::Value> arg, v8::Local<v8::Object>& module) override;
 
     private:
 

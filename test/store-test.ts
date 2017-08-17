@@ -5,8 +5,6 @@ import * as napa from "../lib/index";
 import * as assert from 'assert';
 import * as path from 'path';
 
-let NAPA_ZONE_TEST_MODULE = path.resolve(__dirname, 'napa-zone/test');
-
 describe('napajs/store', function () {
     this.timeout(0);
 
@@ -32,7 +30,7 @@ describe('napajs/store', function () {
     let store2CreationComplete: Promise<napa.zone.Result>;
 
     it('@napa: store.getOrCreate', () => {
-        store2CreationComplete = napaZone.execute(NAPA_ZONE_TEST_MODULE, "getOrCreateStoreTest");
+        store2CreationComplete = napaZone.execute('./napa-zone/test', "getOrCreateStoreTest");
     });
 
     it('@node: store.get', async () => {
@@ -46,7 +44,7 @@ describe('napajs/store', function () {
     });
 
     it('@napa: store.get', () => {
-        napaZone.execute(NAPA_ZONE_TEST_MODULE, "getStoreTest");
+        napaZone.execute('./napa-zone/test', "getStoreTest");
     });
 
     it('simple types: set in node, get in node', () => {
@@ -56,16 +54,16 @@ describe('napajs/store', function () {
 
     it('simple types: set in node, get in napa', () => {
         store1.set('b', 'hi');
-        napaZone.execute(NAPA_ZONE_TEST_MODULE, "storeVerifyGet", ['store1', 'b', 'hi']);
+        napaZone.execute('./napa-zone/test', "storeVerifyGet", ['store1', 'b', 'hi']);
     });
 
     it('simple types: set in napa, get in napa', () => {
-        napaZone.execute(NAPA_ZONE_TEST_MODULE, "storeSet", ['store1', 'c', 1]);
-        napaZone.execute(NAPA_ZONE_TEST_MODULE, "storeVerifyGet", ['store1', 'c', 1]);
+        napaZone.execute('./napa-zone/test', "storeSet", ['store1', 'c', 1]);
+        napaZone.execute('./napa-zone/test', "storeVerifyGet", ['store1', 'c', 1]);
     });
 
     it('simple types: set in napa, get in node', async () => {
-        await napaZone.execute(NAPA_ZONE_TEST_MODULE, "storeSet", ['store1', 'd', { a: 1, b: 1}]);
+        await napaZone.execute('./napa-zone/test', "storeSet", ['store1', 'd', { a: 1, b: 1}]);
         assert.deepEqual(store1.get('d'), {
             a: 1,
             b: 1
@@ -79,18 +77,18 @@ describe('napajs/store', function () {
 
     it('transportable types: set in node, get in napa', () => {
         store1.set('b', napa.memory.defaultAllocator);
-        napaZone.execute(NAPA_ZONE_TEST_MODULE, "storeVerifyGet", ['store1', 'b', napa.memory.defaultAllocator]);
+        napaZone.execute('./napa-zone/test', "storeVerifyGet", ['store1', 'b', napa.memory.defaultAllocator]);
     });
 
     it('transportable types: set in napa, get in napa', async () => {
         // We have to compare handle in this case, since napa.memory.defaultAllocator retrieved from napa zone will have 2+ refCount.
-        await napaZone.execute(NAPA_ZONE_TEST_MODULE, "storeSet", ['store1', 'e', napa.memory.defaultAllocator]);
-        napaZone.execute(NAPA_ZONE_TEST_MODULE, "storeGetCompareHandle", ['store1', 'e', napa.memory.defaultAllocator.handle]);
+        await napaZone.execute('./napa-zone/test', "storeSet", ['store1', 'e', napa.memory.defaultAllocator]);
+        napaZone.execute('./napa-zone/test', "storeGetCompareHandle", ['store1', 'e', napa.memory.defaultAllocator.handle]);
     });
 
     it('transportable types: set in napa, get in node', async () => {
         let debugAllocator = napa.memory.debugAllocator(napa.memory.defaultAllocator);
-        await napaZone.execute(NAPA_ZONE_TEST_MODULE, "storeSet", ['store1', 'f', debugAllocator]);
+        await napaZone.execute('./napa-zone/test', "storeSet", ['store1', 'f', debugAllocator]);
         assert.deepEqual(store1.get('f'), debugAllocator);
     });
 
@@ -101,16 +99,16 @@ describe('napajs/store', function () {
 
     it('function type: set in node, get in napa', () => {
         store1.set('h', () => { return 0; });
-        napaZone.execute(NAPA_ZONE_TEST_MODULE, "storeVerifyGet", ['store1', 'h', () => { return 0; }]);
+        napaZone.execute('./napa-zone/test', "storeVerifyGet", ['store1', 'h', () => { return 0; }]);
     });
 
     it('function type: set in napa, get in napa', async () => {
-        await napaZone.execute(NAPA_ZONE_TEST_MODULE, "storeSet", ['store1', 'i', () => { return 0; }]);
-        napaZone.execute(NAPA_ZONE_TEST_MODULE, "storeVerifyGet", ['store1', 'i', () => { return 0; }]);
+        await napaZone.execute('./napa-zone/test', "storeSet", ['store1', 'i', () => { return 0; }]);
+        napaZone.execute('./napa-zone/test', "storeVerifyGet", ['store1', 'i', () => { return 0; }]);
     });
 
     it('function type: set in napa, get in node', async () => {
-        await napaZone.execute(NAPA_ZONE_TEST_MODULE, "storeSet", ['store1', 'j', () => { return 0; }]);
+        await napaZone.execute('./napa-zone/test', "storeSet", ['store1', 'j', () => { return 0; }]);
         assert.deepEqual(store1.get('j').toString(), (() => { return 0; }).toString());
     });
 
@@ -125,16 +123,16 @@ describe('napajs/store', function () {
     it('delete in node, check in napa', () => {
         assert(store1.has('b'));
         store1.delete('b');
-        napaZone.execute(NAPA_ZONE_TEST_MODULE, "storeVerifyNotExist", ['store1', 'b']);
+        napaZone.execute('./napa-zone/test', "storeVerifyNotExist", ['store1', 'b']);
     });
 
     it('delete in napa, check in napa', async () => {
-        await napaZone.execute(NAPA_ZONE_TEST_MODULE, "storeDelete", ['store1', 'c']);
-        napaZone.execute(NAPA_ZONE_TEST_MODULE, "storeVerifyNotExist", ['store1', 'c']);
+        await napaZone.execute('./napa-zone/test', "storeDelete", ['store1', 'c']);
+        napaZone.execute('./napa-zone/test', "storeVerifyNotExist", ['store1', 'c']);
     })
 
     it('delete in napa, check in node', async () => {
-        await napaZone.execute(NAPA_ZONE_TEST_MODULE, "storeDelete", ['store1', 'd']);
+        await napaZone.execute('./napa-zone/test', "storeDelete", ['store1', 'd']);
         assert(!store1.has('d'));
         assert(store1.get('d') === undefined);
     });

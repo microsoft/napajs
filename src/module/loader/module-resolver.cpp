@@ -153,7 +153,7 @@ ModuleInfo ModuleResolver::ModuleResolverImpl::Resolve(const char* name, const c
     // Normalize module context path.
     filesystem::Path basePath =
         (path == nullptr) ? filesystem::CurrentDirectory() : filesystem::Path(path);
-    
+
     // Look up from the given path.
     RETURN_IF_NOT_EMPTY(ResolveFromPath(name, basePath));
 

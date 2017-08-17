@@ -13,12 +13,20 @@ using namespace napa::module;
 JavascriptModuleLoader::JavascriptModuleLoader(BuiltInModulesSetter builtInModulesSetter, ModuleCache& moduleCache)
     : _builtInModulesSetter(std::move(builtInModulesSetter)) , _moduleCache(moduleCache) {}
 
-bool JavascriptModuleLoader::TryGet(const std::string& path, v8::Local<v8::Object>& module) {
+bool JavascriptModuleLoader::TryGet(const std::string& path, v8::Local<v8::Value> arg, v8::Local<v8::Object>& module) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::EscapableHandleScope scope(isolate);
 
-    auto source = module_loader_helpers::ReadModuleFile(path);
-    JS_ENSURE_WITH_RETURN(isolate, !source.IsEmpty(), false, "Can't read Javascript module: \"%s\"", path.c_str());
+    bool fromContent = !arg.IsEmpty();
+    v8::Local<v8::String> source;
+
+    if (!fromContent) {
+        source = module_loader_helpers::ReadModuleFile(path);
+        JS_ENSURE_WITH_RETURN(isolate, !source.IsEmpty(), false, "Can't read Javascript module: \"%s\"", path.c_str());
+    } else {
+        JS_ENSURE_WITH_RETURN(isolate, arg->IsString(), false, "The 2nd argument of 'require' must be content of string type.");
+        source = v8::Local<v8::String>::Cast(arg);
+    }
 
     auto context = isolate->GetCurrentContext();
 
@@ -34,7 +42,9 @@ bool JavascriptModuleLoader::TryGet(const std::string& path, v8::Local<v8::Objec
     _builtInModulesSetter(moduleContext);
 
     // To prevent cycle, cache unloaded module first.
-    _moduleCache.Upsert(path, module_loader_helpers::ExportModule(moduleContext->Global(), nullptr));
+    if (!fromContent) {
+        _moduleCache.Upsert(path, module_loader_helpers::ExportModule(moduleContext->Global(), nullptr));
+    }
 
     v8::TryCatch tryCatch;
     {

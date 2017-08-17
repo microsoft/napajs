@@ -25,7 +25,7 @@ CoreModuleLoader::CoreModuleLoader(BuiltInModulesSetter builtInModulesSetter,
                                    ModuleCache& bindingCache)
     : JavascriptModuleLoader(std::move(builtInModulesSetter), moduleCache), _bindingCache(bindingCache) {}
                                 
-bool CoreModuleLoader::TryGet(const std::string& name, v8::Local<v8::Object>& module) {
+bool CoreModuleLoader::TryGet(const std::string& name, v8::Local<v8::Value> /*arg*/, v8::Local<v8::Object>& module) {
     filesystem::Path basePath(module_loader_helpers::GetNapaRuntimeDirectory());
     auto fileName = name + CORE_MODULE_EXTENSION;
 
@@ -33,13 +33,13 @@ bool CoreModuleLoader::TryGet(const std::string& name, v8::Local<v8::Object>& mo
     auto fullPath = basePath / CORE_MODULE_DIRECTORY / fileName;
     if (filesystem::IsRegularFile(fullPath)) {
         // Load javascript core module from a file at ./lib directory.
-        return JavascriptModuleLoader::TryGet(fullPath.String(), module);
+        return JavascriptModuleLoader::TryGet(fullPath.String(), v8::Local<v8::Value>(), module);
     }
 
     fullPath = (basePath.Parent() / CORE_MODULE_DIRECTORY / fileName).Normalize();
     if (filesystem::IsRegularFile(fullPath)) {
         // Load javascript core module from a file at ../lib directory.
-        return JavascriptModuleLoader::TryGet(fullPath.String(), module);
+        return JavascriptModuleLoader::TryGet(fullPath.String(), v8::Local<v8::Value>(), module);
     }
 
     // Return binary core module if exists.
