@@ -40,7 +40,7 @@ describe('napajs/module', function () {
             return napaZone.execute(() => {
                 var assert = require("assert");
                 var jsonModule = require('./module/test.json');
-                
+
                 assert.notEqual(jsonModule, undefined);
                 assert.equal(jsonModule.prop1, "val1");
                 assert.equal(jsonModule.prop2, "val2");
@@ -50,8 +50,8 @@ describe('napajs/module', function () {
         it('napa module', () => {
             return napaZone.execute(() => {
                 var assert = require("assert");
-                var napaModule = require('./module/addon/build/simple-napa-addon.napa');
-                
+                var napaModule = require('../bin/simple-addon.napa');
+
                 assert.notEqual(napaModule, undefined);
                 assert.equal(napaModule.getModuleName(), "simple-napa-addon");
             });
@@ -60,8 +60,8 @@ describe('napajs/module', function () {
         it('object wrap module', () => {
             return napaZone.execute(() => {
                 var assert = require("assert");
-                var napaModule = require('./module/addon/build/simple-napa-addon.napa');
-                
+                var napaModule = require('../bin/simple-addon.napa');
+
                 var obj = napaModule.createSimpleObjectWrap();
                 assert.notEqual(obj, undefined);
                 obj.setValue(3);
@@ -411,7 +411,7 @@ describe('napajs/module', function () {
         it('post async work', () => {
             return napaZone.execute(() => {
                 var assert = require("assert");
-                var napaModule = require('./module/addon/build/simple-napa-addon.napa');
+                var napaModule = require('../bin/simple-addon.napa');
 
                 var obj = napaModule.createSimpleObjectWrap();
                 obj.setValue(3);
@@ -434,7 +434,7 @@ describe('napajs/module', function () {
         it('do async work', () => {
             return napaZone.execute(() => {
                 var assert = require("assert");
-                var napaModule = require('./module/addon/build/simple-napa-addon.napa');
+                var napaModule = require('../bin/simple-addon.napa');
 
                 var obj = napaModule.createSimpleObjectWrap();
                 obj.setValue(8);
