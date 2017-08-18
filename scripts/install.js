@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 var log = require('npmlog');
+var fileExistsSync = require('fs').existsSync;
+var path = require('path');
 var execSync = require('child_process').execSync;
 
 // Default command
@@ -69,13 +71,21 @@ if (errorCode == 0) {
         // Before npm 4.x, the 'prepare' script will not run automatically by npm.
         // We have to run it explicitly in this script.
         log.info('NAPA_INSTALL', 'NPM below 4.x does not recognize script "prepare". We need to run it explicitly.');
-        log.info('NAPA_INSTALL', 'running "npm run prepare"...');
 
-        try {
-            execSync('npm run prepare', { 'stdio': 'inherit' });
+        // Skip this step if we already have the TypeScripts compiled
+        var mainFilePath = path.join(__dirname, '..', process.env['npm_package_main']);
+        if (fileExistsSync(mainFilePath) ) {
+            log.info('NAPA_INSTALL', 'already have compiled typescripts. skip running "npm run prepare".');
         }
-        catch (e) {
-            errorCode = e.status;
+        else {
+            log.info('NAPA_INSTALL', 'running "npm run prepare"...');
+
+            try {
+                execSync('npm run prepare', { 'stdio': 'inherit' });
+            }
+            catch (e) {
+                errorCode = e.status;
+            }
         }
     }
 }
