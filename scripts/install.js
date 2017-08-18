@@ -30,46 +30,51 @@ if (!skipFetch) {
 
         log.info('NAPA_INSTALL', 'completed successfully by download.');
         skipBuild = true;
-    } catch (e) {
-		errorCode = e.status;
-		
-		log.warn('NAPA_INSTALL', 'failed to download the pre-build binaries.');
-		if (!skipBuild) {
-			log.warn('NAPA_INSTALL', 'will fallback to build stage.');
-		}
+    }
+    catch (e) {
+        errorCode = e.status;
+
+        log.warn('NAPA_INSTALL', 'failed to download the pre-build binaries.');
+        if (!skipBuild) {
+            log.warn('NAPA_INSTALL', 'will fallback to build stage.');
+        }
     }
 }
 
 // ==== Try to build from sources ====
 if (!skipBuild) {
+    errorCode = 0;
+
     try {
         log.info('NAPA_INSTALL', 'building from sources...');
         execSync(buildCommand, { 'stdio': 'inherit' });
 
         log.info('NAPA_INSTALL', 'completed successfully by build.');
-    } catch (e) {
-		errorCode = e.status;
-		
-		log.warning('NAPA_INSTALL', 'failed to build from sources.');
+    }
+    catch (e) {
+        errorCode = e.status;
+
+        log.warning('NAPA_INSTALL', 'failed to build from sources.');
     }
 }
 
 // ==== Compile Typescript files ====
 if (errorCode == 0) {
-	var npmVersion = execSync('npm --version').toString().trim();
-	log.info('NAPA_INSTALL', `current NPM version=${npmVersion}.`);
+    var npmVersion = execSync('npm --version').toString().trim();
+    log.info('NAPA_INSTALL', `current NPM version=${npmVersion}.`);
 
-	var npmMajorVersion = npmVersion.split('.')[0];
+    var npmMajorVersion = npmVersion.split('.')[0];
     var npmMajorVersionNumber = parseInt(npmMajorVersion);
     if (npmMajorVersionNumber < 4) {
         // Before npm 4.x, the 'prepare' script will not run automatically by npm.
         // We have to run it explicitly in this script.
-		log.info('NAPA_INSTALL', 'NPM below 4.x does not recognize script "prepare". We need to run it explicitly.');
-		log.info('NAPA_INSTALL', 'running "npm run prepare"...');
-		
+        log.info('NAPA_INSTALL', 'NPM below 4.x does not recognize script "prepare". We need to run it explicitly.');
+        log.info('NAPA_INSTALL', 'running "npm run prepare"...');
+
         try {
             execSync('npm run prepare', { 'stdio': 'inherit' });
-        } catch (e) {
+        }
+        catch (e) {
             errorCode = e.status;
         }
     }
