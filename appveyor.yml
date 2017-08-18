@@ -16,7 +16,7 @@ platform:
 install:
 - ps: Install-Product node $env:nodejs_version $env:platform
 - npm install cmake-js -g
-- npm install
+- npm install --no-fetch
 
 # Skip MSBuild stage
 build: off
