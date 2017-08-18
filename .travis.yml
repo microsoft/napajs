@@ -1,67 +1,25 @@
 language: node_js
-compiler: default
-matrix:
-  exclude:
-  # Disable the default build and use customized matrix only.
-  - compiler: default
-  include:
-  # Node 4.5.0          Linux (Precise)     G++5.4.1
-  - os: linux
-    dist: precise
-    node_js: '4.5.0'
-    compiler: g++-5
-    addons:
-      apt:
-        # The apt source 'ubuntu-toolchain-r-test' is for GCC 5+
-        # The apt source 'george-edison55-precise-backports' is for CMake 3.2+
-        sources:
-        - ubuntu-toolchain-r-test
-        - george-edison55-precise-backports
-        packages:
-        - g++-5
-        - cmake-data
-        - cmake
-    env:
-    - COMPILER_OVERRIDE="CXX=g++-5 CC=gcc-5"
-  # Node LTS (6.x)      Linux (Trusty)      G++5.4.1
-  - os: linux
-    dist: trusty
-    node_js: '6'
-    compiler: g++-5
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-5
-    env:
-    - COMPILER_OVERRIDE="CXX=g++-5 CC=gcc-5"
-  # Node LTS (6.x)      OS X (Yosemite)     LLVM 6.1
-  - os: osx
-    node_js: '6'
-    osx_image: xcode6.4
-  # Node LTS (8.x)      Linux (Trusty)      G++6.3.0
-  - os: linux
-    dist: trusty
-    node_js: '8'
-    compiler: g++-6
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-6
-    env:
-    - COMPILER_OVERRIDE="CXX=g++-6 CC=gcc-6"
-  # Node LTS (8.x)      OS X (El Capitan)   LLVM 7.3
-  - os: osx
-    node_js: '8'
-    osx_image: xcode7.3
-
+node_js:
+- '8'
+- '7'
+- '6'
+- '5'
+- '4'
+os:
+- linux
+- osx
+dist: trusty
+osx_image: xcode7.3
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-6
 before_install:
 - |
   if [ $TRAVIS_OS_NAME == linux ]; then
-    export ${COMPILER_OVERRIDE}
+    export CXX=g++-6 CC=gcc-6
   fi
 install:
 - npm install cmake-js -g
@@ -69,3 +27,12 @@ install:
 script:
 - npm test
 - npm run unittest
+after_success:
+- |
+  if [ "$TRAVIS_BRANCH" == "release" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    ./node_modules/.bin/node-pre-gyp package
+    ./node_modules/.bin/node-pre-gyp-github publish
+  fi
+env:
+  global:
+  - secure: 24NEqStes64CmCUm0uhXTcUEwzd5rSjZ1uaJ/jBHhGWYm3gekDLZXoPkWW2EfhqdDC3tcINB6cuhAnqLsBz/aJiQujC8H5UYfxcfGaqLu+6sz72SNVK8HVF2BxO8Sus4UlJQLFpJR+sFgDocMGHQeVBh2UrSC7xKzgCRjqAQJKfickUSI/e2EHBoVZgylVoqdyw6c3oBL/p6WCXHcbFLKmnQ1q45/+ld9x6uk19x9kx/e1OYGg4LNNacRKPMrcYWrkMxBVZETJ1kxTdnNEsYdCY3YDnPkH3cHqb8ce6bFspji5BRY9oyG9jjss22wKmkySC2niONT0jxoUdKzZmWZHeem53C98b9hUbIWRqXfNm8Cja1FDai+DzghTYUzRgieCUD2vMt768gnlLW2ETIv6z55FZWb7/f6HYkrS1yM65LfODoW64+r3yXorWd/uDF/CKjJ4FN2j/GjuwIsYeUuz2EU0tIHqskr4XjtIHondQ6Lgd7B5CbpPZSoxpmEYHChJ+o3zmua3uvfdoTmtrW+dYYIVdyC+XIVZkFgx9LAxEVCfeHxXnfMxq8Y79fGRv7OrB0biu1W98pugh75JwefAhhWViF58N+z3a127M6iuSvhHZJLXYULp2m3dlfvSXKI6HEcHDW4zyW4nUKTq8Ful2+1lkk9QuZGq7Ns/1Sbz4=
