@@ -60,7 +60,12 @@ if (!skipBuild) {
     }
 }
 
-// ==== Compile Typescript files ====
+// ==== Running "npm run prepare" explicitly ====
+//
+// NOTE: Napa.js has the "prepare" script, which is supposed to run by NPM
+//       after a "npm install" command without parameters.
+//       However, NPM below 4.x does not recognize script "prepare".
+//       We have to run it explicitly in this case.
 if (errorCode == 0) {
     var npmVersion = execSync('npm --version').toString().trim();
     log.info('NAPA_INSTALL', `current NPM version=${npmVersion}.`);
@@ -68,11 +73,9 @@ if (errorCode == 0) {
     var npmMajorVersion = npmVersion.split('.')[0];
     var npmMajorVersionNumber = parseInt(npmMajorVersion);
     if (npmMajorVersionNumber < 4) {
-        // Before npm 4.x, the 'prepare' script will not run automatically by npm.
-        // We have to run it explicitly in this script.
         log.info('NAPA_INSTALL', 'NPM below 4.x does not recognize script "prepare". We need to run it explicitly.');
 
-        // Skip this step if we already have the TypeScripts compiled
+        // Skip this step if we already have the TypeScripts compiled.
         var mainFilePath = path.join(__dirname, '..', process.env['npm_package_main']);
         if (fileExistsSync(mainFilePath) ) {
             log.info('NAPA_INSTALL', 'already have compiled typescripts. skip running "npm run prepare".');
