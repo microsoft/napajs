@@ -4,7 +4,7 @@
 #include "plus-number.h"
 
 #define CATCH_CONFIG_MAIN
-#include <catch/catch.hpp>
+#include "catch/catch.hpp"
 
 using namespace napa::demo;
 
