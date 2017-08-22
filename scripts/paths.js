@@ -21,15 +21,6 @@ Object.defineProperty(exports, 'inc', {
     }
 });
 
-Object.defineProperty(exports, 'third_party', {
-    get: function() {
-        let thirdPartyPath = path.resolve(__dirname, '../third-party');
-        // Output the path to stdout for cmake/gyp commands.
-        process.stdout.write(thirdPartyPath);
-        return thirdPartyPath;
-    }
-});
-
 // Resolve library name according to platform type.
 function getLibraryName(originalName) {
     if (process.platform === "win32") {
