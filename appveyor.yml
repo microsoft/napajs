@@ -1,14 +1,16 @@
+image:
+- Visual Studio 2017
+
 environment:
+  NODE_PRE_GYP_GITHUB_TOKEN:
+    secure: WmvadDXLTf7la1RJUFgzWf7Lr1hP1qYJ018jUUUMH4VJs/O3SoHQS3Nj7eNXVltG
+
   matrix:
-    # Windows Server 2012 R2       Visual C++ Build Tools 2015
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      nodejs_version: 4.5.0
-    # Windows Server 2012 R2       Visual C++ Build Tools 2015
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      nodejs_version: LTS
-    # Windows Server 2016          Visual C++ Build Tools 2017
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      nodejs_version: Stable
+    - nodejs_version: 4
+    - nodejs_version: 5
+    - nodejs_version: 6
+    - nodejs_version: 7
+    - nodejs_version: 8
 
 platform:
 - x64
@@ -24,3 +26,15 @@ build: off
 test_script:
 - npm test
 - npm run unittest
+
+deploy_script:
+# Run deploy scripts only when new commit pushed in release branch
+- ps: >-
+    If ($env:APPVEYOR_REPO_BRANCH -eq "release") {
+      If (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) {
+        If ($env:APPVEYOR_REPO_TAG -eq "false") {
+          .\node_modules\.bin\node-pre-gyp package
+          .\node_modules\.bin\node-pre-gyp-github publish
+        }
+      }
+    }
