@@ -1,7 +1,6 @@
 bin
 build
 examples
-third-party
 
 # Exclude TypeScript source files.
 benchmark/**/*.ts
