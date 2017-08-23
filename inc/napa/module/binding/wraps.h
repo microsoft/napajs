@@ -3,10 +3,10 @@
 
 #pragma once
 
+#include <napa/memory/allocator-debugger.h>
+#include <napa/memory/allocator.h>
 #include <napa/module/binding.h>
 #include <napa/module/shareable-wrap.h>
-#include <napa/memory/allocator.h>
-#include <napa/memory/allocator-debugger.h>
 
 #include <v8.h>
 
@@ -37,6 +37,6 @@ namespace binding {
     inline v8::Local<v8::Object> CreateAllocatorDebuggerWrap(std::shared_ptr<napa::memory::AllocatorDebugger> allocatorDebugger) {
         return CreateShareableWrap(allocatorDebugger, "AllocatorDebuggerWrap");
     }
-}
-}
-}
+} // namespace binding
+} // namespace module
+} // namespace napa

@@ -11,11 +11,11 @@
 namespace napa {
 namespace module {
 
-    /// <summary> 
-    ///     Class that wraps zone::CallContext, which enables JavaScript world to 
+    /// <summary>
+    ///     Class that wraps zone::CallContext, which enables JavaScript world to
     ///     resolve or reject a function call.
     /// </summary>
-    class CallContextWrap: public ShareableWrap {
+    class CallContextWrap : public ShareableWrap {
     public:
         /// <summary> It creates a persistent constructor for CallContextWrap instance. </summary>
         static void Init();
@@ -60,6 +60,5 @@ namespace module {
         /// <summary> It implements CallContext.elapse: [number, number] (precision in nano-second) </summary>
         static void GetElapseCallback(v8::Local<v8::String> propertyName, const v8::PropertyCallbackInfo<v8::Value>& args);
     };
-}
-}
-    
+} // namespace module
+} // namespace napa

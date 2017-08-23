@@ -13,17 +13,17 @@
 namespace napa {
 namespace platform {
 
-const char* GetOSType() {
+    const char* GetOSType() {
 #ifdef SUPPORT_POSIX
-    static struct utsname info;
-    if (uname(&info) < 0) {
-        throw std::runtime_error("Error getting uname");
-    }
-    return info.sysname;
+        static struct utsname info;
+        if (uname(&info) < 0) {
+            throw std::runtime_error("Error getting uname");
+        }
+        return info.sysname;
 #else
-    return "Windows_NT";
+        return "Windows_NT";
 #endif
-}
+    }
 
 
 #ifdef SUPPORT_POSIX
@@ -38,5 +38,5 @@ const char* GetOSType() {
     const char* DIR_SEPARATOR = "\\";
 #endif
 
-}
-}
+} // namespace platform
+} // namespace napa

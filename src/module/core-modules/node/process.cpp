@@ -39,7 +39,7 @@ namespace {
     /// <summary> Environment variable setter. </summary>
     void EnvSetterCallback(v8::Local<v8::String>, v8::Local<v8::Value>, const v8::PropertyCallbackInfo<v8::Value>&);
 
-}   // End of anonymous namespace.
+} // namespace
 
 void process::Init(v8::Local<v8::Object> exports) {
     auto isolate = v8::Isolate::GetCurrent();
@@ -64,24 +64,24 @@ void process::Init(v8::Local<v8::Object> exports) {
     auto envObjectTemplate = v8::ObjectTemplate::New(isolate);
     envObjectTemplate->SetNamedPropertyHandler(EnvGetterCallback, EnvSetterCallback);
     (void)exports->CreateDataProperty(context,
-                                      v8_helpers::MakeV8String(isolate, "env"),
-                                      envObjectTemplate->NewInstance());
+        v8_helpers::MakeV8String(isolate, "env"),
+        envObjectTemplate->NewInstance());
 
     (void)exports->CreateDataProperty(context,
-                                      v8_helpers::MakeV8String(isolate, "platform"),
-                                      v8_helpers::MakeV8String(isolate, platform::PLATFORM));
+        v8_helpers::MakeV8String(isolate, "platform"),
+        v8_helpers::MakeV8String(isolate, platform::PLATFORM));
 
     (void)exports->CreateDataProperty(context,
-                                      v8_helpers::MakeV8String(isolate, "version"),
-                                      v8_helpers::MakeV8String(isolate, std::to_string(MODULE_VERSION)));
+        v8_helpers::MakeV8String(isolate, "version"),
+        v8_helpers::MakeV8String(isolate, std::to_string(MODULE_VERSION)));
 
     (void)exports->CreateDataProperty(context,
-                                      v8_helpers::MakeV8String(isolate, "execPath"),
-                                      v8_helpers::MakeV8String(isolate, filesystem::ProgramPath().String()));
+        v8_helpers::MakeV8String(isolate, "execPath"),
+        v8_helpers::MakeV8String(isolate, filesystem::ProgramPath().String()));
 
     (void)exports->CreateDataProperty(context,
-                                      v8_helpers::MakeV8String(isolate, "pid"),
-                                      v8::Integer::New(isolate, platform::Getpid()));
+        v8_helpers::MakeV8String(isolate, "pid"),
+        v8::Integer::New(isolate, platform::Getpid()));
 }
 
 namespace {
@@ -90,7 +90,7 @@ namespace {
         auto isolate = v8::Isolate::GetCurrent();
         v8::HandleScope scope(isolate);
 
-        args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, 
+        args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate,
             filesystem::CurrentDirectory().String()));
     }
 
@@ -154,7 +154,7 @@ namespace {
             args.GetReturnValue().Set(old);
             return;
         }
-        
+
         CHECK_ARG(isolate,
             args[0]->IsInt32() || args[0]->IsString(),
             "Argument must be an integer or octal string");
@@ -188,8 +188,8 @@ namespace {
     }
 
     void EnvSetterCallback(v8::Local<v8::String> propertyKey,
-                           v8::Local<v8::Value> propertyValue,
-                           const v8::PropertyCallbackInfo<v8::Value>& info) {
+        v8::Local<v8::Value> propertyValue,
+        const v8::PropertyCallbackInfo<v8::Value>& info) {
         auto isolate = v8::Isolate::GetCurrent();
         v8::HandleScope scope(isolate);
 
@@ -200,4 +200,4 @@ namespace {
         info.GetReturnValue().Set(propertyValue);
     }
 
-}   // End of anonymous namespace.
+} // namespace

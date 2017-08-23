@@ -9,7 +9,7 @@
 
 // Forward declare zone.
 namespace napa {
-    class Zone;
+class Zone;
 }
 
 namespace napa {
@@ -18,7 +18,6 @@ namespace module {
     /// <summary> An object wrap to expose zone APIs. </summary>
     class ZoneWrap : public NAPA_OBJECTWRAP {
     public:
-
         /// <summary> Exported class name. </summary>
         static constexpr const char* exportName = "ZoneWrap";
 
@@ -29,7 +28,6 @@ namespace module {
         static v8::Local<v8::Object> NewInstance(std::unique_ptr<napa::Zone> zoneProxy);
 
     private:
-
         /// <summary> Declare persistent constructor to create Zone Javascript wrapper instance. </summary>
         NAPA_DECLARE_PERSISTENT_CONSTRUCTOR;
 
@@ -46,5 +44,5 @@ namespace module {
         template <typename WrapType>
         friend void napa::module::DefaultConstructorCallback(const v8::FunctionCallbackInfo<v8::Value>&);
     };
-}
-}
+} // namespace module
+} // namespace napa

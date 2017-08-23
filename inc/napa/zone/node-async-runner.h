@@ -116,8 +116,8 @@ namespace zone {
     /// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous callback completes. </param>
     /// <remarks> Return value from 'asyncWork' will be the input to 'asyncCompleteCallback'. </remarks>
     inline void PostAsyncWork(v8::Local<v8::Function> jsCallback,
-                              AsyncWork asyncWork,
-                              AsyncCompleteCallback asyncCompleteCallback) {
+        AsyncWork asyncWork,
+        AsyncCompleteCallback asyncCompleteCallback) {
         auto isolate = v8::Isolate::GetCurrent();
         v8::HandleScope scope(isolate);
 
@@ -137,8 +137,8 @@ namespace zone {
     /// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous function completes. </param>
     /// <remarks> Argument at 'asyncWork' completion callback will be the input to 'asyncCompleteCallback'. </remarks>
     inline void DoAsyncWork(v8::Local<v8::Function> jsCallback,
-                            const CompletionWork& asyncWork,
-                            AsyncCompleteCallback asyncCompleteCallback) {
+        const CompletionWork& asyncWork,
+        AsyncCompleteCallback asyncCompleteCallback) {
         auto isolate = v8::Isolate::GetCurrent();
         v8::HandleScope scope(isolate);
 
@@ -157,5 +157,5 @@ namespace zone {
         });
     }
 
-}   // End of namespace module.
-}   // End of namespace napa.
+} // namespace zone
+} // namespace napa.

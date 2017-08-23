@@ -16,13 +16,12 @@ using namespace napa::settings;
 bool settings::Parse(const std::vector<std::string>& args, PlatformSettings& settings) {
     args::ArgumentParser parser("platform settings parser");
 
-    args::ValueFlag<std::string> loggingProvider(parser, "loggingProvider", "logging provider", { "loggingProvider" });
-    args::ValueFlag<std::string> metricProvider(parser, "metricProvider", "metric provider", { "metricProvider" });
+    args::ValueFlag<std::string> loggingProvider(parser, "loggingProvider", "logging provider", {"loggingProvider"});
+    args::ValueFlag<std::string> metricProvider(parser, "metricProvider", "metric provider", {"metricProvider"});
 
     try {
         parser.ParseArgs(args);
-    }
-    catch (const std::exception& ex) {
+    } catch (const std::exception& ex) {
         LOG_ERROR("Settings", "Failed to parse platform settings. Error: %s", ex.what());
         return false;
     }
@@ -41,16 +40,15 @@ bool settings::Parse(const std::vector<std::string>& args, PlatformSettings& set
 bool settings::Parse(const std::vector<std::string>& args, ZoneSettings& settings) {
     args::ArgumentParser parser("zone settings parser");
 
-    args::ValueFlag<uint32_t> workers(parser, "workers", "number of zone workers", { "workers" });
-    args::ValueFlag<uint32_t> maxOldSpaceSize(parser, "maxOldSpaceSize", "max old space size in MB", { "maxOldSpaceSize" });
-    args::ValueFlag<uint32_t> maxSemiSpaceSize(parser, "maxSemiSpaceSize", "max semi space size in MB", { "maxSemiSpaceSize" });
-    args::ValueFlag<uint32_t> maxExecutableSize(parser, "maxExecutableSize", "max executable size in MB", { "maxExecutableSize" });
-    args::ValueFlag<uint32_t> maxStackSize(parser, "maxStackSize", "max isolate stack size in bytes", { "maxStackSize" });
+    args::ValueFlag<uint32_t> workers(parser, "workers", "number of zone workers", {"workers"});
+    args::ValueFlag<uint32_t> maxOldSpaceSize(parser, "maxOldSpaceSize", "max old space size in MB", {"maxOldSpaceSize"});
+    args::ValueFlag<uint32_t> maxSemiSpaceSize(parser, "maxSemiSpaceSize", "max semi space size in MB", {"maxSemiSpaceSize"});
+    args::ValueFlag<uint32_t> maxExecutableSize(parser, "maxExecutableSize", "max executable size in MB", {"maxExecutableSize"});
+    args::ValueFlag<uint32_t> maxStackSize(parser, "maxStackSize", "max isolate stack size in bytes", {"maxStackSize"});
 
     try {
         parser.ParseArgs(args);
-    }
-    catch (const std::exception& ex) {
+    } catch (const std::exception& ex) {
         LOG_ERROR("Settings", "Failed to parse zone settings. Error: %s", ex.what());
         return false;
     }

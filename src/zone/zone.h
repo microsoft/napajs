@@ -27,5 +27,5 @@ namespace zone {
         /// <summary> Virtual destructor. </summary>
         virtual ~Zone() {}
     };
-}
-}
+} // namespace zone
+} // namespace napa

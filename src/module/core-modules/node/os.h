@@ -15,6 +15,6 @@ namespace os {
     /// <param name="exports"> Object to set module. </param>
     void Init(v8::Local<v8::Object> exports);
 
-}   // End of namespace os
-}   // End of namespace module
-}   // End of namespace napa
+} // namespace os
+} // namespace module
+} // namespace napa

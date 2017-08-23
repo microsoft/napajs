@@ -16,7 +16,6 @@ namespace module {
     /// <summary> It loads a module from javascript file or content from arg. </summary>
     class JavascriptModuleLoader : public ModuleFileLoader {
     public:
-
         /// <summary> Constructor. </summary>
         /// <param name="builtInSetter"> Built-in modules registerer. </param>
         /// <param name="moduleCache"> Cache for all modules. </param>
@@ -30,7 +29,6 @@ namespace module {
         bool TryGet(const std::string& path, v8::Local<v8::Value> arg, v8::Local<v8::Object>& module) override;
 
     private:
-
         /// Built-in modules registerer.
         BuiltInModulesSetter _builtInModulesSetter;
 
@@ -38,5 +36,5 @@ namespace module {
         ModuleCache& _moduleCache;
     };
 
-}   // End of namespace module.
-}   // End of namespace napa.
+} // namespace module
+} // namespace napa

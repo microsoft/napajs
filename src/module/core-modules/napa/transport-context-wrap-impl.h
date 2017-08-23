@@ -8,10 +8,10 @@
 
 namespace napa {
 namespace module {
-    
+
     /// <summary> It implements napa::module::TransportContextWrap. </summary>
     /// <remarks> Reference: napajs/lib/transport/transportable.ts#TransportContext </remarks>
-    class TransportContextWrapImpl: public napa::module::TransportContextWrap {
+    class TransportContextWrapImpl : public napa::module::TransportContextWrap {
     public:
         /// <summary> Init this wrap. </summary>
         static void Init();
@@ -20,7 +20,7 @@ namespace module {
         static v8::Local<v8::Object> NewInstance(bool owning = true, napa::transport::TransportContext* context = nullptr);
 
         /// <summary> Destructor. </summary>
-        ~TransportContextWrapImpl(); 
+        ~TransportContextWrapImpl();
 
         /// <summary> Get transport context. </summary>
         napa::transport::TransportContext* Get() override;
@@ -57,5 +57,5 @@ namespace module {
         /// <summary> Own context or not. </summary>
         bool _owning;
     };
-}
-}
+} // namespace module
+} // namespace napa

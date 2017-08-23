@@ -23,5 +23,5 @@ namespace v8_helpers {
         }
         return res;
     }
-}
-}
+} // namespace v8_helpers
+} // namespace napa

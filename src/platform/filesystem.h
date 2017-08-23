@@ -2,8 +2,8 @@
 // Licensed under the MIT license.
 
 #pragma once
-#include <platform/platform.h>
 #include <platform/os.h>
+#include <platform/platform.h>
 
 #include <string>
 
@@ -30,7 +30,6 @@ namespace filesystem {
     /// <summary> Helper class for path manipulation. </summary>
     class Path {
     public:
-
         // We only support ANSI path for now.
         // TODO: consider use wchar_t for Windows.
         typedef char CharType;
@@ -39,12 +38,17 @@ namespace filesystem {
 
         Path() {}
 
-        Path(const CharType* path) : _pathname(path) {}
-        Path(const StringType& path) : _pathname(path) {}
-        Path(StringType&& path) : _pathname(std::move(path)) {}
+        Path(const CharType* path) :
+            _pathname(path) {}
+        Path(const StringType& path) :
+            _pathname(path) {}
+        Path(StringType&& path) :
+            _pathname(std::move(path)) {}
 
-        Path(const Path& path) : _pathname(path._pathname) {}
-        Path(Path&& path) : _pathname(std::move(path._pathname)) {}
+        Path(const Path& path) :
+            _pathname(path._pathname) {}
+        Path(Path&& path) :
+            _pathname(std::move(path._pathname)) {}
 
         Path& operator=(const CharType* path);
         Path& operator=(const StringType& path);
@@ -68,7 +72,7 @@ namespace filesystem {
         /// <summary> Get unnormalized path string buffer. </summary>
         const CharType* c_str() const;
 
-        /// <summary> 
+        /// <summary>
         ///     Append a path to current path
         ///     Or return the path if it's absolute.
         /// </summary>
@@ -205,7 +209,6 @@ namespace filesystem {
         bool Next();
 
     private:
-
 #ifdef SUPPORT_POSIX
         DIR* _dir;
 #else
@@ -215,5 +218,5 @@ namespace filesystem {
         Path _base;
         Path _currentPath;
     };
-}
-}
+} // namespace filesystem
+} // namespace napa

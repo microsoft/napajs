@@ -102,7 +102,7 @@ EXTERN_C NAPA_API const char* napa_result_code_to_string(napa_result_code code);
 /// <param name="allocate_callback"> Function pointer for allocating memory, which should be valid during the entire process. </param>
 /// <param name="deallocate_callback"> Function pointer for deallocating memory, which should be valid during the entire process. </param>
 EXTERN_C NAPA_API void napa_allocator_set(
-    napa_allocate_callback allocate_callback, 
+    napa_allocate_callback allocate_callback,
     napa_deallocate_callback deallocate_callback);
 
 /// <summary> Allocate memory using napa allocator from napa_allocator_set, which is using C runtime ::malloc if not called. </summary>

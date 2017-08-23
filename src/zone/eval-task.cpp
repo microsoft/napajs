@@ -59,7 +59,7 @@ void EvalTask::Execute() {
             return;
         }
     }
-    
+
     NAPA_DEBUG("EvalTask", "Script compiled successfully");
     auto script = compileResult.ToLocalChecked();
 

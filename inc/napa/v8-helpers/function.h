@@ -17,8 +17,8 @@ namespace v8_helpers {
     /// <param name="argv"> Actual arguments. </param>
     /// <returns> Return value of function, or an empty handle if exception is thrown. </returns>
     inline v8::MaybeLocal<v8::Value> Call(
-        const char* functionName, 
-        int argc = 0, 
+        const char* functionName,
+        int argc = 0,
         v8::Local<v8::Value> argv[] = nullptr) {
 
         auto isolate = v8::Isolate::GetCurrent();
@@ -35,7 +35,8 @@ namespace v8_helpers {
             functionName);
 
         return scope.Escape(
-            v8::Local<v8::Function>::Cast(function)->Call(context, context->Global(), argc, argv)
+            v8::Local<v8::Function>::Cast(function)
+                ->Call(context, context->Global(), argc, argv)
                 .FromMaybe(v8::Local<v8::Value>()));
     }
 
@@ -53,7 +54,7 @@ namespace v8_helpers {
 
         auto isolate = v8::Isolate::GetCurrent();
         v8::EscapableHandleScope scope(isolate);
-        
+
         auto context = isolate->GetCurrentContext();
         auto function = object->Get(v8_helpers::MakeV8String(isolate, functionName));
 
@@ -65,8 +66,9 @@ namespace v8_helpers {
             functionName);
 
         return scope.Escape(
-            v8::Local<v8::Function>::Cast(function)->Call(context, object, argc, argv)
+            v8::Local<v8::Function>::Cast(function)
+                ->Call(context, object, argc, argv)
                 .FromMaybe(v8::Local<v8::Value>()));
     }
-}
-}
+} // namespace v8_helpers
+} // namespace napa

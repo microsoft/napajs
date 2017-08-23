@@ -11,5 +11,5 @@ namespace v8_common {
 
     /// <summary> Shutdown and clean v8 global resources. </summary>
     void Shutdown();
-}
-}
+} // namespace v8_common
+} // namespace napa

@@ -21,8 +21,8 @@ namespace module_loader_helpers {
         bool isBuiltIn;
 
         /// <summary> Constructor. </summary>
-        CoreModuleInfo(std::string name, bool isBuiltIn)
-            : name(std::move(name)), isBuiltIn(isBuiltIn) {}
+        CoreModuleInfo(std::string name, bool isBuiltIn) :
+            name(std::move(name)), isBuiltIn(isBuiltIn) {}
     };
 
     /// <summary> It exports loaded module. </summary>
@@ -30,7 +30,7 @@ namespace module_loader_helpers {
     /// <param name="initializer"> Callback function to initialize a module. </param>
     /// <returns> Exported javascript object. </returns>
     v8::Local<v8::Object> ExportModule(v8::Local<v8::Object> object,
-                                       const napa::module::ModuleInitializer& initializer);
+        const napa::module::ModuleInitializer& initializer);
 
     /// <summary> It returns directory of a JavaScript context. </summary>
     /// <returns> Directory of context. If called from external string, module root directory will be returned. </returns>
@@ -63,8 +63,8 @@ namespace module_loader_helpers {
     /// <param name="path"> Module path called by require(). </param>
     /// <returns> V8 context object. </returns>
     void SetupModuleContext(v8::Local<v8::Context> parentContext,
-                            v8::Local<v8::Context> moduleContext,
-                            const std::string& path);
+        v8::Local<v8::Context> moduleContext,
+        const std::string& path);
 
     /// <summary> It reads javascript core module information. </summary>
     std::vector<CoreModuleInfo> ReadCoreModulesJson();
@@ -74,6 +74,6 @@ namespace module_loader_helpers {
     /// <returns> V8 string containing file content. </returns>
     v8::Local<v8::String> ReadModuleFile(const std::string& path);
 
-}   // End of namespace module_loader_helpers.
-}   // End of namespace module
-}   // End of namespace napa
+} // namespace module_loader_helpers
+} // namespace module
+} // namespace napa

@@ -13,7 +13,6 @@ namespace module {
     // It comes from node_object_wrap.h.
     class ObjectWrap {
     public:
-
         ObjectWrap() {
             _refs = 0;
         }
@@ -53,7 +52,6 @@ namespace module {
         }
 
     protected:
-
         void Wrap(v8::Local<v8::Object> handle) {
             assert(persistent().IsEmpty());
             assert(handle->InternalFieldCount() > 0);
@@ -99,7 +97,6 @@ namespace module {
         int _refs;
 
     private:
-
         static void WeakCallback(const v8::WeakCallbackInfo<ObjectWrap>& data) {
             ObjectWrap* wrap = data.GetParameter();
             assert(wrap->_refs == 0);
@@ -110,5 +107,5 @@ namespace module {
         v8::Persistent<v8::Object> _handle;
     };
 
-}   // End of namespace module.
-}   // End of namespace napa.
+} // namespace module
+} // namespace napa

@@ -20,7 +20,8 @@ inline void LogFormattedMessage(
     const char* traceId,
     const char* file,
     int line,
-    const char* format, ...) {
+    const char* format,
+    ...) {
 
     char message[LOG_MAX_SIZE];
     va_list args;
@@ -34,12 +35,13 @@ inline void LogFormattedMessage(
 
 #ifndef NAPA_LOG_DISABLED
 
-#define LOG(section, level, traceId, format, ...) do {                                                   \
-    auto& logger = napa::providers::GetLoggingProvider();                                                \
-    if (logger.IsLogEnabled(section, level)) {                                                           \
-        LogFormattedMessage(logger, section, level, traceId, __FILE__, __LINE__, format, ##__VA_ARGS__); \
-    }                                                                                                    \
-} while (false)
+#define LOG(section, level, traceId, format, ...)                                                            \
+    do {                                                                                                     \
+        auto& logger = napa::providers::GetLoggingProvider();                                                \
+        if (logger.IsLogEnabled(section, level)) {                                                           \
+            LogFormattedMessage(logger, section, level, traceId, __FILE__, __LINE__, format, ##__VA_ARGS__); \
+        }                                                                                                    \
+    } while (false)
 
 #else
 

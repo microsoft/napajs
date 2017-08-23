@@ -22,7 +22,7 @@ namespace {
         return filesystem::Path(file).Absolute().Normalize().String();
     }
 
-}   // End of anonymous namespace.
+} // namespace
 
 std::string file_system_helpers::ReadFileSync(const std::string& filename) {
     std::string fileFullPath = GetFileFullPath(filename);
@@ -45,7 +45,7 @@ std::string file_system_helpers::ReadFileSync(const std::string& filename) {
     std::string content;
     content.resize(size);
 
-    for (size_t i = 0; i < size; ) {
+    for (size_t i = 0; i < size;) {
         i += fread(&content[i], 1, size - i, source);
         if (ferror(source) != 0) {
             std::ostringstream oss;
@@ -59,7 +59,7 @@ std::string file_system_helpers::ReadFileSync(const std::string& filename) {
 
 void file_system_helpers::WriteFileSync(const std::string& filename, const char* data, size_t length) {
     auto fileFullPath = GetFileFullPath(filename);
-    
+
     FILE* target = fopen(fileFullPath.c_str(), "wb");
     if (target == nullptr) {
         std::ostringstream oss;
@@ -71,7 +71,7 @@ void file_system_helpers::WriteFileSync(const std::string& filename, const char*
         fclose(file);
     });
 
-    for (size_t written = 0; written < length; ) {
+    for (size_t written = 0; written < length;) {
         written += fwrite(data + written, 1, length - written, target);
         if (ferror(target) != 0) {
             std::ostringstream oss;
@@ -83,8 +83,7 @@ void file_system_helpers::WriteFileSync(const std::string& filename, const char*
 
 void file_system_helpers::MkdirSync(const std::string& directory) {
     filesystem::Path path(GetFileFullPath(directory));
-    if (!filesystem::IsDirectory(path) && !filesystem::MakeDirectory(path))
-    {
+    if (!filesystem::IsDirectory(path) && !filesystem::MakeDirectory(path)) {
         std::ostringstream oss;
         oss << "The directory: " << directory << " doesn't exist, and can't be created.";
         throw std::runtime_error(oss.str());

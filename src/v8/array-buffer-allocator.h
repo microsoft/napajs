@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include <v8.h>
 #include <cstring>
+#include <v8.h>
 
 namespace napa {
 namespace v8_extensions {
@@ -12,7 +12,6 @@ namespace v8_extensions {
     ///<summary> Allocator that V8 uses to allocate |ArrayBuffer|'s memory. </summary>
     class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
     public:
-
         /// <see> v8::ArrayBuffer::Allocator::Allocate </see>
         virtual void* Allocate(size_t length) override {
             void* data = AllocateUninitialized(length);
@@ -29,5 +28,5 @@ namespace v8_extensions {
             free(data);
         }
     };
-}
-}
+} // namespace v8_extensions
+} // namespace napa

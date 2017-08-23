@@ -26,7 +26,6 @@ namespace zone {
     template <typename WorkerType>
     class SchedulerImpl {
     public:
-
         /// <summary> Constructor. </summary>
         /// <param name="settings"> A settings object. </param>
         /// <param name="workerSetupCallback"> Callback to setup the isolate after worker created its isolate. </param>
@@ -57,7 +56,6 @@ namespace zone {
         void ScheduleOnAllWorkers(std::shared_ptr<Task> task);
 
     private:
-
         /// <summary> The logic invoked when a worker is idle. </summary>
         void IdleWorkerNotificationCallback(WorkerId workerId);
 
@@ -149,7 +147,6 @@ namespace zone {
             }
             _beingScheduled--;
         });
-        
     }
 
     template <typename WorkerType>
@@ -216,5 +213,5 @@ namespace zone {
             }
         });
     }
-}
-}
+} // namespace zone
+} // namespace napa

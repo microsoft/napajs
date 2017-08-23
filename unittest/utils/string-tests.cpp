@@ -29,7 +29,7 @@ TEST_CASE("utils", "[string]") {
         std::vector<std::string> items;
         utils::string::Split(" this is a  \ttest ", items, " \t", false);
 
-        std::vector<std::string> expected = { "", "this", "is", "a", "", "", "test", "" };
+        std::vector<std::string> expected = {"", "this", "is", "a", "", "", "test", ""};
         REQUIRE(items == expected);
     }
 
@@ -37,7 +37,7 @@ TEST_CASE("utils", "[string]") {
         std::vector<std::string> items;
         utils::string::Split(" this is a  \ttest ", items, " \t", true);
 
-        std::vector<std::string> expected = { "this", "is", "a", "test" };
+        std::vector<std::string> expected = {"this", "is", "a", "test"};
         REQUIRE(items == expected);
     }
 
@@ -46,7 +46,7 @@ TEST_CASE("utils", "[string]") {
         std::vector<std::string> items;
         utils::string::Split(str.begin() + 5, str.end(), items, " \t", true);
 
-        std::vector<std::string> expected = { "is", "a", "test" };
+        std::vector<std::string> expected = {"is", "a", "test"};
         REQUIRE(items == expected);
     }
 

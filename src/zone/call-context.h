@@ -70,7 +70,7 @@ namespace zone {
         /// <summary> Transport context. </summary>
         std::unique_ptr<napa::transport::TransportContext> _transportContext;
 
-         /// <summary> Callback when task completes. </summary>
+        /// <summary> Callback when task completes. </summary>
         napa::ExecuteCallback _callback;
 
         /// <summary> Whether this task is finished. </summary>
@@ -79,5 +79,5 @@ namespace zone {
         /// <summary> Call start time. </summary>
         std::chrono::high_resolution_clock::time_point _startTime;
     };
-}
-}
+} // namespace zone
+} // namespace napa

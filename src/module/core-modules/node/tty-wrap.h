@@ -15,6 +15,6 @@ namespace tty_wrap {
     /// <param name="exports"> Object to set module. </param>
     void Init(v8::Local<v8::Object> exports);
 
-}   // End of namespace tty_wrap
-}   // End of namespace module
-}   // End of namespace napa
+} // namespace tty_wrap
+} // namespace module
+} // namespace napa

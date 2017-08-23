@@ -33,7 +33,7 @@ struct Worker::Impl {
 
     /// <summary> Queue for tasks scheduled on this worker. </summary>
     std::queue<std::shared_ptr<Task>> tasks;
-    
+
     /// <summary> Condition variable to indicate if there are more tasks to consume. </summary>
     std::condition_variable hasTaskEvent;
 
@@ -51,10 +51,10 @@ struct Worker::Impl {
 };
 
 Worker::Worker(WorkerId id,
-               const settings::ZoneSettings& settings,
-               std::function<void(WorkerId)> setupCallback,
-               std::function<void(WorkerId)> idleNotificationCallback)
-    : _impl(std::make_unique<Worker::Impl>()) {
+    const settings::ZoneSettings& settings,
+    std::function<void(WorkerId)> setupCallback,
+    std::function<void(WorkerId)> idleNotificationCallback) :
+    _impl(std::make_unique<Worker::Impl>()) {
 
     _impl->id = id;
     _impl->setupCallback = std::move(setupCallback);
@@ -66,7 +66,7 @@ Worker::~Worker() {
     // Signal the thread loop that it should stop processing tasks.
     Enqueue(nullptr);
     NAPA_DEBUG("Worker", "(id=%u) Shutting down: Start draining task queue.", _impl->id);
-    
+
     _impl->workerThread.join();
 
     if (_impl->isolate != nullptr) {
@@ -93,7 +93,7 @@ void Worker::Enqueue(std::shared_ptr<Task> task) {
 }
 
 void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
-    
+
     _impl->isolate = CreateIsolate(settings);
 
     // If any user of v8 library uses a locker on any isolate, all isolates must be locked before use.

@@ -13,7 +13,6 @@ namespace providers {
     /// <summary> A logging provider that logs to the standard console. </summary>
     class ConsoleLoggingProvider : public LoggingProvider {
     public:
-
         virtual void LogMessage(
             const char* section,
             Verboseness level,
@@ -37,5 +36,5 @@ namespace providers {
         }
     };
 
-}
-}
+} // namespace providers
+} // namespace napa

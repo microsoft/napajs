@@ -6,15 +6,17 @@
 #include <napa/log.h>
 #include <platform/process.h>
 #include <platform/thread-local.h>
+
 #include <array>
 
 using namespace napa;
 using namespace napa::zone;
 
 namespace {
-    tls::ThreadLocal<std::array<
-        void*,
-        static_cast<size_t>(WorkerContextItem::END_OF_WORKER_CONTEXT_ITEM)>> items;
+tls::ThreadLocal<std::array<
+    void*,
+    static_cast<size_t>(WorkerContextItem::END_OF_WORKER_CONTEXT_ITEM)>>
+    items;
 }
 
 void WorkerContext::Init() {

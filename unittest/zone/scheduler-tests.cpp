@@ -4,8 +4,8 @@
 #include <catch/catch.hpp>
 #include <zone/scheduler.h>
 
-#include <cstddef>
 #include <atomic>
+#include <cstddef>
 #include <future>
 
 using namespace napa;
@@ -14,7 +14,7 @@ using namespace napa::settings;
 
 class TestTask : public Task {
 public:
-    TestTask(std::function<void()> callback = []() {}) : 
+    TestTask(std::function<void()> callback = []() {}) :
         numberOfExecutions(0),
         lastExecutedWorkerId(99),
         _callback(std::move(callback)) {}
@@ -23,8 +23,7 @@ public:
         lastExecutedWorkerId = id;
     }
 
-    virtual void Execute() override
-    {
+    virtual void Execute() override {
         numberOfExecutions++;
         _callback();
     }
@@ -40,12 +39,12 @@ private:
 template <uint32_t I>
 class TestWorker {
 public:
-
     TestWorker(WorkerId id,
-               const ZoneSettings &settings,
-               std::function<void(WorkerId)> setupCompleteCallback,
-               std::function<void(WorkerId)> idleCallback) : _id(id) {
-        
+        const ZoneSettings& settings,
+        std::function<void(WorkerId)> setupCompleteCallback,
+        std::function<void(WorkerId)> idleCallback) :
+        _id(id) {
+
         numberOfWorkers++;
         _idleNotificationCallback = idleCallback;
         setupCompleteCallback(id);
@@ -144,7 +143,7 @@ TEST_CASE("scheduler distributes and schedules all tasks", "[scheduler]") {
 
     scheduler = nullptr; // force draining all scheduled tasks
 
-    std::vector<bool> scheduledWorkersFlags = { false, false, false, false };
+    std::vector<bool> scheduledWorkersFlags = {false, false, false, false};
     size_t notRun = 0;
     for (size_t i = 0; i < 1000; i++) {
         // Make sure that each task was executed once
@@ -157,7 +156,7 @@ TEST_CASE("scheduler distributes and schedules all tasks", "[scheduler]") {
     REQUIRE(notRun == 0);
 
     // Make sure that all workers were participating
-    for (auto flag: scheduledWorkersFlags) {
+    for (auto flag : scheduledWorkersFlags) {
         REQUIRE(flag);
     }
 }

@@ -11,8 +11,8 @@ const char* PlusNumberWrap::_exportName = "PlusNumberWrap";
 // Define persistent constructor.
 NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(PlusNumberWrap)
 
-PlusNumberWrap::PlusNumberWrap(double value)
-    : _plusNumber(value) {
+PlusNumberWrap::PlusNumberWrap(double value) :
+    _plusNumber(value) {
 }
 
 void PlusNumberWrap::Init() {
@@ -35,7 +35,7 @@ void PlusNumberWrap::NewInstance(const v8::FunctionCallbackInfo<v8::Value>& args
     HandleScope scope(isolate);
 
     const int argc = 1;
-    Local<Value> argv[argc] = { args[0] };
+    Local<Value> argv[argc] = {args[0]};
 
     auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(_exportName, PlusNumberWrap);
     auto context = isolate->GetCurrentContext();

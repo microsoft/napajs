@@ -9,7 +9,7 @@ namespace napa {
 namespace providers {
 
     /// <summary> Interface for a generic logging provider. </summary>
-    /// <remarks> 
+    /// <remarks>
     ///     Ownership of this logging provider belongs to the shared library which created it. Hence the explicit
     ///     Destroy method in this class. To simplify memory management across multiple shared libraries, this class
     ///     can only be created via a factory method provided by the shared library. When it is no longer needed,
@@ -17,7 +17,6 @@ namespace providers {
     /// </remarks>
     class LoggingProvider {
     public:
-
         /// <summary> Represents verboseness for logging. </summary>
         enum class Verboseness {
             Error = 0,
@@ -51,7 +50,6 @@ namespace providers {
         virtual void Destroy() = 0;
 
     protected:
-
         /// <summary> Prevent calling delete on the interface. Must use Destroy! </summary>
         virtual ~LoggingProvider() = default;
     };
@@ -61,5 +59,5 @@ namespace providers {
 
     /// <summary> Singnature  of the logging provider factory method. </summary>
     typedef LoggingProvider* (*CreateLoggingProvider)();
-}
-}
+} // namespace providers
+} // namespace napa

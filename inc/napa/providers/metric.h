@@ -21,7 +21,6 @@ namespace providers {
     /// <summary> Interface to represents a multi-dimensional metric with a maximum dimensionality of 64. </summary>
     class Metric {
     public:
-
         /// <summary> Sets a metric value with variadic dimension arguments. </summary>
         /// <param name="value"> Int64 value. </param>
         /// <param name="numberOfDimensions"> Number of dimensions being set. </param>
@@ -69,14 +68,13 @@ namespace providers {
         virtual void Destroy() = 0;
 
     protected:
-
         ///<summary> Prevent calling delete on the interface. Must use Destroy! </summary>
         virtual ~Metric() = default;
     };
 
 
     /// <summary> Interface for a generic metric provider. </summary>
-    /// <remarks> 
+    /// <remarks>
     ///     Ownership of this metric provider belongs to the shared library which created it. Hence the explicit
     ///     Destroy method in this class. To simplify memory management across multiple shared libraries, this class
     ///     can only be created via a factory method provided by the shared library. When it is no longer needed,
@@ -84,7 +82,6 @@ namespace providers {
     /// </remarks>
     class MetricProvider {
     public:
-
         /// <summary>
         ///     Gets or creates a N-dimensional metric. Metric objects are owned and cached by this class.
         ///     Up to 64 dimensions may be used.</summary>
@@ -111,7 +108,6 @@ namespace providers {
         virtual void Destroy() = 0;
 
     protected:
-
         ///<summary> Prevent calling delete on the interface. Must use Destroy! </summary>
         virtual ~MetricProvider() = default;
     };
@@ -120,5 +116,5 @@ namespace providers {
     NAPA_API MetricProvider& GetMetricProvider();
 
     typedef MetricProvider* (*CreateMetricProvider)();
-}
-}
+} // namespace providers
+} // namespace napa

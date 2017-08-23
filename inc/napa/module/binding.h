@@ -5,9 +5,9 @@
 
 #include <napa/assert.h>
 #include <napa/exports.h>
+#include <napa/v8-helpers/flow.h>
 #include <napa/v8-helpers/maybe.h>
 #include <napa/v8-helpers/string.h>
-#include <napa/v8-helpers/flow.h>
 
 #include <v8.h>
 
@@ -25,29 +25,29 @@ namespace binding {
         auto isolate = v8::Isolate::GetCurrent();
         v8::EscapableHandleScope scope(isolate);
 
-        auto bindingModule = GetModule();        
+        auto bindingModule = GetModule();
         auto binding = bindingModule->Get(napa::v8_helpers::MakeV8String(isolate, "exports"));
         NAPA_ASSERT(!binding.IsEmpty() && binding->IsObject(), "\"exports\" is not available or not object type.");
 
         return scope.Escape(v8::Local<v8::Object>::Cast(binding));
     }
 
-    /// <summary> It calls 'module.require' from context of napa binding in C++. </summary> 
+    /// <summary> It calls 'module.require' from context of napa binding in C++. </summary>
     /// <param name="moduleName"> Module name in node 'require' convention. </summary>
     /// <returns> Object if success, or an empty handle with exception thrown. </summary>
-    /// <remarks> 
-    ///  1) 'napajs' must be required from JS first before Require can be used. 
-    ///  2) Base directory calling 'require' is from 'napajs/bin'. 
+    /// <remarks>
+    ///  1) 'napajs' must be required from JS first before Require can be used.
+    ///  2) Base directory calling 'require' is from 'napajs/bin'.
     /// </remarks>
     inline v8::MaybeLocal<v8::Object> Require(const char* moduleName) {
         auto isolate = v8::Isolate::GetCurrent();
         v8::EscapableHandleScope scope(isolate);
-        
+
         auto bindingModule = GetModule();
         auto require = bindingModule->Get(napa::v8_helpers::MakeV8String(isolate, "require"));
         NAPA_ASSERT(!require.IsEmpty() && require->IsFunction(), "Function \"require\" is not available from module object");
 
-        v8::Local<v8::Value> argv[] = { napa::v8_helpers::MakeV8String(isolate, moduleName)};
+        v8::Local<v8::Value> argv[] = {napa::v8_helpers::MakeV8String(isolate, moduleName)};
         return scope.Escape(
             napa::v8_helpers::ToLocal<v8::Object>(
                 v8::Local<v8::Function>::Cast(require)->Call(isolate->GetCurrentContext(), bindingModule, 1, argv)));
@@ -61,14 +61,15 @@ namespace binding {
         auto binding = GetBinding();
         auto constructor = binding->Get(napa::v8_helpers::MakeV8String(isolate, wrapType));
         JS_ENSURE_WITH_RETURN(
-            isolate, 
-            !constructor.IsEmpty() && constructor->IsFunction(), 
-            v8::MaybeLocal<v8::Object>(), 
+            isolate,
+            !constructor.IsEmpty() && constructor->IsFunction(),
+            v8::MaybeLocal<v8::Object>(),
             "Wrap type \"%s\" is not found in napa binding.",
             wrapType);
 
         return scope.Escape(
-            v8::Local<v8::Function>::Cast(constructor)->NewInstance(isolate->GetCurrentContext(), argc, argv)
+            v8::Local<v8::Function>::Cast(constructor)
+                ->NewInstance(isolate->GetCurrentContext(), argc, argv)
                 .FromMaybe(v8::Local<v8::Object>()));
     }
 
@@ -80,9 +81,9 @@ namespace binding {
     /// <returns> Return value of function, or an empty handle if exception is thrown. </returns>
     /// <remarks> moduleName should take 'napajs/bin' as base directory. </remarks>
     inline v8::MaybeLocal<v8::Object> NewInstance(
-        const char* moduleName, 
-        const char* className, 
-        int argc = 0, 
+        const char* moduleName,
+        const char* className,
+        int argc = 0,
         v8::Local<v8::Value> argv[] = nullptr) {
 
         auto isolate = v8::Isolate::GetCurrent();
@@ -91,7 +92,7 @@ namespace binding {
 
         auto moduleHandle = Require(moduleName);
         RETURN_VALUE_ON_PENDING_EXCEPTION(moduleHandle, v8::MaybeLocal<v8::Object>());
-        
+
         auto module = moduleHandle.ToLocalChecked();
         auto constructor = v8::Local<v8::Function>::Cast(
             module->Get(v8_helpers::MakeV8String(isolate, className)));
@@ -141,9 +142,10 @@ namespace binding {
             moduleName);
 
         return scope.Escape(
-            v8::Local<v8::Function>::Cast(function)->Call(context, module, argc, argv)
+            v8::Local<v8::Function>::Cast(function)
+                ->Call(context, module, argc, argv)
                 .FromMaybe(v8::Local<v8::Value>()));
     }
-}
-}
-}
+} // namespace binding
+} // namespace module
+} // namespace napa

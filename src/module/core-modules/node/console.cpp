@@ -13,11 +13,11 @@ using namespace napa::module;
 
 namespace {
 
-    /// <summary> Log a message to console. </summary>
-    /// <param name="args"> All arguments are converted to string and printed out to console. </param>
-    void LogCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
+/// <summary> Log a message to console. </summary>
+/// <param name="args"> All arguments are converted to string and printed out to console. </param>
+void LogCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-}   // End of anonymous namespace.
+} // namespace
 
 void console::Init(v8::Local<v8::Object> exports) {
     NAPA_SET_METHOD(exports, "log", LogCallback);
@@ -25,24 +25,24 @@ void console::Init(v8::Local<v8::Object> exports) {
 
 namespace {
 
-    void LogCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
-        auto isolate = v8::Isolate::GetCurrent();
-        v8::HandleScope scope(isolate);
+void LogCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
 
-        std::ostringstream oss;
-        for (int i = 0; i < args.Length(); ++i) {
-            v8::String::Utf8Value argument(args[i]->ToString());
-            oss << *argument << " ";
-        }
-
-        std::string message = oss.str();
-        if (!message.empty()) {
-            message.pop_back();
-        }
-
-        std::cout << message << std::endl;
-
-        args.GetReturnValue().Set(args.Holder());
+    std::ostringstream oss;
+    for (int i = 0; i < args.Length(); ++i) {
+        v8::String::Utf8Value argument(args[i]->ToString());
+        oss << *argument << " ";
     }
 
-}   // End of anonymous namespace.
+    std::string message = oss.str();
+    if (!message.empty()) {
+        message.pop_back();
+    }
+
+    std::cout << message << std::endl;
+
+    args.GetReturnValue().Set(args.Holder());
+}
+
+} // namespace

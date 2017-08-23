@@ -5,8 +5,8 @@
 
 #include <napa/zone/napa-async-runner.h>
 
-#include <zone/worker.h>
 #include <zone/napa-zone.h>
+#include <zone/worker.h>
 
 #include <v8.h>
 
@@ -14,7 +14,7 @@
 
 namespace napa {
 namespace zone {
-    
+
     /// <summary> Class holding asynchronous callbacks. </summary>
     struct AsyncContext {
         /// <summary> Zone instance issueing asynchronous work. </summary>
@@ -42,5 +42,5 @@ namespace zone {
         AsyncCompleteCallback asyncCompleteCallback;
     };
 
-}   // End of namespace zone.
-}   // End of namespace napa.
+} // namespace zone
+} // namespace napa

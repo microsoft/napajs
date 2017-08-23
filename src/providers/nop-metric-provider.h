@@ -11,16 +11,15 @@ namespace providers {
     ///<summary> A no-operation instance of a Metric. </summary>
     class NopMetric : public Metric {
     public:
-
-        bool Set(int64_t, size_t, const char*[]) override {
+        bool Set(int64_t, size_t, const char* []) override {
             return true;
         }
 
-        bool Increment(uint64_t, size_t, const char*[]) override {
+        bool Increment(uint64_t, size_t, const char* []) override {
             return true;
         }
 
-        bool Decrement(uint64_t, size_t, const char*[]) override {
+        bool Decrement(uint64_t, size_t, const char* []) override {
             return true;
         }
 
@@ -30,11 +29,10 @@ namespace providers {
     };
 
     ///<summary> A no-operation instance of a MetricProvider.</summary>
-    class NopMetricProvider : public MetricProvider
-    {
+    class NopMetricProvider : public MetricProvider {
     public:
-
-        NopMetricProvider() : _defaultMetric(new NopMetric()) {}
+        NopMetricProvider() :
+            _defaultMetric(new NopMetric()) {}
 
         Metric* GetMetric(const char*, const char*, MetricType, size_t, const char**) override {
             return _defaultMetric;
@@ -47,6 +45,5 @@ namespace providers {
     private:
         Metric* _defaultMetric;
     };
-}
-}
-
+} // namespace providers
+} // namespace napa

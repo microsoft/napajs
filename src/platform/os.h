@@ -13,5 +13,5 @@ namespace platform {
 
     /// <summary> Directory separator. </summary>
     extern const char* DIR_SEPARATOR;
-}
-}
+} // namespace platform
+} // namespace napa

@@ -8,9 +8,9 @@
 #include <platform/filesystem.h>
 #include <utils/debug.h>
 #include <utils/string.h>
-#include <zone/eval-task.h>
-#include <zone/call-task.h>
 #include <zone/call-context.h>
+#include <zone/call-task.h>
+#include <zone/eval-task.h>
 #include <zone/task-decorators.h>
 #include <zone/worker-context.h>
 
@@ -40,7 +40,8 @@ std::shared_ptr<NapaZone> NapaZone::Create(const settings::ZoneSettings& setting
 
     // An helper class to enable make_shared of NapaZone
     struct MakeSharedEnabler : public NapaZone {
-        MakeSharedEnabler(const settings::ZoneSettings& settings) : NapaZone(settings) {}
+        MakeSharedEnabler(const settings::ZoneSettings& settings) :
+            NapaZone(settings) {}
     };
 
     // Fail to create Napa zone is not expected, will always trigger crash.
@@ -68,12 +69,12 @@ std::shared_ptr<NapaZone> NapaZone::Get(const std::string& id) {
         // Use this chance to clean up the map
         _zones.erase(id);
     }
-    
+
     NAPA_DEBUG("Zone", "Get zone \"%s\" succeeded.", id.c_str());
     return zone;
 }
 
-NapaZone::NapaZone(const settings::ZoneSettings& settings) : 
+NapaZone::NapaZone(const settings::ZoneSettings& settings) :
     _settings(settings) {
 
     // Create the zone's scheduler.
@@ -95,8 +96,8 @@ NapaZone::NapaZone(const settings::ZoneSettings& settings) :
     std::promise<ResultCode> promise;
     auto future = promise.get_future();
 
-    Broadcast(BOOTSTRAP_SOURCE, [&promise](ResultCode code){ 
-       promise.set_value(code);
+    Broadcast(BOOTSTRAP_SOURCE, [&promise](ResultCode code) {
+        promise.set_value(code);
     });
 
     NAPA_ASSERT(future.get() == NAPA_RESULT_SUCCESS, "Bootstrap Napa zone failed.");
@@ -109,7 +110,7 @@ const std::string& NapaZone::GetId() const {
 void NapaZone::Broadcast(const std::string& source, BroadcastCallback callback) {
     // Makes sure the callback is only called once, after all workers finished running the broadcast task.
     auto counter = std::make_shared<std::atomic<uint32_t>>(_settings.workers);
-    auto callOnce = [this, source, callback = std::move(callback), counter](napa_result_code code) {
+    auto callOnce = [ this, source, callback = std::move(callback), counter ](napa_result_code code) {
         if (--(*counter) == 0) {
             NAPA_DEBUG("Zone", "Finishing broadcast script \"%s\" to zone \"%s\"", source.c_str(), _settings.id.c_str());
             callback(code);
@@ -132,7 +133,7 @@ void NapaZone::Execute(const FunctionSpec& spec, ExecuteCallback callback) {
     } else {
         task = std::make_shared<CallTask>(std::make_shared<CallContext>(spec, std::move(callback)));
     }
-    
+
     NAPA_DEBUG("Zone", "Execute function \"%s.%s\" on zone \"%s\"", spec.module.data, spec.function.data, _settings.id.c_str());
     _scheduler->Schedule(std::move(task));
 }

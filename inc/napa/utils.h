@@ -20,5 +20,5 @@ namespace utils {
 
         NAPA_ASSERT(size >= 0, "Format message error, probably wrong format encoding");
     }
-}
-}
+} // namespace utils
+} // namespace napa

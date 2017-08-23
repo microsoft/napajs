@@ -6,7 +6,9 @@
 #ifdef USING_V8_SHARED
 
 // Empty stubs when using shared v8
-bool napa::v8_common::Initialize() { return true; }
+bool napa::v8_common::Initialize() {
+    return true;
+}
 void napa::v8_common::Shutdown() {}
 
 #else

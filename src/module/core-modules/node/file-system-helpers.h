@@ -36,6 +36,6 @@ namespace file_system_helpers {
     /// <returns> File and directory names except '.' and '..'. </returns>
     std::vector<std::string> ReadDirectorySync(const std::string& directory);
 
-}   // End of namespace file_system_helpers
-}   // End of namespace module
-}   // End of namespace napa
+} // namespace file_system_helpers
+} // namespace module
+} // namespace napa

@@ -12,7 +12,6 @@ namespace demo {
     /// <summary> Napa example module wrapping PlusNumber class. </summary>
     class PlusNumberWrap : public NAPA_OBJECTWRAP {
     public:
-
         /// <summary> Register this class into V8. </summary>
         static void Init();
 
@@ -21,7 +20,6 @@ namespace demo {
         static void NewInstance(const v8::FunctionCallbackInfo<v8::Value>& args);
 
     private:
-
         /// <summary> Exported class name. </summary>
         static const char* _exportName;
 
@@ -43,5 +41,5 @@ namespace demo {
         PlusNumber _plusNumber;
     };
 
-}  // namespace demo
-}  // namespace napa
+} // namespace demo
+} // namespace napa

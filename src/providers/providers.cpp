@@ -43,7 +43,7 @@ void napa::providers::Shutdown() {
     if (_loggingProvider != nullptr) {
         _loggingProvider->Destroy();
     }
-    
+
     if (_metricProvider != nullptr) {
         _metricProvider->Destroy();
     }
@@ -79,9 +79,9 @@ static ProviderType* LoadProvider(
     NAPA_ASSERT(!package.ParseStream(isw).HasParseError(), rapidjson::GetParseError_En(package.GetParseError()));
 
     NAPA_ASSERT(package.HasMember(jsonPropertyPath.c_str()),
-                "missing property '%s' in '%s'",
-                jsonPropertyPath.c_str(),
-                moduleInfo.packageJsonPath.c_str());
+        "missing property '%s' in '%s'",
+        jsonPropertyPath.c_str(),
+        moduleInfo.packageJsonPath.c_str());
 
     auto providerRelativePath = package[jsonPropertyPath.c_str()].GetString();
 
@@ -114,5 +114,5 @@ static MetricProvider* LoadMetricProvider(const std::string& providerName) {
         return nopMetricProvider.get();
     }
 
-    return LoadProvider<MetricProvider>(providerName, "providers.metric", "CreateMetricProvider");;
+    return LoadProvider<MetricProvider>(providerName, "providers.metric", "CreateMetricProvider");
 }

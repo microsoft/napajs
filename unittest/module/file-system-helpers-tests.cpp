@@ -3,8 +3,8 @@
 
 #include <catch/catch.hpp>
 
-#include <platform/os.h>
 #include <module/core-modules/node/file-system-helpers.h>
+#include <platform/os.h>
 
 using namespace napa;
 using namespace napa::module;

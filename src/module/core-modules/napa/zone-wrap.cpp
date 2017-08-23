@@ -5,10 +5,10 @@
 
 #include "transport-context-wrap-impl.h"
 
-#include <napa/zone.h>
 #include <napa/assert.h>
 #include <napa/async.h>
 #include <napa/v8-helpers.h>
+#include <napa/zone.h>
 
 #include <sstream>
 #include <vector>
@@ -67,7 +67,7 @@ void ZoneWrap::Broadcast(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
     CHECK_ARG(isolate, args[0]->IsString(), "first argument to zone.broadcast must be the javascript source");
     CHECK_ARG(isolate, args[1]->IsFunction(), "second argument to zone.broadcast must be the callback");
-    
+
     v8::String::Utf8Value source(args[0]->ToString());
 
     napa::zone::DoAsyncWork(v8::Local<v8::Function>::Cast(args[1]),
@@ -88,8 +88,7 @@ void ZoneWrap::Broadcast(const v8::FunctionCallbackInfo<v8::Value>& args) {
             argv.emplace_back(v8::Uint32::NewFromUnsigned(isolate, resultCode));
 
             (void)jsCallback->Call(context, context->Global(), static_cast<int>(argv.size()), argv.data());
-        }
-    );
+        });
 }
 
 void ZoneWrap::BroadcastSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -135,8 +134,7 @@ void ZoneWrap::Execute(const v8::FunctionCallbackInfo<v8::Value>& args) {
             (void)jsCallback->Call(context, context->Global(), static_cast<int>(argv.size()), argv.data());
 
             delete result;
-        }
-    );
+        });
 }
 
 void ZoneWrap::ExecuteSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -188,7 +186,7 @@ static void CreateRequestAndExecute(v8::Local<v8::Object> obj, Func&& func) {
     auto context = isolate->GetCurrentContext();
 
     napa::FunctionSpec spec;
-    
+
     // module property is optional in a spec
     Utf8String module;
     auto maybe = obj->Get(context, MakeV8String(isolate, "module"));

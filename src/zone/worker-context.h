@@ -37,7 +37,6 @@ namespace zone {
     /// <summary> Napa specific data stored at TLS. </summary>
     class NAPA_API WorkerContext {
     public:
-
         /// <summary> Initialize isolate data. </summary>
         static void Init();
 
@@ -52,7 +51,7 @@ namespace zone {
         static void Set(WorkerContextItem item, void* data);
     };
 
-    #define INIT_WORKER_CONTEXT napa::zone::WorkerContext::Init
+#define INIT_WORKER_CONTEXT napa::zone::WorkerContext::Init
 
-}   // End of namespace zone.
-}   // End of namespace napa.
+} // namespace zone
+} // namespace napa

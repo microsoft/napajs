@@ -3,8 +3,9 @@
 
 #pragma once
 
-#include <v8.h>
 #include <napa/stl/string.h>
+
+#include <v8.h>
 
 namespace napa {
 namespace v8_helpers {
@@ -15,7 +16,7 @@ namespace v8_helpers {
     inline v8::Local<v8::Array> HrtimeToV8Uint32Array(v8::Isolate* isolate, uint64_t time) {
         v8::EscapableHandleScope scope(isolate);
         auto context = isolate->GetCurrentContext();
-        
+
         v8::Local<v8::Array> res = v8::Array::New(isolate, 2);
         (void)res->CreateDataProperty(
             context,
@@ -34,7 +35,7 @@ namespace v8_helpers {
     inline std::pair<uint64_t, bool> V8Uint32ArrayToHrtime(v8::Isolate* isolate, v8::Local<v8::Value> value) {
         v8::EscapableHandleScope scope(isolate);
         auto context = isolate->GetCurrentContext();
-        
+
         if (value.IsEmpty() || !value->IsArray()) {
             return std::make_pair(0, false);
         }
@@ -45,5 +46,5 @@ namespace v8_helpers {
         }
         return std::make_pair(static_cast<uint64_t>(array->Get(0)->Uint32Value()) * NANOS_PER_SECOND + array->Get(1)->Uint32Value(), true);
     }
-}
-}
+} // namespace v8_helpers
+} // namespace napa

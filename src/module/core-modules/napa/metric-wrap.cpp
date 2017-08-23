@@ -35,8 +35,7 @@ void MetricWrap::ConstructorCallback(const v8::FunctionCallbackInfo<v8::Value>& 
 
     JS_ENSURE(isolate, args.IsConstructCall(), "class \"MetricWrap\" allows constructor call only.");
 
-    CHECK_ARG(isolate, args.Length() == 4,
-        "class \"MetricWrap\" accepts exactly 4 arguments (section, name, type, dimensions)");
+    CHECK_ARG(isolate, args.Length() == 4, "class \"MetricWrap\" accepts exactly 4 arguments (section, name, type, dimensions)");
     CHECK_ARG(isolate, args[0]->IsString(), "'section' must be a valid string");
     CHECK_ARG(isolate, args[1]->IsString(), "'name' must be a valid string");
     CHECK_ARG(isolate, args[2]->IsUint32(), "'type' must be a uint32 type that represents the native enum");

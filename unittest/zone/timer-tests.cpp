@@ -19,9 +19,11 @@ TEST_CASE("timer is triggered after provided timeout", "[timer][!mayfail]") {
     std::promise<high_resolution_clock::time_point> promise;
     auto future = promise.get_future();
 
-    Timer timer([&promise]() {
-        promise.set_value(high_resolution_clock::now());
-    }, 50ms);
+    Timer timer(
+        [&promise]() {
+            promise.set_value(high_resolution_clock::now());
+        },
+        50ms);
 
     auto startTime = high_resolution_clock::now();
     timer.Start();
@@ -36,9 +38,11 @@ TEST_CASE("timer is not called if stopped", "[timer]") {
     std::promise<void> promise;
     auto future = promise.get_future();
 
-    Timer timer([&promise]() {
-        promise.set_value();
-    }, 50ms);
+    Timer timer(
+        [&promise]() {
+            promise.set_value();
+        },
+        50ms);
 
     timer.Start();
     std::this_thread::sleep_for(20ms);
@@ -53,21 +57,27 @@ TEST_CASE("timers are called by order", "[timer]") {
 
     std::promise<int> promise1;
     auto future1 = promise1.get_future();
-    Timer timer1([&promise1, &callOrder]() {
-        promise1.set_value(++callOrder);
-    }, 100ms);
+    Timer timer1(
+        [&promise1, &callOrder]() {
+            promise1.set_value(++callOrder);
+        },
+        100ms);
 
     std::promise<int> promise2;
     auto future2 = promise2.get_future();
-    Timer timer2([&promise2, &callOrder]() {
-        promise2.set_value(++callOrder);
-    }, 50ms);
+    Timer timer2(
+        [&promise2, &callOrder]() {
+            promise2.set_value(++callOrder);
+        },
+        50ms);
 
     std::promise<int> promise3;
     auto future3 = promise3.get_future();
-    Timer timer3([&promise3, &callOrder]() {
-        promise3.set_value(++callOrder);
-    }, 20ms);
+    Timer timer3(
+        [&promise3, &callOrder]() {
+            promise3.set_value(++callOrder);
+        },
+        20ms);
 
     timer1.Start();
     timer2.Start();

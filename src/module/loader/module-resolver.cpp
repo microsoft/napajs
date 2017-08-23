@@ -22,15 +22,14 @@ using namespace napa::module;
 
 namespace {
 
-    const std::string NAPA_MODULE_EXTENSION = ".napa";
-    const std::string JAVASCRIPT_MODULE_EXTENSION = ".js";
-    const std::string JSON_OBJECT_EXTENSION = ".json";
+const std::string NAPA_MODULE_EXTENSION = ".napa";
+const std::string JAVASCRIPT_MODULE_EXTENSION = ".js";
+const std::string JSON_OBJECT_EXTENSION = ".json";
 
-}   // End of anonymous namespace.
+} // namespace
 
 class ModuleResolver::ModuleResolverImpl {
 public:
-
     /// <summary> Constructor. </summary>
     ModuleResolverImpl();
 
@@ -50,7 +49,6 @@ public:
     bool SetAsCoreModule(const char* name);
 
 private:
-
     /// <summary> It resolves a full module path from a given argument of require(). </summary>
     /// <param name="name"> Module name or path. </param>
     /// <param name="path"> Base path. </param>
@@ -110,7 +108,8 @@ private:
     std::vector<std::string> _nodePaths;
 };
 
-ModuleResolver::ModuleResolver() : _impl(std::make_unique<ModuleResolver::ModuleResolverImpl>()) {}
+ModuleResolver::ModuleResolver() :
+    _impl(std::make_unique<ModuleResolver::ModuleResolverImpl>()) {}
 
 ModuleResolver::~ModuleResolver() = default;
 
@@ -136,12 +135,12 @@ ModuleResolver::ModuleResolverImpl::ModuleResolverImpl() {
     }
 }
 
-#define RETURN_IF_NOT_EMPTY(run)                    \
-    do {                                            \
-        auto result = run;                          \
-        if (result.type != ModuleType::NONE) {      \
-            return result;                          \
-        }                                           \
+#define RETURN_IF_NOT_EMPTY(run)               \
+    do {                                       \
+        auto result = run;                     \
+        if (result.type != ModuleType::NONE) { \
+            return result;                     \
+        }                                      \
     } while (false);
 
 ModuleInfo ModuleResolver::ModuleResolverImpl::Resolve(const char* name, const char* path) {
@@ -167,7 +166,7 @@ bool ModuleResolver::ModuleResolverImpl::SetAsCoreModule(const char* name) {
 }
 
 ModuleInfo ModuleResolver::ModuleResolverImpl::ResolveFromPath(const filesystem::Path& name,
-                                                               const filesystem::Path& path) {
+    const filesystem::Path& path) {
     // If name begins with './' or '/' or '../',
     if (IsExplicitRelativePath(name) || name.IsAbsolute()) {
         // Load as a file (path + name).
@@ -182,7 +181,7 @@ ModuleInfo ModuleResolver::ModuleResolverImpl::ResolveFromPath(const filesystem:
 }
 
 ModuleInfo ModuleResolver::ModuleResolverImpl::ResolveFromEnv(const filesystem::Path& name,
-                                                              const filesystem::Path& path) {
+    const filesystem::Path& path) {
     for (const auto& nodePath : _nodePaths) {
         if (nodePath == path.String()) {
             continue;
@@ -199,7 +198,7 @@ bool ModuleResolver::ModuleResolverImpl::IsCoreModule(const std::string& module)
 }
 
 ModuleInfo ModuleResolver::ModuleResolverImpl::LoadAsFile(const filesystem::Path& name,
-                                                          const filesystem::Path& path) {
+    const filesystem::Path& path) {
     auto fullPath = (path / name).Normalize();
 
     if (filesystem::IsRegularFile(fullPath)) {
@@ -219,7 +218,7 @@ ModuleInfo ModuleResolver::ModuleResolverImpl::LoadAsFile(const filesystem::Path
 }
 
 ModuleInfo ModuleResolver::ModuleResolverImpl::LoadAsDirectory(const filesystem::Path& name,
-                                                               const filesystem::Path& path) {
+    const filesystem::Path& path) {
     auto fullPath = (path / name).Normalize();
 
     auto packageJson = fullPath / "package.json";
@@ -240,7 +239,8 @@ ModuleInfo ModuleResolver::ModuleResolverImpl::LoadAsDirectory(const filesystem:
                 moduleInfo.packageJsonPath = packageJson.String();
                 return moduleInfo;
             }
-        } catch (...) {}    // ignore exception and continue.
+        } catch (...) {
+        } // ignore exception and continue.
     }
 
     fullPath = fullPath / "index";
@@ -248,9 +248,9 @@ ModuleInfo ModuleResolver::ModuleResolverImpl::LoadAsDirectory(const filesystem:
 }
 
 ModuleInfo ModuleResolver::ModuleResolverImpl::LoadNodeModules(const filesystem::Path& name,
-                                                               const filesystem::Path& path) {
+    const filesystem::Path& path) {
     auto modulePaths = GetNodeModulesPaths(path);
-    for (const auto& modulePath :modulePaths) {
+    for (const auto& modulePath : modulePaths) {
         // Load as a file (path + name).
         RETURN_IF_NOT_EMPTY(LoadAsFile(name, modulePath));
 

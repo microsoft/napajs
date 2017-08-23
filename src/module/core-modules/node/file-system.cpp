@@ -31,7 +31,7 @@ namespace {
     /// <param name="args"> A string argument of path. </param>
     void ReaddirSyncCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-}   // End of anonymous namespace.
+} // namespace
 
 void file_system::Init(v8::Local<v8::Object> exports) {
     NAPA_SET_METHOD(exports, "readFileSync", ReadFileSyncCallback);
@@ -81,7 +81,7 @@ namespace {
         CHECK_ARG(isolate,
             args[1]->IsString(),
             "fs.writeFileSync require a string as the 2nd parameter for data to write.");
-            
+
         v8::String::Utf8Value fileName(args[0]);
         v8::String::Utf8Value content(args[1]);
 
@@ -103,7 +103,7 @@ namespace {
         CHECK_ARG(isolate,
             args[0]->IsString(),
             "fs.mkdirFileSync requires a string as the 1st parameter for the directory.");
-            
+
         v8::String::Utf8Value directory(args[0]);
 
         try {
@@ -124,7 +124,7 @@ namespace {
         CHECK_ARG(isolate,
             args[0]->IsString(),
             "fs.existsSync requires a string as the 1st parameter for the path to check.");
-            
+
         v8::String::Utf8Value path(args[0]);
         auto exists = file_system_helpers::ExistsSync(std::string(*path));
 
@@ -153,8 +153,8 @@ namespace {
         for (uint32_t i = 0; i < count; ++i) {
             (void)result->CreateDataProperty(context, i, v8_helpers::MakeV8String(isolate, names[i]));
         }
-            
+
         args.GetReturnValue().Set(result);
     }
 
-}   // End of anonymous namespace.
+} // namespace

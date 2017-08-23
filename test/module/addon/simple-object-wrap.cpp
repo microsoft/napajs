@@ -3,10 +3,10 @@
 
 #include "simple-object-wrap.h"
 
-#include <napa/zone.h>
 #include <napa/assert.h>
 #include <napa/async.h>
 #include <napa/v8-helpers.h>
+#include <napa/zone.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -84,12 +84,12 @@ void SimpleObjectWrap::DoIncrementWork(const v8::FunctionCallbackInfo<v8::Value>
 
             int32_t argc = 1;
             v8::Local<v8::Value> argv[] = {
-                v8::Integer::NewFromUnsigned(isolate, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(result)))
-            };
+                v8::Integer::NewFromUnsigned(
+                    isolate,
+                    static_cast<uint32_t>(reinterpret_cast<uintptr_t>(result)))};
 
             jsCallback->Call(isolate->GetCurrentContext()->Global(), argc, argv);
-        }
-    );
+        });
 }
 
 void SimpleObjectWrap::PostIncrementWork(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -102,12 +102,12 @@ void SimpleObjectWrap::PostIncrementWork(const v8::FunctionCallbackInfo<v8::Valu
     napa::zone::PostAsyncWork(
         v8::Local<v8::Function>::Cast(args[0]),
         [wrap]() {
-            #ifdef _WIN32
-                Sleep(10);
-            #else
-                // Sleep 10 ms.
-                usleep(10 * 1000);
-            #endif
+#ifdef _WIN32
+            Sleep(10);
+#else
+            // Sleep 10 ms.
+            usleep(10 * 1000);
+#endif
 
             // This runs at the separate thread.
             auto newValue = ++wrap->value;
@@ -119,11 +119,11 @@ void SimpleObjectWrap::PostIncrementWork(const v8::FunctionCallbackInfo<v8::Valu
             auto isolate = v8::Isolate::GetCurrent();
 
             int32_t argc = 1;
-            v8::Local<v8::Value> argv[] = { 
-                v8::Integer::NewFromUnsigned(isolate, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(result)))
-            };
+            v8::Local<v8::Value> argv[] = {
+                v8::Integer::NewFromUnsigned(
+                    isolate,
+                    static_cast<uint32_t>(reinterpret_cast<uintptr_t>(result)))};
 
             jsCallback->Call(isolate->GetCurrentContext()->Global(), argc, argv);
-        }
-    );
+        });
 }

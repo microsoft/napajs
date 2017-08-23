@@ -15,16 +15,18 @@ using namespace napa::module;
 
 namespace {
 
-    const std::string CORE_MODULE_EXTENSION = ".js";
-    const std::string CORE_MODULE_DIRECTORY = "lib\\core";
+const std::string CORE_MODULE_EXTENSION = ".js";
+const std::string CORE_MODULE_DIRECTORY = "lib\\core";
 
-}   // End of anonymous namespace.
+} // namespace
 
-CoreModuleLoader::CoreModuleLoader(BuiltInModulesSetter builtInModulesSetter,
-                                   ModuleCache& moduleCache,
-                                   ModuleCache& bindingCache)
-    : JavascriptModuleLoader(std::move(builtInModulesSetter), moduleCache), _bindingCache(bindingCache) {}
-                                
+CoreModuleLoader::CoreModuleLoader(
+    BuiltInModulesSetter builtInModulesSetter,
+    ModuleCache& moduleCache,
+    ModuleCache& bindingCache) :
+    JavascriptModuleLoader(std::move(builtInModulesSetter), moduleCache),
+    _bindingCache(bindingCache) {}
+
 bool CoreModuleLoader::TryGet(const std::string& name, v8::Local<v8::Value> /*arg*/, v8::Local<v8::Object>& module) {
     filesystem::Path basePath(module_loader_helpers::GetNapaRuntimeDirectory());
     auto fileName = name + CORE_MODULE_EXTENSION;

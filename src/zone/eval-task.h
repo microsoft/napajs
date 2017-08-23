@@ -32,5 +32,5 @@ namespace zone {
         std::string _sourceOrigin;
         BroadcastCallback _callback;
     };
-}
-}
+} // namespace zone
+} // namespace napa

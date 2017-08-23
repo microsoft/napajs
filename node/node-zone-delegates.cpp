@@ -40,7 +40,7 @@ void ScheduleInNode(std::function<void()> callback) {
 
 void napa::node_zone::Broadcast(const std::string& source, napa::BroadcastCallback callback) {
     std::string sourceCopy = source;
-    ScheduleInNode([sourceCopy = std::move(sourceCopy), callback = std::move(callback)]() {
+    ScheduleInNode([ sourceCopy = std::move(sourceCopy), callback = std::move(callback) ]() {
         napa::zone::EvalTask task(std::move(sourceCopy), "", std::move(callback));
         task.Execute();
     });

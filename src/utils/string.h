@@ -79,7 +79,7 @@ namespace string {
     }
 
     /// <summary> Trim the provided string. </summary>
-    inline void Trim(std::string &str) {
+    inline void Trim(std::string& str) {
         // Left trim
         str.erase(0, str.find_first_not_of(" \n\r\t"));
 
@@ -88,7 +88,7 @@ namespace string {
     }
 
     /// <summary> Return a trimmed copy of the string. </summary>
-    inline std::string TrimCopy(const std::string &str) {
+    inline std::string TrimCopy(const std::string& str) {
         std::string copy = str;
         Trim(copy);
         return copy;
@@ -138,6 +138,6 @@ namespace string {
     inline bool CaseInsensitiveEquals(const std::string& left, const std::string& right) {
         return CaseInsensitiveCompare(left, right) == 0;
     }
-}
-}
-}
+} // namespace string
+} // namespace utils
+} // namespace napa

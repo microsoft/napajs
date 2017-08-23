@@ -12,7 +12,7 @@ typedef struct {
     size_t size;
 } napa_string_ref;
 
-#define NAPA_STRING_REF_WITH_SIZE(data, size) (napa_string_ref { (data), (size) })
+#define NAPA_STRING_REF_WITH_SIZE(data, size) (napa_string_ref{(data), (size)})
 #define NAPA_STRING_REF(data) NAPA_STRING_REF_WITH_SIZE(data, strlen(data))
 
 const napa_string_ref EMPTY_NAPA_STRING_REF = NAPA_STRING_REF_WITH_SIZE(0, 0);
@@ -23,7 +23,7 @@ namespace napa {
     typedef napa_string_ref StringRef;
 }
 
-#define STD_STRING_TO_NAPA_STRING_REF(str) (napa_string_ref { (str).data(), (str).size() })
+#define STD_STRING_TO_NAPA_STRING_REF(str) (napa_string_ref{(str).data(), (str).size()})
 #define NAPA_STRING_REF_TO_STD_STRING(str) (std::string((str).data, (str).size))
 
 #endif // __cplusplus
@@ -50,7 +50,7 @@ namespace napa {
 /// <summary> Represents option for transporting objects in zone.execute. </summary>
 typedef enum {
 
-    /// <summary> 
+    /// <summary>
     ///     transport.marshall/unmarshall will be done by `napajs` automatically.
     ///     This is the most common way, but may not be performance optimal with objects
     ///     that will be shared in multiple zone.execute.
@@ -112,6 +112,7 @@ typedef struct {
 #ifdef __cplusplus
 
 #include <napa/transport/transport-context.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -130,12 +131,12 @@ namespace napa {
         std::vector<StringRef> arguments;
 
         /// <summary> Execute options. </summary>
-        CallOptions options = { 0, AUTO };
+        CallOptions options = {0, AUTO};
 
         /// <summary> Used for transporting shared_ptr and unique_ptr across zones/workers. </summary>
         mutable std::unique_ptr<napa::transport::TransportContext> transportContext;
     };
-}
+} // namespace napa
 
 #endif // __cplusplus
 
@@ -173,13 +174,13 @@ namespace napa {
         /// <summary> Used for transporting shared_ptr and unique_ptr across zones/workers. </summary>
         mutable std::unique_ptr<napa::transport::TransportContext> transportContext;
     };
-}
+} // namespace napa
 
 #endif // __cplusplus
 
 /// <summary> Callback signatures. </summary>
-typedef void(*napa_zone_broadcast_callback)(napa_result_code code, void* context);
-typedef void(*napa_zone_execute_callback)(napa_zone_result result, void* context);
+typedef void (*napa_zone_broadcast_callback)(napa_result_code code, void* context);
+typedef void (*napa_zone_execute_callback)(napa_zone_result result, void* context);
 
 #ifdef __cplusplus
 
@@ -188,12 +189,12 @@ typedef void(*napa_zone_execute_callback)(napa_zone_result result, void* context
 namespace napa {
     typedef std::function<void(ResultCode)> BroadcastCallback;
     typedef std::function<void(Result)> ExecuteCallback;
-}
+} // namespace napa
 
 #endif // __cplusplus
 
 /// <summary> Zone handle type. </summary>
-typedef struct napa_zone *napa_zone_handle;
+typedef struct napa_zone* napa_zone_handle;
 
 /// <summary> Callback for customized memory allocator. </summary>
 typedef void* (*napa_allocate_callback)(size_t);

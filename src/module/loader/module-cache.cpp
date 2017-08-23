@@ -16,17 +16,18 @@ struct ModuleCache::ModuleCacheImpl {
     PersistentModuleCache moduleCache;
 };
 
-ModuleCache::ModuleCache() : _impl(std::make_unique<ModuleCache::ModuleCacheImpl>()) {}
+ModuleCache::ModuleCache() :
+    _impl(std::make_unique<ModuleCache::ModuleCacheImpl>()) {}
 
 ModuleCache::~ModuleCache() = default;
 
 std::string NormalizeCacheKey(const std::string& path) {
-    #ifdef _WIN32
+#ifdef _WIN32
     // Remove UNC prefix if present.
     if (path.substr(0, 4) == "\\\\?\\") {
         return path.substr(4);
     }
-    #endif
+#endif
     return path;
 }
 
@@ -46,8 +47,8 @@ void ModuleCache::Upsert(const std::string& path, v8::Local<v8::Object> module) 
         iter->second = PersistentModule(isolate, module);
     } else {
         _impl->moduleCache.emplace(std::piecewise_construct,
-                                   std::forward_as_tuple(key),
-                                   std::forward_as_tuple(isolate, module));
+            std::forward_as_tuple(key),
+            std::forward_as_tuple(isolate, module));
     }
 }
 

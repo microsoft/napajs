@@ -13,14 +13,13 @@ namespace module {
     /// <summary> It loads a core module. </summary>
     class CoreModuleLoader : public JavascriptModuleLoader {
     public:
-
         /// <summary> Constructor. </summary>
         /// <param name="builtInSetter"> Built-in modules registerer. </param>
         /// <param name="moduleCache"> Cache for all modules. </param>
         /// <param name="bindingCache"> Cache for binding core binary modules. </param>
         CoreModuleLoader(BuiltInModulesSetter builtInModulesSetter,
-                         ModuleCache& moduleCache,
-                         ModuleCache& bindingCache);
+            ModuleCache& moduleCache,
+            ModuleCache& bindingCache);
 
         /// <summary> It loads a core module. </summary>
         /// <param name="name"> Core module name. </param>
@@ -30,10 +29,9 @@ namespace module {
         bool TryGet(const std::string& name, v8::Local<v8::Value> arg, v8::Local<v8::Object>& module) override;
 
     private:
-
         /// Cache instance for binding binary core modules.
         ModuleCache& _bindingCache;
     };
 
-}   // End of namespace module.
-}   // End of namespace napa.
+} // namespace module
+} // namespace napa

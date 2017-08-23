@@ -13,7 +13,7 @@ AllocatorDebuggerWrap::AllocatorDebuggerWrap(std::shared_ptr<napa::memory::Alloc
     this->_object = std::move(allocatorDebugger);
 }
 
-void AllocatorDebuggerWrap::Init(){
+void AllocatorDebuggerWrap::Init() {
     auto isolate = v8::Isolate::GetCurrent();
     auto constructorTemplate = v8::FunctionTemplate::New(isolate, ConstructorCallback);
     constructorTemplate->SetClassName(v8_helpers::MakeV8String(isolate, exportName));
@@ -42,12 +42,11 @@ void AllocatorDebuggerWrap::ConstructorCallback(const v8::FunctionCallbackInfo<v
     if (args.Length() == 0) {
         allocator = std::shared_ptr<napa::memory::Allocator>(
             &napa::memory::GetDefaultAllocator(),
-            [](napa::memory::Allocator*){});
-    } 
-    else {
+            [](napa::memory::Allocator*) {});
+    } else {
         CHECK_ARG(isolate, args[0]->IsObject(), "Argument \"allocator\" should be \"AllocatorWrap\" type.'");
         auto allocatorWrap = NAPA_OBJECTWRAP::Unwrap<AllocatorWrap>(v8::Local<v8::Object>::Cast(args[0]));
-        JS_ENSURE(isolate, allocatorWrap != nullptr,  "argument \"allocator\" must be of type \"AllocatorWrap\".");
+        JS_ENSURE(isolate, allocatorWrap != nullptr, "argument \"allocator\" must be of type \"AllocatorWrap\".");
         allocator = allocatorWrap->Get();
     }
 

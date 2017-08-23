@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include <napa/v8-helpers/string.h>
 #include <napa/v8-helpers/function.h>
+#include <napa/v8-helpers/string.h>
 #include <v8.h>
 
 namespace napa {
@@ -22,7 +22,7 @@ namespace v8_helpers {
                 v8_helpers::MakeV8String(isolate, "console")));
 
             v8_helpers::Call(console, "log", argc, argv);
-        } 
+        }
     };
-}
-}
+} // namespace v8_helpers
+} // namespace napa

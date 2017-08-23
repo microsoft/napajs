@@ -22,5 +22,5 @@ namespace module {
         /// <summary> Exported class name. </summary>
         static constexpr const char* exportName = "SharedPtrWrap";
     };
-}
-}
+} // namespace module
+} // namespace napa

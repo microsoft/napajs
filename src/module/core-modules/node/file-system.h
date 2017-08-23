@@ -16,6 +16,6 @@ namespace file_system {
     /// <param name="exports"> Object to set module. </param>
     void Init(v8::Local<v8::Object> exports);
 
-}   // End of namespace file_system
-}   // End of namespace module
-}   // End of namespace napa
+} // namespace file_system
+} // namespace module
+} // namespace napa

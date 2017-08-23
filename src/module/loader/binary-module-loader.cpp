@@ -11,8 +11,8 @@
 using namespace napa;
 using namespace napa::module;
 
-BinaryModuleLoader::BinaryModuleLoader(BuiltInModulesSetter builtInModulesSetter)
-    : _builtInModulesSetter(std::move(builtInModulesSetter)) {}
+BinaryModuleLoader::BinaryModuleLoader(BuiltInModulesSetter builtInModulesSetter) :
+    _builtInModulesSetter(std::move(builtInModulesSetter)) {}
 
 bool BinaryModuleLoader::TryGet(const std::string& path, v8::Local<v8::Value> /*arg*/, v8::Local<v8::Object>& module) {
     auto isolate = v8::Isolate::GetCurrent();
@@ -22,16 +22,16 @@ bool BinaryModuleLoader::TryGet(const std::string& path, v8::Local<v8::Value> /*
     auto napaModule = library->Import<NapaModule>(napa::module::NAPA_MODULE_EXPORT);
 
     JS_ENSURE_WITH_RETURN(isolate,
-                          napaModule != nullptr,
-                          false,
-                          "Can't import napa module: \"%s\"", 
-                          path.c_str());
+        napaModule != nullptr,
+        false,
+        "Can't import napa module: \"%s\"",
+        path.c_str());
 
     JS_ENSURE_WITH_RETURN(isolate,
-                          napaModule->version == MODULE_VERSION,
-                          false,
-                          "Module version is not compatible: \"%s\"",
-                          path.c_str());
+        napaModule->version == MODULE_VERSION,
+        false,
+        "Module version is not compatible: \"%s\"",
+        path.c_str());
 
     _modules.push_back(library);
 

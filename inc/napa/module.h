@@ -36,9 +36,10 @@
 
 /// <summary> It binds a name with a property with V8 prototype function object. </summary>
 #define NAPA_SET_PROTOTYPE_PROPERTY(functionTemplate, name, value) \
-    functionTemplate->PrototypeTemplate()->Set(v8::Isolate::GetCurrent(), \
-                                               name, \
-                                               value)
+    functionTemplate->PrototypeTemplate()->Set(                    \
+        v8::Isolate::GetCurrent(),                                 \
+        name,                                                      \
+        value)
 
 /// <summary> It registers the module with the name and the initializer. </summary>
 #ifdef BUILDING_NAPA_EXTENSION
@@ -56,15 +57,17 @@
 
 /// <summary> It sets the accessors for the given V8 function template object. </summary>
 #define NAPA_SET_ACCESSOR(functionTemplate, name, getter, setter) \
-    functionTemplate->InstanceTemplate()->SetAccessor(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), name), \
-                                                      getter, \
-                                                      setter)
+    functionTemplate->InstanceTemplate()->SetAccessor(            \
+        v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), name), \
+        getter,                                                   \
+        setter)
 
 /// <summary> It sets the property for the given V8 function template object. </summary>
 #define NAPA_SET_PROPERTY(functionTemplate, name, value) \
-    functionTemplate->InstanceTemplate()->Set(v8::Isolate::GetCurrent(), \
-                                              name, \
-                                              value)
+    functionTemplate->InstanceTemplate()->Set(           \
+        v8::Isolate::GetCurrent(),                       \
+        name,                                            \
+        value)
 
 /// <summary> It declares the persistent constructor. </summary>
 /// <remarks> Napa registers constructor at local thread storage. </remarks>
@@ -90,7 +93,7 @@
 #define NAPA_DEFINE_TEMPLATE_PERSISTENT_CONSTRUCTOR(className)
 #else
 #define NAPA_DEFINE_TEMPLATE_PERSISTENT_CONSTRUCTOR(className) \
-    template <typename T> \
+    template <typename T>                                      \
     v8::Persistent<v8::Function> className<T>::_constructor;
 #endif
 
@@ -114,9 +117,10 @@
 #endif
 
 /// <summary> It exports a NAPA_OBJECTWRAP subclass to addon exports object. </summary>
-#define NAPA_EXPORT_OBJECTWRAP(exports, exportName, className) \
-    exports->Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), exportName), \
-                 NAPA_GET_PERSISTENT_CONSTRUCTOR(exportName, className))
+#define NAPA_EXPORT_OBJECTWRAP(exports, exportName, className)          \
+    exports->Set(                                                       \
+        v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), exportName), \
+        NAPA_GET_PERSISTENT_CONSTRUCTOR(exportName, className))
 
 // Depends on NAPA_GET_PERSISTENT_CONSTRUCTOR.
 #include "napa/module/common.h"

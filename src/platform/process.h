@@ -34,5 +34,5 @@ namespace platform {
     /// <param name="fd"> File descriptor. </param>
     int32_t Isatty(int32_t fd);
 
-}
-}
+} // namespace platform
+} // namespace napa

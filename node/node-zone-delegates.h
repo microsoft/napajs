@@ -13,5 +13,5 @@ namespace node_zone {
 
     /// <summary> Execute in Node zone. </summary>
     void Execute(const napa::FunctionSpec& spec, napa::ExecuteCallback callback);
-}
-}
+} // namespace node_zone
+} // namespace napa

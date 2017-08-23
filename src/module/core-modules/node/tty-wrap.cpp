@@ -17,7 +17,7 @@ namespace {
     /// <summary> Callback to guessHandleType(). </summary>
     void GuessHandleTypeCallback(const v8::FunctionCallbackInfo<v8::Value>&);
 
-}   // End of anonymous namespace.
+} // namespace
 
 void tty_wrap::Init(v8::Local<v8::Object> exports) {
     NAPA_SET_METHOD(exports, "isTTY", IsTTYCallback);
@@ -55,4 +55,4 @@ namespace {
         args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, "UNKNOWN"));
     }
 
-}   // End of anonymous namespace.
+} // namespace

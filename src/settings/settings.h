@@ -41,5 +41,5 @@ namespace settings {
         /// <summary> The maximum size that the isolate stack is allowed to grow in bytes. </summary>
         uint32_t maxStackSize = 500 * 1024;
     };
-}
-}
+} // namespace settings
+} // namespace napa

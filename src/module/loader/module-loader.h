@@ -15,15 +15,14 @@ namespace module {
     /// </summary>
     class ModuleLoader {
     public:
-
         /// <summary> It creates a module loader. One thread can have only one module loader. </summary>
         static void CreateModuleLoader();
 
-        /// <summary>
-        /// A helper macro to create a module loader instance at current thread.
-        /// This must be called before calling 'require'.
-        /// </summary>
-        #define CREATE_MODULE_LOADER napa::module::ModuleLoader::CreateModuleLoader
+/// <summary>
+/// A helper macro to create a module loader instance at current thread.
+/// This must be called before calling 'require'.
+/// </summary>
+#define CREATE_MODULE_LOADER napa::module::ModuleLoader::CreateModuleLoader
 
         /// <summary> Non-copyable and Non-movable. </summary>
         ModuleLoader(const ModuleLoader&) = delete;
@@ -32,7 +31,6 @@ namespace module {
         ModuleLoader& operator=(ModuleLoader&&) = delete;
 
     private:
-
         /// <summary> Constructor. </summary>
         ModuleLoader();
 
@@ -43,5 +41,5 @@ namespace module {
         std::unique_ptr<ModuleLoaderImpl> _impl;
     };
 
-}
-}
+} // namespace module
+} // namespace napa

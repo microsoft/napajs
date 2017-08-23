@@ -3,13 +3,14 @@
 
 #pragma once
 
-#include <v8.h>
 #include <utility>
+
+#include <v8.h>
 
 namespace napa {
 namespace v8_helpers {
     /// <summary> Uint32ptr size of multiple 32-bits. </summary>
-    static const uint32_t UINTPTR_SIZE_IN_UINT32 = static_cast<uint32_t>(sizeof(uintptr_t) / sizeof(uint32_t)); 
+    static const uint32_t UINTPTR_SIZE_IN_UINT32 = static_cast<uint32_t>(sizeof(uintptr_t) / sizeof(uint32_t));
 
     /// <summary> Convert a pointer value to V8 Uint32 array. </summary>
     /// <param name="isolate"> V8 Isolate instance. </summary>
@@ -43,8 +44,8 @@ namespace v8_helpers {
     inline std::pair<uintptr_t, bool> V8ValueToUintptr(v8::Isolate* isolate, const v8::Local<v8::Value>& source) {
         if (!source->IsArray()) {
             return std::make_pair(0, false);
-        } 
-        
+        }
+
         auto numberArray = v8::Local<v8::Array>::Cast(source);
         if (numberArray->Length() != UINTPTR_SIZE_IN_UINT32) {
             return std::make_pair(0, false);
@@ -71,5 +72,5 @@ namespace v8_helpers {
         auto result = V8ValueToUintptr(isolate, source);
         return std::make_pair(static_cast<T*>(reinterpret_cast<void*>(result.first)), result.second);
     }
-}
-}
+} // namespace v8_helpers
+} // namespace napa

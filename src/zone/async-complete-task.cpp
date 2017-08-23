@@ -7,7 +7,8 @@
 
 using namespace napa::zone;
 
-AsyncCompleteTask::AsyncCompleteTask(std::shared_ptr<AsyncContext> context) : _context(std::move(context)) {}
+AsyncCompleteTask::AsyncCompleteTask(std::shared_ptr<AsyncContext> context) :
+    _context(std::move(context)) {}
 
 void AsyncCompleteTask::Execute() {
     // If asyncWork is empty, don't need to wait for async result. It just posts a completion only.

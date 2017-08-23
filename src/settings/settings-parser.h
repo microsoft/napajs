@@ -40,8 +40,7 @@ namespace settings {
         std::vector<std::string> args;
         try {
             utils::string::Split(strCopy, args, "\t ", true);
-        }
-        catch (std::exception& ex) {
+        } catch (std::exception& ex) {
             std::cerr << "Failed to split input string [" << strCopy << "] error: " << ex.what() << std::endl;
             return false;
         }
@@ -68,5 +67,5 @@ namespace settings {
 
         return Parse(args, settings);
     }
-}
-}
+} // namespace settings
+} // namespace napa

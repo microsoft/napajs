@@ -116,7 +116,7 @@ namespace {
     /// <param name="args"> 2 strings represent from-path and to-path. </param>
     void RelativeCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-}   // End of anonymous namespace.
+} // namespace
 
 void path::Init(v8::Local<v8::Object> exports) {
     auto isolate = v8::Isolate::GetCurrent();
@@ -134,8 +134,8 @@ void path::Init(v8::Local<v8::Object> exports) {
     NAPA_SET_METHOD(exports, "relative", RelativeCallback);
 
     (void)exports->CreateDataProperty(context,
-                                      v8_helpers::MakeV8String(isolate, "sep"),
-                                      v8_helpers::MakeV8String(isolate, platform::DIR_SEPARATOR));
+        v8_helpers::MakeV8String(isolate, "sep"),
+        v8_helpers::MakeV8String(isolate, platform::DIR_SEPARATOR));
 }
 
 namespace {
@@ -145,9 +145,9 @@ namespace {
         v8::HandleScope scope(isolate);
 
         CHECK_ARG(isolate,
-            args.Length() == 1 && args[0]->IsString() ,
+            args.Length() == 1 && args[0]->IsString(),
             "path.normalize requires 1 string parameter of file path.");
-        
+
         v8::String::Utf8Value utf8Path(args[0]);
         auto path = filesystem::Path(*utf8Path).Normalize();
         args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, path.String()));
@@ -167,7 +167,7 @@ namespace {
             CHECK_ARG(isolate,
                 args[i]->IsString(),
                 "path.resolve doesn't accept non-string argument.");
-            
+
             v8::String::Utf8Value nextPath(args[i]);
             path /= *nextPath;
         }
@@ -189,7 +189,7 @@ namespace {
             CHECK_ARG(isolate,
                 args[i]->IsString(),
                 "path.join doesn't accept non-string argument.");
-            
+
             v8::String::Utf8Value nextPath(args[i]);
             path /= *nextPath;
         }
@@ -203,7 +203,7 @@ namespace {
         CHECK_ARG(isolate,
             args.Length() == 1 && args[0]->IsString(),
             "path.dirname requires 1 string parameter of file path.");
-        
+
         v8::String::Utf8Value utf8Path(args[0]);
         auto path = filesystem::Path(*utf8Path);
         args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, path.Dirname().String()));
@@ -216,16 +216,16 @@ namespace {
         CHECK_ARG(isolate,
             args.Length() == 1 || args.Length() == 2,
             "path.basename takes 1 required argument of file path and 1 optional argument of extension");
-        
+
         CHECK_ARG(isolate,
-            args[0]->IsString() ,
+            args[0]->IsString(),
             "path.basename requires a string parameter of file path.");
-        
+
         v8::String::Utf8Value utf8Path(args[0]);
         auto fileName = filesystem::Path(*utf8Path).Filename().String();
         if (args.Length() == 2) {
             CHECK_ARG(isolate,
-                args[1]->IsString() ,
+                args[1]->IsString(),
                 "path.basename requires a string as 2nd parameter of extension.");
 
             v8::String::Utf8Value extension(args[1]);
@@ -244,7 +244,7 @@ namespace {
         CHECK_ARG(isolate,
             args.Length() == 1 && args[0]->IsString(),
             "path.extname requires 1 string parameter of file path.");
-        
+
         v8::String::Utf8Value utf8Path(args[0]);
         auto path = filesystem::Path(*utf8Path);
         args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, path.Extension().String()));
@@ -255,9 +255,9 @@ namespace {
         v8::HandleScope scope(isolate);
 
         CHECK_ARG(isolate,
-            args.Length() == 1 && args[0]->IsString() ,
+            args.Length() == 1 && args[0]->IsString(),
             "path.isAbsolute requires 1 string parameter of file path.");
-        
+
         v8::String::Utf8Value utf8Path(args[0]);
         auto path = filesystem::Path(*utf8Path);
         args.GetReturnValue().Set(path.IsAbsolute());
@@ -278,4 +278,4 @@ namespace {
         args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, relativePath.String()));
     }
 
-}   // End of anonymous namespace.
+} // namespace

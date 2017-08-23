@@ -5,8 +5,8 @@
 
 #include "zone.h"
 
-#include "zone/scheduler.h"
 #include "settings/settings.h"
+#include "zone/scheduler.h"
 
 #include <memory>
 #include <string>
@@ -19,7 +19,6 @@ namespace zone {
     /// <summary> Concrete implementation of a Napa zone. </summary>
     class NapaZone : public Zone {
     public:
-
         /// <summary> Creates a new zone with the provided id and settings. </summary>
         static std::shared_ptr<NapaZone> Create(const settings::ZoneSettings& settings);
 
@@ -51,5 +50,5 @@ namespace zone {
         static std::mutex _mutex;
         static std::unordered_map<std::string, std::weak_ptr<NapaZone>> _zones;
     };
-}
-}
+} // namespace zone
+} // namespace napa

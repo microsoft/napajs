@@ -5,7 +5,8 @@
 
 using namespace napa::zone;
 
-SimpleThreadPool::Worker::Worker(SimpleThreadPool& pool) : _pool(pool) {}
+SimpleThreadPool::Worker::Worker(SimpleThreadPool& pool) :
+    _pool(pool) {}
 
 void SimpleThreadPool::Worker::operator()() {
     std::function<void()> task;
@@ -32,7 +33,9 @@ void SimpleThreadPool::Worker::operator()() {
     }
 }
 
-SimpleThreadPool::SimpleThreadPool(uint32_t numberOfWorkers) : _isStopped(false) {
+SimpleThreadPool::SimpleThreadPool(uint32_t numberOfWorkers) :
+    _isStopped(false) {
+
     _workers.reserve(numberOfWorkers);
 
     for (uint32_t i = 0; i < numberOfWorkers; ++i) {

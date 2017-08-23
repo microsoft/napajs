@@ -14,7 +14,7 @@
 using namespace napa::zone;
 using namespace napa::v8_helpers;
 
-napa::zone::CallTask::CallTask(std::shared_ptr<CallContext> context) : 
+napa::zone::CallTask::CallTask(std::shared_ptr<CallContext> context) :
     _context(std::move(context)) {
 }
 
@@ -31,15 +31,15 @@ void CallTask::Execute() {
 
     // Create task wrap.
     auto contextWrap = napa::module::CallContextWrap::NewInstance(_context);
-    v8::Local<v8::Value> argv[] = { contextWrap };
+    v8::Local<v8::Value> argv[] = {contextWrap};
 
     // Execute the function.
     v8::TryCatch tryCatch(isolate);
-    auto res = v8::Local<v8::Function>::Cast(executeFunction)->Call(
-        isolate->GetCurrentContext(),
-        context->Global(),
-        1,
-        argv);
+    auto res = v8::Local<v8::Function>::Cast(executeFunction)
+                   ->Call(isolate->GetCurrentContext(),
+                       context->Global(),
+                       1,
+                       argv);
 
     // Terminating an isolate may occur from a different thread, i.e. from timeout service.
     // If the function call already finished successfully when the isolate is terminated it may lead

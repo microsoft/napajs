@@ -12,7 +12,6 @@ namespace providers {
     /// <summary> A logging provider that does nothing. </summary>
     class NopLoggingProvider : public LoggingProvider {
     public:
-
         virtual void LogMessage(
             const char* section,
             Verboseness level,
@@ -28,8 +27,7 @@ namespace providers {
         virtual void Destroy() override {
             // Don't actually delete. We're a lifetime process object.
         }
-
     };
 
-}
-}
+} // namespace providers
+} // namespace napa

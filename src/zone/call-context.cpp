@@ -17,7 +17,7 @@
 
 using namespace napa::zone;
 
-CallContext::CallContext(const napa::FunctionSpec& spec, napa::ExecuteCallback callback) : 
+CallContext::CallContext(const napa::FunctionSpec& spec, napa::ExecuteCallback callback) :
     _module(NAPA_STRING_REF_TO_STD_STRING(spec.module)),
     _function(NAPA_STRING_REF_TO_STD_STRING(spec.function)),
     _callback(callback),
@@ -25,7 +25,7 @@ CallContext::CallContext(const napa::FunctionSpec& spec, napa::ExecuteCallback c
 
     // Audit start time.
     _startTime = std::chrono::high_resolution_clock::now();
-    
+
     _arguments.reserve(spec.arguments.size());
     for (auto& arg : spec.arguments) {
         _arguments.emplace_back(NAPA_STRING_REF_TO_STD_STRING(arg));
@@ -44,12 +44,10 @@ bool CallContext::Resolve(std::string marshalledResult) {
 
     NAPA_DEBUG("CallTask", "Call to \"%s.%s\" is resolved successfully.", _module.c_str(), _function.c_str());
 
-    _callback({ 
-        NAPA_RESULT_SUCCESS, 
-        "", 
+    _callback({NAPA_RESULT_SUCCESS,
+        "",
         std::move(marshalledResult),
-        std::move(_transportContext) 
-    });
+        std::move(_transportContext)});
     return true;
 }
 
@@ -61,7 +59,7 @@ bool CallContext::Reject(napa::ResultCode code, std::string reason) {
 
     NAPA_DEBUG("CallTask", "Call to \"%s.%s\" was rejected: %s.", _module.c_str(), _function.c_str(), reason.c_str());
 
-    _callback({ code, reason, "", std::move(_transportContext) });
+    _callback({code, reason, "", std::move(_transportContext)});
     return true;
 }
 

@@ -17,7 +17,6 @@ namespace module {
     /// <remarks> see napajs/lib/memory/shareable.ts </remarks>
     class ShareableWrap : public NAPA_OBJECTWRAP {
     public:
-
         /// <summary> It initialize constructor template of a sub-class of ShareableWrap. </summary>
         /// <param name="constructorTemplate"> Constructor template of wrap class. </param>
         /// <remarks> Should call this method in sub-class Init. </remarks>
@@ -85,13 +84,14 @@ namespace module {
         ShareableWrap() = default;
 
         /// <summary> Constructor. </summary>
-        explicit ShareableWrap(std::shared_ptr<void> object) : _object(std::move(object)) {}
+        explicit ShareableWrap(std::shared_ptr<void> object) :
+            _object(std::move(object)) {}
 
         /// <summary> Allow inheritance. </summary>
         virtual ~ShareableWrap() = default;
 
         /// <summary> It implements readonly Shareable.handle : Handle </summary>
-        static void GetHandleCallback(v8::Local<v8::String> /*propertyName*/, const v8::PropertyCallbackInfo<v8::Value>& args){
+        static void GetHandleCallback(v8::Local<v8::String> /*propertyName*/, const v8::PropertyCallbackInfo<v8::Value>& args) {
             auto isolate = v8::Isolate::GetCurrent();
             v8::HandleScope scope(isolate);
             auto thisObject = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(args.Holder());
@@ -99,7 +99,7 @@ namespace module {
         }
 
         /// <summary> It implements Shareable.refCount(): boolean </summary>
-        static void RefCountCallback(v8::Local<v8::String> /*propertyName*/, const v8::PropertyCallbackInfo<v8::Value>& args){
+        static void RefCountCallback(v8::Local<v8::String> /*propertyName*/, const v8::PropertyCallbackInfo<v8::Value>& args) {
             auto isolate = v8::Isolate::GetCurrent();
             v8::HandleScope scope(isolate);
             auto thisObject = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(args.Holder());
@@ -126,13 +126,13 @@ namespace module {
 
             auto payload = v8::Local<v8::Object>::Cast(args[0]);
             auto numberArray = payload->Get(v8_helpers::MakeV8String(isolate, "handle"));
-            
+
             auto result = v8_helpers::V8ValueToUintptr(isolate, numberArray);
             JS_ENSURE(isolate, result.second, "Unable to cast \"handle\" to pointer. Please check if it's in valid handle format.");
-            
+
             auto transportContextWrap = NAPA_OBJECTWRAP::Unwrap<TransportContextWrap>(v8::Local<v8::Object>::Cast(args[1]));
             JS_ENSURE(isolate, transportContextWrap != nullptr, "Argument \"transportContext\" should be 'TransportContextWrap' type.");
-    
+
             // Load object from transport context.
             auto thisObject = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(args.Holder());
             thisObject->_object = transportContextWrap->Get()->LoadShared<void>(result.first);
@@ -143,7 +143,7 @@ namespace module {
             auto isolate = v8::Isolate::GetCurrent();
             v8::HandleScope scope(isolate);
             auto context = isolate->GetCurrentContext();
-            
+
             CHECK_ARG(isolate, args.Length() == 2, "2 arguments are required for \"save\".");
             CHECK_ARG(isolate, args[0]->IsObject(), "Argument \"payload\" should be 'Object' type.");
             CHECK_ARG(isolate, args[1]->IsObject(), "Argument \"transportContext\" should be 'TransportContextWrap' type.");
@@ -165,5 +165,5 @@ namespace module {
         /// <summary> Shared object. </summary>
         std::shared_ptr<void> _object;
     };
-}
-}
+} // namespace module
+} // namespace napa

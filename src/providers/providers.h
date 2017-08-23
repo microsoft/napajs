@@ -17,5 +17,5 @@ namespace providers {
 
     /// <summary> Clean up and destroy all loaded providers. </summary>
     void Shutdown();
-}
-}
+} // namespace providers
+} // namespace napa

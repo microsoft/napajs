@@ -14,7 +14,7 @@ void AllocatorWrap::Init() {
     constructorTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 
     InitConstructorTemplate<AllocatorWrap>(constructorTemplate);
-    
+
     NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "allocate", AllocateCallback);
     NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "deallocate", DeallocateCallback);
     NAPA_SET_ACCESSOR(constructorTemplate, "type", GetTypeCallback, nullptr);
@@ -50,22 +50,22 @@ void AllocatorWrap::DeallocateCallback(const v8::FunctionCallbackInfo<v8::Value>
     CHECK_ARG(isolate, args.Length() == 2, "2 arguments is required for \"deallocate\".");
     auto result = v8_helpers::V8ValueToUintptr(isolate, args[0]);
     JS_ENSURE(isolate, result.second, "Unable to cast \"handle\" to pointer. Please check if it's in valid handle format.");
-    
+
     CHECK_ARG(isolate, args[1]->IsUint32(), "Argument \"sizeHint\" must be a 32-bit unsigned integer.");
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<AllocatorWrap>(args.Holder());
     auto allocator = thisObject->Get();
     JS_ENSURE(isolate, allocator != nullptr, "AllocatorWrap is not attached with any C++ allocator.");
-    
+
     allocator->Deallocate(reinterpret_cast<void*>(result.first), args[1]->Uint32Value());
 }
 
-void AllocatorWrap::GetTypeCallback(v8::Local<v8::String> /*propertyName*/, const v8::PropertyCallbackInfo<v8::Value>& args){
+void AllocatorWrap::GetTypeCallback(v8::Local<v8::String> /*propertyName*/, const v8::PropertyCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<AllocatorWrap>(args.Holder());
     auto allocator = thisObject->Get();
     args.GetReturnValue().Set(
         v8_helpers::MakeV8String(
-            isolate, 
+            isolate,
             allocator != nullptr ? allocator->GetType() : "<unloaded>"));
 }

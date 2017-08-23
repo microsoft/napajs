@@ -3,8 +3,8 @@
 
 #pragma once
 
+#include <exception>
 #include <iostream>
-#include <exception> 
 
 #include <stdarg.h>
 
@@ -21,15 +21,16 @@ inline void OutputAssertMessage(const char* condition, const char* file, int lin
 
     if (size >= 0) {
         std::cerr << "Assertion failed: `" << condition << "`, file " << file << ", line " << line
-            << " : " << message << "." << std::endl;
+                  << " : " << message << "." << std::endl;
     }
 }
 
-#define NAPA_ASSERT(condition, format, ...) do {                                    \
-    if (!(condition)) {                                                             \
-        OutputAssertMessage(#condition, __FILE__, __LINE__, format, ##__VA_ARGS__); \
-        std::terminate();                                                           \
-    }                                                                               \
-} while (false)
+#define NAPA_ASSERT(condition, format, ...)                                             \
+    do {                                                                                \
+        if (!(condition)) {                                                             \
+            OutputAssertMessage(#condition, __FILE__, __LINE__, format, ##__VA_ARGS__); \
+            std::terminate();                                                           \
+        }                                                                               \
+    } while (false)
 
 #define NAPA_FAIL(message) NAPA_ASSERT(false, message)

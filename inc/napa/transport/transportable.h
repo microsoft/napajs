@@ -32,7 +32,7 @@ namespace transport {
         }
 
         /// <summary> It implements Transportable.cid() : string </summary>
-        static void GetCidCallback(const v8::FunctionCallbackInfo<v8::Value>& args){
+        static void GetCidCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
             auto isolate = v8::Isolate::GetCurrent();
             v8::HandleScope scope(isolate);
             auto prototype = v8::Local<v8::Object>::Cast(args.Holder()->GetPrototype());
@@ -63,21 +63,21 @@ namespace transport {
             // Save property "_cid".
             auto payload = v8::Object::New(isolate);
             payload->CreateDataProperty(
-                context, 
-                v8_helpers::MakeV8String(isolate, "_cid"), 
+                context,
+                v8_helpers::MakeV8String(isolate, "_cid"),
                 cid);
-            
+
             // Delegate to sub-class to save its members.
             auto saveMethod = v8::Local<v8::Function>::Cast(
                 holder->Get(v8_helpers::MakeV8String(isolate, "save")));
-            JS_ENSURE(isolate, 
-                !saveMethod.IsEmpty(), 
+            JS_ENSURE(isolate,
+                !saveMethod.IsEmpty(),
                 "\"save\" method doesn't exist.");
-            
+
             constexpr int argc = 2;
             v8::Local<v8::Value> argv[argc] = {payload, args[0]};
             saveMethod->Call(
-                context, 
+                context,
                 holder,
                 argc,
                 argv);
@@ -98,15 +98,15 @@ namespace transport {
             // Delegate to sub-class to load its members.
             auto loadMethod = v8::Local<v8::Function>::Cast(holder->Get(v8_helpers::MakeV8String(isolate, "load")));
             JS_ENSURE(isolate, !loadMethod.IsEmpty(), "\"load\" method doesn't exist.");
-           
+
             constexpr int argc = 2;
             v8::Local<v8::Value> argv[argc] = {args[0], args[1]};
             loadMethod->Call(
-                context, 
+                context,
                 holder,
                 argc,
                 argv);
         }
     };
-}
-}
+} // namespace transport
+} // namespace napa

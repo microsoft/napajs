@@ -24,8 +24,8 @@ namespace zone {
         /// <summary> Set delegate function for Broadcast and Execute on node zone. This is intended to be called from napa-binding.node. </summary>
         static NAPA_API void Init(BroadcastDelegate broadcast, ExecuteDelegate execute);
 
-        /// <summary> 
-        ///    Retrieves an existing zone. 
+        /// <summary>
+        ///    Retrieves an existing zone.
         ///    If Node is not applicable (like in embed mode), a nullptr will be returned.
         /// </summary>
         static std::shared_ptr<NodeZone> Get();
@@ -55,5 +55,5 @@ namespace zone {
         /// <summary> Node zone instance. </summary>
         static std::shared_ptr<NodeZone> _instance;
     };
-}
-}
+} // namespace zone
+} // namespace napa

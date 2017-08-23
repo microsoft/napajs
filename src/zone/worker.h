@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "task.h"
 #include "settings/settings.h"
+#include "task.h"
 
 #include <functional>
 #include <memory>
@@ -19,16 +19,15 @@ namespace zone {
     /// <summary> Represents an execution unit (a worker) for running tasks. </summary>
     class Worker {
     public:
-
         /// <summary> Constructor. </summary>
         /// <param name="id"> The task id. </param>
         /// <param name="settings"> A settings object. </param>
         /// <param name="setupCallback"> Callback to setup the isolate after worker created its isolate. </param>
         /// <param name="idleNotificationCallback"> Triggers when the worker becomes idle. </param>
         Worker(WorkerId id,
-               const settings::ZoneSettings &settings,
-               std::function<void(WorkerId)> setupCallback,
-               std::function<void(WorkerId)> idleNotificationCallback);
+            const settings::ZoneSettings& settings,
+            std::function<void(WorkerId)> setupCallback,
+            std::function<void(WorkerId)> idleNotificationCallback);
 
         /// <summary> Destructor. </summary>
         /// <note> This will block until all pending tasks are completed. </note>
@@ -48,7 +47,6 @@ namespace zone {
         void Schedule(std::shared_ptr<Task> task);
 
     private:
-
         /// <summary> The worker thread logic. </summary>
         void WorkerThreadFunc(const settings::ZoneSettings& settings);
 
@@ -58,5 +56,5 @@ namespace zone {
         struct Impl;
         std::unique_ptr<Impl> _impl;
     };
-}
-}
+} // namespace zone
+} // namespace napa

@@ -1,12 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-#include <napa/memory.h>
 #include <napa/capi.h>
+#include <napa/memory.h>
+
 #include <cstring>
 
 /// <summary> C runtime allocator from napa.dll. </summary>
-class CrtAllocator: public napa::memory::Allocator {
+class CrtAllocator : public napa::memory::Allocator {
 public:
     /// <summary> Allocate memory of given size. </summary>
     /// <param name="size"> Requested size. </summary>
@@ -35,7 +36,7 @@ public:
 };
 
 /// <summary> Allocator that uses napa_allocate and napa_deallocate. </summary>
-class DefaultAllocator: public napa::memory::Allocator {
+class DefaultAllocator : public napa::memory::Allocator {
 public:
     /// <summary> Allocate memory of given size. </summary>
     /// <param name="size"> Requested size. </summary>
@@ -70,7 +71,7 @@ namespace memory {
         // Never destory to ensure they live longer than all consumers.
         auto _crtAllocator = new CrtAllocator();
         auto _defaultAllocator = new DefaultAllocator();
-    }
+    } // namespace
 
     Allocator& GetCrtAllocator() {
         return *_crtAllocator;

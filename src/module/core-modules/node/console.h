@@ -15,6 +15,6 @@ namespace console {
     /// <param name="exports"> Object to set module. </param>
     void Init(v8::Local<v8::Object> exports);
 
-}   // End of namespace console
-}   // End of namespace module
-}   // End of namespace napa
+} // namespace console
+} // namespace module
+} // namespace napa

@@ -27,5 +27,5 @@ namespace dll {
 
     /// <summary> Returns the path of the dll including this line of code. </summary>
     std::string ThisLineLocation();
-}
-}
+} // namespace dll
+} // namespace napa

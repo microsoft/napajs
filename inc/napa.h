@@ -12,9 +12,9 @@
 #include <napa/assert.h>
 #include <napa/async.h>
 #include <napa/exports.h>
+#include <napa/log.h>
 #include <napa/memory.h>
 #include <napa/module.h>
-#include <napa/log.h>
 #include <napa/transport.h>
 #include <napa/types.h>
 #include <napa/v8-helpers.h>

@@ -33,5 +33,5 @@ namespace zone {
     private:
         Index _index;
     };
-}
-}
+} // namespace zone
+} // namespace napa

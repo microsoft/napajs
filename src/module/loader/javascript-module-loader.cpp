@@ -10,8 +10,8 @@
 using namespace napa;
 using namespace napa::module;
 
-JavascriptModuleLoader::JavascriptModuleLoader(BuiltInModulesSetter builtInModulesSetter, ModuleCache& moduleCache)
-    : _builtInModulesSetter(std::move(builtInModulesSetter)) , _moduleCache(moduleCache) {}
+JavascriptModuleLoader::JavascriptModuleLoader(BuiltInModulesSetter builtInModulesSetter, ModuleCache& moduleCache) :
+    _builtInModulesSetter(std::move(builtInModulesSetter)), _moduleCache(moduleCache) {}
 
 bool JavascriptModuleLoader::TryGet(const std::string& path, v8::Local<v8::Value> arg, v8::Local<v8::Object>& module) {
     auto isolate = v8::Isolate::GetCurrent();

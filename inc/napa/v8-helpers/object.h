@@ -4,8 +4,9 @@
 #pragma once
 
 #include <napa/v8-helpers/string.h>
-#include <v8.h>
 #include <unordered_map>
+
+#include <v8.h>
 
 namespace napa {
 namespace v8_helpers {
@@ -33,5 +34,5 @@ namespace v8_helpers {
         }
         return res;
     }
-}
-}
+} // namespace v8_helpers
+} // namespace napa

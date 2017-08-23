@@ -4,6 +4,7 @@
 #pragma once
 
 #include <napa/exports.h>
+
 #include <cstddef>
 
 namespace napa {
@@ -38,5 +39,5 @@ namespace memory {
 
     /// <summary> Get a long living default allocator for convenience. User can create their own as well.</summary>
     NAPA_API Allocator& GetDefaultAllocator();
-}
-}
+} // namespace memory
+} // namespace napa

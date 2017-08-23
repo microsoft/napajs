@@ -5,15 +5,15 @@
 
 #include "allocator-wrap.h"
 
-#include <napa/module.h>
 #include <napa/memory/allocator-debugger.h>
+#include <napa/module.h>
 
 namespace napa {
 namespace module {
-    
+
     /// <summary> It wraps napa::memory::AllocatorDebugger. </summary>
     /// <remarks> Reference: napajs/lib/memory/allocator.ts#AllocatorDebugger </remarks>
-    class AllocatorDebuggerWrap: public AllocatorWrap {
+    class AllocatorDebuggerWrap : public AllocatorWrap {
     public:
         /// <summary> Init this wrap. </summary>
         static void Init();
@@ -38,5 +38,5 @@ namespace module {
         /// <summary> It implements AllocatorDebugger.debugInfo </summary>
         static void GetDebugInfoCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
     };
-}
-}
+} // namespace module
+} // namespace napa

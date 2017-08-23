@@ -21,8 +21,10 @@ struct ConstructorInfo {
 /// <summary> It sets the persistent constructor at the current V8 isolate. </summary>
 /// <param name="name"> Unique constructor name. It's recommended to use the same name as module. </param>
 /// <param name="constructor"> V8 persistent function to constructor V8 object. </param>
-void napa::module::SetPersistentConstructor(const char* name,
-                                     v8::Local<v8::Function> constructor) {
+void napa::module::SetPersistentConstructor(
+    const char* name,
+    v8::Local<v8::Function> constructor) {
+
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
@@ -34,8 +36,8 @@ void napa::module::SetPersistentConstructor(const char* name,
     }
 
     constructorInfo->constructorMap.emplace(std::piecewise_construct,
-                                            std::forward_as_tuple(name),
-                                            std::forward_as_tuple(isolate, constructor));
+        std::forward_as_tuple(name),
+        std::forward_as_tuple(isolate, constructor));
 }
 
 /// <summary> It gets the given persistent constructor from the current V8 isolate. </summary>

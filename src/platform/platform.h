@@ -43,5 +43,5 @@ namespace platform {
 #else
     constexpr const char* PLATFORM = "unknown";
 #endif
-}   // End of namespce platform.
-}   // End of namespce napa.
+} // namespace platform
+} // namespace napa

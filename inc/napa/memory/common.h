@@ -6,6 +6,7 @@
 #include <napa/capi.h>
 #include <napa/memory/allocator.h>
 #include <napa/stl/allocator.h>
+
 #include <memory>
 #include <type_traits>
 
@@ -35,7 +36,7 @@ namespace memory {
     template <typename T, typename Alloc, typename... Args>
     std::shared_ptr<T> AllocateShared(Alloc& allocator, Args&&... args) {
         return std::allocate_shared<T>(
-            napa::stl::Allocator<T>(allocator), 
+            napa::stl::Allocator<T>(allocator),
             std::forward<Args>(args)...);
     }
 
@@ -43,8 +44,8 @@ namespace memory {
     template <typename T, typename... Args>
     std::shared_ptr<T> MakeShared(Args&&... args) {
         return AllocateShared<T>(
-            GetDefaultAllocator(), 
+            GetDefaultAllocator(),
             std::forward<Args>(args)...);
     }
-}
-}
+} // namespace memory
+} // namespace napa

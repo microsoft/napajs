@@ -36,12 +36,12 @@ napa_zone_handle napa_zone_create(napa_string_ref id) {
     NAPA_ASSERT(_initialized, "Napa wasn't initialized");
 
     // The actual zone is created upon initialization.
-    return new napa_zone { NAPA_STRING_REF_TO_STD_STRING(id), nullptr };
+    return new napa_zone{NAPA_STRING_REF_TO_STD_STRING(id), nullptr};
 }
 
 napa_zone_handle napa_zone_get(napa_string_ref id) {
     NAPA_ASSERT(_initialized, "Napa wasn't initialized");
-    
+
     auto zoneId = NAPA_STRING_REF_TO_STD_STRING(id);
     std::shared_ptr<zone::Zone> zone;
     if (zoneId == "node") {
@@ -54,7 +54,7 @@ napa_zone_handle napa_zone_get(napa_string_ref id) {
         return nullptr;
     }
 
-    return new napa_zone { std::move(zoneId), std::move(zone) };
+    return new napa_zone{std::move(zoneId), std::move(zone)};
 }
 
 napa_zone_handle napa_zone_get_current() {
@@ -106,14 +106,14 @@ napa_result_code napa_zone_release(napa_zone_handle handle) {
 napa_string_ref napa_zone_get_id(napa_zone_handle handle) {
     NAPA_ASSERT(_initialized, "Napa platform wasn't initialized");
     NAPA_ASSERT(handle, "Zone handle is null");
-    
+
     return STD_STRING_TO_NAPA_STRING_REF(handle->id);
 }
 
 void napa_zone_broadcast(napa_zone_handle handle,
-                         napa_string_ref source,
-                         napa_zone_broadcast_callback callback,
-                         void* context) {
+    napa_string_ref source,
+    napa_zone_broadcast_callback callback,
+    void* context) {
     NAPA_ASSERT(_initialized, "Napa platform wasn't initialized");
     NAPA_ASSERT(handle, "Zone handle is null");
     NAPA_ASSERT(handle->zone, "Zone handle wasn't initialized");
@@ -124,9 +124,9 @@ void napa_zone_broadcast(napa_zone_handle handle,
 }
 
 void napa_zone_execute(napa_zone_handle handle,
-                       napa_zone_function_spec spec,
-                       napa_zone_execute_callback callback,
-                       void* context) {
+    napa_zone_function_spec spec,
+    napa_zone_execute_callback callback,
+    void* context) {
     NAPA_ASSERT(_initialized, "Napa platform wasn't initialized");
     NAPA_ASSERT(handle, "Zone handle is null");
     NAPA_ASSERT(handle->zone, "Zone handle wasn't initialized");
@@ -134,14 +134,14 @@ void napa_zone_execute(napa_zone_handle handle,
     FunctionSpec req;
     req.module = spec.module;
     req.function = spec.function;
-    
+
     req.arguments.reserve(spec.arguments_count);
     for (size_t i = 0; i < spec.arguments_count; i++) {
         req.arguments.emplace_back(spec.arguments[i]);
     }
 
     req.options = spec.options;
-    
+
     // Assume ownership of transport context
     req.transportContext.reset(reinterpret_cast<napa::transport::TransportContext*>(spec.transport_context));
 
@@ -150,7 +150,7 @@ void napa_zone_execute(napa_zone_handle handle,
         res.code = result.code;
         res.error_message = STD_STRING_TO_NAPA_STRING_REF(result.errorMessage);
         res.return_value = STD_STRING_TO_NAPA_STRING_REF(result.returnValue);
-        
+
         // Release ownership of transport context
         res.transport_context = reinterpret_cast<void*>(result.transportContext.release());
 
@@ -214,8 +214,10 @@ static const char* NAPA_REPONSE_CODE_STRINGS[] = {
 
 #undef NAPA_RESULT_CODE_DEF
 
-template<class T, size_t N>
-constexpr size_t size(T(&)[N]) { return N; }
+template <class T, size_t N>
+constexpr size_t size(T (&)[N]) {
+    return N;
+}
 
 const char* napa_result_code_to_string(napa_result_code code) {
     NAPA_ASSERT(code < size(NAPA_REPONSE_CODE_STRINGS), "result code out of range");
@@ -236,14 +238,14 @@ void napa_free(void* pointer, size_t /*size_hint*/) {
 }
 
 namespace {
-    napa_allocate_callback _global_allocate = napa_malloc;
-    napa_deallocate_callback _global_deallocate = napa_free;
+napa_allocate_callback _global_allocate = napa_malloc;
+napa_deallocate_callback _global_deallocate = napa_free;
 } // namespace
 
 void napa_allocator_set(
-    napa_allocate_callback allocate_callback, 
+    napa_allocate_callback allocate_callback,
     napa_deallocate_callback deallocate_callback) {
-    
+
     NAPA_ASSERT(allocate_callback != nullptr, "'allocate_callback' should be a valid function.");
     NAPA_ASSERT(deallocate_callback != nullptr, "'deallocate_callback' should be a valid function.");
 

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include <napa/v8-helpers/string.h>
 #include <napa/stl/string.h>
+#include <napa/v8-helpers/string.h>
 #include <utility>
 
 namespace napa {
@@ -34,5 +34,5 @@ namespace v8_helpers {
     inline Utf8String V8ValueTo(const v8::Local<v8::Value>& value) {
         return Utf8String(value);
     }
-}
-}
+} // namespace v8_helpers
+} // namespace napa

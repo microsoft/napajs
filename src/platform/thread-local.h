@@ -107,5 +107,5 @@ namespace tls {
         DWORD _key;
 #endif
     };
-}
-}
+} // namespace tls
+} // namespace napa

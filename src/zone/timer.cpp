@@ -82,8 +82,7 @@ bool TimersScheduler::StartMainLoop() {
                         // The callback is assumed to be very fast as it is meant to dispatch to appropriate
                         // callback queues.
                         timers[topTimer.index].callback();
-                    }
-                    catch (const std::exception &ex) {
+                    } catch (const std::exception& ex) {
                         LOG_ERROR("Timers", "Timer callback threw an exception. %s", ex.what());
                     }
 
@@ -93,8 +92,7 @@ bool TimersScheduler::StartMainLoop() {
 
                 // Timer expired, so it's no longer active.
                 activeTimers.pop();
-            }
-            else {
+            } else {
                 // Wait for timer expiration.
                 cv.wait_until(lock, topTimer.expirationTime, [&topTimer]() {
                     return topTimer.expirationTime <= std::chrono::high_resolution_clock::now();
@@ -115,15 +113,14 @@ Timer::Timer(Callback callback, std::chrono::milliseconds timeout) {
 
     std::lock_guard<std::mutex> lock(_timersScheduler.mutex);
 
-    TimerInfo timerInfo{ false, timeout, callback };
+    TimerInfo timerInfo{false, timeout, callback};
 
     if (!_timersScheduler.freeSlots.empty()) {
         _index = _timersScheduler.freeSlots.top();
         _timersScheduler.freeSlots.pop();
 
         _timersScheduler.timers[_index] = std::move(timerInfo);
-    }
-    else {
+    } else {
         _index = static_cast<Timer::Index>(_timersScheduler.timers.size());
         _timersScheduler.timers.emplace_back(timerInfo);
     }
@@ -141,11 +138,11 @@ Timer::~Timer() {
 void Timer::Start() {
     {
         std::lock_guard<std::mutex> lock(_timersScheduler.mutex);
-        
+
         auto& timerInfo = _timersScheduler.timers[_index];
         timerInfo.active = true;
 
-        ActiveTimerEntry entry = { _index, std::chrono::high_resolution_clock::now() + timerInfo.timeout };
+        ActiveTimerEntry entry = {_index, std::chrono::high_resolution_clock::now() + timerInfo.timeout};
         _timersScheduler.activeTimers.emplace(std::move(entry));
     }
 

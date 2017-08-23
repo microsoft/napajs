@@ -24,5 +24,5 @@ namespace v8_helpers {
         }
         return v8::Local<T>::Cast(handle.ToLocalChecked());
     }
-}
-}
+} // namespace v8_helpers
+} // namespace napa
