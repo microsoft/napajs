@@ -5,7 +5,7 @@ let path = require('path');
 
 Object.defineProperty(exports, 'lib', {
     get: function() {
-        let libPath = path.resolve(__dirname, '../inc/' + getLibraryName('napa'));
+        let libPath = path.resolve(__dirname, '../bin/' + getLibraryName('napa'));
         // Output the path to stdout for cmake/gyp commands.
         process.stdout.write(libPath);
         return libPath;
