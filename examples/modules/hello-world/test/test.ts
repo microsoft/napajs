@@ -2,9 +2,7 @@
 // Licensed under the MIT license.
 
 let assert = require('assert');
-import * as path from "path";
-let helloWorldDir: string = path.resolve(__dirname, '..');
-let helloWorld = require(helloWorldDir);
+let helloWorld = require('..');
 let napa = require('napajs');
 let zone = napa.zone.create('zone');
 
@@ -17,11 +15,11 @@ describe('Test suite for hello-word', function() {
     });
 
     it('prints the string "world" in napa zone', function() {
-        return zone.execute((helloWorldDir: string) => {
-            let helloWorld = require(helloWorldDir);
+        return zone.execute(() => {
+            let helloWorld = require('..');
             let result: string = helloWorld.hello();
             return result;
-        }, [helloWorldDir]).then((result : any) => {
+        }, []).then((result : any) => {
             assert.equal(result.value, 'world');
         });
     });

@@ -1,23 +1,7 @@
 {
   "variables": {
-    "napajs_root": "<!(node -e \" \
-      var path = require('path'); \
-      process.stdout.write(path.resolve(path.dirname(require.resolve('napajs')), '..')); \
-    \")",
-    'conditions': [
-      ['OS=="win"', {
-        "library_prefix": "",
-        "library_suffix": ".lib"
-      }],
-      ['OS=="linux"', {
-        "library_prefix": "lib",
-        "library_suffix": ".dylib"
-      }],
-      ['OS=="max"', {
-        "library_prefix": "lib",
-        "library_suffix": ".so"
-      }]
-    ]
+    "napajs_lib": "<!(node -e \"require('napajs/build').paths.lib\")",
+    "napajs_inc": "<!(node -e \"require('napajs/build').paths.inc\")"
   },
   "targets": [
     {
@@ -30,7 +14,7 @@
         "NAPA_BINDING_EXPORTS",
         "BUILDING_NODE_EXTENSION"
       ],
-      "include_dirs": ["<(napajs_root)/inc"]
+      "include_dirs": ["<(napajs_inc)"]
     },
     {
       "target_name": "addon.napa",
@@ -43,9 +27,9 @@
         "NAPA_BINDING_EXPORTS",
         "BUILDING_NAPA_EXTENSION"
       ],
-      "include_dirs": ["<(napajs_root)/inc"],
+      "include_dirs": ["<(napajs_inc)"],
       "link_settings": {
-        "libraries": ["<(napajs_root)/bin/<(library_prefix)napa<(library_suffix)"]
+        "libraries": ["<(napajs_lib)"]
       }
     }
   ]

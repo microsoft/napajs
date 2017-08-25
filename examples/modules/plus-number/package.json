@@ -14,7 +14,7 @@
     "markdown-table": "1.1.0"
   },
   "dependencies": {
-    "napajs": ">= 0.1.0"
+    "napajs": ">= 0.1.2"
   },
   "scripts": {
     "install": "cmake-js compile",

@@ -19,26 +19,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN)
 
-# Prefix an suffix of Library name for different OS.
-if (WIN32)
-    set(LIBRARY_PREFIX "")
-    set(LIBRARY_SUFFIX ".lib")
-elseif (APPLE)
-    set(LIBRARY_PREFIX "lib")
-    set(LIBRARY_SUFFIX ".dylib")
-else()
-    set(LIBRARY_PREFIX "lib")
-    set(LIBRARY_SUFFIX ".so")
-endif()
-
-execute_process(COMMAND node -e
-    "var path = require('path'); process.stdout.write(path.resolve(path.dirname(require.resolve('napajs')), '..'));"
-    RESULT_VARIABLE ERR
-    OUTPUT_VARIABLE NAPAJS_ROOT)
-if(ERR)
-    message(FATAL_ERROR "Failed to get NAPAJS_ROOT")
-endif(ERR)
-
 file(GLOB LIBRARY-FILES "../bin/*plus-number.*")
 file(COPY ${LIBRARY-FILES} DESTINATION ${PROJECT_SOURCE_DIR}/bin/)
 
@@ -57,4 +37,4 @@ target_include_directories(${TARGET_NAME} PRIVATE ../inc)
 
 # Link libraries
 target_link_libraries(${TARGET_NAME} PRIVATE
-    ${PROJECT_SOURCE_DIR}/bin/${LIBRARY_PREFIX}plus-number${LIBRARY_SUFFIX})
+    ${PROJECT_SOURCE_DIR}/bin/${CMAKE_STATIC_LIBRARY_PREFIX}plus-number${CMAKE_STATIC_LIBRARY_SUFFIX})

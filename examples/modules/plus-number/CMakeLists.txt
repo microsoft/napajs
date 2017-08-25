@@ -19,24 +19,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN)
 
-# Prefix an suffix of Library name for different OS.
-if (WIN32)
-    set(LIBRARY_PREFIX "")
-    set(LIBRARY_SUFFIX ".lib")
-elseif (APPLE)
-    set(LIBRARY_PREFIX "lib")
-    set(LIBRARY_SUFFIX ".dylib")
-else()
-    set(LIBRARY_PREFIX "lib")
-    set(LIBRARY_SUFFIX ".so")
-endif()
-
-execute_process(COMMAND node -e
-    "var path = require('path'); process.stdout.write(path.resolve(path.dirname(require.resolve('napajs')), '..'));"
-    RESULT_VARIABLE ERR
-    OUTPUT_VARIABLE NAPAJS_ROOT)
+execute_process(COMMAND node -e "require('napajs/build').paths.inc" RESULT_VARIABLE ERR OUTPUT_VARIABLE NAPAJS_INC)
 if(ERR)
-    message(FATAL_ERROR "Failed to get NAPAJS_ROOT")
+    message(FATAL_ERROR "Failed to get NAPAJS_INC")
+endif(ERR)
+
+execute_process(COMMAND node -e "require('napajs/build').paths.lib" RESULT_VARIABLE ERR OUTPUT_VARIABLE NAPAJS_LIB)
+if(ERR)
+    message(FATAL_ERROR "Failed to get NAPAJS_LIB")
 endif(ERR)
 
 #######################################################################################
@@ -65,7 +55,7 @@ set_target_properties(${NAPA_ADDON_TARGET_NAME} PROPERTIES PREFIX "" SUFFIX "")
 target_include_directories(${NAPA_ADDON_TARGET_NAME} PRIVATE
     inc
     ${CMAKE_JS_INC}
-    ${NAPAJS_ROOT}/inc)
+    ${NAPAJS_INC})
 
 # Compiler definitions
 target_compile_definitions(${NAPA_ADDON_TARGET_NAME} PRIVATE
@@ -77,7 +67,7 @@ target_compile_definitions(${NAPA_ADDON_TARGET_NAME} PRIVATE
 target_link_libraries(${NAPA_ADDON_TARGET_NAME} PRIVATE
     plus-number
     ${CMAKE_JS_LIB}
-    ${NAPAJS_ROOT}/bin/${LIBRARY_PREFIX}napa${LIBRARY_SUFFIX})
+    ${NAPAJS_LIB})
 
 #######################################################################################
 if (CMAKE_JS_VERSION)
@@ -93,7 +83,7 @@ if (CMAKE_JS_VERSION)
     target_include_directories(${NODE_ADDON_TARGET_NAME} PRIVATE
         inc
         ${CMAKE_JS_INC}
-        ${NAPAJS_ROOT}/inc)
+        ${NAPAJS_INC})
 
     # Compiler definitions
     target_compile_definitions(${NODE_ADDON_TARGET_NAME} PRIVATE

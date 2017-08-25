@@ -2,9 +2,7 @@
 // Licensed under the MIT license.
 
 let assert = require('assert');
-import * as path from "path";
-let plusNumberDir: string = path.resolve(__dirname, '..');
-let plusNumber = require(plusNumberDir);
+let plusNumber = require('..');
 let napa = require('napajs');
 let zone = napa.zone.create('zone');
 
@@ -28,24 +26,24 @@ describe('Test suite for plus-number', function() {
     });
 
     it('adds a given value in napa zone', function() {
-        return zone.execute((plusNumberDir: string) => {
-            let plusNumber = require(plusNumberDir);
+        return zone.execute(() => {
+            let plusNumber = require('..');
             let po = plusNumber.createPlusNumber(3);
             let result: number = po.add(4);
             return result;
-        }, [plusNumberDir])
+        }, [])
         .then((result: any) => {
             assert.equal(result.value, 7);
         });
     });
 
     it('adds a given value in node zone', function() {
-        return napa.zone.node.execute((plusNumberDir: string) => {
-            let plusNumber = require(plusNumberDir);
+        return napa.zone.node.execute(() => {
+            let plusNumber = require('..');
             let po = plusNumber.createPlusNumber(3);
             let result: number = po.add(4);
             return result;
-        }, [plusNumberDir])
+        }, [])
         .then((result: any) => {
             assert.equal(result.value, 7);
         });
