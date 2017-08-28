@@ -4,7 +4,7 @@
 
 set NODE_EXE=%~dp0\node.exe
 if not exist "%NODE_EXE%" (
-  SET NODE_EXE=node
+  set NODE_EXE=node
 )
 
-%NODE_EXE% %~dp0\scripts\build.js %*
+%NODE_EXE% %~dp0\build.js %*
