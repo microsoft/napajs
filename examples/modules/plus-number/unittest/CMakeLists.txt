@@ -53,9 +53,7 @@ set(TARGET_NAME "library-test")
 add_executable(${TARGET_NAME} ${SOURCE_FILES})
 
 # Include directories
-target_include_directories(${TARGET_NAME} PRIVATE
-    ../inc
-    ${NAPAJS_ROOT}/third-party)
+target_include_directories(${TARGET_NAME} PRIVATE ../inc)
 
 # Link libraries
 target_link_libraries(${TARGET_NAME} PRIVATE

@@ -1,5 +1,5 @@
 [![Build Status for Linux/MacOS](https://travis-ci.org/Microsoft/napajs.svg?branch=master)](https://travis-ci.org/Microsoft/napajs)
-[![Build Status for Windows](https://ci.appveyor.com/api/projects/status/github/Microsoft/napajs?branch=master&svg=true)](https://ci.appveyor.com/project/daiyip/napajs)
+[![Build Status for Windows](https://ci.appveyor.com/api/projects/status/github/Microsoft/napajs?branch=master&svg=true)](https://ci.appveyor.com/project/napajs/napajs)
 [![npm version](https://badge.fury.io/js/napajs.svg)](https://www.npmjs.com/package/napajs)
 [![Downloads](https://img.shields.io/npm/dm/napajs.svg)](https://www.npmjs.com/package/napajs)
 
