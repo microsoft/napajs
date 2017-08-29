@@ -59,7 +59,7 @@ describe('Test suite for async-number', function() {
             });
 
             asyncNumber.increaseSync(3, (value: number) => {} );
-        }, []);
+        });
     });
 
     it('change number synchronously on current thread in napa zone', () => {
@@ -82,6 +82,6 @@ describe('Test suite for async-number', function() {
             assert.equal(now, 3);
             asyncNumber.increaseSync(3, (value: number) => {} );
             return 1;
-        }, []);
+        });
     });
 })

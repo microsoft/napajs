@@ -31,7 +31,7 @@ describe('Test suite for plus-number', function() {
             let po = plusNumber.createPlusNumber(3);
             let result: number = po.add(4);
             return result;
-        }, [])
+        })
         .then((result: any) => {
             assert.equal(result.value, 7);
         });
@@ -43,7 +43,7 @@ describe('Test suite for plus-number', function() {
             let po = plusNumber.createPlusNumber(3);
             let result: number = po.add(4);
             return result;
-        }, [])
+        })
         .then((result: any) => {
             assert.equal(result.value, 7);
         });

@@ -33,11 +33,9 @@ set(TARGET_NAME "library-test")
 add_executable(${TARGET_NAME} ${SOURCE_FILES})
 
 # Include directories
-target_include_directories(${TARGET_NAME} PRIVATE ../inc)
+target_include_directories(${TARGET_NAME} PRIVATE ../plus-number)
 
-# Compiler definitions
-target_compile_definitions(${TARGET_NAME} PUBLIC NAPA_EXAMPLE_API)
+find_library(PLUS_NUMBER_LIBRARY NAMES plus-number PATHS ${PROJECT_SOURCE_DIR}/bin)
 
 # Link libraries
-target_link_libraries(${TARGET_NAME} PRIVATE
-    ${PROJECT_SOURCE_DIR}/bin/${CMAKE_STATIC_LIBRARY_PREFIX}plus-number${CMAKE_STATIC_LIBRARY_SUFFIX})
+target_link_libraries(${TARGET_NAME} PRIVATE ${PLUS_NUMBER_LIBRARY})

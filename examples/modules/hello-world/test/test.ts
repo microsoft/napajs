@@ -19,7 +19,7 @@ describe('Test suite for hello-word', function() {
             let helloWorld = require('..');
             let result: string = helloWorld.hello();
             return result;
-        }, []).then((result : any) => {
+        }).then((result : any) => {
             assert.equal(result.value, 'world');
         });
     });
