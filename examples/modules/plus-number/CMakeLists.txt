@@ -34,13 +34,13 @@ endif(ERR)
 set(LIBRARY_TARGET_NAME "plus-number")
 
 # The generated library
-add_library(${LIBRARY_TARGET_NAME} SHARED "src/plus-number.cpp")
+add_library(${LIBRARY_TARGET_NAME} STATIC "src/plus-number.cpp")
 
 # Include directories
 target_include_directories(${LIBRARY_TARGET_NAME} PRIVATE inc)
 
 # Compiler definitions
-target_compile_definitions(${LIBRARY_TARGET_NAME} PRIVATE NAPA_EXAMPLE_API)
+target_compile_definitions(${LIBRARY_TARGET_NAME} PUBLIC NAPA_EXAMPLE_API)
 
 #######################################################################################
 # Build napa addon.
@@ -65,7 +65,7 @@ target_compile_definitions(${NAPA_ADDON_TARGET_NAME} PRIVATE
 
 # Link libraries
 target_link_libraries(${NAPA_ADDON_TARGET_NAME} PRIVATE
-    plus-number
+    ${LIBRARY_TARGET_NAME}
     ${CMAKE_JS_LIB}
     ${NAPAJS_LIB})
 
@@ -92,6 +92,6 @@ if (CMAKE_JS_VERSION)
 
     # Link libraries
     target_link_libraries(${NODE_ADDON_TARGET_NAME} PRIVATE
-        plus-number
+        ${LIBRARY_TARGET_NAME}
         ${CMAKE_JS_LIB})
 endif()

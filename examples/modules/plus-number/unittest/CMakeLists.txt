@@ -35,6 +35,9 @@ add_executable(${TARGET_NAME} ${SOURCE_FILES})
 # Include directories
 target_include_directories(${TARGET_NAME} PRIVATE ../inc)
 
+# Compiler definitions
+target_compile_definitions(${TARGET_NAME} PUBLIC NAPA_EXAMPLE_API)
+
 # Link libraries
 target_link_libraries(${TARGET_NAME} PRIVATE
     ${PROJECT_SOURCE_DIR}/bin/${CMAKE_STATIC_LIBRARY_PREFIX}plus-number${CMAKE_STATIC_LIBRARY_SUFFIX})
