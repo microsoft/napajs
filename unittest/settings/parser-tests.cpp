@@ -13,7 +13,9 @@ TEST_CASE("Parsing nothing doesn't fail", "[settings-parser]") {
     settings::PlatformSettings settings;
 
     REQUIRE(settings::ParseFromString("", settings));
-    REQUIRE(settings::ParseFromConsole(0, nullptr, settings));
+
+    std::vector<char*> args = { "dummy.exe" };
+    REQUIRE(settings::ParseFromConsole(static_cast<int>(args.size()), args.data(), settings));
 }
 
 TEST_CASE("Parsing from string", "[settings-parser]") {
@@ -28,9 +30,9 @@ TEST_CASE("Parsing from console", "[settings-parser]") {
     settings::PlatformSettings settings;
     settings.loggingProvider = "";
 
-    std::vector<const char*> args = { "--loggingProvider", "myProvider" };
+    std::vector<char*> args = { "dummy.exe", "--loggingProvider", "myProvider" };
 
-    REQUIRE(settings::ParseFromConsole(static_cast<int>(args.size()), const_cast<char**>(args.data()), settings));
+    REQUIRE(settings::ParseFromConsole(static_cast<int>(args.size()), args.data(), settings));
     REQUIRE(settings.loggingProvider == "myProvider");
 }
 
