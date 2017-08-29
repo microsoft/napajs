@@ -11,7 +11,6 @@
       "product_dir": "<(PRODUCT_DIR)/../../bin",
       "sources": [ "src/addon.cpp"],
       "defines": [
-        "NAPA_BINDING_EXPORTS",
         "BUILDING_NODE_EXTENSION"
       ],
       "include_dirs": ["<(napajs_inc)"]
@@ -23,8 +22,6 @@
       "product_dir": "<(PRODUCT_DIR)/../../bin",
       "sources": [ "src/addon.cpp" ],
       "defines": [
-        "NAPA_EXPORTS",
-        "NAPA_BINDING_EXPORTS",
         "BUILDING_NAPA_EXTENSION"
       ],
       "include_dirs": ["<(napajs_inc)"],

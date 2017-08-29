@@ -19,16 +19,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN)
 
-execute_process(COMMAND node -e "require('napajs/build').paths.inc" RESULT_VARIABLE ERR OUTPUT_VARIABLE NAPAJS_INC)
-if(ERR)
-    message(FATAL_ERROR "Failed to resolve napa include directory")
-endif(ERR)
-
-execute_process(COMMAND node -e "require('napajs/build').paths.lib" RESULT_VARIABLE ERR OUTPUT_VARIABLE NAPAJS_LIB)
-if(ERR)
-    message(FATAL_ERROR "Failed to resolve napa library path")
-endif(ERR)
-
 # Build plus-number library
 add_subdirectory(plus-number)
 
