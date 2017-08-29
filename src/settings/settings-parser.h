@@ -61,8 +61,9 @@ namespace settings {
     bool ParseFromConsole(int argc, char* argv[], SettingsType& settings) {
         std::vector<std::string> args;
 
-        args.reserve(argc);
-        for (auto i = 0; i < argc; i++) {
+        // Skip first parameter (program name)
+        args.reserve(argc - 1);
+        for (auto i = 1; i < argc; i++) {
             args.emplace_back(argv[i]);
         }
 

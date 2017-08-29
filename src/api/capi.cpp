@@ -218,7 +218,8 @@ template<class T, size_t N>
 constexpr size_t size(T(&)[N]) { return N; }
 
 const char* napa_result_code_to_string(napa_result_code code) {
-    NAPA_ASSERT(code < size(NAPA_REPONSE_CODE_STRINGS), "result code out of range");
+    NAPA_ASSERT(code >= 0, "result code out of range (%d)", code);
+    NAPA_ASSERT(static_cast<size_t>(code) < size(NAPA_REPONSE_CODE_STRINGS), "result code out of range (%d)", code);
 
     return NAPA_REPONSE_CODE_STRINGS[code];
 }
