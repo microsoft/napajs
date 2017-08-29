@@ -20,7 +20,7 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN)
 
 # Build plus-number library
-add_subdirectory(plus-number)
+add_subdirectory(src)
 
 # Build napa addon
-add_subdirectory(src)
+add_subdirectory(napa)

@@ -9,7 +9,7 @@
       "type": "<(library)",
       "product_extension": "",
       "product_dir": "<(PRODUCT_DIR)/../../bin",
-      "sources": [ "src/addon.cpp"],
+      "sources": [ "napa/addon.cpp"],
       "defines": [
         "BUILDING_NODE_EXTENSION"
       ],
@@ -20,7 +20,7 @@
       "type": "<(library)",
       "product_extension": "",
       "product_dir": "<(PRODUCT_DIR)/../../bin",
-      "sources": [ "src/addon.cpp" ],
+      "sources": [ "napa/addon.cpp" ],
       "defines": [
         "BUILDING_NAPA_EXTENSION"
       ],

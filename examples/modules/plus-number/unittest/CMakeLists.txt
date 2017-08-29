@@ -23,8 +23,7 @@ file(GLOB LIBRARY-FILES "../bin/*plus-number.*")
 file(COPY ${LIBRARY-FILES} DESTINATION ${PROJECT_SOURCE_DIR}/bin/)
 
 # Files to compile
-file(GLOB SOURCE_FILES 
-    "main.cpp")
+file(GLOB SOURCE_FILES "main.cpp")
 
 # The executable name
 set(TARGET_NAME "library-test")
@@ -33,7 +32,7 @@ set(TARGET_NAME "library-test")
 add_executable(${TARGET_NAME} ${SOURCE_FILES})
 
 # Include directories
-target_include_directories(${TARGET_NAME} PRIVATE ../plus-number)
+target_include_directories(${TARGET_NAME} PRIVATE ../inc)
 
 find_library(PLUS_NUMBER_LIBRARY NAMES plus-number PATHS ${PROJECT_SOURCE_DIR}/bin)
 
