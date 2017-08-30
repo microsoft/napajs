@@ -1,5 +1,6 @@
 {
   "name": "napajs",
+  "description": "Napa.js is a multi-threaded JavaScript runtime built on V8",
   "version": "0.1.2",
   "author": "napajs",
   "main": "./lib/index.js",
