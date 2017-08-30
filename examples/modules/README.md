@@ -5,18 +5,22 @@ The source codes can be organized as the structure below.
 +-- napa-module-example
     +-- inc
     |   +-- example.h
-    +-- src
-    |   +-- example.cpp
-    |   +-- addon.h
-    |   +-- addon.cpp
     +-- lib
     |   +-- example.ts
     |   +-- tsconfig.json
+    +-- napa
+    |   +-- addon.cpp
+    |   +-- CMakeLists.txt (cmake specific)
+    |   +-- example-wrap.cpp
+    |   +-- example-wrap.h
+    +-- src
+    |   +-- CMakeLists.txt (cmake specific)
+    |   +-- example.cpp
     +-- test
     |   +-- test.ts
     |   +-- tsconfig.json
-    +-- binding.gyp (when build configuration is given in node-gyp)
-    +-- CMakeLists.txt (when build configuration is given in cmake-js)
+    +-- binding.gyp (gyp specific)
+    +-- CMakeLists.txt (cmake specific)
     +-- package.json
     +-- README.md
 ```

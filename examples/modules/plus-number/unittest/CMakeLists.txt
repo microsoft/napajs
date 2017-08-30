@@ -19,32 +19,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN)
 
-# Prefix an suffix of Library name for different OS.
-if (WIN32)
-    set(LIBRARY_PREFIX "")
-    set(LIBRARY_SUFFIX ".lib")
-elseif (APPLE)
-    set(LIBRARY_PREFIX "lib")
-    set(LIBRARY_SUFFIX ".dylib")
-else()
-    set(LIBRARY_PREFIX "lib")
-    set(LIBRARY_SUFFIX ".so")
-endif()
-
-execute_process(COMMAND node -e
-    "var path = require('path'); process.stdout.write(path.resolve(path.dirname(require.resolve('napajs')), '..'));"
-    RESULT_VARIABLE ERR
-    OUTPUT_VARIABLE NAPAJS_ROOT)
-if(ERR)
-    message(FATAL_ERROR "Failed to get NAPAJS_ROOT")
-endif(ERR)
-
 file(GLOB LIBRARY-FILES "../bin/*plus-number.*")
 file(COPY ${LIBRARY-FILES} DESTINATION ${PROJECT_SOURCE_DIR}/bin/)
 
 # Files to compile
-file(GLOB SOURCE_FILES 
-    "main.cpp")
+file(GLOB SOURCE_FILES "main.cpp")
 
 # The executable name
 set(TARGET_NAME "library-test")
@@ -55,6 +34,7 @@ add_executable(${TARGET_NAME} ${SOURCE_FILES})
 # Include directories
 target_include_directories(${TARGET_NAME} PRIVATE ../inc)
 
+find_library(PLUS_NUMBER_LIBRARY NAMES plus-number PATHS ${PROJECT_SOURCE_DIR}/bin)
+
 # Link libraries
-target_link_libraries(${TARGET_NAME} PRIVATE
-    ${PROJECT_SOURCE_DIR}/bin/${LIBRARY_PREFIX}plus-number${LIBRARY_SUFFIX})
+target_link_libraries(${TARGET_NAME} PRIVATE ${PLUS_NUMBER_LIBRARY})
