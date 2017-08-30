@@ -2,9 +2,7 @@
 // Licensed under the MIT license.
 
 let assert = require('assert');
-import * as path from "path";
-let asyncNumberDir: string = path.resolve(__dirname, '..');
-let asyncNumber = require(asyncNumberDir);
+let asyncNumber = require('..');
 let napa = require('napajs');
 let zone = napa.zone.create('zone');
 
@@ -46,9 +44,9 @@ describe('Test suite for async-number', function() {
     });
 
     it('change number asynchronously on separate thread in napa zone', () => {
-        return zone.execute((asyncNumberDir: string) => {
+        return zone.execute(() => {
             let assert = require('assert');
-            let asyncNumber = require(asyncNumberDir);
+            let asyncNumber = require('..');
             let now = asyncNumber.now();
             assert.equal(now, 0);
 
@@ -61,13 +59,13 @@ describe('Test suite for async-number', function() {
             });
 
             asyncNumber.increaseSync(3, (value: number) => {} );
-        }, [asyncNumberDir]);
+        });
     });
 
     it('change number synchronously on current thread in napa zone', () => {
-        zone.execute((asyncNumberDir: string) => {
+        zone.execute(() => {
             let assert = require('assert');
-            let asyncNumber = require(asyncNumberDir);
+            let asyncNumber = require('..');
             let now = asyncNumber.now();
             assert.equal(now, 0);
 
@@ -84,6 +82,6 @@ describe('Test suite for async-number', function() {
             assert.equal(now, 3);
             asyncNumber.increaseSync(3, (value: number) => {} );
             return 1;
-        }, [asyncNumberDir]);
+        });
     });
 })

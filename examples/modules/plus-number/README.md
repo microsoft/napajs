@@ -38,7 +38,7 @@ namespace demo {
 
 ## Wrapper class
 
-*addon.h* declares the wrapper class inherited from *NAPA_OBJECTWRAP* as follows,
+*plus-number-wrap.h* declares the wrapper class inherited from *NAPA_OBJECTWRAP* as follows,
 
 ```h
 #include <napa/module.h>
@@ -85,11 +85,10 @@ namespace demo {
 }  // namespace napa
 ```
 
-*addon.cpp* implements each functions as follows,
-
+*plus-number-wrap.cpp* implements each functions as follows,
 
 ```cpp
-#include "addon.h"
+#include "plus-number-wrap.h"
 
 using namespace napa::demo;
 using namespace v8;
@@ -125,7 +124,7 @@ void PlusNumberWrap::NewInstance(const v8::FunctionCallbackInfo<v8::Value>& args
     const int argc = 1;
     Local<Value> argv[argc] = { args[0] };
 
-    auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(_exportName);
+    auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(_exportName, PlusNumberWrap);
     auto context = isolate->GetCurrentContext();
     auto instance = constructor->NewInstance(context, argc, argv).ToLocalChecked();
 
@@ -171,6 +170,15 @@ void PlusNumberWrap::Add(const FunctionCallbackInfo<Value>& args) {
 
     args.GetReturnValue().Set(Number::New(isolate, value));
 }
+```
+
+*addon.cpp* implements the addon as below,
+
+```cpp
+#include "plus-number-wrap.h"
+
+using namespace napa::demo;
+using namespace v8;
 
 void CreatePlusNumber(const FunctionCallbackInfo<Value>& args) {
     PlusNumberWrap::NewInstance(args);
