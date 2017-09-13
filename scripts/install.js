@@ -14,6 +14,8 @@ var buildCommand = 'cmake-js compile';
 var skipFetch = process.env.hasOwnProperty('npm_config_fetch') && !process.env['npm_config_fetch'];
 // Skip the build stage. '--no-build', or '--build=false'
 var skipBuild = process.env.hasOwnProperty('npm_config_build') && !process.env['npm_config_build'];
+// Skip the prepare stage. '--no-prepare', or '--prepare=false'
+var skipPrepare = process.env.hasOwnProperty('npm_config_prepare') && !process.env['npm_config_prepare'];
 
 // Use debug build
 if (process.env.hasOwnProperty('npm_config_debug') && process.env['npm_config_debug']) {
@@ -66,7 +68,7 @@ if (!skipBuild) {
 //       after a "npm install" command without parameters.
 //       However, NPM below 4.x does not recognize script "prepare".
 //       We have to run it explicitly in this case.
-if (errorCode == 0) {
+if (!skipPrepare && errorCode == 0) {
     var npmVersion = execSync('npm --version').toString().trim();
     log.info('NAPA_INSTALL', `current NPM version=${npmVersion}.`);
 
