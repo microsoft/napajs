@@ -211,7 +211,7 @@ namespace {
         (void)module->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "paths"), v8::Array::New(isolate));
         (void)module->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "id"), v8_helpers::MakeV8String(isolate, id));
         (void)module->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "filename"), v8_helpers::MakeV8String(isolate, id));
-        
+
         // Setup 'module.require'.
         if (!parentContext.IsEmpty()) {
             auto requireKey = v8_helpers::MakeV8String(isolate, "require");
@@ -220,10 +220,15 @@ namespace {
 
         (void)exports->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "module"), module);
         (void)exports->CreateDataProperty(context, v8_helpers::MakeV8String(isolate, "exports"),
-                                          module->Get(v8_helpers::MakeV8String(isolate, "exports"))->ToObject());
+            module->Get(v8_helpers::MakeV8String(isolate, "exports"))->ToObject());
 
         // Set '__in_napa' variable in all modules context to distinguish node and napa runtime.
         (void)exports->Set(v8_helpers::MakeV8String(isolate, "__in_napa"), v8::Boolean::New(isolate, true));
-    }
 
+#ifndef USING_V8_SHARED
+
+        // Set '__in_embed' variable in all modules context to distinguish between napa running in node and embedded mode.
+        (void)exports->Set(v8_helpers::MakeV8String(isolate, "__in_embed"), v8::Boolean::New(isolate, true));
+#endif
+    }
 }   // End of anonymous namespace.
