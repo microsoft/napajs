@@ -5,7 +5,7 @@ import * as napa from "../lib/index";
 import * as assert from 'assert';
 import * as path from 'path';
 
-describe('napajs/store', function () {
+describe('napajs/store', () => {
     this.timeout(0);
 
     let napaZone = napa.zone.create('zone6');
