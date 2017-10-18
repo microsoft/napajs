@@ -66,7 +66,6 @@ console.log('\t-----------------------------------------------------------------
 
 // Run with different # of points and batches in sequence.
 run(4000000, 1)
-.then(result => { run(4000000, 2)
-.then(result => { run(4000000, 4)
-.then(result => { run(4000000, 8)
-}) }) })
+.then(result => run(4000000, 2))
+.then(result => run(4000000, 4))
+.then(result => run(4000000, 8))
