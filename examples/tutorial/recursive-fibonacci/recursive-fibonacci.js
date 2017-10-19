@@ -68,10 +68,9 @@ zone.broadcast(fibonacci.toString());
 
 // Run fibonacci evaluation in sequence.
 run(10)
-.then(result => { run(11)
-.then(result => { run(12)
-.then(result => { run(13)
-.then(result => { run(14)
-.then(result => { run(15)
-.then(result => { run(16)
-}) }) }) }) }) })
+.then(result => run(11))
+.then(result => run(12))
+.then(result => run(13))
+.then(result => run(14))
+.then(result => run(15))
+.then(result => run(16))
