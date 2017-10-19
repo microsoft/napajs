@@ -81,7 +81,7 @@ Since Napa doesn't support *Buffer* yet, assert is not working on *Buffer*.
 * path.resolve([...paths])
 * path.sep
 
-## Prcess
+## Process
 
 * process.argv
 * process.cwd()
