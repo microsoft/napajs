@@ -58,7 +58,7 @@ if (!skipBuild) {
     catch (e) {
         errorCode = e.status;
 
-        log.warning('NAPA_INSTALL', 'failed to build from sources.');
+        log.warn('NAPA_INSTALL', 'failed to build from sources.');
     }
 }
 

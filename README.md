@@ -23,9 +23,7 @@ zone1.broadcast('console.log("hello world");');
 
 // Execute an anonymous function in any worker thread in 'zone1'.
 zone1.execute(
-    (text) => {
-        return text;
-    }, 
+    (text) => text, 
     ['hello napa'])
     .then((result) => {
         console.log(result.value);
