@@ -18,6 +18,12 @@ add_library(${TARGET_NAME} SHARED ${SOURCE_FILES})
 
 set_target_properties(${TARGET_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 
+# Rpath definitions
+set_target_properties(${TARGET_NAME} PROPERTIES
+    BUILD_WITH_INSTALL_RPATH TRUE
+    INSTALL_RPATH "$ORIGIN/"
+    INSTALL_RPATH_USE_LINK_PATH FALSE)
+
 # Include directories
 target_include_directories(${TARGET_NAME} PRIVATE
     ${CMAKE_JS_INC}
