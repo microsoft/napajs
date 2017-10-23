@@ -44,11 +44,7 @@ More examples:
 ## Documentation
 - [Napa.js Home](https://github.com/Microsoft/napajs/wiki)
 - [API Reference](./docs/api/index.md)
-
-# License
-Copyright (c) Microsoft Corporation. All rights reserved.
-
-Licensed under the [MIT](https://github.com/Microsoft/napajs/blob/master/LICENSE.txt) License.
+- [FAQ](https://github.com/Microsoft/napajs/wiki/FAQ)
 
 # Contribute
 You can contribute to Napa.js in following ways:
@@ -60,5 +56,7 @@ You can contribute to Napa.js in following ways:
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact opencode@microsoft.com with any additional questions or comments.
 
-# Contacts
-* [Mailing list](https://groups.google.com/forum/#!forum/napajs)
+# License
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+Licensed under the [MIT](https://github.com/Microsoft/napajs/blob/master/LICENSE.txt) License.
