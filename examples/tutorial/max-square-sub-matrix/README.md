@@ -10,7 +10,7 @@ Please note that this example is to demonstrate the programming paradigm, while 
 2. Run "npm install" to install napajs
 3. Run "node max-square-sub-matrix.js"
 
-\**Note: This example uses 'async / await', so Node version that supports ES6 is required. (newer than v7.6.0).
+**Note**: This example uses 'async / await', so Node version that supports ES6 is required. (newer than v7.6.0).
 
 ## Program output
 The output below shows the result of the implementation. By a napa zone with 4 workers, it took 15 ms to find out the max square sub matrix with all 1s for the given 6 * 6 square binary matrix.

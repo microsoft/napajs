@@ -1,22 +1,10 @@
-
-//#define BUILDING_NAPA_EXTENSION 1
-
-#include <string.h>
-#include <pthread.h>
-#include <dlfcn.h>
-#include <napa/zone.h>
+#include <napa.h>
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <memory>
 #include <future>
-
-
-using namespace std;
-
-#define DEBUG_NAPA 1
-
 
 int main(int argc, char* argv[])
 {
@@ -29,12 +17,10 @@ int main(int argc, char* argv[])
         function estimatePI(points) { \
             var i = points; \
             var inside = 0; \
-            var z = []; \
             while (i-- > 0) { \
-	            if (i%10000 == 0) console.log(i); \
+	        if (i%10000 == 0) console.log(i); \
                 var x = Math.random(); \
                 var y = Math.random(); \
-                z = z.slice(0); z.push(x); z.push(y); \
                 if ((x * x) + (y * y) <= 1) { \
                     inside++; \
                 } \
@@ -57,11 +43,13 @@ int main(int argc, char* argv[])
             } \
 \
             console.log('4 times napa.zone.execution issued.'); \
-            return Promise.all(promises).then(values => { \
+            Promise.all(promises).then(values => { \
                 var aggregate = 0; \
                 values.forEach(result => aggregate += result.value); \
                 console.log('PI: ', aggregate / 4); \
-            }) \
+            }); \
+\
+            return 'returned-value-to-cpp-world'; \
         } \
     "
    );
@@ -71,11 +59,11 @@ int main(int argc, char* argv[])
     spec.function = NAPA_STRING_REF("run");
     spec.arguments = { };
 
-    zone->ExecuteSync(spec);
+    napa::Result res = zone->ExecuteSync(spec);
+    std::cout << res.returnValue << std::endl;
 
-    /// If you call zone.execute and returns directly, instead of await the result promise get resolved,
-    /// the below "while(true)" line is required to allow napa execution to complete. 
-    // while(true);
+    /// Wait for js execution in napa zone.
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 
     return 0;
 }

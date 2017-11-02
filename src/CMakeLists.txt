@@ -71,8 +71,6 @@ else()
             ${ICUSTUBDATA_LIBRARY}
             ${ICUUCX_LIBRARY})
 
-        target_link_libraries(${TARGET_NAME} PRIVATE winmm.lib)
-
     elseif("${CMAKE_SYSTEM}" MATCHES "Linux")
         find_library(V8_BASE_LIBRARY NAMES v8_base PATHS ${NODE_ROOT}/out/${NODE_BUILD_TYPE}/obj.target/deps/v8/tools/gyp)
         find_library(V8_LIBBASE_LIBRARY NAMES v8_libbase PATHS ${NODE_ROOT}/out/${NODE_BUILD_TYPE}/obj.target/deps/v8/tools/gyp)
@@ -92,7 +90,13 @@ else()
             ${ICUI18N_LIBRARY}
             ${ICUSTUBDATA_LIBRARY}
             ${ICUUCX_LIBRARY})
+
     else()
         message(FATAL_ERROR "Node build solution for embed mode is not provided for ${CMAKE_SYSTEM}")
     endif()
+
+endif()
+
+if(WIN32)
+    target_link_libraries(${TARGET_NAME} PRIVATE winmm.lib)
 endif()

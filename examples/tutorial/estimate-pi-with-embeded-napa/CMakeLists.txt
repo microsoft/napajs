@@ -13,12 +13,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Set symbol visibility to hidden by default.
-# Napa shared library shares a few classes with napa-binding.node with different compile definition,
-# exposing the same symbols from both shared libraries may cause improper behaviors under gcc.
-set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-set(CMAKE_VISIBILITY_INLINES_HIDDEN)
-
 set(NAPAJS_INC ${PROJECT_SOURCE_DIR}/../../../inc)
 set(NAPAJS_LIB ${PROJECT_SOURCE_DIR}/../../../bin/libnapa.so)
 
@@ -28,7 +22,7 @@ add_executable(${TARGET_NAME} "main.cpp")
 
 if("${CMAKE_SYSTEM}" MATCHES "Linux")
 
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread -lpthread")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread")
 
     # Include directories
     target_include_directories(${TARGET_NAME} PRIVATE
@@ -45,5 +39,5 @@ if("${CMAKE_SYSTEM}" MATCHES "Linux")
     )
 
 else()
-    message(FATAL_ERROR "Build solution for this example is not provided for ${CMAKE_SYSTEM}")
+    message(FATAL_ERROR "Build solution of this example is not provided for ${CMAKE_SYSTEM}")
 endif()
