@@ -5,10 +5,10 @@ matrix:
   # Disable the default build and use customized matrix only.
   - compiler: default
   include:
-  # Node 4.5.0          Linux (Precise)     G++5.4.1
+  # Node 6.x            Linux (Precise)     G++5.4.1
   - os: linux
     dist: precise
-    node_js: '4.5.0'
+    node_js: '6'
     compiler: g++-5
     addons:
       apt:
@@ -23,20 +23,7 @@ matrix:
         - cmake
     env:
     - COMPILER_OVERRIDE="CXX=g++-5 CC=gcc-5"
-  # Node LTS (6.x)      Linux (Trusty)      G++5.4.1
-  - os: linux
-    dist: trusty
-    node_js: '6'
-    compiler: g++-5
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-5
-    env:
-    - COMPILER_OVERRIDE="CXX=g++-5 CC=gcc-5"
-  # Node LTS (6.x)      OS X (Yosemite)     AppleClang 6.1
+  # Node 6.x            OS X (Yosemite)     AppleClang 6.1
   - os: osx
     node_js: '6'
     osx_image: xcode6.4
@@ -50,13 +37,30 @@ matrix:
         sources:
         - ubuntu-toolchain-r-test
         packages:
-        - g++-6
+        - g++-5
     env:
-    - COMPILER_OVERRIDE="CXX=g++-6 CC=gcc-6"
+    - COMPILER_OVERRIDE="CXX=g++-5 CC=gcc-5"
   # Node LTS (8.x)      OS X (El Capitan)   AppleClang 7.3
   - os: osx
     node_js: '8'
     osx_image: xcode7.3
+  # Node Stable (9.x)   Linux (Trusty)      G++6.3.0
+  - os: linux
+    dist: trusty
+    node_js: '9'
+    compiler: g++-6
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-6
+    env:
+    - COMPILER_OVERRIDE="CXX=g++-6 CC=gcc-6"
+  # Node Stable (9.x)   macOS (Sierra)      AppleClang 8.1
+  - os: osx
+    node_js: '9'
+    osx_image: xcode8.3
 
 before_install:
 - |
