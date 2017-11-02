@@ -10,11 +10,12 @@ exports.build = function (buildType) {
     var napaRoot = path.join(__dirname, "..");
     var nodeVersion = "v6.10.3"; // Stable node version that can build as a dll.
     var nodeCloneRoot = path.join(napaRoot, "build/node-" + nodeVersion);
+    var archOption = "";
     
     console.log("\x1b[1m\x1b[32m", `Building napa in embed mode (${buildType}) based on Node.JS ${nodeVersion}`,'\x1b[0m');
-
+/*
     // Refer to https://github.com/nodejs/node/blob/master/BUILDING.md#windows-1 for prerequisites.
-    childProcess.execSync(`git clone --branch ${nodeVersion} https://github.com/nodejs/node.git ${nodeCloneRoot}.`, {
+    childProcess.execSync(`git clone --branch ${nodeVersion} https://github.com/nodejs/node.git ${nodeCloneRoot}`, {
         stdio: 'inherit'
     });
 
@@ -26,12 +27,33 @@ exports.build = function (buildType) {
             cwd: nodeCloneRoot,
             stdio: 'inherit'
         });
-    }
-    // TODO (asib): support other platforms
 
+        archOption = " -A x64 ";
+    }
+    else if (os.platform() === 'linux') {
+        console.log("\x1b[1m\x1b[32m", "Building Node.JS.",'\x1b[0m');
+
+        // Modify configure to add '-fPIC' cflags.
+        childProcess.execSync("sed -i 's/'\\'cflags\\':\\ \\\\[]'/'\\'cflags\\':\\ [\\'\\ -fPIC\\ \\']'/g' configure", {
+            cwd: nodeCloneRoot,
+            stdio: 'inherit'
+        });
+
+        // Build node to extract intermediate v8 static libraries to build napa shared library.
+        childProcess.execSync(`./configure && make -j4`, {
+            cwd: nodeCloneRoot,
+            stdio: 'inherit'
+        });
+    }
+    else {        
+        console.log("\x1b[1m\x1b[32m", "Napa build solution for embeded mode is not provided for ", os.platform(),'\x1b[0m');
+	return;
+        // TODO (asib): support other platforms
+    }
+*/
     // Create platform specific build files using cmake.
     console.log("\x1b[1m\x1b[32m", "Running cmake to generate build files.",'\x1b[0m');
-    childProcess.execSync(`cmake -A x64 -DNODE_ROOT=${nodeCloneRoot} -DCMAKE_BUILD_TYPE=${buildType} ..`, {
+    childProcess.execSync(`cmake ${archOption} -DNODE_ROOT=${nodeCloneRoot} -DCMAKE_BUILD_TYPE=${buildType} ..`, {
         cwd: path.join(napaRoot, "build"),
         stdio: 'inherit'
     });
