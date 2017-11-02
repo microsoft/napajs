@@ -42,6 +42,9 @@ namespace zone {
         Worker(Worker&&);
         Worker& operator=(Worker&&);
 
+        /// <summary> Start the underlying worker thread. </summary>
+        void Start();
+
         /// <summary> Schedules a task on this worker. </summary>
         /// <param name="task"> Task to schedule. </param>
         /// <note> Same task instance may run on multiple workers, hence the use of shared_ptr. </node>

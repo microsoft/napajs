@@ -98,6 +98,7 @@ namespace zone {
             _workers.emplace_back(i, settings, workerSetupCallback, [this](WorkerId workerId) {
                 IdleWorkerNotificationCallback(workerId);
             });
+            _workers[i].Start();
 
             // All workers are idle initially.
             auto iter = _idleWorkers.emplace(_idleWorkers.end(), i);

@@ -48,6 +48,9 @@ struct Worker::Impl {
 
     /// <summary> A callback function that is called when worker becomes idle. </summary>
     std::function<void(WorkerId)> idleNotificationCallback;
+
+    /// <summary> The zone settings for the current worker. </summary>
+    settings::ZoneSettings settings;
 };
 
 Worker::Worker(WorkerId id,
@@ -59,7 +62,7 @@ Worker::Worker(WorkerId id,
     _impl->id = id;
     _impl->setupCallback = std::move(setupCallback);
     _impl->idleNotificationCallback = std::move(idleNotificationCallback);
-    _impl->workerThread = std::thread(&Worker::WorkerThreadFunc, this, settings);
+    _impl->settings = settings;
 }
 
 Worker::~Worker() {
@@ -77,6 +80,10 @@ Worker::~Worker() {
 
 Worker::Worker(Worker&&) = default;
 Worker& Worker::operator=(Worker&&) = default;
+
+void Worker::Start() {
+    _impl->workerThread = std::thread(&Worker::WorkerThreadFunc, this, _impl->settings);
+}
 
 void Worker::Schedule(std::shared_ptr<Task> task) {
     NAPA_ASSERT(task != nullptr, "Task should not be null");
