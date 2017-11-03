@@ -184,7 +184,7 @@ napa_result_code napa_initialize(napa_string_ref settings) {
     return napa_initialize_common();
 }
 
-napa_result_code napa_initialize_from_console(int argc, char* argv[]) {
+napa_result_code napa_initialize_from_console(int argc, const char* argv[]) {
     NAPA_ASSERT(!_initialized, "Napa platform was already initialized");
 
     if (!napa::settings::ParseFromConsole(argc, argv, _platformSettings)) {
