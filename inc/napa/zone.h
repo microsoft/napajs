@@ -16,7 +16,7 @@ namespace napa {
     }
 
     /// <summary> Initialize napa using console provided arguments. </summary>
-    inline ResultCode InitializeFromConsole(int argc, char* argv[]) {
+    inline ResultCode InitializeFromConsole(int argc, const char* argv[]) {
         return napa_initialize_from_console(argc, argv);
     }
 

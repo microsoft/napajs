@@ -16,7 +16,7 @@ Other options can be found in [Build Napa.js](https://github.com/Microsoft/napaj
 ## Quick Start
 ```js
 var napa = require('napajs');
-var zone1 = napa.zone.create('zone1', { workers: 4} );
+var zone1 = napa.zone.create('zone1', { workers: 4 });
 
 // Broadcast code to all 4 workers in 'zone1'.
 zone1.broadcast('console.log("hello world");');
@@ -44,15 +44,19 @@ More examples:
 ## Documentation
 - [Napa.js Home](https://github.com/Microsoft/napajs/wiki)
 - [API Reference](./docs/api/index.md)
+- [FAQ](https://github.com/Microsoft/napajs/wiki/FAQ)
 
 # Contribute
 You can contribute to Napa.js in following ways:
 
 * [Report issues](https://github.com/Microsoft/napajs/issues) and help us verify fixes as they are checked in.
 * Review the [source code changes](https://github.com/Microsoft/napajs/pulls).
+* Contribute to core module compatibility with Node.
 * Contribute bug fixes.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact opencode@microsoft.com with any additional questions or comments.
 
-# Contacts
-* [Mailing list](https://groups.google.com/forum/#!forum/napajs)
+# License
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+Licensed under the [MIT](https://github.com/Microsoft/napajs/blob/master/LICENSE.txt) License.
