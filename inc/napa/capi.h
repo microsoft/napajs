@@ -88,7 +88,7 @@ EXTERN_C NAPA_API napa_result_code napa_initialize(napa_string_ref settings);
 /// <param name="argv"> The arguments. </param>
 EXTERN_C NAPA_API napa_result_code napa_initialize_from_console(
     int argc,
-    char* argv[]);
+    const char* argv[]);
 
 /// <summary> Invokes napa shutdown steps. All non released zones will be destroyed. </summary>
 EXTERN_C NAPA_API napa_result_code napa_shutdown();
