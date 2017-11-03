@@ -3,68 +3,45 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <memory>
-#include <future>
+
+void ReadJSFromFile(std::stringstream& jsStream, const std::string& jsFileName);
 
 int main(int argc, char* argv[])
 {
-    napa::InitializeFromConsole(argc, argv);
+    if (argc != 2) {
+        std::cout << "usage: napa-runner <js-file>" << std::endl;
+        exit(0);
+    }
 
-    auto zone = std::make_unique<napa::Zone>("z1");
+    // Read js from user specifed js file.
+    std::stringstream jsStream;
+    ReadJSFromFile(jsStream, argv[1]);
 
-    zone->BroadcastSync(
-	" \
-        function estimatePI(points) { \
-            var i = points; \
-            var inside = 0; \
-            while (i-- > 0) { \
-	        if (i%10000 == 0) console.log(i); \
-                var x = Math.random(); \
-                var y = Math.random(); \
-                if ((x * x) + (y * y) <= 1) { \
-                    inside++; \
-                } \
-            } \
-	        return inside / points * 4; \
-        } \
-\
-        function run() { \
-            console.log('start run'); \
-\
-            var napa = require('napajs'); \
-            console.log('napajs loaded'); \
-            const NUMBER_OF_WORKERS = 4; \
-            var zone = napa.zone.create('zone1', { workers: NUMBER_OF_WORKERS }); \
-            console.log('zone created with 4 workers'); \
-\
-            var promises = []; \
-            for (var i = 0; i < 4; i++) { \
-                promises[i] = zone.execute(estimatePI, [40000]); \
-            } \
-\
-            console.log('4 times napa.zone.execution issued.'); \
-            Promise.all(promises).then(values => { \
-                var aggregate = 0; \
-                values.forEach(result => aggregate += result.value); \
-                console.log('PI: ', aggregate / 4); \
-            }); \
-\
-            return 'returned-value-to-cpp-world'; \
-        } \
-    "
-   );
+    // Initializes napa with glabal scope settings.
+    napa::Initialize();
 
-    napa::FunctionSpec spec;
-    spec.module = EMPTY_NAPA_STRING_REF;
-    spec.function = NAPA_STRING_REF("run");
-    spec.arguments = { };
+    // Create a napa zone with 1 worker.
+    auto zone = std::make_unique<napa::Zone>("z1", "--workers\t1");
 
-    napa::Result res = zone->ExecuteSync(spec);
-    std::cout << res.returnValue << std::endl;
+    // Broadcast js workload.
+    zone->BroadcastSync(jsStream.str());
 
-    /// Wait for js execution in napa zone.
-    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    // Do some work in the host service.
+    while (true) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
 
     return 0;
+}
+
+void ReadJSFromFile(std::stringstream& jsStream, const std::string& jsFileName) {
+    std::ifstream jsFile;
+    jsFile.open(jsFileName);
+    if (!jsFile) {
+        std::cout << "Failed to open js file: " << jsFileName << std::endl;
+        exit(0);
+    }
+    jsStream << jsFile.rdbuf();
+    jsFile.close();
 }
 
