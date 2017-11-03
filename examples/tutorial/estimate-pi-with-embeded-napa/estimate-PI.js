@@ -1,5 +1,5 @@
-
-console.log('1234567890');
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
 
 function estimatePI(points) {
     var i = points;

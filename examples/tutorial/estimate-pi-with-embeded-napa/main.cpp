@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 #include <napa.h>
 
 #include <iostream>
@@ -34,7 +37,8 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-void ReadJSFromFile(std::stringstream& jsStream, const std::string& jsFileName) {
+void ReadJSFromFile(std::stringstream& jsStream, const std::string& jsFileName)
+{
     std::ifstream jsFile;
     jsFile.open(jsFileName);
     if (!jsFile) {
