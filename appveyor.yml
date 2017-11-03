@@ -2,13 +2,13 @@ environment:
   matrix:
     # Windows Server 2012 R2       Visual C++ Build Tools 2015
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      nodejs_version: 4.5.0
+      nodejs_version: 6
     # Windows Server 2012 R2       Visual C++ Build Tools 2015
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      nodejs_version: LTS
+      nodejs_version: 8
     # Windows Server 2016          Visual C++ Build Tools 2017
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      nodejs_version: Stable
+      nodejs_version: 9
 
 platform:
 - x64
