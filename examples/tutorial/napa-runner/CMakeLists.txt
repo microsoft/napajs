@@ -15,8 +15,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(NAPAJS_ROOT ${PROJECT_SOURCE_DIR}/../../..)
 set(NAPAJS_INC ${NAPAJS_ROOT}/inc)
-set(NODE_ROOT ${NAPAJS_ROOT}/build/node-v6.10.3)
 find_library(NAPAJS_LIB NAMES napa PATHS ${NAPAJS_ROOT}/bin)
+
+# A stable node version taht can build as a shared library.
+set(NODE_ROOT ${NAPAJS_ROOT}/build/node-v6.10.3)
 
 set(BUILD_TYPE "Release")
 if ((DEFINED CMAKE_BUILD_TYPE) AND (CMAKE_BUILD_TYPE STREQUAL "debug"))
@@ -39,6 +41,7 @@ if("${CMAKE_SYSTEM}" MATCHES "Linux")
     ${NODE_ROOT}/deps/v8/include
     ${NAPAJS_INC})
 
+    # TODO #124: Remove dependencies of v8_libbase and icustubdata to embed Napa.js into a c++ program, because they are already dependencies to build napa shared library.
     find_library(V8_LIBBASE NAMES v8_libbase PATHS ${NODE_ROOT}/out/${BUILD_TYPE}/obj.target/deps/v8/tools/gyp)
     find_library(ICUSTUBDATA_LIB NAMES icustubdata PATHS ${NODE_ROOT}/out/${BUILD_TYPE}/obj.target/tools/icu)
 

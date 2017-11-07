@@ -35,8 +35,8 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
-    // Put a dead loop here to allow all tasks to complete in napa zone before shutting down napa.
-    // We will provide a graceful shutdown method to save this.
+    // Put a dead loop here to allow all tasks to complete in napa zones before shutting down napa.
+    // TODO #123: Support shut down napa gracefully to save this.
     while (true) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
