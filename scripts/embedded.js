@@ -8,7 +8,7 @@ var path = require("path");
 
 exports.build = function (buildType) {
     var napaRoot = path.join(__dirname, "..");
-    var nodeVersion = "v6.10.3"; // Stable node version that can build as a shared library.
+    var nodeVersion = "v6.10.3"; // Stable node version that can build as a library.
     var nodeCloneRoot = path.join(napaRoot, "build/node-" + nodeVersion);
     var archOption = "";
     

@@ -17,7 +17,7 @@ set(NAPAJS_ROOT ${PROJECT_SOURCE_DIR}/../../..)
 set(NAPAJS_INC ${NAPAJS_ROOT}/inc)
 find_library(NAPAJS_LIB NAMES napa PATHS ${NAPAJS_ROOT}/bin)
 
-# A stable node version taht can build as a shared library.
+# A stable node version that can build as a library.
 set(NODE_ROOT ${NAPAJS_ROOT}/build/node-v6.10.3)
 
 set(BUILD_TYPE "Release")
