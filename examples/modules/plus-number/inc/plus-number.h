@@ -3,10 +3,14 @@
 
 #pragma once
 
-#ifdef NAPA_EXAMPLE_API
-#define NAPA_EXAMPLE_EXPORT __declspec(dllexport)
+#if defined(_WIN32) || defined(__WIN32__)
+    #ifdef NAPA_EXAMPLE_API
+        #define NAPA_EXAMPLE_EXPORT __declspec(dllexport)
+    #else
+        #define NAPA_EXAMPLE_EXPORT __declspec(dllimport)
+    #endif
 #else
-#define NAPA_EXAMPLE_EXPORT __declspec(dllimport)
+    #define NAPA_EXAMPLE_EXPORT
 #endif
 
 namespace napa {
