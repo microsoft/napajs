@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
-project("NapaRuner")
+project("napa-runer")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/bin)
@@ -13,12 +13,22 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(NAPAJS_INC ${PROJECT_SOURCE_DIR}/../../../inc)
-set(NAPAJS_LIB ${PROJECT_SOURCE_DIR}/../../../bin/libnapa.so)
+set(NAPAJS_ROOT ${PROJECT_SOURCE_DIR}/../../..)
+set(NAPAJS_INC ${NAPAJS_ROOT}/inc)
+set(NODE_ROOT ${NAPAJS_ROOT}/build/node-v6.10.3)
+find_library(NAPAJS_LIB NAMES napa PATHS ${NAPAJS_ROOT}/bin)
+
+set(BUILD_TYPE "Release")
+if ((DEFINED CMAKE_BUILD_TYPE) AND (CMAKE_BUILD_TYPE STREQUAL "debug"))
+    set(BUILD_TYPE "Debug")
+endif()
+
 
 set(TARGET_NAME "${PROJECT_NAME}")
 
 add_executable(${TARGET_NAME} "main.cpp")
+
+target_compile_definitions(${TARGET_NAME} PRIVATE BUILDING_NAPA_EXTENSION)
 
 if("${CMAKE_SYSTEM}" MATCHES "Linux")
 
@@ -26,16 +36,18 @@ if("${CMAKE_SYSTEM}" MATCHES "Linux")
 
     # Include directories
     target_include_directories(${TARGET_NAME} PRIVATE
-    ${CMAKE_JS_INC}
+    ${NODE_ROOT}/deps/v8/include
     ${NAPAJS_INC})
+
+    find_library(V8_LIBBASE NAMES v8_libbase PATHS ${NODE_ROOT}/out/${BUILD_TYPE}/obj.target/deps/v8/tools/gyp)
+    find_library(ICUSTUBDATA_LIB NAMES icustubdata PATHS ${NODE_ROOT}/out/${BUILD_TYPE}/obj.target/tools/icu)
 
     # Link libraries
     target_link_libraries(${TARGET_NAME} PRIVATE
-    ${CMAKE_JS_LIB}
     ${NAPAJS_LIB}
     ${CMAKE_DL_LIBS}
-    ${PROJECT_SOURCE_DIR}/../../../build/node-v6.10.3/out/Release/obj.target/deps/v8/tools/gyp/libv8_libbase.a
-    ${PROJECT_SOURCE_DIR}/../../../build/node-v6.10.3/out/Release/obj.target/tools/icu/libicustubdata.a
+    ${V8_LIBBASE}
+    ${ICUSTUBDATA_LIB}
     )
 
 else()

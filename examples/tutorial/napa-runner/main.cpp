@@ -24,15 +24,25 @@ int main(int argc, char* argv[])
     napa::Initialize();
 
     // Create a napa zone with 1 worker.
-    auto zone = std::make_unique<napa::Zone>("z1", "--workers\t1");
+    auto mainZone = std::make_unique<napa::Zone>("main", "--workers 1");
 
     // Broadcast js workload.
-    zone->BroadcastSync(jsStream.str());
+    napa::ResultCode resultCode = mainZone->BroadcastSync(jsStream.str());
+    if (resultCode != NAPA_RESULT_SUCCESS) {
+        std::cout << napa_result_code_to_string(resultCode) << std::endl;
+        // Shut down napa.
+        napa::Shutdown();
+        exit(1);
+    }
 
-    // Do some work in the host service.
+    // Put a dead loop here to allow all tasks to complete in napa zone before shutting down napa.
+    // We will provide a graceful shutdown method to save this.
     while (true) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
+
+    // Shut down napa.
+    napa::Shutdown();
 
     return 0;
 }

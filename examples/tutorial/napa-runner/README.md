@@ -1,5 +1,5 @@
 # Napa runner
-Napa runner is a tool to run JavaScript with napa capability. It is implemented in C++ using napa API.
+Napa runner is an example to embed Napa.JS into a C++. It simply runs JavaScript with all Napa capability without Node dependency from command line.
 
 ## How to build
 1. Go to napajs root directory, run "node build.js embed" to build napa library for embeded mode. 
@@ -9,6 +9,6 @@ Napa runner is a tool to run JavaScript with napa capability. It is implemented 
 
 ## How to use
 1. Run "npm install" to intall required npm modules
-2. Run "./bin/NapaRunner emstimate-PI.js"
+2. Run "./bin/napa-runner emstimate-PI.js"
 
-**NOTE**: Build solution of NapaRunner is provided only for linux system so far. Windows / Mac OS support will come in near future.
+**NOTE**: Build solution of napa-runner is provided only for linux system so far. Windows / Mac OS support will come in near future.
