@@ -7,7 +7,8 @@
     {
       "target_name": "addon.node",
       "type": "<(library)",
-      "product_extension": "",
+      "product_name": "addon",
+      "product_extension": "node",
       "product_dir": "<(PRODUCT_DIR)/../../bin",
       "sources": [ "napa/addon.cpp"],
       "defines": [
@@ -18,7 +19,8 @@
     {
       "target_name": "addon.napa",
       "type": "<(library)",
-      "product_extension": "",
+      "product_name": "addon",
+      "product_extension": "napa",
       "product_dir": "<(PRODUCT_DIR)/../../bin",
       "sources": [ "napa/addon.cpp" ],
       "defines": [
