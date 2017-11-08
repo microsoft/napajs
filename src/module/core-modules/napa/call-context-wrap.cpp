@@ -9,7 +9,7 @@
 using namespace napa;
 using namespace napa::module;
 
-NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(CallContextWrap)
+NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(CallContextWrap);
 
 void CallContextWrap::Init() {
     auto isolate = v8::Isolate::GetCurrent();

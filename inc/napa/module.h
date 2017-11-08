@@ -72,7 +72,7 @@
 #define NAPA_DECLARE_PERSISTENT_CONSTRUCTOR
 #else
 #define NAPA_DECLARE_PERSISTENT_CONSTRUCTOR \
-    static v8::Persistent<v8::Function> _constructor;
+    static v8::Persistent<v8::Function> _constructor
 #endif
 
 /// <summary> It defines the persistent constructor. <summary>
@@ -81,7 +81,7 @@
 #define NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(className)
 #else
 #define NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(className) \
-    v8::Persistent<v8::Function> className::_constructor;
+    v8::Persistent<v8::Function> className::_constructor
 #endif
 
 /// <summary> It defines the template class's persistent constructor. <summary>
@@ -91,7 +91,7 @@
 #else
 #define NAPA_DEFINE_TEMPLATE_PERSISTENT_CONSTRUCTOR(className) \
     template <typename T> \
-    v8::Persistent<v8::Function> className<T>::_constructor;
+    v8::Persistent<v8::Function> className<T>::_constructor
 #endif
 
 /// <summary> It sets the persistent constructor at the current V8 isolate. </summary>

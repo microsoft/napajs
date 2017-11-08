@@ -30,7 +30,7 @@ namespace module {
         static constexpr const char* exportName = "CallContextWrap";
 
         /// <summary> Declare constructor in public, so we can export class constructor in JavaScript world. </summary>
-        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR
+        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR;
 
     protected:
         /// <summary> It implements CallContext.resolve(result: any): void </summary>
