@@ -38,13 +38,13 @@ TEST_CASE("timer is not called if stopped", "[timer]") {
 
     Timer timer([&promise]() {
         promise.set_value();
-    }, 50ms);
+    }, 200ms);
 
     timer.Start();
-    std::this_thread::sleep_for(20ms);
+    std::this_thread::sleep_for(100ms);
     timer.Stop();
 
-    auto status = future.wait_for(80ms);
+    auto status = future.wait_for(200ms);
     REQUIRE(status == std::future_status::timeout);
 }
 
@@ -55,19 +55,19 @@ TEST_CASE("timers are called by order", "[timer]") {
     auto future1 = promise1.get_future();
     Timer timer1([&promise1, &callOrder]() {
         promise1.set_value(++callOrder);
-    }, 100ms);
+    }, 300ms);
 
     std::promise<int> promise2;
     auto future2 = promise2.get_future();
     Timer timer2([&promise2, &callOrder]() {
         promise2.set_value(++callOrder);
-    }, 50ms);
+    }, 200ms);
 
     std::promise<int> promise3;
     auto future3 = promise3.get_future();
     Timer timer3([&promise3, &callOrder]() {
         promise3.set_value(++callOrder);
-    }, 20ms);
+    }, 100ms);
 
     timer1.Start();
     timer2.Start();
