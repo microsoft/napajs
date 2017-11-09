@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 #include "module-resolver.h"
+#include "module-resolver-cache.h"
 
 #include <platform/filesystem.h>
 #include <platform/os.h>
@@ -108,6 +109,9 @@ private:
 
     /// <summary> Paths in 'NODE_PATH' environment variable. </summary>
     std::vector<std::string> _nodePaths;
+
+    /// <summary> Module info cache for all loaded modules. </summary>
+    ModuleResolverCache _cache;
 };
 
 ModuleResolver::ModuleResolver() : _impl(std::make_unique<ModuleResolver::ModuleResolverImpl>()) {}
@@ -150,15 +154,26 @@ ModuleInfo ModuleResolver::ModuleResolverImpl::Resolve(const char* name, const c
         return ModuleInfo{ModuleType::CORE, std::string(name), std::string()};
     }
 
+    // Lookup for module info cache.
+    RETURN_IF_NOT_EMPTY(_cache.Lookup(name, path));
+
     // Normalize module context path.
     filesystem::Path basePath =
         (path == nullptr) ? filesystem::CurrentDirectory() : filesystem::Path(path);
 
     // Look up from the given path.
-    RETURN_IF_NOT_EMPTY(ResolveFromPath(name, basePath));
+    ModuleInfo moduleInfo = ResolveFromPath(name, basePath);
+    if (moduleInfo.type != ModuleType::NONE) {
+        _cache.Insert(name, path, moduleInfo);
+        return moduleInfo;
+    }
 
     // Look up NODE_PATH
-    return ResolveFromEnv(name, basePath);
+    moduleInfo = ResolveFromEnv(name, basePath);
+    if (moduleInfo.type != ModuleType::NONE) {
+        _cache.Insert(name, path, moduleInfo);
+    }
+    return moduleInfo;
 }
 
 bool ModuleResolver::ModuleResolverImpl::SetAsCoreModule(const char* name) {
