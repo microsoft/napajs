@@ -30,7 +30,7 @@ matrix:
   # Node LTS (8.x)      Linux (Trusty)      G++6.3.0
   - os: linux
     dist: trusty
-    node_js: '8'
+    node_js: '8.4.0'
     compiler: g++-6
     addons:
       apt:
@@ -42,7 +42,7 @@ matrix:
     - COMPILER_OVERRIDE="CXX=g++-5 CC=gcc-5"
   # Node LTS (8.x)      OS X (El Capitan)   AppleClang 7.3
   - os: osx
-    node_js: '8'
+    node_js: '8.4.0'
     osx_image: xcode7.3
   # Node Stable (9.x)   Linux (Trusty)      G++6.3.0
   - os: linux
@@ -61,6 +61,16 @@ matrix:
   - os: osx
     node_js: '9'
     osx_image: xcode8.3
+  # There is a compatibility issue on Node v8.5.0 and above.
+  # So we fix the version to 8.4.0 on the build for 8.x, and
+  # allow failure for 9.x
+  #
+  # https://github.com/Microsoft/napajs/issues/96
+  # https://github.com/nodejs/node/issues/16658
+  #
+  # This should be removed once the issue resolved.
+  allow_failures:
+  - node_js: '9'
 
 before_install:
 - |
