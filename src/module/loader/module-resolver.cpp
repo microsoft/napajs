@@ -154,24 +154,24 @@ ModuleInfo ModuleResolver::ModuleResolverImpl::Resolve(const char* name, const c
         return ModuleInfo{ModuleType::CORE, std::string(name), std::string()};
     }
 
-    // Lookup for module info cache.
-    RETURN_IF_NOT_EMPTY(_cache.Lookup(name, path));
-
     // Normalize module context path.
     filesystem::Path basePath =
         (path == nullptr) ? filesystem::CurrentDirectory() : filesystem::Path(path);
 
-    // Look up from the given path.
+    // Lookup for module info cache.
+    RETURN_IF_NOT_EMPTY(_cache.Lookup(name, basePath.c_str()));
+    
+        // Look up from the given path.
     ModuleInfo moduleInfo = ResolveFromPath(name, basePath);
     if (moduleInfo.type != ModuleType::NONE) {
-        _cache.Insert(name, path, moduleInfo);
+        _cache.Insert(name, basePath.c_str(), moduleInfo);
         return moduleInfo;
     }
 
     // Look up NODE_PATH
     moduleInfo = ResolveFromEnv(name, basePath);
     if (moduleInfo.type != ModuleType::NONE) {
-        _cache.Insert(name, path, moduleInfo);
+        _cache.Insert(name, basePath.c_str(), moduleInfo);
     }
     return moduleInfo;
 }

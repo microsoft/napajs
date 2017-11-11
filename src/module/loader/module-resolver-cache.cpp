@@ -49,9 +49,10 @@ void ModuleResolverCache::Insert(const char* name, const char* path, const Modul
 }
 
 ModuleInfo ModuleResolverCache::ModuleResolverCacheImpl::Lookup(const char* name, const char* path) {
+    ModuleResolverCacheKey key{name, path};
+
     std::lock_guard<std::mutex> lock(_lock);
 
-    ModuleResolverCacheKey key{name, path};
     auto result = _resolvedModules.find(key);
     if (result != _resolvedModules.end()) {
         return result->second;
@@ -61,8 +62,9 @@ ModuleInfo ModuleResolverCache::ModuleResolverCacheImpl::Lookup(const char* name
 }
 
 void ModuleResolverCache::ModuleResolverCacheImpl::Insert(const char* name, const char* path, const ModuleInfo& moduleInfo) {
+    ModuleResolverCacheKey key{name, path};
+    
     std::lock_guard<std::mutex> lock(_lock);
 
-    ModuleResolverCacheKey key{name, path};
     _resolvedModules.emplace(std::make_pair(key, moduleInfo));
 }
