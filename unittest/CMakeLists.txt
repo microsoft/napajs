@@ -20,6 +20,7 @@ file(GLOB_RECURSE TEST_FILES
 # Source files under test
 file(GLOB_RECURSE SOURCE_FILES
     ${NAPA_ROOT}/src/module/core-modules/node/file-system-helpers.cpp
+    ${NAPA_ROOT}/src/module/loader/module-resolver-cache.cpp
     ${NAPA_ROOT}/src/module/loader/module-resolver.cpp
     ${NAPA_ROOT}/src/platform/filesystem.cpp
     ${NAPA_ROOT}/src/platform/os.cpp
