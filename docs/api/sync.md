@@ -33,7 +33,7 @@ catch(error) {
 }
 ```
 ### <a name="lock-guard-func-promise-any-promise-any"></a> lock.guard(func: () => Promise\<any>): Promise\<any>
-Run input function and obtain the lock during its execution, returns the promise as the input function returns, or throws error if input function throws. Lock will be released once exception thrown or the promise resolved/rejected.
+Run input function and obtain the lock during its execution, returns the promise as the input function returns, or throws error if input function throws. Lock will be released once an exception is thrown or the promise gets resolved/rejected.
 ```ts
 try {
     var promise = lock.guard(() => {
