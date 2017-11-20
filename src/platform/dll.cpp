@@ -72,6 +72,18 @@ std::string ThisLineLocation() {
     if (len == 0) {
         return "";
     }
+
+    // Currently we do not fully support UNC prefix in Napa.js.
+    //
+    // The following is a workaround to fix inconsistency of __dirname and __filename
+    // between Napa.js and Node.js
+    //
+    // https://github.com/Microsoft/napajs/issues/131
+    // Should remove this code when fixing Issue #131.
+    if (len > 4 && path[0] == '\\' && path[1] == '\\' && path[2] == '?' && path[3] == '\\') {
+        return path + 4;
+    }
+
     return path;
 #endif
 }
