@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 #include <platform/dll.h>
+#include <platform/filesystem.h>
 #include <platform/platform.h>
 
 #ifdef SUPPORT_POSIX
@@ -80,7 +81,7 @@ std::string ThisLineLocation() {
     //
     // https://github.com/Microsoft/napajs/issues/131
     // Should remove this code when fixing Issue #131.
-    if (len > 4 && path[0] == '\\' && path[1] == '\\' && path[2] == '?' && path[3] == '\\') {
+    if (len > 4 && filesystem::Path(path).HasUncPrefix()) {
         return path + 4;
     }
 
