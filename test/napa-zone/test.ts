@@ -191,7 +191,7 @@ export class CannotPass {
     field2: number;
 }
 
-@napa.transport.cid(module.id)
+@napa.transport.cid()
 export class CanPass extends napa.transport.TransportableObject {
     constructor(allocator: napa.memory.Allocator) {
         super();
