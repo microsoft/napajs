@@ -18,8 +18,7 @@
   },
   "scripts": {
     "install": "cmake-js compile",
-    "prepare": "tsc -p lib",
-    "pretest": "cmake-js compile -d unittest && tsc -p test",
+    "pretest": "tsc -p lib && cmake-js compile -d unittest && tsc -p test",
     "test": "node unittest/run.js && mocha test --recursive"
   }
 }
