@@ -6,8 +6,6 @@ import * as assert from 'assert';
 import * as path from 'path';
 
 describe('napajs/store', function () {
-    this.timeout(0);
-
     let napaZone = napa.zone.create('zone6');
     let store1 = napa.store.create('store1');
     it('@node: store.create - succeed', () => {

@@ -18,10 +18,6 @@ function shouldFail<T>(func: () => Promise<T>) {
 }
 
 describe('napajs/zone', function () {
-    // disable timeouts. 
-    // promise.then is always fired after mocha test timeout.
-    this.timeout(0);
-
     let napaZone1: Zone = napa.zone.create('napa-zone1');
     let napaZone2: Zone = napa.zone.create('napa-zone2');
     let napaLibPath: string = path.resolve(__dirname, '../lib');
@@ -32,11 +28,12 @@ describe('napajs/zone', function () {
             assert.strictEqual(napaZone1.id, 'napa-zone1');
         });
 
+        // This case may be slow as the first hit of napa zone execute API, so we clear timeout.
         it('@napa: default settings', async () => {
             // Zone should be destroyed when going out of scope.
             let result = await napaZone1.execute(`${napaLibPath}/zone`, 'create', ['new-zone']);
             assert.equal(result.value.id, "new-zone");
-        });
+        }).timeout(0);
 
         it('@node: zone id already exists', () => {
             assert.throws(() => { napa.zone.create('napa-zone1'); });
