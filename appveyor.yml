@@ -5,22 +5,10 @@ environment:
       nodejs_version: 6
     # Windows Server 2012 R2       Visual C++ Build Tools 2015
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      nodejs_version: 8.4.0
+      nodejs_version: 8
     # Windows Server 2016          Visual C++ Build Tools 2017
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       nodejs_version: 9
-
-# There is a compatibility issue on Node v8.5.0 and above.
-# So we fix the version to 8.4.0 on the build for 8.x, and
-# allow failure for 9.x
-#
-# https://github.com/Microsoft/napajs/issues/96
-# https://github.com/nodejs/node/issues/16658
-#
-# This should be removed once the issue resolved.
-matrix:
-  allow_failures:
-    - nodejs_version: 9
 
 platform:
 - x64
