@@ -1,8 +1,11 @@
 # Namespace `sync`
 ## Table of Contents
 - class [`Lock`](#class-lock)
-    - [`lock.guard(func: () => any): any`](#lock-guard-func-any-any)
+    - [`lock.guardSync(func: () => any): any`](#lock-guard-sync-func-any-any)
+<!--
+    // Preserve this interface for async lock.
     - [`lock.guard(func: () => Promise<any>): Promise<any>`](#lock-guard-func-promise-any-promise-any)
+-->
 <!--
 - class [`ReadWriteLock`](#class-readwritelock)
     - [`rwlock.guardRead(func: () => any): any`](#rwlock-guardread-func-any-any)
@@ -18,11 +21,11 @@ Example: Creating a lock with operator `new`.
 ```ts
 var lock = new napa.sync.Lock();
 ```
-### <a name="lock-guard-func-any-any"></a> lock.guard(func: () => any): any
+### <a name="lock-guard-sync-func-any-any"></a> lock.guardSync(func: () => any): any
 Run input function synchronously and obtain the lock during its execution, returns what the function returns, or throws error if input function throws. Lock will be released once execution finishes.
 ```ts
 try {
-    var value = lock.guard(() => {
+    var value = lock.guardSync(() => {
         // DoSomething may throw.
         return DoSomething();
     });
@@ -32,24 +35,12 @@ catch(error) {
     console.log(error);
 }
 ```
+<!--
 ### <a name="lock-guard-func-promise-any-promise-any"></a> lock.guard(func: () => Promise\<any>): Promise\<any>
-Run input function and obtain the lock during its execution, returns the promise as the input function returns, or throws error if input function throws. Lock will be released once an exception is thrown or the promise gets resolved/rejected.
-```ts
-try {
-    var promise = lock.guard(() => {
-        // DoSomethingAsync returns a promise. it may throw.
-        return DoSomethingAsync();
-    }).then((value) => {
-        console.log(value);
-    }, (reason) => {
-        console.log(reason);
-    });
-}
-catch(error) {
-    console.log(error);
-}
-```
 
+// TBD: this is a non-blocking guard function. It tries to obtain the lock and run the func. It will return regardless of whether it obtained the lock successfully.
+
+-->
 <!--
 ## Class `ReadWriteLock`
 Read-write lock, which is [transportable](transport.md#transportable) across JavaScript threads.
