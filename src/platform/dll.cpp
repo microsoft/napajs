@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 #include <platform/dll.h>
+#include <platform/filesystem.h>
 #include <platform/platform.h>
 
 #ifdef SUPPORT_POSIX
@@ -72,6 +73,18 @@ std::string ThisLineLocation() {
     if (len == 0) {
         return "";
     }
+
+    // Currently we do not fully support UNC prefix in Napa.js.
+    //
+    // The following is a workaround to fix inconsistency of __dirname and __filename
+    // between Napa.js and Node.js
+    //
+    // https://github.com/Microsoft/napajs/issues/131
+    // Should remove this code when fixing Issue #131.
+    if (len > 4 && filesystem::Path(path).HasUncPrefix()) {
+        return path + 4;
+    }
+
     return path;
 #endif
 }
