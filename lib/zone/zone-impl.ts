@@ -42,6 +42,21 @@ class Result implements zone.Result{
      private _value: any;
 };
 
+declare var __in_napa: boolean;
+
+/// <summary> Helper function to workaround possible delay in Promise resolve/reject when working with Node event loop.
+/// See https://github.com/audreyt/node-webworker-threads/issues/123#issuecomment-254019552
+/// </summary>
+function runImmediately(func : () => void) {
+    if (typeof __in_napa === 'undefined') {
+        // In node.
+        setImmediate(func);
+    } else  {
+        // In napa workers.
+        func();
+    }
+}
+
 /// <summary> Zone consists of Napa isolates. </summary>
 export class ZoneImpl implements zone.Zone {
     private _nativeZone: any;
@@ -63,11 +78,13 @@ export class ZoneImpl implements zone.Zone {
 
         return new Promise<void>((resolve, reject) => {
             this._nativeZone.broadcast(source, (resultCode: number) => {
-                if (resultCode === 0) {
-                    resolve();
-                } else {
-                    reject("broadcast failed with result code: " + resultCode);
-                }
+                runImmediately(() => {
+                    if (resultCode === 0) {
+                        resolve();
+                    } else {
+                        reject("broadcast failed with result code: " + resultCode);
+                    }
+                });
             });
         });
     }
@@ -77,13 +94,15 @@ export class ZoneImpl implements zone.Zone {
         
         return new Promise<zone.Result>((resolve, reject) => {
             this._nativeZone.execute(spec, (result: any) => {
-                if (result.code === 0) {
-                    resolve(new Result(
-                        result.returnValue,
-                        transport.createTransportContext(true, result.contextHandle)));
-                } else {
-                    reject(result.errorMessage);
-                }
+                runImmediately(() => {
+                    if (result.code === 0) {
+                        resolve(new Result(
+                            result.returnValue,
+                            transport.createTransportContext(true, result.contextHandle)));
+                    } else {
+                        reject(result.errorMessage);
+                    }
+                })
             });
         });
     }

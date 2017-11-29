@@ -6,7 +6,6 @@ import * as assert from 'assert';
 import * as path from 'path';
 
 describe('napajs/memory', function() {
-    this.timeout(0);
     let napaZone = napa.zone.create('zone5');
 
     describe('Handle', () => {
