@@ -8,7 +8,6 @@ import * as path from "path";
 type Zone = napa.zone.Zone;
 
 describe('napajs/module', function () {
-    this.timeout(0);
     let napaZone = napa.zone.create('module-tests-zone', { workers: 1 });
 
     describe('load', function () {
