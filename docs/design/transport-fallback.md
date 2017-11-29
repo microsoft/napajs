@@ -1,11 +1,11 @@
 # transport-fallback
 
 ## Incentives
-The abstraction of 'Transportable' lies in the center of napa.js to support efficiently share objects between JavaScript VMs (napa workers). Except JavaScript primitive types, an object needs to implement 'Transportable' interface to make it transportable. It means [Javascript standard built-in objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects) are not transportable unless wrappers or equivalent implementations for them are implemented by extending 'Transportable' interface. Developing cost for all those objects is not trivial, and new abstraction layer (wrappers or equivalent implementations) will bring barriers for users to learn and adopt these new stuffs. Moreover, developers also need to deal with the interaction between JavaScript standards objects and those wrappers or equivalent implementations.
+The abstraction of 'Transportable' lies in the center of napa.js to efficiently share objects between JavaScript VMs (napa workers). Except JavaScript primitive types, an object needs to implement 'Transportable' interface to make it transportable. It means [Javascript standard built-in objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects) are not transportable unless wrappers or equivalent implementations for them are implemented by extending 'Transportable' interface. Developing cost for all those objects is not trivial, and new abstraction layer (wrappers or equivalent implementations) will bring barriers for users to learn and adopt these new stuffs. Moreover, developers also need to deal with the interaction between JavaScript standards objects and those wrappers or equivalent implementations.
 
 The incentive of transport-fallback is to provide a solution to make JavaScript standard built-in objects transportable with requirements listed in the below Goals section.
 
-At the first stage, we will focus on a efficient solution to share data between napa workers. Basically, it is about making SharedArrayBuffer / TypedArray / DataView transportable.
+At the first stage, we will focus on an efficient solution to share data between napa workers. Basically, it is about making SharedArrayBuffer / TypedArray / DataView transportable.
 
 ## Goals
 Make Javascript built-in objects transportable with
@@ -45,7 +45,7 @@ run();
 ```
 
 ## Solution
-Here we just give a high level description of the solution. Its api will go to docs/api/transport-fallback, and some key concepts or design details will be filled in this file later.
+Here we just give a high level description of the solution. Its api will go to docs/api/transport, and some key concepts or design details will be filled in this file later.
 - V8 provides its value serialization solution by ValueSerializer and ValueDeserializer, which is compatible with the HTML structured clone algorithm. It is a horizontal solution to serialize / deserialize JavaScript objects. ValueSerializer::Delegate and ValueDeserializer::Delegate are their inner class. They work as base classes from which developers can deprive to customize some special handling of external / shared resources, like memory used by a SharedArrayBuffer object.
 
 - V8SerializedData
