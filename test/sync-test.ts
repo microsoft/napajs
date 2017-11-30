@@ -10,17 +10,13 @@ function spinWait(time: number) {
     while (Date.now() - now < time) { }
 }
 
-describe('napajs/store', function () {
+describe('napajs/sync', function () {
     this.timeout(0);
-
-    let napaZone = napa.zone.create('zone-for-sync-test');
-    napaZone.broadcast(spinWait.toString());
-    napaZone.broadcast("require('../lib/index')");
 
     it('@node: sync.Lock - create a lock', () => {
         let succeed = false;
         try {
-            let lock = new napa.sync.Lock();
+            let lock = napa.sync.createLock();
             succeed = true;
         }
         catch (error) {
@@ -32,18 +28,18 @@ describe('napajs/store', function () {
         let succeed = false;
         let index = 0;
         try {
-            let lock = new napa.sync.Lock();
+            let lock = napa.sync.createLock();
             lock.guardSync(function () {
                 spinWait(100);
-                assert(index == 0);
+                assert.equal(index, 0);
                 index++;
             });
             lock.guardSync(function () {
                 spinWait(100);
-                assert(index == 1);
+                assert.equal(index, 1);
                 index++;
             });
-            assert(index == 2);
+            assert.equal(index, 2);
             succeed = true;
         }
         catch (error) {
@@ -51,64 +47,84 @@ describe('napajs/store', function () {
         assert(succeed);
     });
 
-    it('@node: sync.Lock - multi thread sync execution (not using lock)', () => {
+    it('@napa: sync.Lock - multi thread sync execution (not using lock)', () => {
+        let napaZone = napa.zone.create('zone-for-sync-test-1', { workers: 2 });
+        napaZone.broadcast(spinWait.toString());
+        napaZone.broadcast("require('../lib/index')");
 
         // If not using lock, the store.set() in second execute() function should start before the first complete.
         let succeed = false;
         try {
-            let lock = new napa.sync.Lock();
+            let lock = napa.sync.createLock();
             // We use napa.store to verify the result
-            napa.store.getOrCreate('store-for-sync-test').set('k1', 0);
+            napa.store.getOrCreate('store-for-sync-test-1').set('before-wait', 0);
+            napa.store.getOrCreate('store-for-sync-test-1').set('after-wait', 0);
 
             let exe1 = napaZone.execute(function () {
-                (<any>global).spinWait(100);
                 var napa = require('../lib/index');
-                napa.store.get('store-for-sync-test').set('k1', 1);
+
+                napa.store.get('store-for-sync-test-1').set('before-wait', 1);
+                (<any>global).spinWait(100);
+                napa.store.get('store-for-sync-test-1').set('after-wait', 1);
             });
 
-            spinWait(50);
             let exe2 = napaZone.execute(function () {
                 var assert = require('assert');
                 var napa = require('../lib/index');
-                assert(napa.store.get('store-for-sync-test').get('k1') == 0);
+                
+                (<any>global).spinWait(50);
+                assert.equal(napa.store.get('store-for-sync-test-1').get('before-wait'), 1);
+                assert.equal(napa.store.get('store-for-sync-test-1').get('after-wait'), 0);
             });
 
             return Promise.all([exe1, exe2]).then(function () {
-                assert(napa.store.get('store-for-sync-test').get('k1') == 1);
+                assert.equal(napa.store.get('store-for-sync-test-1').get('before-wait'), 1);
+                assert.equal(napa.store.get('store-for-sync-test-1').get('after-wait'), 1);
             });
         }
         catch (error) {
         }
     });
     
-    it('@node: sync.Lock - multi thread sync execution (using lock)', () => {
+    it('@napa: sync.Lock - multi thread sync execution (using lock)', () => {
+        let napaZone = napa.zone.create('zone-for-sync-test-2', { workers: 2 });
+        napaZone.broadcast(spinWait.toString());
+        napaZone.broadcast("require('../lib/index')");
+
 
         // If guard by lock, the store.set() in second execute() function should start after the first complete.
         let succeed = false;
         try {
-            let lock = new napa.sync.Lock();
+            let lock = napa.sync.createLock();
             // We use napa.store to verify the result
-            napa.store.getOrCreate('store-for-sync-test').set('k1', 0);
+            napa.store.getOrCreate('store-for-sync-test-2').set('before-wait', 0);
+            napa.store.getOrCreate('store-for-sync-test-2').set('after-wait', 0);
 
             let exe1 = napaZone.execute(function (lock) {
+                var napa = require('../lib/index');
+
                 lock.guardSync(function () {
+                    napa.store.get('store-for-sync-test-2').set('before-wait', 1);
                     (<any>global).spinWait(100);
-                    var napa = require('../lib/index');
-                    napa.store.get('store-for-sync-test').set('k1', 1);
+                    napa.store.get('store-for-sync-test-2').set('after-wait', 1);
                 });
             }, [lock]);
 
-            spinWait(50);
             let exe2 = napaZone.execute(function (lock) {
-                lock.guard(function () {
-                    var assert = require('assert');
-                    var napa = require('../lib/index');
-                    assert(napa.store.get('store-for-sync-test').get('k1') == 1);
+                var assert = require('assert');
+                var napa = require('../lib/index');
+
+                (<any>global).spinWait(50);
+
+                lock.guardSync(function () {
+                    assert.equal(napa.store.get('store-for-sync-test-2').get('before-wait'), 1);
+                    assert.equal(napa.store.get('store-for-sync-test-2').get('after-wait'), 1);
                 });
             }, [lock]);
 
             return Promise.all([exe1, exe2]).then(function () {
-                assert(napa.store.get('store-for-sync-test').get('k1') == 1);
+                assert.equal(napa.store.get('store-for-sync-test-2').get('before-wait'), 1);
+                assert.equal(napa.store.get('store-for-sync-test-2').get('after-wait'), 1);
             });
         }
         catch (error) {

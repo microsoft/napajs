@@ -28,8 +28,7 @@ namespace module {
     private:
 
         // LockWrap methods
-        static void EnterCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
-        static void ExitCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
+        static void GuardSyncCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
     };
 }
 }

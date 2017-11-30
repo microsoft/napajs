@@ -17,9 +17,9 @@ Namespace `sync` deal with synchronization between threads in Napa. `Lock` <!-- 
 ## <a name="class-lock"></a> Class `Lock`
 Exclusive Lock, which is [transportable](transport.md#transportable) across JavaScript threads.
 
-Example: Creating a lock with operator `new`.
+Example: Creating a lock.
 ```ts
-var lock = new napa.sync.Lock();
+var lock = napa.sync.createLock();
 ```
 ### <a name="lock-guard-sync-func-any-any"></a> lock.guardSync(func: () => any): any
 Run input function synchronously and obtain the lock during its execution, returns what the function returns, or throws error if input function throws. Lock will be released once execution finishes.
@@ -38,12 +38,16 @@ catch(error) {
 <!--
 ### <a name="lock-guard-func-promise-any-promise-any"></a> lock.guard(func: () => Promise\<any>): Promise\<any>
 
-// TBD: this is a non-blocking guard function. It tries to obtain the lock and run the func. It will return regardless of whether it obtained the lock successfully.
+// TBD: this is a non-blocking guard function.
+//      It tries to obtain the lock and run the func.
+//      It will return regardless of whether it obtained the lock successfully.
 
 -->
 <!--
 ## Class `ReadWriteLock`
 Read-write lock, which is [transportable](transport.md#transportable) across JavaScript threads.
+
+// TBD: RWLock APIs may be redesign in future.
 
 Example: Creating a read-write lock with operator `new`.
 ```ts
