@@ -7,11 +7,10 @@ import * as assert from 'assert';
 // spin-wait for the specific time, in milliseconds.
 function spinWait(time: number) {
     let now = Date.now();
-    while (Date.now() - now < time) { }
+    while (Date.now() - now < time) {}
 }
 
 describe('napajs/sync', function () {
-    this.timeout(0);
 
     it('@node: sync.Lock - create a lock', () => {
         let succeed = false;

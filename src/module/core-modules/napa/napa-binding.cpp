@@ -219,19 +219,19 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
 
     AllocatorDebuggerWrap::Init();
     AllocatorWrap::Init();
-    MetricWrap::Init();
     CallContextWrap::Init();
+    LockWrap::Init();
+    MetricWrap::Init();
     SharedPtrWrap::Init();
     StoreWrap::Init();
-    LockWrap::Init();
     TransportContextWrapImpl::Init();
     ZoneWrap::Init();
 
     NAPA_EXPORT_OBJECTWRAP(exports, "AllocatorDebuggerWrap", AllocatorDebuggerWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "AllocatorWrap", AllocatorWrap);
-    NAPA_EXPORT_OBJECTWRAP(exports, "MetricWrap", MetricWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "CallContextWrap", CallContextWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "LockWrap", LockWrap);
+    NAPA_EXPORT_OBJECTWRAP(exports, "MetricWrap", MetricWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "SharedPtrWrap", SharedPtrWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "TransportContextWrap", TransportContextWrapImpl);
 

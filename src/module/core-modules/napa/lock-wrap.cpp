@@ -3,13 +3,11 @@
 
 #include "lock-wrap.h"
 
-#define DEBUG_NAPA
-#include <utils/debug.h>
-
 #include <napa/module/binding/wraps.h>
 
 #include <memory>
 #include <mutex>
+#include <vector>
 
 using namespace napa::module;
 
@@ -38,7 +36,8 @@ void LockWrap::GuardSyncCallback(const v8::FunctionCallbackInfo<v8::Value>& args
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
-    CHECK_ARG(isolate, args.Length() == 1, "1 argument is required for calling 'guardSync'.");
+    int argc = args.Length();
+    CHECK_ARG(isolate, argc >= 1, "1 argument is required for calling 'guardSync'.");
     CHECK_ARG(isolate, args[0]->IsFunction(), "Argument \"func\" shall be 'Function' type.");
 
     auto context = isolate->GetCurrentContext();
@@ -50,7 +49,14 @@ void LockWrap::GuardSyncCallback(const v8::FunctionCallbackInfo<v8::Value>& args
         auto mutex = thisObject->Get<std::mutex>();
         std::lock_guard<std::mutex> guard(*mutex);
 
-        auto result = v8::Local<v8::Function>::Cast(args[0])->Call(context, holder, 0, nullptr);
+        std::vector<v8::Local<v8::Value>> rest;
+        rest.reserve(argc - 1);
+
+        for (int i = 1; i < argc; i++) {
+            rest.emplace_back(args[i]);
+        }
+
+        auto result = v8::Local<v8::Function>::Cast(args[0])->Call(context, holder, argc - 1, rest.data());
 
         if (result.IsEmpty() || tryCatch.HasCaught()) {
             tryCatch.ReThrow();
