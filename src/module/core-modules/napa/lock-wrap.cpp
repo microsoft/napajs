@@ -36,9 +36,9 @@ void LockWrap::GuardSyncCallback(const v8::FunctionCallbackInfo<v8::Value>& args
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
-    int argc = args.Length();
-    CHECK_ARG(isolate, argc >= 1, "1 argument is required for calling 'guardSync'.");
+    CHECK_ARG(isolate, args.Length() >= 1, "1 argument is required for calling 'guardSync'.");
     CHECK_ARG(isolate, args[0]->IsFunction(), "Argument \"func\" shall be 'Function' type.");
+    CHECK_ARG(isolate, args.Length() < 2 || args[1]->IsArray(), "Argument \"params\" shall be a valid array.");
 
     auto context = isolate->GetCurrentContext();
     auto holder = args.Holder();
@@ -49,14 +49,24 @@ void LockWrap::GuardSyncCallback(const v8::FunctionCallbackInfo<v8::Value>& args
         auto mutex = thisObject->Get<std::mutex>();
         std::lock_guard<std::mutex> guard(*mutex);
 
-        std::vector<v8::Local<v8::Value>> rest;
-        rest.reserve(argc - 1);
+        std::vector<v8::Local<v8::Value>> params;
 
-        for (int i = 1; i < argc; i++) {
-            rest.emplace_back(args[i]);
+        if (args.Length() >= 2) {
+            auto paramsArray = v8::Local<v8::Array>::Cast(args[1]);
+            int paramsLength = paramsArray->Length();
+            params.reserve(paramsLength);
+
+            for (int i = 0; i < paramsLength; i++) {
+                auto item = paramsArray->Get(context, i).ToLocalChecked();
+                params.emplace_back(item);
+            }
         }
 
-        auto result = v8::Local<v8::Function>::Cast(args[0])->Call(context, holder, argc - 1, rest.data());
+        auto result = v8::Local<v8::Function>::Cast(args[0])->Call(
+            context,
+            holder,
+            params.size(),
+            params.empty() ? nullptr : params.data());
 
         if (result.IsEmpty() || tryCatch.HasCaught()) {
             tryCatch.ReThrow();

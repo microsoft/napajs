@@ -23,6 +23,22 @@ describe('napajs/sync', function () {
         assert(succeed);
     });
 
+    it('@node: sync.Lock - parameters passing', () => {
+        let succeed = false;
+        try {
+            let lock = napa.sync.createLock();
+            lock.guardSync((a, b, c) => {
+                assert.strictEqual(a, 123);
+                assert.strictEqual(b, '456');
+                assert.strictEqual(c, undefined);
+            }, [123, '456']);
+            succeed = true;
+        }
+        catch (error) {
+        }
+        assert(succeed);
+    });
+
     it('@node: sync.Lock - guard single thread sync execution', () => {
         let succeed = false;
         let index = 0;

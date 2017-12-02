@@ -1,7 +1,7 @@
 # Namespace `sync`
 ## Table of Contents
 - class [`Lock`](#class-lock)
-    - [`lock.guardSync(func: () => any): any`](#lock-guard-sync-func-any-any)
+    - [`lock.guardSync(func: (...params: any[]) => any, params?: any[]): any`](#lock-guard-sync-func-any-any)
 <!--
     // Preserve this interface for async lock.
     - [`lock.guard(func: () => Promise<any>): Promise<any>`](#lock-guard-func-promise-any-promise-any)
@@ -14,14 +14,14 @@
 
 ## APIs
 Namespace `sync` deal with synchronization between threads in Napa. `Lock` <!-- and `ReadWriteLock` are --> is provided for exclusive and shared mutex scenarios.
-## <a name="class-lock"></a> Class `Lock`
+## <a name="class-lock"></a> Interface `Lock`
 Exclusive Lock, which is [transportable](transport.md#transportable) across JavaScript threads.
 
-Example: Creating a lock.
+Use `napa.sync.createLock()` to create a lock.
 ```ts
 var lock = napa.sync.createLock();
 ```
-### <a name="lock-guard-sync-func-any-any"></a> lock.guardSync(func: () => any): any
+### <a name="lock-guard-sync-func-any-any"></a> lock.guardSync(func: (...params: any[]) => any, params?: any[]): any
 Run input function synchronously and obtain the lock during its execution, returns what the function returns, or throws error if input function throws. Lock will be released once execution finishes.
 ```ts
 try {

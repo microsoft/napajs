@@ -15,7 +15,7 @@ export interface Lock {
     /// <returns> The value that the input function returns. </returns>
     /// <remarks> This function will obtain the lock before running the input function. It will wait until the
     /// lock is available. If the input function throws exception, the exception will be thrown out. </remarks>
-    guardSync(func: (...params: any[]) => any, ...params: any[]): any;
+    guardSync(func: (...params: any[]) => any, params?: any[]): any;
 }
 
 export function createLock(): Lock {
