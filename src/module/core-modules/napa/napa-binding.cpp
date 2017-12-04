@@ -3,10 +3,11 @@
 
 #include "napa-binding.h"
 
-#include "metric-wrap.h"
 #include "allocator-debugger-wrap.h"
 #include "allocator-wrap.h"
 #include "call-context-wrap.h"
+#include "lock-wrap.h"
+#include "metric-wrap.h"
 #include "shared-ptr-wrap.h"
 #include "store-wrap.h"
 #include "transport-context-wrap-impl.h"
@@ -142,6 +143,16 @@ static void GetStoreCount(const v8::FunctionCallbackInfo<v8::Value>& args) {
     args.GetReturnValue().Set(static_cast<uint32_t>(napa::store::GetStoreCount()));
 }
 
+/////////////////////////////////////////////////////////////////////
+/// Sync APIs
+
+static void CreateLock(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
+
+    args.GetReturnValue().Set(LockWrap::NewInstance());
+}
+
 static void GetCrtAllocator(const v8::FunctionCallbackInfo<v8::Value>& args) {
     args.GetReturnValue().Set(binding::CreateAllocatorWrap(
         std::shared_ptr<napa::memory::Allocator>(
@@ -208,8 +219,9 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
 
     AllocatorDebuggerWrap::Init();
     AllocatorWrap::Init();
-    MetricWrap::Init();
     CallContextWrap::Init();
+    LockWrap::Init();
+    MetricWrap::Init();
     SharedPtrWrap::Init();
     StoreWrap::Init();
     TransportContextWrapImpl::Init();
@@ -217,8 +229,9 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
 
     NAPA_EXPORT_OBJECTWRAP(exports, "AllocatorDebuggerWrap", AllocatorDebuggerWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "AllocatorWrap", AllocatorWrap);
-    NAPA_EXPORT_OBJECTWRAP(exports, "MetricWrap", MetricWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "CallContextWrap", CallContextWrap);
+    NAPA_EXPORT_OBJECTWRAP(exports, "LockWrap", LockWrap);
+    NAPA_EXPORT_OBJECTWRAP(exports, "MetricWrap", MetricWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "SharedPtrWrap", SharedPtrWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "TransportContextWrap", TransportContextWrapImpl);
 
@@ -231,6 +244,8 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
     NAPA_SET_METHOD(exports, "getStore", GetStore);
     NAPA_SET_METHOD(exports, "getStoreCount", GetStoreCount);
 
+    NAPA_SET_METHOD(exports, "createLock", CreateLock);
+    
     NAPA_SET_METHOD(exports, "getCrtAllocator", GetCrtAllocator);
     NAPA_SET_METHOD(exports, "getDefaultAllocator", GetDefaultAllocator);
 
