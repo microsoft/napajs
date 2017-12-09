@@ -7,11 +7,11 @@
 #include "deserializer.h"
 
 namespace napa {
-namespace v8_extensions {
+namespace transport {
 
     using namespace v8;
 
-    class V8TransportHelper {
+    class TransportUtils {
     public:
         static std::shared_ptr<SerializedData>
         SerializeValue(Isolate* isolate, Local<Value> value) {

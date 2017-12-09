@@ -10,9 +10,9 @@ export interface SerializedData extends Shareable {
 }
 
 export function serializeValue(jsValue: any): SerializedData {
-    return require('../binding').v8SerializeValue(jsValue);
+    return require('../binding').serializeValue(jsValue);
 }
 
 export function deserializeValue(serializedData: SerializedData): any {
-    return require('../binding').v8DeserializeValue(serializedData);
+    return require('../binding').deserializeValue(serializedData);
 }

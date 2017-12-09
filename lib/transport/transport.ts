@@ -3,21 +3,20 @@
 
 import * as transportable from './transportable';
 import * as functionTransporter from './function-transporter';
-import * as v8TransportHelper from './v8-transport-helper';
+import * as builtinObjectTransporter from './builtin-object-transporter';
 import * as path from 'path';
 
 /// <summary> Per-isolate cid => constructor registry. </summary>
 let _registry: Map<string, new(...args: any[]) => transportable.Transportable> 
     = new Map<string, new(...args: any[]) => transportable.Transportable>();
 
-let _v8TransportHelperVerifiedWhitelist = new Set();
+let _verifiedBuiltInTypeWhitelist = new Set();
 [
     'ArrayBuffer', 'SharedArrayBuffer',
-    'DataView',
     'Float32Array', 'Float64Array',
     'Int8Array', 'Int16Array', 'Int32Array',
     'Uint8Array', 'Uint16Array', 'Uint32Array'
-].forEach((type) => {_v8TransportHelperVerifiedWhitelist.add(type);});
+].forEach((type) => { _verifiedBuiltInTypeWhitelist.add(type); });
 
 /// <summary> Register a TransportableObject sub-class with a Constructor ID (cid). </summary>
 export function register(subClass: new(...args: any[]) => any) {
@@ -43,10 +42,14 @@ export function marshallTransform(jsValue: any, context: transportable.Transport
         if (constructorName !== 'Object') {
             if (typeof jsValue['cid'] === 'function') {
                 return <transportable.Transportable>(jsValue).marshall(context);
-            } else if (_v8TransportHelperVerifiedWhitelist.has(constructorName)) {
-                return {v8SerializedData : v8TransportHelper.serializeValue(jsValue)};
-            }
-            else {
+            } else if (_verifiedBuiltInTypeWhitelist.has(constructorName)) {
+                let serializedData = builtinObjectTransporter.serializeValue(jsValue);
+                if (serializedData) {
+                    return { _serialized : serializedData };
+                } else {
+                    throw new Error(`Failed to serialize object with type of \"${constructorName}\".`);
+                }
+            } else {
                 throw new Error(`Object type \"${constructorName}\" is not transportable.`);
             }
         }
@@ -71,8 +74,8 @@ function unmarshallTransform(payload: any, context: transportable.TransportConte
         let object = new subClass();
         object.unmarshall(payload, context);
         return object;
-    } else if (payload.hasOwnProperty('v8SerializedData')) {
-        return v8TransportHelper.deserializeValue(payload['v8SerializedData']);
+    } else if (payload.hasOwnProperty('_serialized')) {
+        return builtinObjectTransporter.deserializeValue(payload['_serialized']);
     }
     return payload;
 }

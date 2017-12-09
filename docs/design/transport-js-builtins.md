@@ -1,9 +1,9 @@
-# v8-transport-helper
+# Transport JavaScript standard built-in objects
 
 ## Incentives
 The abstraction of 'Transportable' lies in the center of napa.js to efficiently share objects between JavaScript VMs (napa workers). Except JavaScript primitive types, an object needs to implement 'Transportable' interface to make it transportable. It means [Javascript standard built-in objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects) are not transportable unless wrappers or equivalent implementations for them are implemented by extending 'Transportable' interface. Developing cost for all those objects is not trivial, and new abstraction layer (wrappers or equivalent implementations) will bring barriers for users to learn and adopt these new stuffs. Moreover, developers also need to deal with the interaction between JavaScript standards objects and those wrappers or equivalent implementations.
 
-The incentive of transport-fallback is to provide a solution to make JavaScript standard built-in objects transportable with requirements listed in the below Goals section.
+The incentive of this design is to provide a solution to make JavaScript standard built-in objects transportable with requirements listed in the Goals section.
 
 At the first stage, we will focus on an efficient solution to share data between napa workers. Basically, it is about making SharedArrayBuffer / TypedArray / DataView transportable.
 
