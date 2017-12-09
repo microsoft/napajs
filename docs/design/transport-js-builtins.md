@@ -74,10 +74,14 @@ export function marshallTransform(jsValue: any, context: transportable.Transport
         if (constructorName !== 'Object') {
             if (typeof jsValue['cid'] === 'function') {
                 return <transportable.Transportable>(jsValue).marshall(context);
-            } else if (_v8TransportHelperVerifiedWhitelist.has(constructorName)) {
-                return {v8SerializedData : v8TransportHelper.serializeValue(jsValue)};
-            }
-            else {
+            } else if (_builtInTypeWhitelist.has(constructorName)) {
+                let serializedData = builtinObjectTransporter.serializeValue(jsValue);
+                if (serializedData) {
+                    return { _serialized : serializedData };
+                } else {
+                    throw new Error(`Failed to serialize object with type of \"${constructorName}\".`);
+                }
+            } else {
                 throw new Error(`Object type \"${constructorName}\" is not transportable.`);
             }
         }
@@ -100,8 +104,8 @@ function unmarshallTransform(payload: any, context: transportable.TransportConte
         let object = new subClass();
         object.unmarshall(payload, context);
         return object;
-    } else if (payload.hasOwnProperty('v8SerializedData')) {
-        return v8TransportHelper.deserializeValue(payload['v8SerializedData']);
+    } else if (payload.hasOwnProperty('_serialized')) {
+        return builtinObjectTransporter.deserializeValue(payload['_serialized']);
     }
     return payload;
 }

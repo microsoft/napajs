@@ -12,7 +12,7 @@ namespace transport {
 
     using namespace v8;
 
-    typedef std::pair<SharedArrayBuffer::Contents, std::shared_ptr<ExternalizedContents>> SharedArrayBufferExternalization;
+    typedef std::pair<SharedArrayBuffer::Contents, std::shared_ptr<ExternalizedContents>> ExternalizedSharedArrayBufferContents;
 
     class Serializer : public ValueSerializer::Delegate {
     public:
@@ -29,22 +29,22 @@ namespace transport {
 
         Maybe<uint32_t> GetSharedArrayBufferId(
             Isolate* isolate,
-            Local<SharedArrayBuffer> shared_array_buffer
+            Local<SharedArrayBuffer> sharedArrayBuffer
         ) override;
 
-        void* ReallocateBufferMemory(void* old_buffer, size_t size, size_t* actual_size) override;
+        void* ReallocateBufferMemory(void* oldBuffer, size_t size, size_t* actualSize) override;
 
         void FreeBufferMemory(void* buffer) override;
 
     private:
-        SharedArrayBufferExternalization MaybeExternalize(Local<SharedArrayBuffer> shared_array_buffer);
+        ExternalizedSharedArrayBufferContents MaybeExternalize(Local<SharedArrayBuffer> sharedArrayBuffer);
 
         Maybe<bool> FinalizeTransfer();
 
         Isolate* _isolate;
         ValueSerializer _serializer;
         std::shared_ptr<SerializedData> _data;
-        std::vector<Global<SharedArrayBuffer>> _shared_array_buffers;
+        std::vector<Global<SharedArrayBuffer>> _sharedArrayBuffers;
 
         Serializer(const Serializer&) = delete;
         Serializer& operator=(const Serializer&) = delete;
@@ -52,7 +52,7 @@ namespace transport {
 
 
     Maybe<bool> Serializer::WriteValue(Local<Value> value) {
-        bool ok;
+        bool ok = false;
         _data.reset(new SerializedData);
         _serializer.WriteHeader();
 
@@ -78,55 +78,55 @@ namespace transport {
 
     Maybe<uint32_t> Serializer::GetSharedArrayBufferId(
         Isolate* isolate,
-        Local<SharedArrayBuffer> shared_array_buffer
+        Local<SharedArrayBuffer> sharedArrayBuffer
     ) {
-        for (size_t index = 0; index < _shared_array_buffers.size(); ++index) {
-            if (_shared_array_buffers[index] == shared_array_buffer) {
+        for (size_t index = 0; index < _sharedArrayBuffers.size(); ++index) {
+            if (_sharedArrayBuffers[index] == sharedArrayBuffer) {
                 return Just<uint32_t>(static_cast<uint32_t>(index));
             }
         }
 
-        size_t index = _shared_array_buffers.size();
-        _shared_array_buffers.emplace_back(_isolate, shared_array_buffer);
+        size_t index = _sharedArrayBuffers.size();
+        _sharedArrayBuffers.emplace_back(_isolate, sharedArrayBuffer);
         return Just<uint32_t>(static_cast<uint32_t>(index));
     }
 
-    void* Serializer::ReallocateBufferMemory(void* old_buffer, size_t size, size_t* actual_size) {
-        void* result = realloc(old_buffer, size);
-        *actual_size = result ? size : 0;
+    void* Serializer::ReallocateBufferMemory(void* oldBuffer, size_t size, size_t* actualSize) {
+        void* result = realloc(oldBuffer, size);
+        *actualSize = result ? size : 0;
         return result;
     }
 
     void Serializer::FreeBufferMemory(void* buffer) { free(buffer); }
 
-    SharedArrayBufferExternalization
-    Serializer::MaybeExternalize(Local<SharedArrayBuffer> shared_array_buffer) {
+    ExternalizedSharedArrayBufferContents
+    Serializer::MaybeExternalize(Local<SharedArrayBuffer> sharedArrayBuffer) {
         Local<Context> context = _isolate->GetCurrentContext();
         Local<String> key = v8_helpers::MakeV8String(_isolate, "_externalized");
-        bool ok;
-        if (shared_array_buffer->IsExternal()
-            && shared_array_buffer->Has(context, key).To(&ok)) {
+        bool ok = false;
+        if (sharedArrayBuffer->IsExternal()
+            && sharedArrayBuffer->Has(context, key).To(&ok)) {
             Local<Value> value;
-            if (shared_array_buffer->Get(context, key).ToLocal(&value)) {
+            if (sharedArrayBuffer->Get(context, key).ToLocal(&value)) {
                 auto sharedPtrWrap = NAPA_OBJECTWRAP::Unwrap<napa::module::SharedPtrWrap>(Local<Object>::Cast(value));
                 auto externalizedContents = sharedPtrWrap->Get<ExternalizedContents>();
-                return std::make_pair(shared_array_buffer->GetContents(), externalizedContents);
+                return std::make_pair(sharedArrayBuffer->GetContents(), externalizedContents);
             }
-            return std::make_pair(shared_array_buffer->GetContents(), nullptr);
+            return std::make_pair(sharedArrayBuffer->GetContents(), nullptr);
         } else {
-            auto contents = shared_array_buffer->Externalize();
+            auto contents = sharedArrayBuffer->Externalize();
             auto externalizedContents = std::make_shared<ExternalizedContents>(contents);
             auto sharedPtrWrap = napa::module::binding::CreateShareableWrap(externalizedContents);
-            shared_array_buffer->CreateDataProperty(context, key, sharedPtrWrap);
+            sharedArrayBuffer->CreateDataProperty(context, key, sharedPtrWrap);
             return std::make_pair(contents, externalizedContents);
         }
     }
 
     Maybe<bool> Serializer::FinalizeTransfer() {
-        for (const auto& global_shared_array_buffer : _shared_array_buffers) {
-            Local<SharedArrayBuffer> shared_array_buffer =
-                Local<SharedArrayBuffer>::New(_isolate, global_shared_array_buffer);
-            _data->_shared_array_buffer_contents.push_back(MaybeExternalize(shared_array_buffer));
+        for (const auto& globalSharedArrayBuffer : _sharedArrayBuffers) {
+            Local<SharedArrayBuffer> sharedArrayBuffer =
+                Local<SharedArrayBuffer>::New(_isolate, globalSharedArrayBuffer);
+            _data->_externalizedSharedArrayBufferContents.push_back(MaybeExternalize(sharedArrayBuffer));
         }
 
         return Just(true);

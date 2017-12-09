@@ -10,13 +10,13 @@ import * as path from 'path';
 let _registry: Map<string, new(...args: any[]) => transportable.Transportable> 
     = new Map<string, new(...args: any[]) => transportable.Transportable>();
 
-let _verifiedBuiltInTypeWhitelist = new Set();
+let _builtInTypeWhitelist = new Set();
 [
     'ArrayBuffer', 'SharedArrayBuffer',
     'Float32Array', 'Float64Array',
     'Int8Array', 'Int16Array', 'Int32Array',
     'Uint8Array', 'Uint16Array', 'Uint32Array'
-].forEach((type) => { _verifiedBuiltInTypeWhitelist.add(type); });
+].forEach((type) => { _builtInTypeWhitelist.add(type); });
 
 /// <summary> Register a TransportableObject sub-class with a Constructor ID (cid). </summary>
 export function register(subClass: new(...args: any[]) => any) {
@@ -42,7 +42,7 @@ export function marshallTransform(jsValue: any, context: transportable.Transport
         if (constructorName !== 'Object') {
             if (typeof jsValue['cid'] === 'function') {
                 return <transportable.Transportable>(jsValue).marshall(context);
-            } else if (_verifiedBuiltInTypeWhitelist.has(constructorName)) {
+            } else if (_builtInTypeWhitelist.has(constructorName)) {
                 let serializedData = builtinObjectTransporter.serializeValue(jsValue);
                 if (serializedData) {
                     return { _serialized : serializedData };

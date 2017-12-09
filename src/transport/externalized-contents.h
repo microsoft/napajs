@@ -44,7 +44,7 @@ namespace transport {
     };
 
     ExternalizedContents::~ExternalizedContents() {
-        // TODO: Get array_buffer_allocator to free its ExternalizedContents.
+        // TODO #146: Get array_buffer_allocator to free ExternalizedContents.
         free(_data);
     }
 }

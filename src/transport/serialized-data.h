@@ -10,19 +10,19 @@ namespace transport {
 
     using namespace v8;
 
-    typedef std::pair<SharedArrayBuffer::Contents, std::shared_ptr<ExternalizedContents>> SharedArrayBufferExternalization;
+    typedef std::pair<SharedArrayBuffer::Contents, std::shared_ptr<ExternalizedContents>> ExternalizedSharedArrayBufferContents;
 
     class SerializedData {
     public:
         SerializedData() : _size(0) {}
 
-        uint8_t* data() { return _data.get(); }
+        uint8_t* GetData() { return _data.get(); }
 
-        size_t size() { return _size; }
+        size_t GetSize() { return _size; }
 
-        const std::vector<SharedArrayBufferExternalization>&
-        shared_array_buffer_contents() {
-            return _shared_array_buffer_contents;
+        const std::vector<ExternalizedSharedArrayBufferContents>&
+        GetExternalizedSharedArrayBufferContents() {
+            return _externalizedSharedArrayBufferContents;
         }
 
     private:
@@ -32,7 +32,7 @@ namespace transport {
 
         std::unique_ptr<uint8_t, DataDeleter> _data;
         size_t _size;
-        std::vector<SharedArrayBufferExternalization> _shared_array_buffer_contents;
+        std::vector<ExternalizedSharedArrayBufferContents> _externalizedSharedArrayBufferContents;
 
     private:
         friend class Serializer;
