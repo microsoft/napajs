@@ -65,7 +65,7 @@ void LockWrap::GuardSyncCallback(const v8::FunctionCallbackInfo<v8::Value>& args
         auto result = v8::Local<v8::Function>::Cast(args[0])->Call(
             context,
             holder,
-            params.size(),
+            static_cast<int>(params.size()),
             params.empty() ? nullptr : params.data());
 
         if (result.IsEmpty() || tryCatch.HasCaught()) {
