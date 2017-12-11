@@ -5,7 +5,7 @@ import * as napa from "../lib/index";
 import * as assert from 'assert';
 import * as path from 'path';
 import * as t from './napa-zone/test';
-var transportBuiltin = require('./module/transport-builtin-test');
+var transportBuiltin = require('./transport-builtin-test');
 
 describe('napajs/transport', () => {
     let napaZone = napa.zone.create('zone10');

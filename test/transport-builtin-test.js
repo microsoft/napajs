@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 const assert = require('assert');
-const napa = require('../../lib/index');
+const napa = require('../lib/index');
 let zoneKey = 'transport-test-zone';
 let zone = napa.zone.create(zoneKey, { workers: 4 });
 
@@ -74,7 +74,7 @@ function recursivelySetElementOfSharedArrayBuffer(zoneKey, sab, i, value) {
     let expected = global.constructExpectedResult(i, ta.length, value);
     assert.equal(ta.toString(), expected);
 
-    const napa = require('../../lib/index');
+    const napa = require('../lib/index');
     let zone = (i % 4 < 2) ? napa.zone.get(zoneKey) : napa.zone.node;
     zone.execute(
         recursivelySetElementOfSharedArrayBuffer,
@@ -120,7 +120,7 @@ function recursivelySetElementOfTypedArray_SAB(zoneKey, ta, i, value) {
     let expected = global.constructExpectedResult(i, ta.length, value);
     assert.equal(ta.toString(), expected);
 
-    const napa = require('../../lib/index');
+    const napa = require('../lib/index');
     let zone = (i % 4 < 2) ? napa.zone.get(zoneKey) : napa.zone.node;
     zone.execute(
         recursivelySetElementOfTypedArray_SAB,
@@ -171,7 +171,7 @@ function recursivelySetElementOfArrayBuffer(zoneKey, ab, i, value) {
     let expected = global.constructExpectedResult(i, ta.length, value);
     assert.equal(ta.toString(), expected);
 
-    const napa = require('../../lib/index');
+    const napa = require('../lib/index');
     let zone = (i % 4 < 2) ? napa.zone.get(zoneKey) : napa.zone.node;
     zone.execute(
         recursivelySetElementOfArrayBuffer,
@@ -216,7 +216,7 @@ function recursivelySetElementOfTypeArray_AB(zoneKey, ta, i, value) {
     let expected = global.constructExpectedResult(i, ta.length, value);
     assert.equal(ta.toString(), expected);
 
-    const napa = require('../../lib/index');
+    const napa = require('../lib/index');
     let zone = (i % 4 < 2) ? napa.zone.get(zoneKey) : napa.zone.node;
     zone.execute(
         recursivelySetElementOfTypeArray_AB,

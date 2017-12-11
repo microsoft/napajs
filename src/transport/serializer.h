@@ -12,8 +12,6 @@ namespace transport {
 
     using namespace v8;
 
-    typedef std::pair<SharedArrayBuffer::Contents, std::shared_ptr<ExternalizedContents>> ExternalizedSharedArrayBufferContents;
-
     class Serializer : public ValueSerializer::Delegate {
     public:
         explicit Serializer(Isolate* isolate) :
@@ -107,6 +105,8 @@ namespace transport {
         if (sharedArrayBuffer->IsExternal()
             && sharedArrayBuffer->Has(context, key).To(&ok)) {
             Local<Value> value;
+            // If the SharedArrayBuffer has been externalized, just get its Contents without externalizing it again,
+            // and get its ExternalizedContents which has been stored in the '_externalized' property of the SharedArrayBuffer.
             if (sharedArrayBuffer->Get(context, key).ToLocal(&value)) {
                 auto sharedPtrWrap = NAPA_OBJECTWRAP::Unwrap<napa::module::SharedPtrWrap>(Local<Object>::Cast(value));
                 auto externalizedContents = sharedPtrWrap->Get<ExternalizedContents>();
@@ -114,6 +114,9 @@ namespace transport {
             }
             return std::make_pair(sharedArrayBuffer->GetContents(), nullptr);
         } else {
+            // If the SharedArrayBuffer has not been externalized,
+            // externalize it and get its Contents and ExternalizedContents at first,
+            // then store its ExternalizedContents in the '_externalized' property of the original SharedArrayBuffer.
             auto contents = sharedArrayBuffer->Externalize();
             auto externalizedContents = std::make_shared<ExternalizedContents>(contents);
             auto sharedPtrWrap = napa::module::binding::CreateShareableWrap(externalizedContents);
@@ -126,6 +129,8 @@ namespace transport {
         for (const auto& globalSharedArrayBuffer : _sharedArrayBuffers) {
             Local<SharedArrayBuffer> sharedArrayBuffer =
                 Local<SharedArrayBuffer>::New(_isolate, globalSharedArrayBuffer);
+            // Externalize the SharedArrayBuffer if it hasn't been done before,
+            // and store it's ExternalizedContents which will be used when deserializing it in deserializer.
             _data->_externalizedSharedArrayBufferContents.push_back(MaybeExternalize(sharedArrayBuffer));
         }
 

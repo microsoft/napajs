@@ -31,7 +31,7 @@ namespace transport {
     Deserializer::Deserializer(Isolate* isolate, std::shared_ptr<SerializedData> data) :
         _isolate(isolate),
         _deserializer(isolate, data->GetData(), data->GetSize(), this),
-        _data(data) {
+        _data(std::move(data)) {
         _deserializer.SetSupportsLegacyWireFormat(true);
     }
 
@@ -48,6 +48,10 @@ namespace transport {
             Local<SharedArrayBuffer> sharedArrayBuffers = SharedArrayBuffer::New(
                 _isolate, contents.first.Data(), contents.first.ByteLength());
             auto sharedPtrWrap = napa::module::binding::CreateShareableWrap(contents.second);
+
+            // After deserialization of a SharedArrayBuffer from its SerializedData,
+            // set its '_externalized' property to a SharedPtrWrap of its ExternalizedContents.
+            // This extends the lifecycle of the ExternalizedContents by the lifetime of the restored SharedArrayBuffer object.
             sharedArrayBuffers->CreateDataProperty(context, key, sharedPtrWrap);
             _deserializer.TransferSharedArrayBuffer(index++, sharedArrayBuffers);
         }

@@ -24,7 +24,7 @@ namespace transport {
         }
         
         static MaybeLocal<Value>
-        DeserializeValue(Isolate* isolate, std::shared_ptr<SerializedData> data) {
+        DeserializeValue(Isolate* isolate, std::shared_ptr<SerializedData>& data) {
             Local<Value> value;
             Deserializer deserializer(isolate, data);
             return deserializer.ReadValue();

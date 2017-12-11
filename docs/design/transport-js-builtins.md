@@ -111,6 +111,23 @@ function unmarshallTransform(payload: any, context: transportable.TransportConte
 }
 ```
 
+- Life cycle of SharedArrayBuffer (SAB)
+> 1. When a SAB participates transportation among napa workers, its life cycle will be extended till the last reference this SAB. The reference of a SAB could be
+>>> 1) a SAB object in its original isolate.
+
+>>> 2) a received SAB transported from another napa workers, including node zone of napa.
+
+>>> 3) a TypedArray or DataView created from the original SAB or a received SAB.
+
+> 2. The life cycle extension during transportation is achieved through the ExternalizedContents SharedPtrWrap of the SAB.
+>>> 1) When a SAB is transported for the first time, it will be externalized and its ExternalizedContents will be stored in its SerializedData. At the same time, the SharedPtrWrap of the ExternalizedContents will be set to the '_externalized' property of the original SAB.
+
+>>> 2) When a SAB is transported for the second time or later, it wil skip externalization and find its ExternalizedContents from its '_externalized' property, and store it to its SerializedData.
+
+>>> 3) When a napa worker try to restored a transported SAB, it will find the pre-stored ExternalizedContents, and create a SharedPtrWrap for it, then set it to the to-be-restored SAB.
+
+>>> 4) The life cycle of the SharedArrayBuffer is extended by the SharedPtrWrap of its ExternalizedContents.
+
 
 ## Constraints
 The above solution is based on the serialization / deserialization mechanism of V8. It may have the following constraints.

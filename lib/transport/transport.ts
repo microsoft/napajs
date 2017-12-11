@@ -12,10 +12,16 @@ let _registry: Map<string, new(...args: any[]) => transportable.Transportable>
 
 let _builtInTypeWhitelist = new Set();
 [
-    'ArrayBuffer', 'SharedArrayBuffer',
-    'Float32Array', 'Float64Array',
-    'Int8Array', 'Int16Array', 'Int32Array',
-    'Uint8Array', 'Uint16Array', 'Uint32Array'
+    'ArrayBuffer',
+    'Float32Array',
+    'Float64Array',
+    'Int16Array',
+    'Int32Array',
+    'Int8Array',
+    'SharedArrayBuffer',
+    'Uint16Array',
+    'Uint32Array',
+    'Uint8Array'
 ].forEach((type) => { _builtInTypeWhitelist.add(type); });
 
 /// <summary> Register a TransportableObject sub-class with a Constructor ID (cid). </summary>
