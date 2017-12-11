@@ -3,8 +3,10 @@
 
 #pragma once
 
-#include "serializer.h"
 #include "deserializer.h"
+#include "serializer.h"
+
+#include <napa/exports.h>
 
 namespace napa {
 namespace transport {
@@ -13,7 +15,7 @@ namespace transport {
 
     class TransportUtils {
     public:
-        static std::shared_ptr<SerializedData>
+        static NAPA_API std::shared_ptr<SerializedData>
         SerializeValue(Isolate* isolate, Local<Value> value) {
             bool ok;
             Serializer serializer(isolate);
@@ -23,7 +25,7 @@ namespace transport {
             return nullptr;
         }
         
-        static MaybeLocal<Value>
+        static NAPA_API MaybeLocal<Value>
         DeserializeValue(Isolate* isolate, std::shared_ptr<SerializedData>& data) {
             Local<Value> value;
             Deserializer deserializer(isolate, data);
