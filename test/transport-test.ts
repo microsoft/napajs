@@ -60,7 +60,7 @@ describe('napajs/transport', () => {
         });
 
         it('@node: addon transportable', () => {
-           t.addonTransportTest();
+            t.addonTransportTest();
         });
 
         it('@napa: addon transportable', () => {
@@ -68,7 +68,7 @@ describe('napajs/transport', () => {
         });
 
         it('@node: function transportable', () => {
-           t.functionTransportTest();
+            t.functionTransportTest();
         });
 
         it('@napa: function transportable', () => {

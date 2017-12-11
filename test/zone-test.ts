@@ -508,6 +508,44 @@ describe('napajs/zone', function () {
                 });
         });
 
+        let unicodeStr = "中文 español deutsch English हिन्दी العربية português বাংলা русский 日本語 ਪੰਜਾਬੀ 한국어 தமிழ் עברית"; // len = 92
+
+        it('@node: -> node zone with args containing unicode string', () => {
+            return napa.zone.current.execute((str: string) => {
+                var assert = require("assert");
+                let unicodeStr = "中文 español deutsch English हिन्दी العربية português বাংলা русский 日本語 ਪੰਜਾਬੀ 한국어 தமிழ் עברית";
+                assert.equal(str, unicodeStr);
+                return str;
+            }, [unicodeStr]).then((result: napa.zone.Result) => {
+                assert.equal(result.value, unicodeStr);
+            });
+        });
+
+        it('@node: -> napa zone with args containing unicode string', () => {
+            return napaZone1.execute((str: string) => {
+                var assert = require("assert");
+                let unicodeStr = "中文 español deutsch English हिन्दी العربية português বাংলা русский 日本語 ਪੰਜਾਬੀ 한국어 தமிழ் עברית";
+                assert.equal(str, unicodeStr);
+                return unicodeStr;
+            }, [unicodeStr]).then((result: napa.zone.Result) => {
+                assert.equal(result.value, unicodeStr);
+            });
+        });
+
+        it('@napa: -> napa zone with args containing unicode string', () => {
+            return napaZone1.execute('./napa-zone/test', "executeWithArgsContainingUnicodeString", ['napa-zone2'])
+                .then((result: napa.zone.Result) => {
+                    assert.equal(result.value, unicodeStr);
+                });
+        });
+
+        it('@napa: -> node zone with args containing unicode string', () => {
+            return napaZone1.execute('./napa-zone/test', "executeWithArgsContainingUnicodeString", ['node'])
+                .then((result: napa.zone.Result) => {
+                    assert.equal(result.value, unicodeStr);
+                });
+        });
+
         it.skip('@node: -> napa zone with timeout and succeed', () => {
             return napaZone1.execute('./napa-zone/test', 'waitMS', [1], {timeout: 100});
         });

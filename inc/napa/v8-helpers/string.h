@@ -20,32 +20,89 @@ namespace v8_helpers {
         return MakeV8String(isolate, str.c_str(), static_cast<int>(str.length()));
     }
 
-    /// <summary> Make a V8 string from std::string. </summary>
+    /// <summary> Make a V8 string from napa::stl::String. </summary>
     inline v8::Local<v8::String> MakeV8String(v8::Isolate *isolate, const napa::stl::String& str) {
         return MakeV8String(isolate, str.c_str(), static_cast<int>(str.length()));
     }
 
+    /// <summary> Make a V8 string by making a copy of const uint16_t*. </summary>
+    inline v8::Local<v8::String> MakeV8String(v8::Isolate *isolate, const uint16_t* str, int length = -1) {
+        return v8::String::NewFromTwoByte(isolate, str, v8::NewStringType::kNormal, length).ToLocalChecked();
+    }
+
+    /// <summary> Make a V8 string by making a copy of const char16_t*. </summary>
+    inline v8::Local<v8::String> MakeV8String(v8::Isolate *isolate, const char16_t* str, int length = -1) {
+        return MakeV8String(isolate, reinterpret_cast<const uint16_t *>(str), length);
+    }
+
+    /// <summary> Make a V8 string from std::u16string. </summary>
+    inline v8::Local<v8::String> MakeV8String(v8::Isolate *isolate, const std::u16string& str) {
+        return MakeV8String(isolate, str.c_str(), static_cast<int>(str.length()));
+    }
+
+    /// <summary> Make a V8 string from napa::stl::U16String. </summary>
+    inline v8::Local<v8::String> MakeV8String(v8::Isolate *isolate, const napa::stl::U16String& str) {
+        return MakeV8String(isolate, str.c_str(), static_cast<int>(str.length()));
+    }
+
+    using ExternalOneByteStringView = v8::ExternalOneByteStringResourceImpl;
+    class ExternalTwoByteStringView : public v8::String::ExternalStringResource {
+    public:
+        ExternalTwoByteStringView() : _data(nullptr), _length(0) {}
+        ExternalTwoByteStringView(const uint16_t* data, size_t length) : _data(data), _length(length) {}
+        const uint16_t* data() const { return _data; }
+        size_t length() const { return _length; }
+
+    private:
+        const uint16_t* _data;
+        size_t _length;
+    };
+
     /// <summary> Make a V8 string from external const char*. </summary>
-    inline v8::Local<v8::String> MakeExternalV8String(v8::Isolate *isolate, const char* data) {
-        // V8 garbage collection frees ExternalOneByteStringResourceImpl.
-        auto externalResource = new v8::ExternalOneByteStringResourceImpl(data, std::strlen(data));
+    /// <remarks> The input data should only contains Latin-1 chars. </remarks>
+    inline v8::Local<v8::String> MakeExternalV8String(v8::Isolate *isolate, const char* data, size_t length) {
+        // V8 garbage collection frees ExternalOneByteStringView.
+        auto externalResource = new ExternalOneByteStringView(data, length);
         return v8::String::NewExternalOneByte(isolate, externalResource).ToLocalChecked();
     }
 
     /// <summary> Make a V8 string from external const char*. </summary>
-    inline v8::Local<v8::String> MakeExternalV8String(v8::Isolate *isolate, const char* data, size_t length) {
-        // V8 garbage collection frees ExternalOneByteStringResourceImpl.
-        auto externalResource = new v8::ExternalOneByteStringResourceImpl(data, length);
-        return v8::String::NewExternalOneByte(isolate, externalResource).ToLocalChecked();
+    /// <remarks> The input data should only contains Latin-1 chars. </remarks>
+    inline v8::Local<v8::String> MakeExternalV8String(v8::Isolate *isolate, const char* data) {
+        return MakeExternalV8String(isolate, data, strlen(data));
     }
 
     /// <summary> Make a V8 string from external std::string. </sumary>
+    /// <remarks> The input data should only contains Latin-1 chars. </remarks>
     inline v8::Local<v8::String> MakeExternalV8String(v8::Isolate *isolate, const std::string& str) {
         return MakeExternalV8String(isolate, str.data(), str.length());
     }
 
-     /// <summary> Make a V8 string from external napa::stl::String. </sumary>
+    /// <summary> Make a V8 string from external napa::stl::String. </sumary>
+    /// <remarks> The input data should only contains Latin-1 chars. </remarks>
     inline v8::Local<v8::String> MakeExternalV8String(v8::Isolate *isolate, const napa::stl::String& str) {
+        return MakeExternalV8String(isolate, str.data(), str.length());
+    }
+
+    /// <summary> Make a V8 string from external const uint16_t*. </summary>
+    inline v8::Local<v8::String> MakeExternalV8String(v8::Isolate *isolate, const uint16_t* data, size_t length) {
+        // V8 garbage collection frees ExternalTwoByteStringView.
+        auto externalResource = new ExternalTwoByteStringView(data, length);
+        return v8::String::NewExternalTwoByte(isolate, externalResource).ToLocalChecked();
+    }
+
+    /// <summary> Make a V8 string from external const char16_t*. </summary>
+    inline v8::Local<v8::String> MakeExternalV8String(v8::Isolate *isolate, const char16_t* data, size_t length) {
+        return MakeExternalV8String(isolate, reinterpret_cast<const uint16_t *>(data), length);
+    }
+
+    /// <summary> Make a V8 string from external std::u16string. </sumary>
+    inline v8::Local<v8::String> MakeExternalV8String(v8::Isolate *isolate, const std::u16string& str) {
+        return MakeExternalV8String(isolate, str.data(), str.length());
+    }
+
+    /// <summary> Make a V8 string from external napa::stl::U16String. </sumary>
+    inline v8::Local<v8::String> MakeExternalV8String(v8::Isolate *isolate, const napa::stl::U16String& str) {
         return MakeExternalV8String(isolate, str.data(), str.length());
     }
 
@@ -73,7 +130,7 @@ namespace v8_helpers {
             if (!val->ToString(context).ToLocal(&str)) {
                 return;
             }
-            _length = str->Length();
+            _length = str->Utf8Length();
             _data = _alloc.allocate(_length + 1);
             str->WriteUtf8(_data);
         }
