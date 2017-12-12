@@ -247,14 +247,16 @@ ModuleInfo ModuleResolver::ModuleResolverImpl::LoadAsDirectory(const filesystem:
                 throw std::runtime_error(rapidjson::GetParseError_En(package.GetParseError()));
             }
 
-            filesystem::Path mainPath(package["main"].GetString());
-            mainPath.Normalize();
+			if (package.HasMember("main")) {
+				filesystem::Path mainPath(package["main"].GetString());
+				mainPath.Normalize();
 
-            auto moduleInfo = LoadAsFile(mainPath, fullPath);
-            if (moduleInfo.type != ModuleType::NONE) {
-                moduleInfo.packageJsonPath = packageJson.String();
-                return moduleInfo;
-            }
+				auto moduleInfo = LoadAsFile(mainPath, fullPath);
+				if (moduleInfo.type != ModuleType::NONE) {
+					moduleInfo.packageJsonPath = packageJson.String();
+					return moduleInfo;
+				}
+			}
         } catch (...) {}    // ignore exception and continue.
     }
 
