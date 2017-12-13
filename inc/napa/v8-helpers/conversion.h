@@ -22,7 +22,7 @@ namespace v8_helpers {
         return std::string(*utf8Value);
     }
 
-    /// <summary> Convert a v8 value to std::wstring. </summary>
+    /// <summary> Convert a v8 value to std::u16string. </summary>
     template <>
     inline std::u16string V8ValueTo(const v8::Local<v8::Value>& value) {
         v8::String::Value utf16Value(value);
@@ -36,7 +36,7 @@ namespace v8_helpers {
         return napa::stl::String(*utf8Value);
     }
 
-    /// <summary> Convert a v8 value to napa::stl::WString. </summary>
+    /// <summary> Convert a v8 value to napa::stl::U16String. </summary>
     template <>
     inline napa::stl::U16String V8ValueTo(const v8::Local<v8::Value>& value) {
         v8::String::Value utf16Value(value);

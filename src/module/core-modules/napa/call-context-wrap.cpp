@@ -117,6 +117,7 @@ void CallContextWrap::GetArgumentsCallback(v8::Local<v8::String> /*propertyName*
     auto& cppArgs = thisObject->GetRef().GetArguments();
     auto jsArgs = v8::Array::New(isolate, static_cast<int>(cppArgs.size()));
     for (size_t i = 0; i < cppArgs.size(); ++i) {
+        // TODO: Switch to 2-bytes external string.
         (void)jsArgs->CreateDataProperty(context, static_cast<uint32_t>(i), v8_helpers::MakeV8String(isolate, cppArgs[i]));
     }
     args.GetReturnValue().Set(jsArgs);
