@@ -18,3 +18,4 @@ test/tsconfig.json
 .taskkey
 .travis.yml
 appveyor.yml
+npm-debug.log
