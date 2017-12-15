@@ -217,7 +217,7 @@ static void Log(const v8::FunctionCallbackInfo<v8::Value>& args) {
     logger.LogMessage(section, level, traceId, *file, line, *message);
 }
 
-static void SerializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void SerializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
@@ -240,7 +240,7 @@ static void SerializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
     #endif
 }
 
-static void DeserializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void DeserializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
