@@ -43,12 +43,7 @@ inline void LogFormattedMessage(
 
 #else
 
-#define LOG(section, level, traceId, format, ...) \
-    UNUSED(section);                              \
-    UNUSED(level);                                \
-    UNUSED(traceId);                              \
-    UNUSED(format);                               \
-    UNUSED(__VA_ARGS__);
+#define LOG(section, level, traceId, format, ...) UNUSED(section, level, traceId, format, ##__VA_ARGS__)
 
 #endif
 
