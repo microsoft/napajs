@@ -8,7 +8,7 @@
 
 #include <stdarg.h>
 
-#define UNUSED(var) (void)(var)
+#define UNUSED(...) (void)(0, ##__VA_ARGS__)
 
 /// <summary> The maximum string length of a single log call. Anything over will be truncated. </summary>
 const size_t LOG_MAX_SIZE = 512;
@@ -43,7 +43,7 @@ inline void LogFormattedMessage(
 
 #else
 
-#define LOG(section, level, traceId, format, ...) UNUSED(section, level, traceId, format, ##__VA_ARGS__)
+#define LOG(section, level, traceId, format, ...) UNUSED(section, level, traceId, format, UNUSED(__VA_ARGS__))
 
 #endif
 
