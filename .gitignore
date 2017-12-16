@@ -28,3 +28,6 @@ package-lock.json
 
 # ignore all VSCode files
 .vscode
+
+# ignore npm related files
+npm-debug.log
