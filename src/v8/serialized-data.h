@@ -6,28 +6,30 @@
 #include "externalized-contents.h"
 
 namespace napa {
-namespace transport {
+namespace v8_extensions {
 
     using namespace v8;
 
     typedef std::pair<SharedArrayBuffer::Contents, std::shared_ptr<ExternalizedContents>> ExternalizedSharedArrayBufferContents;
 
+    /// <summary>
+    /// SerializedData holds the serialized data of a JavaScript object, and it is required during its deserialization.
+    /// If the JavaScript object has properties or elements of SharedArrayBuffer or types based on SharedArrayBuffer, 
+    /// like DataView and TypedArray, their ExternalizedContents will be stored in _externalizedSharedArrayBufferContents.
+    /// </summary>
     class SerializedData {
     public:
-        SerializedData() : _size(0) {}
+        SerializedData();
 
-        uint8_t* GetData() { return _data.get(); }
+        const uint8_t* GetData() const;
 
-        size_t GetSize() { return _size; }
+        size_t GetSize() const;
 
-        const std::vector<ExternalizedSharedArrayBufferContents>&
-        GetExternalizedSharedArrayBufferContents() {
-            return _externalizedSharedArrayBufferContents;
-        }
+        const std::vector<ExternalizedSharedArrayBufferContents>& GetExternalizedSharedArrayBufferContents() const;
 
     private:
         struct DataDeleter {
-            void operator()(uint8_t* p) const { free(p); }
+            void operator()(uint8_t* p) const;
         };
 
         std::unique_ptr<uint8_t, DataDeleter> _data;

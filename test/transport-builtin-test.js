@@ -3,8 +3,8 @@
 
 const assert = require('assert');
 const napa = require('../lib/index');
-let zoneKey = 'transport-test-zone';
-let zone = napa.zone.create(zoneKey, { workers: 4 });
+let zoneId = 'transport-test-zone';
+let zone = napa.zone.create(zoneId, { workers: 4 });
 
 /// Construct an expected result string.
 /// constructExpectedResult(5, 5, 255) returns '0,0,0,0,0'
@@ -62,7 +62,7 @@ function transportCompositeObjectOfSharedArrayBuffer() {
 }
 exports.transportCompositeObjectOfSharedArrayBuffer = transportCompositeObjectOfSharedArrayBuffer;
 
-function recursivelySetElementOfSharedArrayBuffer(zoneKey, sab, i, value) {
+function recursivelySetElementOfSharedArrayBuffer(zoneId, sab, i, value) {
     if (i < 0) return;
     let ta = new Uint8Array(sab);
     ta[i] = value;
@@ -75,10 +75,10 @@ function recursivelySetElementOfSharedArrayBuffer(zoneKey, sab, i, value) {
     assert.equal(ta.toString(), expected);
 
     const napa = require('../lib/index');
-    let zone = (i % 4 < 2) ? napa.zone.get(zoneKey) : napa.zone.node;
+    let zone = (i % 4 < 2) ? napa.zone.get(zoneId) : napa.zone.node;
     zone.execute(
         recursivelySetElementOfSharedArrayBuffer,
-        [zoneKey, sab, i - 1, value]
+        [zoneId, sab, i - 1, value]
     ).then((result) => {
         // SharedArrayBuffer shares storage when it is transported,
         // if i > 0, ta[i - 1] has been set to {value} by the previous zone.execute,
@@ -93,7 +93,7 @@ function recursivelyTransportSharedArrayBuffer(length, timeout) {
     let value = 255;
     let sab = new SharedArrayBuffer(length);
     let ta = new Uint8Array(sab);
-    recursivelySetElementOfSharedArrayBuffer(zoneKey, sab, length - 1, value);
+    recursivelySetElementOfSharedArrayBuffer(zoneId, sab, length - 1, value);
 
     return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -109,7 +109,7 @@ function recursivelyTransportSharedArrayBuffer(length, timeout) {
 exports.recursivelyTransportSharedArrayBuffer = recursivelyTransportSharedArrayBuffer;
 
 
-function recursivelySetElementOfTypedArray_SAB(zoneKey, ta, i, value) {
+function recursivelySetElementOfTypedArray_SAB(zoneId, ta, i, value) {
     if (i < 0) return;
     ta[i] = value;
 
@@ -121,10 +121,10 @@ function recursivelySetElementOfTypedArray_SAB(zoneKey, ta, i, value) {
     assert.equal(ta.toString(), expected);
 
     const napa = require('../lib/index');
-    let zone = (i % 4 < 2) ? napa.zone.get(zoneKey) : napa.zone.node;
+    let zone = (i % 4 < 2) ? napa.zone.get(zoneId) : napa.zone.node;
     zone.execute(
         recursivelySetElementOfTypedArray_SAB,
-        [zoneKey, ta, i - 1, value]
+        [zoneId, ta, i - 1, value]
     ).then((result) => {
         // SharedArrayBuffer shares storage when it is transported,
         // if i > 0, ta[i - 1] has been set to {value} by the previous zone.execute,
@@ -139,7 +139,7 @@ function recursivelyTransportTypedArray_SAB(length, timeout) {
     let value = 255;
     let sab = new SharedArrayBuffer(length);
     let ta = new Uint8Array(sab);
-    recursivelySetElementOfTypedArray_SAB(zoneKey, ta, length - 1, value);
+    recursivelySetElementOfTypedArray_SAB(zoneId, ta, length - 1, value);
 
     return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -155,7 +155,7 @@ function recursivelyTransportTypedArray_SAB(length, timeout) {
 exports.recursivelyTransportTypedArray_SAB = recursivelyTransportTypedArray_SAB;
 
 
-function recursivelySetElementOfArrayBuffer(zoneKey, ab, i, value) {
+function recursivelySetElementOfArrayBuffer(zoneId, ab, i, value) {
     if (i < 0) {
         return;
     }
@@ -172,10 +172,10 @@ function recursivelySetElementOfArrayBuffer(zoneKey, ab, i, value) {
     assert.equal(ta.toString(), expected);
 
     const napa = require('../lib/index');
-    let zone = (i % 4 < 2) ? napa.zone.get(zoneKey) : napa.zone.node;
+    let zone = (i % 4 < 2) ? napa.zone.get(zoneId) : napa.zone.node;
     zone.execute(
         recursivelySetElementOfArrayBuffer,
-        [zoneKey, ab, i - 1, value]
+        [zoneId, ab, i - 1, value]
     ).then((result) => {
         // The original TypeArray (based on ArrayBuffer) shouldn't been changed by the just-finished zone.execute.
         assert.equal(ta.toString(), expected);
@@ -186,7 +186,7 @@ function recursivelyTransportArrayBuffer(length, timeout) {
     let value = 255;
     let ab = new ArrayBuffer(length);
     let ta = new Uint8Array(ab);
-    recursivelySetElementOfArrayBuffer(zoneKey, ab, length - 1, value);
+    recursivelySetElementOfArrayBuffer(zoneId, ab, length - 1, value);
 
     return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -201,7 +201,7 @@ function recursivelyTransportArrayBuffer(length, timeout) {
 exports.recursivelyTransportArrayBuffer = recursivelyTransportArrayBuffer;
 
 
-function recursivelySetElementOfTypeArray_AB(zoneKey, ta, i, value) {
+function recursivelySetElementOfTypeArray_AB(zoneId, ta, i, value) {
     if (i < 0) {
         return;
     }
@@ -217,10 +217,10 @@ function recursivelySetElementOfTypeArray_AB(zoneKey, ta, i, value) {
     assert.equal(ta.toString(), expected);
 
     const napa = require('../lib/index');
-    let zone = (i % 4 < 2) ? napa.zone.get(zoneKey) : napa.zone.node;
+    let zone = (i % 4 < 2) ? napa.zone.get(zoneId) : napa.zone.node;
     zone.execute(
         recursivelySetElementOfTypeArray_AB,
-        [zoneKey, ta, i - 1, value]
+        [zoneId, ta, i - 1, value]
     ).then((result) => {
         // The original TypeArray (based on ArrayBuffer) shouldn't been changed by the just-finished zone.execute.
         assert.equal(ta.toString(), expected);
@@ -231,7 +231,7 @@ function recursivelyTransportTypedArray_AB(length, timeout) {
     let value = 255;
     let ab = new ArrayBuffer(length);
     let ta = new Uint8Array(ab);
-    recursivelySetElementOfTypeArray_AB(zoneKey, ta, length - 1, value);
+    recursivelySetElementOfTypeArray_AB(zoneId, ta, length - 1, value);
 
     return new Promise((resolve, reject) => {
         setTimeout(() => {

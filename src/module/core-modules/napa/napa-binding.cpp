@@ -23,7 +23,7 @@
 #include <napa/providers/metric.h>
 
 #if (V8_MAJOR_VERSION == 6 && V8_MINOR_VERSION >= 2) || V8_MAJOR_VERSION > 6
-#include <transport/transport-utils.h>
+#include <v8/v8-extensions.h>
 #endif
 
 using namespace napa;
@@ -69,8 +69,10 @@ static void CreateZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
     try {
         auto zoneProxy = std::make_unique<napa::Zone>(*zoneId, ss.str());
         args.GetReturnValue().Set(ZoneWrap::NewInstance(std::move(zoneProxy)));
-    } catch (const std::exception& ex) {
+    } catch (const std::runtime_error& ex) {
         JS_FAIL(isolate, ex.what());
+    } catch (...) {
+        JS_FAIL(isolate, "Failed to initialize zone with id ", *zoneId);
     }
 }
 
@@ -85,8 +87,10 @@ static void GetZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
         auto zoneProxy = napa::Zone::Get(*zoneId);
         args.GetReturnValue().Set(ZoneWrap::NewInstance(std::move(zoneProxy)));
     }
-    catch (const std::exception &ex) {
-        JS_ASSERT(isolate, false, ex.what());
+    catch (const std::runtime_error &ex) {
+        JS_FAIL(isolate, ex.what());
+    } catch (...) {
+        JS_FAIL(isolate, "No zone exists with id ", *zoneId);
     }
 }
 
@@ -225,7 +229,7 @@ void SerializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
     CHECK_ARG(isolate, args.Length() == 1, "1 argument is required for \"serializeValue\".");
 
-    auto serializedData = transport::TransportUtils::SerializeValue(isolate, args[0]);
+    auto serializedData = v8_extensions::Utils::SerializeValue(isolate, args[0]);
     if (serializedData) {
         args.GetReturnValue().Set(binding::CreateShareableWrap(serializedData));
     }
@@ -249,10 +253,10 @@ void DeserializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
     CHECK_ARG(isolate, args.Length() == 1, "1 argument is required for \"deserializeValue\".");
     CHECK_ARG(isolate, args[0]->IsObject(), "Argument \"object\" shall be 'SharedPtrWrap' type.");
     auto sharedPtrWrap = NAPA_OBJECTWRAP::Unwrap<SharedPtrWrap>(v8::Local<v8::Object>::Cast(args[0]));
-    auto serializedData = sharedPtrWrap->Get<transport::SerializedData>();
+    auto serializedData = sharedPtrWrap->Get<v8_extensions::SerializedData>();
 
     v8::Local<v8::Value> value;
-    if (transport::TransportUtils::DeserializeValue(isolate, serializedData).ToLocal(&value)) {
+    if (v8_extensions::Utils::DeserializeValue(isolate, serializedData).ToLocal(&value)) {
         args.GetReturnValue().Set(value);
     }
 

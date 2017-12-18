@@ -1,3 +1,9 @@
+# Disable rtti for compatibility with node and v8.
+set(CMAKE_CXX_FLAGS_ORG ${CMAKE_CXX_FLAGS})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
+add_subdirectory(v8)
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS_ORG})
+
 # Files to compile
 file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
@@ -19,7 +25,7 @@ target_include_directories(${TARGET_NAME}
 target_compile_definitions(${TARGET_NAME} PRIVATE NAPA_EXPORTS NAPA_BINDING_EXPORTS BUILDING_NAPA_EXTENSION)
 
 # Link libraries
-target_link_libraries(${TARGET_NAME} PRIVATE)
+target_link_libraries(${TARGET_NAME} PRIVATE "v8-extensions")
 
 if(CMAKE_JS_VERSION)
     # Building Napa as an npm package for node usage (using exported v8 from node.exe)

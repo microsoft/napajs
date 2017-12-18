@@ -19,9 +19,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN)
 
-# Disable rtti for compatibility with node and v8.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
-
 # Build napa shared library.
 add_subdirectory(src)
 
