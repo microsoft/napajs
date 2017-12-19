@@ -1,5 +1,5 @@
 # Files to compile
-file(GLOB SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cc)
+file(GLOB SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
 # The target name
 set(TARGET_NAME "v8-extensions")
