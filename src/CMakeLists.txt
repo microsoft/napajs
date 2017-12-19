@@ -1,7 +1,7 @@
 set(CMAKE_CXX_FLAGS_ORG ${CMAKE_CXX_FLAGS})
 
-# Use -fno-rtti to build v8-extensions as a static library for compatibility with node and v8.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
+# Use -fno-rtti and -fPIC to build v8-extensions as a static library for compatibility with node and v8.
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fPIC")
 add_subdirectory(v8-extensions)
 
 # Restore CMAKE_CXX_FLAGS from CMAKE_CXX_FLAGS_ORG.
