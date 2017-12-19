@@ -7,6 +7,8 @@
 
 #include "serialized-data.h"
 
+#include <stdlib.h>
+
 using namespace napa::v8_extensions;
 using namespace v8;
 

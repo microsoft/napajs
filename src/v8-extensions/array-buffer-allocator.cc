@@ -7,8 +7,9 @@
 
 #include "array-buffer-allocator.h"
 
-#include <v8.h>
 #include <cstring>
+#include <stdlib.h>
+#include <v8.h>
 
 using namespace napa::v8_extensions;
 

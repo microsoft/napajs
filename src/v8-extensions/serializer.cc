@@ -8,6 +8,7 @@
 #include "serializer.h"
 
 #include <napa/module/binding/basic-wraps.h>
+#include <stdlib.h>
 
 using namespace napa::v8_extensions;
 using namespace v8;
