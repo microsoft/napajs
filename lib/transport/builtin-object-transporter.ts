@@ -4,7 +4,7 @@
 import { Shareable } from '../memory/shareable';
 
 /// <summary>
-/// SharedPtrWrap of SerializedData.
+/// ShareableWrap of SerializedData.
 /// </summary>
 export interface SerializedData extends Shareable {
 }

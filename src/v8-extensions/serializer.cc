@@ -1,6 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+#include "v8-extensions-macros.h"
+
+#if V8_VERSION_CHECK_FOR_BUILT_IN_TYPE_TRANSPORTER
+
 #include "serializer.h"
 
 #include <napa/module/binding/basic-wraps.h>
@@ -103,3 +107,5 @@ Maybe<bool> Serializer::FinalizeTransfer() {
 
     return Just(true);
 }
+
+#endif

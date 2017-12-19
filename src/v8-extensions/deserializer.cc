@@ -1,6 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+#include "v8-extensions-macros.h"
+
+#if V8_VERSION_CHECK_FOR_BUILT_IN_TYPE_TRANSPORTER
+
 #include "deserializer.h"
 
 #include <napa/module/binding/basic-wraps.h>
@@ -42,3 +46,5 @@ MaybeLocal<Value> Deserializer::ReadValue() {
 Deserializer* Deserializer::NewDeserializer(v8::Isolate* isolate, std::shared_ptr<SerializedData> data) {
     return new Deserializer(isolate, data);
 }
+
+#endif

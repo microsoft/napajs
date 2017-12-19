@@ -1,6 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+#include "v8-extensions-macros.h"
+
+#if V8_VERSION_CHECK_FOR_BUILT_IN_TYPE_TRANSPORTER
+
 #include "serialized-data.h"
 
 using namespace napa::v8_extensions;
@@ -18,3 +22,5 @@ SerializedData::GetExternalizedSharedArrayBufferContents() const {
 }
 
 void SerializedData::DataDeleter::operator()(uint8_t* p) const { free(p); }
+
+#endif

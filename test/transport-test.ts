@@ -5,6 +5,8 @@ import * as napa from "../lib/index";
 import * as assert from 'assert';
 import * as path from 'path';
 import * as t from './napa-zone/test';
+
+// TODO #150 (helloshuangzi): Update TypeScript version and convert './transport-builtin-test' to TypeScript.
 var transportBuiltin = require('./transport-builtin-test');
 
 describe('napajs/transport', () => {

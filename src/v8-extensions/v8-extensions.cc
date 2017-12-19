@@ -1,6 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+#include "v8-extensions-macros.h"
+
+#if V8_VERSION_CHECK_FOR_BUILT_IN_TYPE_TRANSPORTER
+
 #include "deserializer.h"
 #include "serializer.h"
 #include "v8-extensions.h"
@@ -24,3 +28,5 @@ v8_extensions::Utils::DeserializeValue(Isolate* isolate, std::shared_ptr<v8_exte
     Deserializer deserializer(isolate, data);
     return deserializer.ReadValue();
 }
+
+#endif

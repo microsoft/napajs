@@ -22,8 +22,9 @@
 #include <napa/providers/logging.h>
 #include <napa/providers/metric.h>
 
-#if (V8_MAJOR_VERSION == 6 && V8_MINOR_VERSION >= 2) || V8_MAJOR_VERSION > 6
-#include <v8/v8-extensions.h>
+#include <v8-extensions/v8-extensions-macros.h>
+#if V8_VERSION_CHECK_FOR_BUILT_IN_TYPE_TRANSPORTER
+    #include <v8-extensions/v8-extensions.h>
 #endif
 
 using namespace napa;
@@ -225,7 +226,7 @@ void SerializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
-    #if (V8_MAJOR_VERSION == 6 && V8_MINOR_VERSION >= 2) || V8_MAJOR_VERSION > 6
+    #if V8_VERSION_CHECK_FOR_BUILT_IN_TYPE_TRANSPORTER
 
     CHECK_ARG(isolate, args.Length() == 1, "1 argument is required for \"serializeValue\".");
 
@@ -239,7 +240,7 @@ void SerializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
     isolate->ThrowException(v8::Exception::TypeError(napa::v8_helpers::MakeV8String(
         isolate,
         "It requires v8 newer than 6.2.x to transport builtin types. \
-        In node mode, please make sure your node version is v9.0.0 or above.")));
+        If run in node mode, please make sure the node version is v9.0.0 or above.")));
 
     #endif
 }
@@ -248,12 +249,12 @@ void DeserializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
-    #if (V8_MAJOR_VERSION == 6 && V8_MINOR_VERSION >= 2) || V8_MAJOR_VERSION > 6
+    #if V8_VERSION_CHECK_FOR_BUILT_IN_TYPE_TRANSPORTER
 
     CHECK_ARG(isolate, args.Length() == 1, "1 argument is required for \"deserializeValue\".");
     CHECK_ARG(isolate, args[0]->IsObject(), "Argument \"object\" shall be 'SharedPtrWrap' type.");
-    auto sharedPtrWrap = NAPA_OBJECTWRAP::Unwrap<SharedPtrWrap>(v8::Local<v8::Object>::Cast(args[0]));
-    auto serializedData = sharedPtrWrap->Get<v8_extensions::SerializedData>();
+    auto shareableWrap = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(v8::Local<v8::Object>::Cast(args[0]));
+    auto serializedData = shareableWrap->Get<v8_extensions::SerializedData>();
 
     v8::Local<v8::Value> value;
     if (v8_extensions::Utils::DeserializeValue(isolate, serializedData).ToLocal(&value)) {
@@ -265,7 +266,7 @@ void DeserializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
     isolate->ThrowException(v8::Exception::TypeError(napa::v8_helpers::MakeV8String(
         isolate,
         "It requires v8 newer than 6.2.x to transport builtin types. \
-        In node mode, please make sure your node version is v9.0.0 or above.")));
+        If run in node mode, please make sure the node version is v9.0.0 or above.")));
 
     #endif
 }

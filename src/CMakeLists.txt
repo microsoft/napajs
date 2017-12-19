@@ -1,7 +1,10 @@
-# Disable rtti for compatibility with node and v8.
 set(CMAKE_CXX_FLAGS_ORG ${CMAKE_CXX_FLAGS})
+
+# Use -fno-rtti to build v8-extensions as a static library for compatibility with node and v8.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
-add_subdirectory(v8)
+add_subdirectory(v8-extensions)
+
+# Restore CMAKE_CXX_FLAGS from CMAKE_CXX_FLAGS_ORG.
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS_ORG})
 
 # Files to compile
