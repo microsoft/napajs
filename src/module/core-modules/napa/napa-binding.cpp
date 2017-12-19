@@ -22,6 +22,10 @@
 #include <napa/providers/logging.h>
 #include <napa/providers/metric.h>
 
+#if (V8_MAJOR_VERSION == 6 && V8_MINOR_VERSION >= 2) || V8_MAJOR_VERSION > 6
+#include <transport/transport-utils.h>
+#endif
+
 using namespace napa;
 using namespace napa::module;
 
@@ -213,6 +217,55 @@ static void Log(const v8::FunctionCallbackInfo<v8::Value>& args) {
     logger.LogMessage(section, level, traceId, *file, line, *message);
 }
 
+static void SerializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
+
+    #if (V8_MAJOR_VERSION == 6 && V8_MINOR_VERSION >= 2) || V8_MAJOR_VERSION > 6
+
+    CHECK_ARG(isolate, args.Length() == 1, "1 argument is required for \"serializeValue\".");
+
+    auto serializedData = transport::TransportUtils::SerializeValue(isolate, args[0]);
+    if (serializedData) {
+        args.GetReturnValue().Set(binding::CreateShareableWrap(serializedData));
+    }
+
+    #else
+
+    isolate->ThrowException(v8::Exception::TypeError(napa::v8_helpers::MakeV8String(
+        isolate,
+        "It requires v8 newer than 6.2.x to transport builtin types. \
+        In node mode, please make sure your node version is v9.0.0 or above.")));
+
+    #endif
+}
+
+static void DeserializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
+
+    #if (V8_MAJOR_VERSION == 6 && V8_MINOR_VERSION >= 2) || V8_MAJOR_VERSION > 6
+
+    CHECK_ARG(isolate, args.Length() == 1, "1 argument is required for \"deserializeValue\".");
+    CHECK_ARG(isolate, args[0]->IsObject(), "Argument \"object\" shall be 'SharedPtrWrap' type.");
+    auto sharedPtrWrap = NAPA_OBJECTWRAP::Unwrap<SharedPtrWrap>(v8::Local<v8::Object>::Cast(args[0]));
+    auto serializedData = sharedPtrWrap->Get<transport::SerializedData>();
+
+    v8::Local<v8::Value> value;
+    if (transport::TransportUtils::DeserializeValue(isolate, serializedData).ToLocal(&value)) {
+        args.GetReturnValue().Set(value);
+    }
+
+    #else
+
+    isolate->ThrowException(v8::Exception::TypeError(napa::v8_helpers::MakeV8String(
+        isolate,
+        "It requires v8 newer than 6.2.x to transport builtin types. \
+        In node mode, please make sure your node version is v9.0.0 or above.")));
+
+    #endif
+}
+
 void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) {
     // Register napa binding in worker context.
     RegisterBinding(module);
@@ -250,4 +303,7 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
     NAPA_SET_METHOD(exports, "getDefaultAllocator", GetDefaultAllocator);
 
     NAPA_SET_METHOD(exports, "log", Log);
+
+    NAPA_SET_METHOD(exports, "serializeValue", SerializeValue);
+    NAPA_SET_METHOD(exports, "deserializeValue", DeserializeValue);
 }
