@@ -79,7 +79,7 @@ describe('napajs/sync', function () {
                 var napa = require('../lib/index');
 
                 napa.store.get('store-for-sync-test-1').set('before-wait', 1);
-                (<any>global).spinWait(500);
+                (<any>global).spinWait(100);
                 napa.store.get('store-for-sync-test-1').set('after-wait', 1);
             });
 
@@ -87,7 +87,7 @@ describe('napajs/sync', function () {
                 var assert = require('assert');
                 var napa = require('../lib/index');
                 
-                (<any>global).spinWait(100);
+                (<any>global).spinWait(50);
                 assert.equal(napa.store.get('store-for-sync-test-1').get('before-wait'), 1);
                 assert.equal(napa.store.get('store-for-sync-test-1').get('after-wait'), 0);
             });
@@ -99,7 +99,7 @@ describe('napajs/sync', function () {
         }
         catch (error) {
         }
-    }).timeout(0);
+    });
     
     it('@napa: sync.Lock - multi thread sync execution (using lock)', () => {
         let napaZone = napa.zone.create('zone-for-sync-test-2', { workers: 2 });
@@ -144,6 +144,4 @@ describe('napajs/sync', function () {
         }
         catch (error) {
         }
-    }).timeout(0);
-
-});
+    });
