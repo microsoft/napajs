@@ -4,7 +4,6 @@
 #pragma once
 
 #include <v8.h>
-#include <cstring>
 
 namespace napa {
 namespace v8_extensions {
@@ -14,20 +13,13 @@ namespace v8_extensions {
     public:
 
         /// <see> v8::ArrayBuffer::Allocator::Allocate </see>
-        virtual void* Allocate(size_t length) override {
-            void* data = AllocateUninitialized(length);
-            return std::memset(data, 0, length);
-        }
+        virtual void* Allocate(size_t length) override;
 
         /// <see> v8::ArrayBuffer::Allocator::AllocateUninitialized </see>
-        virtual void* AllocateUninitialized(size_t length) override {
-            return malloc(length);
-        }
+        virtual void* AllocateUninitialized(size_t length) override;
 
         /// <see> v8::ArrayBuffer::Allocator::Free </see>
-        virtual void Free(void* data, size_t length) override {
-            free(data);
-        }
+        virtual void Free(void* data, size_t length) override;
     };
 }
 }

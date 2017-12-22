@@ -6,6 +6,9 @@ import * as assert from 'assert';
 import * as path from 'path';
 import * as t from './napa-zone/test';
 
+// TODO #150 (helloshuangzi): Update TypeScript version and convert './transport-builtin-test' to TypeScript.
+var transportBuiltin = require('./transport-builtin-test');
+
 describe('napajs/transport', () => {
     let napaZone = napa.zone.create('zone10');
     describe('TransportContext', () => {
@@ -91,4 +94,42 @@ describe('napajs/transport', () => {
             napaZone.execute('./napa-zone/test', "nontransportableTest");
         });
     });
+
+    function transportBuiltinObjects() {
+        it('@node: transport SharedArrayBuffer (SAB)', () => {
+            return transportBuiltin.transportSharedArrayBuffer();
+        });
+
+        it('@node: transport composite object of SharedArrayBuffer', () => {
+            return transportBuiltin.transportCompositeObjectOfSharedArrayBuffer();
+        });
+
+        // @node: node -> napa -> napa -> node -> node -> napa -> napa
+        it('@node: recursively transport received SharedArrayBuffer (SAB)', () => {
+            return transportBuiltin.recursivelyTransportSharedArrayBuffer(8, 50);
+        });
+
+        // @node: node -> napa -> napa -> node -> node -> napa -> napa
+        it('@node: recursively transport received TypedArray based on SAB', () => {
+            return transportBuiltin.recursivelyTransportTypedArray_SAB(8, 50);
+        });
+
+        // @node: node -> napa -> napa -> node -> node -> napa -> napa
+        it('@node: recursively transport received ArrayBuffer (AB)', () => {
+            return transportBuiltin.recursivelyTransportArrayBuffer(8, 50);
+        });
+
+        // @node: node -> napa -> napa -> node -> node -> napa -> napa
+        it('@node: recursively transport received TypedArray based on AB', () => {
+            return transportBuiltin.recursivelyTransportTypedArray_AB(8, 50);
+        });
+    }
+
+    var builtinTestGroup = 'Transport built-in objects';
+    if (process.version >= 'v9.0.0' || process.version.indexOf('.') > 2) {
+        describe(builtinTestGroup, transportBuiltinObjects);
+    } else {
+        describe.skip(builtinTestGroup, transportBuiltinObjects);
+        require('npmlog').warn(builtinTestGroup, 'This test group is skipped since it requires node newer than v9.0.0');
+    }
 });

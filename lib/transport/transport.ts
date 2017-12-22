@@ -3,11 +3,26 @@
 
 import * as transportable from './transportable';
 import * as functionTransporter from './function-transporter';
+import * as builtinObjectTransporter from './builtin-object-transporter';
 import * as path from 'path';
 
 /// <summary> Per-isolate cid => constructor registry. </summary>
 let _registry: Map<string, new(...args: any[]) => transportable.Transportable> 
-    = new Map<string, new(...args: any[]) => transportable.Transportable>(); 
+    = new Map<string, new(...args: any[]) => transportable.Transportable>();
+
+let _builtInTypeWhitelist = new Set();
+[
+    'ArrayBuffer',
+    'Float32Array',
+    'Float64Array',
+    'Int16Array',
+    'Int32Array',
+    'Int8Array',
+    'SharedArrayBuffer',
+    'Uint16Array',
+    'Uint32Array',
+    'Uint8Array'
+].forEach((type) => { _builtInTypeWhitelist.add(type); });
 
 /// <summary> Register a TransportableObject sub-class with a Constructor ID (cid). </summary>
 export function register(subClass: new(...args: any[]) => any) {
@@ -33,6 +48,13 @@ export function marshallTransform(jsValue: any, context: transportable.Transport
         if (constructorName !== 'Object') {
             if (typeof jsValue['cid'] === 'function') {
                 return <transportable.Transportable>(jsValue).marshall(context);
+            } else if (_builtInTypeWhitelist.has(constructorName)) {
+                let serializedData = builtinObjectTransporter.serializeValue(jsValue);
+                if (serializedData) {
+                    return { _serialized : serializedData };
+                } else {
+                    throw new Error(`Failed to serialize object with type of \"${constructorName}\".`);
+                }
             } else {
                 throw new Error(`Object type \"${constructorName}\" is not transportable.`);
             }
@@ -58,6 +80,8 @@ function unmarshallTransform(payload: any, context: transportable.TransportConte
         let object = new subClass();
         object.unmarshall(payload, context);
         return object;
+    } else if (payload.hasOwnProperty('_serialized')) {
+        return builtinObjectTransporter.deserializeValue(payload['_serialized']);
     }
     return payload;
 }
