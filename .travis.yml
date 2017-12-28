@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- '9'
+- '9.2.1'
 - '8'
 - '7'
 - '6'

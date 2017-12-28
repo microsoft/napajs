@@ -29,7 +29,7 @@
 ## <a name="intro"></a> Introduction
 Zone is a key concept of napajs that exposes multi-thread capabilities in JavaScript world, which is a logical group of symmetric workers for specific tasks. 
 
-Please note that it's not the same `zone` concept of a context object for async calls in [Dart](https://www.dartlang.org/articles/libraries/zones), or [Augular](https://github.com/angular/zone.js), or a proposal in [TC39](https://github.com/domenic/zones).
+Please note that it's not the same `zone` concept of a context object for async calls in [Dart](https://www.dartlang.org/articles/libraries/zones), or [Angular](https://github.com/angular/zone.js), or a proposal in [TC39](https://github.com/domenic/zones).
 
 ### <a name="worker-vs-zone"></a> Multiple workers vs. Multiple zones
 Zone consists of one or multiple JavaScript threads, we name each thread `worker`. Workers within a zone are symmetric, which means code executed on any worker from the zone should return the same result, and the internal state of every worker should be the same from a long-running point of view. 
