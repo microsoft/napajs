@@ -22,6 +22,11 @@
 #include <napa/providers/logging.h>
 #include <napa/providers/metric.h>
 
+#include <v8-extensions/v8-extensions-macros.h>
+#if V8_VERSION_CHECK_FOR_BUILT_IN_TYPE_TRANSPORTER
+    #include <v8-extensions/v8-extensions.h>
+#endif
+
 using namespace napa;
 using namespace napa::module;
 
@@ -65,8 +70,10 @@ static void CreateZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
     try {
         auto zoneProxy = std::make_unique<napa::Zone>(*zoneId, ss.str());
         args.GetReturnValue().Set(ZoneWrap::NewInstance(std::move(zoneProxy)));
-    } catch (const std::exception& ex) {
+    } catch (const std::runtime_error& ex) {
         JS_FAIL(isolate, ex.what());
+    } catch (...) {
+        JS_FAIL(isolate, "Failed to initialize zone with id ", *zoneId);
     }
 }
 
@@ -81,8 +88,10 @@ static void GetZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
         auto zoneProxy = napa::Zone::Get(*zoneId);
         args.GetReturnValue().Set(ZoneWrap::NewInstance(std::move(zoneProxy)));
     }
-    catch (const std::exception &ex) {
-        JS_ASSERT(isolate, false, ex.what());
+    catch (const std::runtime_error &ex) {
+        JS_FAIL(isolate, ex.what());
+    } catch (...) {
+        JS_FAIL(isolate, "No zone exists with id ", *zoneId);
     }
 }
 
@@ -213,6 +222,55 @@ static void Log(const v8::FunctionCallbackInfo<v8::Value>& args) {
     logger.LogMessage(section, level, traceId, *file, line, *message);
 }
 
+void SerializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
+
+    #if V8_VERSION_CHECK_FOR_BUILT_IN_TYPE_TRANSPORTER
+
+    CHECK_ARG(isolate, args.Length() == 1, "1 argument is required for \"serializeValue\".");
+
+    auto serializedData = v8_extensions::Utils::SerializeValue(isolate, args[0]);
+    if (serializedData) {
+        args.GetReturnValue().Set(binding::CreateShareableWrap(serializedData));
+    }
+
+    #else
+
+    isolate->ThrowException(v8::Exception::TypeError(napa::v8_helpers::MakeV8String(
+        isolate,
+        "It requires v8 newer than 6.2.x to transport builtin types. \
+        If run in node mode, please make sure the node version is v9.0.0 or above.")));
+
+    #endif
+}
+
+void DeserializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
+
+    #if V8_VERSION_CHECK_FOR_BUILT_IN_TYPE_TRANSPORTER
+
+    CHECK_ARG(isolate, args.Length() == 1, "1 argument is required for \"deserializeValue\".");
+    CHECK_ARG(isolate, args[0]->IsObject(), "Argument \"object\" shall be 'SharedPtrWrap' type.");
+    auto shareableWrap = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(v8::Local<v8::Object>::Cast(args[0]));
+    auto serializedData = shareableWrap->Get<v8_extensions::SerializedData>();
+
+    v8::Local<v8::Value> value;
+    if (v8_extensions::Utils::DeserializeValue(isolate, serializedData).ToLocal(&value)) {
+        args.GetReturnValue().Set(value);
+    }
+
+    #else
+
+    isolate->ThrowException(v8::Exception::TypeError(napa::v8_helpers::MakeV8String(
+        isolate,
+        "It requires v8 newer than 6.2.x to transport builtin types. \
+        If run in node mode, please make sure the node version is v9.0.0 or above.")));
+
+    #endif
+}
+
 void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) {
     // Register napa binding in worker context.
     RegisterBinding(module);
@@ -250,4 +308,7 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
     NAPA_SET_METHOD(exports, "getDefaultAllocator", GetDefaultAllocator);
 
     NAPA_SET_METHOD(exports, "log", Log);
+
+    NAPA_SET_METHOD(exports, "serializeValue", SerializeValue);
+    NAPA_SET_METHOD(exports, "deserializeValue", DeserializeValue);
 }
