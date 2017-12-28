@@ -65,7 +65,6 @@ describe('napajs/sync', function () {
     it('@napa: sync.Lock - multi thread sync execution (not using lock)', () => {
         let napaZone = napa.zone.create('zone-for-sync-test-1', { workers: 2 });
         napaZone.broadcast(spinWait.toString());
-        napaZone.broadcast("require('../lib/index');");
 
         // If not using lock, the store.set() in second execute() function should start before the first complete.
         let succeed = false;
@@ -106,8 +105,6 @@ describe('napajs/sync', function () {
     it('@napa: sync.Lock - multi thread sync execution (using lock)', () => {
         let napaZone = napa.zone.create('zone-for-sync-test-2', { workers: 2 });
         napaZone.broadcast(spinWait.toString());
-        napaZone.broadcast("require('../lib/index');");
-
 
         // If guard by lock, the store.set() in second execute() function should start after the first complete.
         let succeed = false;
