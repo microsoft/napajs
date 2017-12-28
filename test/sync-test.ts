@@ -145,5 +145,4 @@ describe('napajs/sync', function () {
         catch (error) {
         }
     });
-
 });

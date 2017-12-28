@@ -79,6 +79,17 @@ describe('napajs/module', function () {
                 assert(cycle_b.done);
             }, [__dirname]);
         });
+
+        it('module that does not exist', () => {
+            return napaZone.execute(() => {
+                try {
+                    var jsmodule = require('./module/module-does-not-exist');
+                    assert.fail("require on module that does not exist shall throw");
+                }
+                catch (e) {
+                }
+            });
+        });
     });
 
     describe('resolve', function () {
