@@ -31,7 +31,7 @@ namespace module {
     private:
 
         /// <summary> Declare persistent constructor to create Zone Javascript wrapper instance. </summary>
-        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR;
+        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR();
 
         std::unique_ptr<napa::Zone> _zoneProxy;
 

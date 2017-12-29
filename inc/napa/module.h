@@ -69,9 +69,9 @@
 /// <summary> It declares the persistent constructor. </summary>
 /// <remarks> Napa registers constructor at local thread storage. </remarks>
 #ifdef BUILDING_NAPA_EXTENSION
-#define NAPA_DECLARE_PERSISTENT_CONSTRUCTOR
+#define NAPA_DECLARE_PERSISTENT_CONSTRUCTOR()
 #else
-#define NAPA_DECLARE_PERSISTENT_CONSTRUCTOR \
+#define NAPA_DECLARE_PERSISTENT_CONSTRUCTOR() \
     static v8::Persistent<v8::Function> _constructor
 #endif
 

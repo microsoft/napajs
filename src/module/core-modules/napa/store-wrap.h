@@ -60,7 +60,7 @@ namespace module {
         static constexpr const char* exportName = "StoreWrap";
 
         /// <summary> Hid constructor from public access. </summary>
-        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR;
+        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR();
 
         /// <summary> Store. </summary>
         std::shared_ptr<napa::store::Store> _store;

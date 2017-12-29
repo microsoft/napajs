@@ -23,7 +23,7 @@ namespace module {
         static constexpr const char* exportName = "LockWrap";
 
         /// <summary> Declare persistent constructor to create Lock Javascript wrapper instance. </summary>
-        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR;
+        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR();
 
     private:
 
