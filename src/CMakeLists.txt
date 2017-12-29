@@ -1,5 +1,26 @@
+set(CMAKE_CXX_FLAGS_ORG ${CMAKE_CXX_FLAGS})
+
+# Use -fno-rtti and -fPIC to build v8-extensions as a static library for compatibility with node and v8.
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fPIC")
+add_subdirectory(v8-extensions)
+
+# Restore CMAKE_CXX_FLAGS from CMAKE_CXX_FLAGS_ORG.
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS_ORG})
+
 # Files to compile
-file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+file(GLOB SOURCE_FILES_0 ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE SOURCE_FILES_1
+    ${CMAKE_CURRENT_SOURCE_DIR}/api/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/memory/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/module/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/platform/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/providers/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/settings/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/store/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/zone/*.cpp
+)
+set(SOURCE_FILES ${SOURCE_FILES_0} ${SOURCE_FILES_1})
 
 # The target name
 set(TARGET_NAME ${PROJECT_NAME})
@@ -19,7 +40,7 @@ target_include_directories(${TARGET_NAME}
 target_compile_definitions(${TARGET_NAME} PRIVATE NAPA_EXPORTS NAPA_BINDING_EXPORTS BUILDING_NAPA_EXTENSION)
 
 # Link libraries
-target_link_libraries(${TARGET_NAME} PRIVATE)
+target_link_libraries(${TARGET_NAME} PRIVATE "v8-extensions")
 
 if(CMAKE_JS_VERSION)
     # Building Napa as an npm package for node usage (using exported v8 from node.exe)

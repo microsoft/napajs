@@ -40,7 +40,7 @@ describe('napajs/zone', function () {
         });
 
         it('@napa: zone id already exists', () => {
-            shouldFail(() => {
+            return shouldFail(() => {
                 return napaZone1.execute(`${napaLibPath}/zone`, 'create', ['napa-zone1']);
             });
         });
@@ -85,7 +85,7 @@ describe('napajs/zone', function () {
         });
 
         it('@napa: zone not existed', () => {
-            shouldFail(() => { 
+            return shouldFail(() => {
                 return napaZone1.execute(`${napaLibPath}/zone`, 'get', ['zonex']); 
             });
         });
