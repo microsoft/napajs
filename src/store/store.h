@@ -20,7 +20,7 @@ namespace store {
         /// Meta-data that is necessary to marshall/unmarshall JS values.
         struct ValueType {
             /// <summary> JSON string from marshalled JS value. </summary>
-            std::string payload;
+            std::u16string payload;
 
             /// <summary> TransportContext that is needed to unmarshall the JS value. </summary>
             napa::transport::TransportContext transportContext;
