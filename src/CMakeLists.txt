@@ -1,5 +1,26 @@
+set(CMAKE_CXX_FLAGS_ORG ${CMAKE_CXX_FLAGS})
+
+# Use -fno-rtti and -fPIC to build v8-extensions as a static library for compatibility with node and v8.
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fPIC")
+add_subdirectory(v8-extensions)
+
+# Restore CMAKE_CXX_FLAGS from CMAKE_CXX_FLAGS_ORG.
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS_ORG})
+
 # Files to compile
-file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+file(GLOB SOURCE_FILES_0 ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE SOURCE_FILES_1
+    ${CMAKE_CURRENT_SOURCE_DIR}/api/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/memory/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/module/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/platform/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/providers/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/settings/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/store/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/zone/*.cpp
+)
+set(SOURCE_FILES ${SOURCE_FILES_0} ${SOURCE_FILES_1})
 
 # The target name
 set(TARGET_NAME ${PROJECT_NAME})
@@ -19,9 +40,9 @@ target_include_directories(${TARGET_NAME}
 target_compile_definitions(${TARGET_NAME} PRIVATE NAPA_EXPORTS NAPA_BINDING_EXPORTS BUILDING_NAPA_EXTENSION)
 
 # Link libraries
-target_link_libraries(${TARGET_NAME} PRIVATE)
+target_link_libraries(${TARGET_NAME} PRIVATE "v8-extensions")
 
-if (CMAKE_JS_VERSION)
+if(CMAKE_JS_VERSION)
     # Building Napa as an npm package for node usage (using exported v8 from node.exe)
 
     target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_JS_INC})
@@ -31,7 +52,6 @@ if (CMAKE_JS_VERSION)
     target_compile_definitions(${TARGET_NAME} PRIVATE USING_V8_SHARED)
 else()
     # Building Napa for embed scenarios (static linking with v8)
-
     if (NOT DEFINED NODE_ROOT)
         message(FATAL_ERROR "NODE_ROOT must be set to the node sources root directory")
     endif()
@@ -41,37 +61,63 @@ else()
         set(NODE_BUILD_TYPE "Debug")
     endif()
 
-    find_library(V8_BASE_0_LIBRARY NAMES v8_base_0 PATHS ${NODE_ROOT}/build/${NODE_BUILD_TYPE}/lib)
-    find_library(V8_BASE_1_LIBRARY NAMES v8_base_1 PATHS ${NODE_ROOT}/build/${NODE_BUILD_TYPE}/lib)
-    find_library(V8_BASE_2_LIBRARY NAMES v8_base_2 PATHS ${NODE_ROOT}/build/${NODE_BUILD_TYPE}/lib)
-    find_library(V8_BASE_3_LIBRARY NAMES v8_base_3 PATHS ${NODE_ROOT}/build/${NODE_BUILD_TYPE}/lib)
-    find_library(V8_LIBBASE_LIBRARY NAMES v8_libbase PATHS ${NODE_ROOT}/build/${NODE_BUILD_TYPE}/lib)
-    find_library(V8_LIBPLATFORM_LIBRARY NAMES v8_libplatform PATHS ${NODE_ROOT}/build/${NODE_BUILD_TYPE}/lib)
-    find_library(V8_NOSNAPSHOT_LIBRARY NAMES v8_nosnapshot PATHS ${NODE_ROOT}/build/${NODE_BUILD_TYPE}/lib)
-
-    find_library(ICUI18N_LIBRARY NAMES icui18n PATHS ${NODE_ROOT}/${NODE_BUILD_TYPE}/lib)
-    find_library(ICUSTUBDATA_LIBRARY NAMES icustubdata PATHS ${NODE_ROOT}/${NODE_BUILD_TYPE}/lib)
-    find_library(ICUUCX_LIBRARY NAMES icuucx PATHS ${NODE_ROOT}/${NODE_BUILD_TYPE}/lib)
-
-    set_target_properties(${TARGET_NAME} PROPERTIES LINK_FLAGS "/LTCG")
-
     # V8 header files
     target_include_directories(${TARGET_NAME} PRIVATE ${NODE_ROOT}/deps/v8/include)
 
-    # V8 static libraries
-    target_link_libraries(${TARGET_NAME} PRIVATE
-        ${V8_BASE_0_LIBRARY}
-        ${V8_BASE_1_LIBRARY}
-        ${V8_BASE_2_LIBRARY}
-        ${V8_BASE_3_LIBRARY}
-        ${V8_LIBBASE_LIBRARY}
-        ${V8_LIBPLATFORM_LIBRARY}
-        ${V8_NOSNAPSHOT_LIBRARY}
-        ${ICUI18N_LIBRARY}
-        ${ICUSTUBDATA_LIBRARY}
-        ${ICUUCX_LIBRARY})
+    if(WIN32)
+        find_library(V8_BASE_0_LIBRARY NAMES v8_base_0 PATHS ${NODE_ROOT}/build/${NODE_BUILD_TYPE}/lib)
+        find_library(V8_BASE_1_LIBRARY NAMES v8_base_1 PATHS ${NODE_ROOT}/build/${NODE_BUILD_TYPE}/lib)
+        find_library(V8_BASE_2_LIBRARY NAMES v8_base_2 PATHS ${NODE_ROOT}/build/${NODE_BUILD_TYPE}/lib)
+        find_library(V8_BASE_3_LIBRARY NAMES v8_base_3 PATHS ${NODE_ROOT}/build/${NODE_BUILD_TYPE}/lib)
+        find_library(V8_LIBBASE_LIBRARY NAMES v8_libbase PATHS ${NODE_ROOT}/build/${NODE_BUILD_TYPE}/lib)
+        find_library(V8_LIBPLATFORM_LIBRARY NAMES v8_libplatform PATHS ${NODE_ROOT}/build/${NODE_BUILD_TYPE}/lib)
+        find_library(V8_NOSNAPSHOT_LIBRARY NAMES v8_nosnapshot PATHS ${NODE_ROOT}/build/${NODE_BUILD_TYPE}/lib)
+
+        find_library(ICUI18N_LIBRARY NAMES icui18n PATHS ${NODE_ROOT}/${NODE_BUILD_TYPE}/lib)
+        find_library(ICUSTUBDATA_LIBRARY NAMES icustubdata PATHS ${NODE_ROOT}/${NODE_BUILD_TYPE}/lib)
+        find_library(ICUUCX_LIBRARY NAMES icuucx PATHS ${NODE_ROOT}/${NODE_BUILD_TYPE}/lib)
+
+        set_target_properties(${TARGET_NAME} PROPERTIES LINK_FLAGS "/LTCG")
+
+        # V8 static libraries
+        target_link_libraries(${TARGET_NAME} PRIVATE
+            ${V8_BASE_0_LIBRARY}
+            ${V8_BASE_1_LIBRARY}
+            ${V8_BASE_2_LIBRARY}
+            ${V8_BASE_3_LIBRARY}
+            ${V8_LIBBASE_LIBRARY}
+            ${V8_LIBPLATFORM_LIBRARY}
+            ${V8_NOSNAPSHOT_LIBRARY}
+            ${ICUI18N_LIBRARY}
+            ${ICUSTUBDATA_LIBRARY}
+            ${ICUUCX_LIBRARY})
+
+    elseif("${CMAKE_SYSTEM}" MATCHES "Linux")
+        find_library(V8_BASE_LIBRARY NAMES v8_base PATHS ${NODE_ROOT}/out/${NODE_BUILD_TYPE}/obj.target/deps/v8/tools/gyp)
+        find_library(V8_LIBBASE_LIBRARY NAMES v8_libbase PATHS ${NODE_ROOT}/out/${NODE_BUILD_TYPE}/obj.target/deps/v8/tools/gyp)
+        find_library(V8_LIBPLATFORM_LIBRARY NAMES v8_libplatform PATHS ${NODE_ROOT}/out/${NODE_BUILD_TYPE}/obj.target/deps/v8/tools/gyp)
+        find_library(V8_NOSNAPSHOT_LIBRARY NAMES v8_nosnapshot PATHS ${NODE_ROOT}/out/${NODE_BUILD_TYPE}/obj.target/deps/v8/tools/gyp)
+
+        find_library(ICUI18N_LIBRARY NAMES icui18n PATHS ${NODE_ROOT}/out/${NODE_BUILD_TYPE}/obj.target/tools/icu)
+        find_library(ICUSTUBDATA_LIBRARY NAMES icustubdata PATHS ${NODE_ROOT}/out/${NODE_BUILD_TYPE}/obj.target/tools/icu)
+        find_library(ICUUCX_LIBRARY NAMES icuucx PATHS ${NODE_ROOT}/out/${NODE_BUILD_TYPE}/obj.target/tools/icu)
+
+        # V8 static libraries
+        target_link_libraries(${TARGET_NAME} PRIVATE
+            ${V8_BASE_LIBRARY}
+            ${V8_LIBBASE_LIBRARY}
+            ${V8_LIBPLATFORM_LIBRARY}
+            ${V8_NOSNAPSHOT_LIBRARY}
+            ${ICUI18N_LIBRARY}
+            ${ICUSTUBDATA_LIBRARY}
+            ${ICUUCX_LIBRARY})
+
+    else()
+        message(FATAL_ERROR "Node build solution for embed mode is not provided for ${CMAKE_SYSTEM}")
+    endif()
+
 endif()
 
-if (WIN32)
+if(WIN32)
     target_link_libraries(${TARGET_NAME} PRIVATE winmm.lib)
 endif()

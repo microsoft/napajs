@@ -8,8 +8,6 @@
 
 #include <stdarg.h>
 
-#define UNUSED(var) (void)(var)
-
 /// <summary> The maximum string length of a single log call. Anything over will be truncated. </summary>
 const size_t LOG_MAX_SIZE = 512;
 
@@ -43,12 +41,8 @@ inline void LogFormattedMessage(
 
 #else
 
-#define LOG(section, level, traceId, format, ...) \
-    UNUSED(section);                              \
-    UNUSED(level);                                \
-    UNUSED(traceId);                              \
-    UNUSED(format);                               \
-    UNUSED(__VA_ARGS__);
+// Do nothing without generating any "unreferenced variable" warnings.
+template <typename... Types> inline void LOG(Types&&...) {}
 
 #endif
 

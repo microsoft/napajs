@@ -8,7 +8,6 @@ import * as path from "path";
 type Zone = napa.zone.Zone;
 
 describe('napajs/module', function () {
-    this.timeout(0);
     let napaZone = napa.zone.create('module-tests-zone', { workers: 1 });
 
     describe('load', function () {
@@ -79,6 +78,17 @@ describe('napajs/module', function () {
                 assert(cycle_a.done);
                 assert(cycle_b.done);
             }, [__dirname]);
+        });
+
+        it('module that does not exist', () => {
+            return napaZone.execute(() => {
+                try {
+                    var jsmodule = require('./module/module-does-not-exist');
+                    assert.fail("require on module that does not exist shall throw");
+                }
+                catch (e) {
+                }
+            });
         });
     });
 

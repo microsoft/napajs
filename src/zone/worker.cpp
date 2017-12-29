@@ -4,7 +4,6 @@
 #include "worker.h"
 
 #include <utils/debug.h>
-#include <v8/array-buffer-allocator.h>
 
 #include <napa/log.h>
 
@@ -15,6 +14,11 @@
 #include <mutex>
 #include <queue>
 #include <thread>
+
+#include <v8-extensions/v8-extensions-macros.h>
+#if !(V8_VERSION_CHECK_FOR_ARRAY_BUFFER_ALLOCATOR)
+    #include <v8-extensions/array-buffer-allocator.h>
+#endif
 
 using namespace napa;
 using namespace napa::zone;
@@ -156,7 +160,7 @@ static v8::Isolate* CreateIsolate(const settings::ZoneSettings& settings) {
     v8::Isolate::CreateParams createParams;
 
     // The allocator is a global V8 setting.
-#if (V8_MAJOR_VERSION == 5 && V8_MINOR_VERSION >= 5) || V8_MAJOR_VERSION > 5
+#if V8_VERSION_CHECK_FOR_ARRAY_BUFFER_ALLOCATOR
     static std::unique_ptr<v8::ArrayBuffer::Allocator> defaultArrayBufferAllocator(v8::ArrayBuffer::Allocator::NewDefaultAllocator());
     createParams.array_buffer_allocator = defaultArrayBufferAllocator.get();
 #else

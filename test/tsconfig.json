@@ -6,6 +6,6 @@
         "noImplicitAny": true,
         "declaration": false,
         "preserveConstEnums": true,
-        "lib": [ "es2015" ]
+        "lib": [ "es2017" ]
     }
 }

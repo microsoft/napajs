@@ -273,11 +273,7 @@ void ModuleLoader::ModuleLoaderImpl::RequireModule(const char* path, const v8::F
         };
     } else {
         moduleInfo = _resolver.Resolve(path, contextDir.c_str());
-        if (moduleInfo.type == ModuleType::NONE) {
-            NAPA_DEBUG("ModuleLoader", "Cannot resolve module path \"%s\".", path);
-            args.GetReturnValue().SetUndefined();
-            return;
-        }
+        JS_ENSURE(isolate, moduleInfo.type != ModuleType::NONE, "Cannot resolve module path \"%s\"", path);
     }
 
     v8::Local<v8::Object> module;
@@ -297,6 +293,7 @@ void ModuleLoader::ModuleLoaderImpl::RequireModule(const char* path, const v8::F
     auto succeeded = loader->TryGet(moduleInfo.fullPath, arg, module);
     if (!succeeded) {
         NAPA_DEBUG("ModuleLoader", "Cannot load module \"%s\".", path);
+        // Exception has already been thrown upon loader failure.
         args.GetReturnValue().SetUndefined();
         return;
     }

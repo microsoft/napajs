@@ -11,6 +11,7 @@
 /// </summary>
 
 import * as transport from './transport'
+import * as v8 from '../v8';
 
 import { Shareable } from '../memory/shareable';
 import { Handle } from '../memory/handle';
@@ -55,14 +56,13 @@ export interface Transportable {
 /// 1) Constructor should accept zero parameters .
 /// 2) Implement save()/load() to marshall/unmarshall internal state.
 /// 3) Register with transport with a Constructor ID (cid) via one of following methods:
-///    - declare class decorator: @cid(module.id) for exported classes.
-///    - declare class decorator: @cid(module.id, '<class-name>') for non-exported classes.
-///    - explicitly call transport.register(cid, <class-name>).
+///    - declare class decorator: @cid() use '<module-name>.<class-name>' as cid.
+///    - declare class decorator: @cid('<guid>') use the specified GUID as cid.
 /// </summary>
 export abstract class TransportableObject implements Transportable{
     /// <summary> Get Constructor ID (cid) for this object. </summary>
     cid(): string {
-        return Object.getPrototypeOf(this)._cid;
+        return Object.getPrototypeOf(this).constructor._cid;
     }
 
     /// <summary> Subclass to save state to payload. </summary>
@@ -81,7 +81,7 @@ export abstract class TransportableObject implements Transportable{
     /// <returns> Plain JavaScript value. </returns>
     marshall(context: TransportContext): object {
         let payload = {
-            _cid: this.cid
+            _cid: this.cid()
         };
         this.save(payload, context);
         return payload;
@@ -146,20 +146,15 @@ export function isTransportable(jsValue: any): boolean {
 }
 
 /// <summary> Decorator 'cid' to register a transportable class with a 'cid'. </summary>
-/// <param name="moduleId"> Return value of 'module.id' within sub-class definition file. </param>
-/// <param name="className"> Optional for exported class, which will use class name by default. 
-/// For non-exported class, it is required, otherwise 'Object' will be used as className. </param>
-export function cid<T extends TransportableObject>(moduleId: string, className?: string) {
-    let cid = className;
-    if (moduleId != null && moduleId.length !== 0) {
-        let moduleName = extractModuleName(moduleId);
-        if (className == null) {
-            className = Object.getPrototypeOf(this).constructor.name; 
-        }
-        cid = `${moduleName}.${className}`; 
+/// <param name="guid"> If specified, use this GUID as cid. </param>
+export function cid<T extends TransportableObject>(guid?: string) {
+    let moduleName: string = null;
+    if (!guid) {
+        moduleName = extractModuleName(v8.currentStack(2)[1].getFileName());
     }
 
     return (constructor: new(...args: any[]) => any ) => {
+        let cid = moduleName ? `${moduleName}.${constructor.name}` : guid;
         (<any>constructor)['_cid'] = cid;
         transport.register(constructor);
     }
