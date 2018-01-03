@@ -6,6 +6,7 @@
     - [Constructor ID](#constructor-id)
     - [Transport context](#transport-context)
     - [Transporting functions](#transporting-functions)
+    - [Transporting JavaScript built-in object](#transporting-built-in)
 - API
     - [`isTransportable(jsValue: any): boolean`](#istransportable)
     - [`register(transportableClass: new(...args: any[]) => any): void`](#register)
@@ -56,6 +57,11 @@ Highlights on transporting functions are:
 - For the same function, marshall/unmarshall is an one-time cost on each JavaScript thread. Once a function is transported for the first time, later transportation of the same function to previous JavaScript thread can be regarded as free.
 - Closure cannot be transported, but you won't get error when transporting a function. Instead, you will get runtime error complaining a variable (from closure) is undefined when you can the function later.
 - `__dirname` / `__filename` can be accessed in transported function, which is determined by `origin` property of function. By default `origin` property is set to current working directory.
+
+### <a name="transporting-built-in"></a> Transporting JavaScript built-in object
+Standard JavaScript built-in objects in [_builtInTypeWhitelist](./../../lib/transport/transport.ts) can be transported among napa workers transparently. JavaScript Objects with properties in these types are also able to be transported. Please refer to [transportBuiltinObjects](./../../test/transport-test.ts) for detail.
+
+In [Parallel Quick Sort](./../../examples/tutorial/parallel-quick-sort), a TypedArray based on a SharedArrayBuffer is transported among napa workers to perform quick sort in parallel.
 
 ## <a name="api"></a> API
 
