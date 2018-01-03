@@ -1,0 +1,9 @@
+{
+    "name": "napajs-tutorial",
+    "version": "0.1.0",
+    "author": "napajs",
+    "main": "./parallel-quick-sort.js",
+    "dependencies": {
+        "napajs": ">= 0.2.0"
+    }
+}
