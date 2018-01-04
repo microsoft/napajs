@@ -1,6 +1,6 @@
 # Namespace `sync`
 ## Table of Contents
-- class [`Lock`](#class-lock)
+- class [`Lock`](#interface-lock)
     - [`lock.guardSync(func: (...params: any[]) => any, params?: any[]): any`](#lock-guard-sync-func-any-any)
 <!--
     // Preserve this interface for async lock.
@@ -14,7 +14,7 @@
 
 ## APIs
 Namespace `sync` deal with synchronization between threads in Napa. `Lock` <!-- and `ReadWriteLock` are --> is provided for exclusive and shared mutex scenarios.
-## <a name="class-lock"></a> Interface `Lock`
+## <a name="interface-lock"></a> Interface `Lock`
 Exclusive Lock, which is [transportable](transport.md#transportable) across JavaScript threads.
 
 Use `napa.sync.createLock()` to create a lock.
