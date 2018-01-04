@@ -84,7 +84,7 @@ function run(length) {
     console.log('quickSort:\t\tIt took (', Date.now() - start1, ') MS to sort an array with ', length, ' elements.');
     // Assert the TypedArray has been sorted in ascending order.
     for (let i = 0; i < length - 1; i++) {
-        assert(ta1[i] <= ta1[++i], 'the array is not in ascending order after quicksort.')
+        assert(ta1[i] <= ta1[i + 1], 'the array is not in ascending order after quicksort.')
     }
 
     // Execute parallelQuickSort.
@@ -95,7 +95,7 @@ function run(length) {
 
         // Assert the TypedArray has been sorted in ascending order.
         for (let i = 0; i < length - 1; i++) {
-            assert(ta2[i] <= ta2[++i], 'the array is not in ascending order after quicksort.')
+            assert(ta2[i] <= ta2[i + 1], 'the array is not in ascending order after quicksort.')
         }
     });
 }
