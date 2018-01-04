@@ -1,5 +1,5 @@
 # Lazy Loading
-This example implements a lazy-loading component. The component should load data when the first time it is used. The lazy loading should be run only once. It is thread-safe in Napa zones with the use of `napa.sync.Lock`.
+This example implements a lazy-loading component. The component should load data when the first time it is used. The lazy loading should be run only once. It is thread-safe in Napa zones with the use of [`napa.sync.Lock`](./../../../docs/api/sync.md#interface-lock).
 
 ## How to run
 1. Go to directory of "examples/tutorial/lazy-loading"
