@@ -6,6 +6,7 @@
     - [Constructor ID](#constructor-id)
     - [Transport context](#transport-context)
     - [Transporting functions](#transporting-functions)
+    - [Transporting JavaScript built-in objects](#transporting-built-in)
 - API
     - [`isTransportable(jsValue: any): boolean`](#istransportable)
     - [`register(transportableClass: new(...args: any[]) => any): void`](#register)
@@ -39,7 +40,18 @@ Transportable types are:
 - JavaScript primitive types: undefined, null, boolean, number, string
 - Object (TypeScript class) that implement [`Transportable`](#transportable) interface
 - Array or plain JavaScript object that is composite pattern of above.
-- Function without referencing closures. 
+- Function without referencing closures.
+- <a name="built-in-whitelist"></a> JavaScript standard built-In objects in this whitelist.
+    * ArrayBuffer
+    * Float32Array
+    * Float64Array
+    * Int16Array
+    * Int32Array
+    * Int8Array
+    * SharedArrayBuffer
+    * Uint16Array
+    * Uint32Array
+    * Uint8Array
 
 ### <a name="constructor-id"></a> Constructor ID (cid)
 For user classes that implement [`Transportable`](#transportable) interface, Napa uses Constructor ID (`cid`) to lookup constructors for creating a right object from a string payload. `cid` is marshalled as a part of the payload. During unmarshalling, transport layer will extract the `cid`, create an object instance using the constructor associated with it, and then call unmarshall on the object. 
@@ -56,6 +68,11 @@ Highlights on transporting functions are:
 - For the same function, marshall/unmarshall is an one-time cost on each JavaScript thread. Once a function is transported for the first time, later transportation of the same function to previous JavaScript thread can be regarded as free.
 - Closure cannot be transported, but you won't get error when transporting a function. Instead, you will get runtime error complaining a variable (from closure) is undefined when you can the function later.
 - `__dirname` / `__filename` can be accessed in transported function, which is determined by `origin` property of function. By default `origin` property is set to current working directory.
+
+### <a name="transporting-built-in"></a> Transporting JavaScript built-in objects
+JavaScript standard built-In objects in [the whitelist](#built-in-whitelist) can be transported among napa workers transparently. JavaScript Objects with properties in these types are also able to be transported. Please refer to [unit tests](./../../test/transport-test.ts) for detail.
+
+An example [Parallel Quick Sort](./../../examples/tutorial/parallel-quick-sort) demonstrated transporting TypedArray (created from SharedArrayBuffer) among multiple Napa workers for efficient data sharing.
 
 ## <a name="api"></a> API
 
