@@ -31,9 +31,10 @@ zone1.execute(
 ```
 More examples:
 * [Estimate PI in parallel](./examples/tutorial/estimate-pi-in-parallel)
+* [Max sub-matrix of 1s with layered parallelism](./examples/tutorial/max-square-sub-matrix)
 * [Parallel Quick Sort](./examples/tutorial/parallel-quick-sort)
 * [Recursive Fibonacci with multiple JavaScript threads](./examples/tutorial/recursive-fibonacci)
-* [Max sub-matrix of 1s with layered parallelism](./examples/tutorial/max-square-sub-matrix)
+* [Synchronized loading](./examples/tutorial/synchronized-loading)
 
 ## Features
 - Multi-threaded JavaScript runtime
