@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 const napa = require("napajs");
-const store = napa.store.getOrCreate('my-lazy-loading-component');
+const store = napa.store.getOrCreate('my-phone-book');
 
 const initialize = function () {
     store.set('_lock', napa.sync.createLock());
@@ -10,24 +10,19 @@ const initialize = function () {
 
 const load_data = function () {
     // load data. This function should run only once.
-    console.log('[load_data]loading...');
+    console.log('[load_data] loading...');
     
     const fs = require('fs');
-    let shared_const_data = {
-        'data1': fs.readFileSync('./data1').toString(),
-        'data2': fs.readFileSync('./data2').toString()
-    };
+    let phoneBookData = JSON.parse(fs.readFileSync('./phone-book-data.json').toString());
 
-    for (let i in shared_const_data) {
-        store.set(i, shared_const_data[i]);
+    for (let name in phoneBookData) {
+        store.set(name, phoneBookData[name]);
     }
     store.set('_loaded', true);
 }
 
 let loaded = false;
-const do_something = function (key) {
-    console.log(`[do_something]key=${key.toString()}, trying to load data...`);
-
+const lookup = function (name) {
     if (!loaded) {
         const lock = store.get('_lock');
         lock.guardSync(function() {
@@ -38,10 +33,8 @@ const do_something = function (key) {
         loaded = true;
     }
 
-    // use data
-    let data = store.get(key);
-    console.log(`[do_something]key=${key.toString()}, data=${data ? data : '<not exist>'}`);
+    return store.get(name);
 };
 
 module.exports.initialize = initialize;
-module.exports.do_something = do_something;
+module.exports.lookup = lookup;
