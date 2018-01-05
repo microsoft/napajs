@@ -9,7 +9,7 @@ using namespace v8;
 const char* PlusNumberWrap::_exportName = "PlusNumberWrap";
 
 // Define persistent constructor.
-NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(PlusNumberWrap)
+NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(PlusNumberWrap);
 
 PlusNumberWrap::PlusNumberWrap(double value)
     : _plusNumber(value) {

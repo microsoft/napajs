@@ -28,7 +28,7 @@ namespace test {
     private:
 
         /// <summary> Declare persistent constructor to create Zone Javascript wrapper instance. </summary>
-        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR;
+        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR();
 
         // SimpleObjectWrap methods
         static void GetValue(const v8::FunctionCallbackInfo<v8::Value>& args);

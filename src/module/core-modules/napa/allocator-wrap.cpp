@@ -5,7 +5,7 @@
 
 using namespace napa::module;
 
-NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(AllocatorWrap)
+NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(AllocatorWrap);
 
 void AllocatorWrap::Init() {
     auto isolate = v8::Isolate::GetCurrent();

@@ -22,7 +22,7 @@ namespace module {
         static v8::Local<v8::Object> NewInstance(napa::providers::Metric* metric, uint32_t dimensions);
 
         /// <summary> Declare persistent constructor to create Metric Javascript wrapper instance. </summary>
-        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR;
+        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR();
 
     private:
 

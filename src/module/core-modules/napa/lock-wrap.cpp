@@ -11,7 +11,7 @@
 
 using namespace napa::module;
 
-NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(napa::module::LockWrap)
+NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(napa::module::LockWrap);
 
 void LockWrap::Init() {
     auto isolate = v8::Isolate::GetCurrent();
