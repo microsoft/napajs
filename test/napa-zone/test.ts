@@ -236,7 +236,8 @@ export function simpleTypeTransportTest() {
         a: 'hello',
         b: {
             c: [0, 1]
-        }
+        },
+        c: null
     });
 }
 
