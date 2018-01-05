@@ -68,7 +68,8 @@ export function marshallTransform(jsValue: any, context: transportable.Transport
 /// <param name="context"> Transport context. </param>
 /// <returns> Transported value. </returns>
 function unmarshallTransform(payload: any, context: transportable.TransportContext): any {
-    if (payload != null && payload._cid !== undefined) {
+    if (payload == null) return payload;
+    if (payload._cid !== undefined) {
         let cid = payload._cid;
         if (cid === 'function') {
             return functionTransporter.load(payload.hash);
