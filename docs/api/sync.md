@@ -35,6 +35,9 @@ catch(error) {
     console.log(error);
 }
 ```
+
+An example [Synchronized Loading](./../../examples/tutorial/synchronized-loading) demonstrated how to implement a shared, lazy-loading phone book.
+
 <!--
 ### <a name="lock-guard-func-promise-any-promise-any"></a> lock.guard(func: () => Promise\<any>): Promise\<any>
 
