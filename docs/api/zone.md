@@ -124,7 +124,7 @@ zone.broadcast('var state = 0;')
 ### <a name="broadcast-function"></a> zone.broadcast(function: (...args: any[]) => void, args?: any[]): Promise\<void\>
 It asynchronously broadcasts an anonymous function with its arguments to all workers, which returns a Promise of void. If any of the workers failed to execute the code, the promise will be rejected with an error message.
 
-*Please note that Napa doesn't support closure in 'function' during broadcast.
+*Please note that Napa doesn't support closure in 'function' during broadcast.*
 
 Example:
 
@@ -142,7 +142,7 @@ zone.broadcast((state) => {
 ### <a name="execute-by-name"></a> zone.execute(moduleName: string, functionName: string, args?: any[], options?: CallOptions): Promise\<any\>
 Execute a function asynchronously on an arbitrary worker via module name and function name. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns a Promise of [`Result`](#result). If an error happens, either bad code, user exception, or timeout is reached, the promise will be rejected.
 
-Example: Execute function 'bar' in module 'foo', with arguments [1, 'hello', { field1: 1 }]. 300ms timeout is applied.
+Example: Execute function `bar` in module `foo`, with arguments [1, 'hello', { field1: 1 }]. 300ms timeout is applied.
 ```js
 zone.execute(
     'foo', 
