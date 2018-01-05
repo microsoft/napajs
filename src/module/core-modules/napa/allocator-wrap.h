@@ -22,7 +22,7 @@ namespace module {
         static constexpr const char* exportName = "AllocatorWrap";
 
         /// <summary> Declare constructor in public, so we can export class constructor in JavaScript world. </summary>
-        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR
+        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR();
 
     protected:
         /// <summary> It implements Allocator.allocate(size: number): napajs.memory.Handle </summary>

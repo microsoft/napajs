@@ -38,7 +38,7 @@ namespace demo {
 
         /// <summary> Declare persistent constructor to create PlusNumber instance. </summary>
         /// <remarks> Napa creates persistent constructor at each isolate while node.js creates the static instance. </remarks>
-        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR
+        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR();
 
         PlusNumber _plusNumber;
     };

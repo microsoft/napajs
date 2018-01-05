@@ -6,7 +6,7 @@
 
 using namespace napa::module;
 
-NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(StoreWrap)
+NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(StoreWrap);
     
 void StoreWrap::Init() {
     auto isolate = v8::Isolate::GetCurrent();

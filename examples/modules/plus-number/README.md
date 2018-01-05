@@ -76,7 +76,7 @@ namespace demo {
 
         /// <summary> Declare persistent constructor to create PlusNumber instance. </summary>
         /// <remarks> Napa creates persistent constructor at each isolate while node.js creates the static instance. </remarks>
-        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR
+        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR();
 
         PlusNumber _plusNumber;
     };
@@ -96,7 +96,7 @@ using namespace v8;
 const char* PlusNumberWrap::_exportName = "PlusNumberWrap";
 
 // Define persistent constructor.
-NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(PlusNumberWrap)
+NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(PlusNumberWrap);
 
 PlusNumberWrap::PlusNumberWrap(double value)
     : _plusNumber(value) {

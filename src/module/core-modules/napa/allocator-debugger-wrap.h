@@ -19,7 +19,7 @@ namespace module {
         static void Init();
 
         /// <summary> Declare constructor in public, so we can export class constructor to JavaScript world. </summary>
-        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR
+        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR();
 
         /// <summary> Exported class name. </summary>
         static constexpr const char* exportName = "AllocatorDebuggerWrap";
