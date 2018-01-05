@@ -1,5 +1,5 @@
 # Synchronized loading
-This example implements a shared phone book component. The component will not load data until the first lookup request happens. When it starts to load data, it ensures the loading will be run only once. 
+This example implements a shared phone book component. The component will not load data until the first lookup request happens. When it starts to load data, it ensures the loading will run only once. 
 
 The component is implemented using lazy-loading pattern with the use of [`napa.sync.Lock`](./../../../docs/api/sync.md#interface-lock).
 
