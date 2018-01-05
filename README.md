@@ -34,7 +34,7 @@ More examples:
 * [Max sub-matrix of 1s with layered parallelism](./examples/tutorial/max-square-sub-matrix)
 * [Parallel Quick Sort](./examples/tutorial/parallel-quick-sort)
 * [Recursive Fibonacci with multiple JavaScript threads](./examples/tutorial/recursive-fibonacci)
-* [Synchronized Loading](./examples/tutorial/synchronized-loading)
+* [Synchronized loading](./examples/tutorial/synchronized-loading)
 
 ## Features
 - Multi-threaded JavaScript runtime

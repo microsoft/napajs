@@ -5,7 +5,7 @@ const napa = require("napajs");
 const store = napa.store.getOrCreate('my-phone-book');
 
 const initialize = function () {
-    store.set('_lock', napa.sync.createLock());
+    store.set('_loadLock', napa.sync.createLock());
 }
 
 const load_data = function () {
@@ -24,7 +24,7 @@ const load_data = function () {
 let loaded = false;
 const lookup = function (name) {
     if (!loaded) {
-        const lock = store.get('_lock');
+        const lock = store.get('_loadLock');
         lock.guardSync(function() {
             if (!store.get('_loaded')) {
                 load_data();
