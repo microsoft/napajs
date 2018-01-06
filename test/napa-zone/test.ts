@@ -115,6 +115,21 @@ export function executeWithTransportableReturns(id: string): Promise<any> {
     });
 }
 
+export function executeWithArgsContainingUnicodeString(id: string): Promise<any> {
+    let unicodeStr = "中文 español deutsch English हिन्दी العربية português বাংলা русский 日本語 ਪੰਜਾਬੀ 한국어 தமிழ் עברית";
+    let zone = napa.zone.get(id);
+    return new Promise((resolve, reject) => {
+        zone.execute((str: string) => {
+                var assert = require("assert");
+                let unicodeStr = "中文 español deutsch English हिन्दी العربية português বাংলা русский 日本語 ਪੰਜਾਬੀ 한국어 தமிழ் עברית";
+                assert.equal(str, unicodeStr);
+                return str;
+            }, [unicodeStr])
+            .then ((result: napa.zone.Result) => resolve(result.value))
+            .catch((error: any) => reject(error));
+    });
+}
+
 /// <summary> Memory test helpers. </summary>
 export function crtAllocatorTest(): void {
     let handle = napa.memory.crtAllocator.allocate(10);
@@ -221,7 +236,8 @@ export function simpleTypeTransportTest() {
         a: 'hello',
         b: {
             c: [0, 1]
-        }
+        },
+        c: null
     });
 }
 

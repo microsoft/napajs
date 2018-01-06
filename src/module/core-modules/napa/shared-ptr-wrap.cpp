@@ -5,7 +5,7 @@
 
 using namespace napa::module;
 
-NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(napa::module::SharedPtrWrap)
+NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(napa::module::SharedPtrWrap);
 
 void SharedPtrWrap::Init() {
     auto isolate = v8::Isolate::GetCurrent();

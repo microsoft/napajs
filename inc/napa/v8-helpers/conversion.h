@@ -22,11 +22,25 @@ namespace v8_helpers {
         return std::string(*utf8Value);
     }
 
+    /// <summary> Convert a v8 value to std::u16string. </summary>
+    template <>
+    inline std::u16string V8ValueTo(const v8::Local<v8::Value>& value) {
+        v8::String::Value utf16Value(value);
+        return std::u16string(reinterpret_cast<const char16_t *>(*utf16Value));
+    }
+
     /// <summary> Convert a v8 value to napa::stl::String. </summary>
     template <>
     inline napa::stl::String V8ValueTo(const v8::Local<v8::Value>& value) {
         v8::String::Utf8Value utf8Value(value);
         return napa::stl::String(*utf8Value);
+    }
+
+    /// <summary> Convert a v8 value to napa::stl::U16String. </summary>
+    template <>
+    inline napa::stl::U16String V8ValueTo(const v8::Local<v8::Value>& value) {
+        v8::String::Value utf16Value(value);
+        return napa::stl::U16String(reinterpret_cast<const char16_t *>(*utf16Value));
     }
 
     /// <summary> Convert a v8 value to a Utf8String. </summary>
