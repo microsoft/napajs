@@ -4,6 +4,7 @@
 #pragma once
 
 #include "napa/capi.h"
+#include <napa/string-ref.h>
 
 #include <functional>
 #include <future>
@@ -12,7 +13,7 @@ namespace napa {
 
     /// <summary> Initializes napa with global scope settings. </summary>
     inline ResultCode Initialize(const std::string& settings = "") {
-        return napa_initialize(STD_STRING_TO_NAPA_STRING_REF(settings));
+        return napa_initialize(STD_STRING_TO_NAPA_STRING_REF_UTF8(settings));
     }
 
     /// <summary> Initialize napa using console provided arguments. </summary>
@@ -33,9 +34,9 @@ namespace napa {
         /// <param name="id"> A unique id for the zone. </param>
         /// <param name="settings"> A settings string to set zone specific settings. </param>
         explicit Zone(const std::string& id, const std::string& settings = "") : _zoneId(id) {
-            _handle = napa_zone_create(STD_STRING_TO_NAPA_STRING_REF(id));
+            _handle = napa_zone_create(STD_STRING_TO_NAPA_STRING_REF_UTF8(id));
 
-            auto res = napa_zone_init(_handle, STD_STRING_TO_NAPA_STRING_REF(settings));
+            auto res = napa_zone_init(_handle, STD_STRING_TO_NAPA_STRING_REF_UTF8(settings));
             if (res != NAPA_RESULT_SUCCESS) {
                 napa_zone_release(_handle);
                 throw std::runtime_error(napa_result_code_to_string(res));
@@ -61,7 +62,7 @@ namespace napa {
 
             napa_zone_broadcast(
                 _handle,
-                STD_STRING_TO_NAPA_STRING_REF(source),
+                STD_STRING_TO_NAPA_STRING_REF_UTF8(source),
                 [](napa_result_code code, void* context) {
                     // Ensures the context is deleted when this scope ends.
                     std::unique_ptr<BroadcastCallback> callback(reinterpret_cast<BroadcastCallback*>(context));
@@ -132,7 +133,7 @@ namespace napa {
 
         /// <summary> Retrieves a new zone proxy for the zone id, throws if zone is not found. </summary>
         static std::unique_ptr<Zone> Get(const std::string& id) {
-            auto handle = napa_zone_get(STD_STRING_TO_NAPA_STRING_REF(id));
+            auto handle = napa_zone_get(STD_STRING_TO_NAPA_STRING_REF_UTF8(id));
             if (!handle) {
                 throw std::runtime_error("No zone exists for id '" + id + "'");
             }

@@ -194,7 +194,7 @@ static void CreateRequestAndExecute(v8::Local<v8::Object> obj, Func&& func) {
     auto maybe = obj->Get(context, MakeV8String(isolate, "module"));
     if (!maybe.IsEmpty()) {
         module = Utf8String(maybe.ToLocalChecked());
-        spec.module = NAPA_STRING_REF_WITH_SIZE(module.Data(), module.Length());
+        spec.module = NAPA_STRING_REF_WITH_SIZE_UTF8(module.Data(), module.Length());
     }
 
     // function property is mandatory in a spec
@@ -205,7 +205,7 @@ static void CreateRequestAndExecute(v8::Local<v8::Object> obj, Func&& func) {
     CHECK_ARG(isolate, functionValue->IsString(), "function property in function spec object must be a string");
 
     v8::String::Utf8Value function(functionValue->ToString());
-    spec.function = NAPA_STRING_REF_WITH_SIZE(*function, static_cast<size_t>(function.length()));
+    spec.function = NAPA_STRING_REF_WITH_SIZE_UTF8(*function, static_cast<size_t>(function.length()));
 
     // arguments are optional in a spec
     maybe = obj->Get(context, MakeV8String(isolate, "arguments"));
@@ -215,7 +215,7 @@ static void CreateRequestAndExecute(v8::Local<v8::Object> obj, Func&& func) {
 
         spec.arguments.reserve(arguments.size());
         for (const auto& arg : arguments) {
-            spec.arguments.emplace_back(NAPA_STRING_REF_WITH_SIZE(arg.Data(), arg.Length()));
+            spec.arguments.emplace_back(NAPA_STRING_REF_WITH_SIZE_UTF8(arg.Data(), arg.Length()));
         }
     }
 

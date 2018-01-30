@@ -3,30 +3,11 @@
 
 #pragma once
 
+#include "napa/string-ref.h"
+
 #include "stddef.h"
 #include "stdint.h"
 
-/// <summary> Simple non owning string. Should only be used for binding. </summary>
-typedef struct {
-    const char* data;
-    size_t size;
-} napa_string_ref;
-
-#define NAPA_STRING_REF_WITH_SIZE(data, size) (napa_string_ref { (data), (size) })
-#define NAPA_STRING_REF(data) NAPA_STRING_REF_WITH_SIZE(data, strlen(data))
-
-const napa_string_ref EMPTY_NAPA_STRING_REF = NAPA_STRING_REF_WITH_SIZE(0, 0);
-
-#ifdef __cplusplus
-
-namespace napa {
-    typedef napa_string_ref StringRef;
-}
-
-#define STD_STRING_TO_NAPA_STRING_REF(str) (napa_string_ref { (str).data(), (str).size() })
-#define NAPA_STRING_REF_TO_STD_STRING(str) (std::string((str).data, (str).size))
-
-#endif // __cplusplus
 
 /// <summary> Represents result code in napa zone apis. </summary>
 #define NAPA_RESULT_CODE_DEF(symbol, ...) NAPA_RESULT_##symbol

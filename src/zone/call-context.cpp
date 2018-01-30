@@ -10,6 +10,7 @@
 
 #include <utils/debug.h>
 
+#include <napa/string-ref.h>
 #include <napa/log.h>
 #include <napa/v8-helpers.h>
 

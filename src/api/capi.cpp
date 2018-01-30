@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 #include <napa/capi.h>
+#include <napa/string-ref.h>
 
 #include <providers/providers.h>
 #include <settings/settings-parser.h>
@@ -66,7 +67,7 @@ napa_zone_handle napa_zone_get_current() {
         return nullptr;
     }
 
-    return napa_zone_get(STD_STRING_TO_NAPA_STRING_REF(zone->GetId()));
+    return napa_zone_get(STD_STRING_TO_NAPA_STRING_REF_UTF8(zone->GetId()));
 }
 
 napa_result_code napa_zone_init(napa_zone_handle handle, napa_string_ref settings) {
@@ -107,7 +108,7 @@ napa_string_ref napa_zone_get_id(napa_zone_handle handle) {
     NAPA_ASSERT(_initialized, "Napa platform wasn't initialized");
     NAPA_ASSERT(handle, "Zone handle is null");
     
-    return STD_STRING_TO_NAPA_STRING_REF(handle->id);
+    return STD_STRING_TO_NAPA_STRING_REF_UTF8(handle->id);
 }
 
 void napa_zone_broadcast(napa_zone_handle handle,
@@ -148,8 +149,8 @@ void napa_zone_execute(napa_zone_handle handle,
     handle->zone->Execute(req, [callback, context](Result result) {
         napa_zone_result res;
         res.code = result.code;
-        res.error_message = STD_STRING_TO_NAPA_STRING_REF(result.errorMessage);
-        res.return_value = STD_STRING_TO_NAPA_STRING_REF(result.returnValue);
+        res.error_message = STD_STRING_TO_NAPA_STRING_REF_UTF8(result.errorMessage);
+        res.return_value = STD_STRING_TO_NAPA_STRING_REF_UTF8(result.returnValue);
         
         // Release ownership of transport context
         res.transport_context = reinterpret_cast<void*>(result.transportContext.release());
