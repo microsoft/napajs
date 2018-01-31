@@ -21,15 +21,15 @@ namespace napa {
         // https://connect.microsoft.com/VisualStudio/feedback/details/1403302/unresolved-external-when-using-codecvt-utf8
         //
         template<>
-        struct deletable_facet<std::codecvt<char16_t, char, std::mbstate_t>>
-            : deletable_facet<std::codecvt<uint16_t, char, std::mbstate_t>>
+        struct deletable_facet<std::codecvt_utf8_utf16<char16_t>>
+            : deletable_facet<std::codecvt_utf8_utf16<uint16_t>>
         {
             inline result in(
                 std::mbstate_t& state,
                 const char *first1, const char *last1, const char *& mid1,
                 char16_t *first2, char16_t *last2, char16_t *& mid2) const {
 
-                return std::codecvt<uint16_t, char, std::mbstate_t>::in(
+                return std::codecvt_utf8_utf16<uint16_t>::in(
                     state,
                     first1, last1, mid1,
                     reinterpret_cast<uint16_t *>(first2), reinterpret_cast<uint16_t *>(last2), reinterpret_cast<uint16_t *&>(mid2));
@@ -40,7 +40,7 @@ namespace napa {
                 const char16_t *first1, const char16_t *last1, const char16_t *& mid1,
                 char *first2, char *last2, char *& mid2) const {
 
-                return std::codecvt<uint16_t, char, std::mbstate_t>::out(
+                return std::codecvt_utf8_utf16<uint16_t>::out(
                     state,
                     reinterpret_cast<const uint16_t *>(first1), reinterpret_cast<const uint16_t *>(last1), reinterpret_cast<const uint16_t *&>(mid1),
                     first2, last2, mid2);
@@ -48,11 +48,11 @@ namespace napa {
         };
 #endif
 
-        typedef deletable_facet<std::codecvt<char16_t, char, std::mbstate_t>> codecvt_utf16;
+        typedef deletable_facet<std::codecvt_utf8_utf16<char16_t>> codecvt_utf16;
 
         inline std::string utf16_to_utf8(const char16_t *data, size_t size) {
             std::wstring_convert<codecvt_utf16, char16_t> cvt;
-            
+
             return cvt.to_bytes(
                 reinterpret_cast<const char16_t *>(data),
                 reinterpret_cast<const char16_t *>(data) + size);

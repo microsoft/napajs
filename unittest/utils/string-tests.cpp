@@ -6,7 +6,7 @@
 
 using namespace napa;
 
-TEST_CASE("utils", "[string]") {
+TEST_CASE("utils - string", "[string]") {
 
     SECTION("ReplaceAll - No match") {
         std::string str = "no match at all";

@@ -26,6 +26,7 @@ file(GLOB_RECURSE SOURCE_FILES
     ${NAPA_ROOT}/src/platform/os.cpp
     ${NAPA_ROOT}/src/platform/process.cpp
     ${NAPA_ROOT}/src/settings/settings-parser.cpp
+    ${NAPA_ROOT}/src/utils/string-ref.cpp
     ${NAPA_ROOT}/src/zone/simple-thread-pool.cpp
     ${NAPA_ROOT}/src/zone/timer.cpp)
 
@@ -36,7 +37,7 @@ set(TARGET_NAME ${PROJECT_NAME})
 add_executable(${TARGET_NAME} ${TEST_FILES} ${SOURCE_FILES} ${PLATFORM_SOURCE_FILES})
 
 # Compiler definitions
-target_compile_definitions(${TARGET_NAME} PRIVATE NAPA_LOG_DISABLED)
+target_compile_definitions(${TARGET_NAME} PRIVATE NAPA_LOG_DISABLED NAPA_EXPORTS)
 
 # Include directories
 target_include_directories(${TARGET_NAME}
