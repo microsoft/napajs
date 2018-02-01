@@ -4,6 +4,7 @@
 #include <napa/string-ref.h>
 
 #include <codecvt>
+#include <locale>
 
 namespace napa {
     namespace stl {

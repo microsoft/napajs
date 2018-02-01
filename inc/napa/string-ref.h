@@ -10,6 +10,7 @@
 
 #ifdef __cplusplus
 #include <string>
+#include <cstring>
 #endif
 
 typedef enum {
@@ -73,8 +74,8 @@ namespace napa {
     typedef napa_string_ref StringRef;
 
     namespace string_ref {
-        inline NAPA_API std::string ToString(const StringRef& str);
-        inline NAPA_API std::u16string ToU16String(const StringRef& str);
+        NAPA_API std::string ToString(const StringRef& str);
+        NAPA_API std::u16string ToU16String(const StringRef& str);
     }
 }
 
@@ -82,8 +83,8 @@ namespace napa {
 #define NAPA_STRING_REF_WITH_SIZE_UTF8(data, size) NAPA_STRING_REF_WITH_SIZE(data, size, NAPA_STRING_ENCODING_UTF8)
 #define NAPA_STRING_REF_WITH_SIZE_UTF16(data, size) NAPA_STRING_REF_WITH_SIZE(data, size, NAPA_STRING_ENCODING_UTF16)
 
-#define NAPA_STRING_REF_LATIN1(data) NAPA_STRING_REF_WITH_SIZE_LATIN1(data, strlen(data))
-#define NAPA_STRING_REF_UTF8(data) NAPA_STRING_REF_WITH_SIZE_UTF8(data, strlen(data))
+#define NAPA_STRING_REF_LATIN1(data) NAPA_STRING_REF_WITH_SIZE_LATIN1(data, std::strlen(data))
+#define NAPA_STRING_REF_UTF8(data) NAPA_STRING_REF_WITH_SIZE_UTF8(data, std::strlen(data))
 #define NAPA_STRING_REF_UTF16(data) NAPA_STRING_REF_WITH_SIZE_UTF16(data, std::char_traits<char16_t>::length(data))
 
 #define STD_STRING_TO_NAPA_STRING_REF_LATIN1(str) (napa_string_ref { (str).data(), (str).size(), NAPA_STRING_ENCODING_LATIN1 })
