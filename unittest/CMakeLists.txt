@@ -52,8 +52,9 @@ set_target_properties(${TARGET_NAME} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_SOURCE_DIR}/build/test
 )
 
-if (CMAKE_COMPILER_IS_GNUCC)
-    # GCC: enable std::thread via -pthread option.
+# GCC/Clang: enable std::thread via -pthread option.
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
+    "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set(THREADS_PREFER_PTHREAD_FLAG ON)
     find_package(Threads REQUIRED)
     target_link_libraries(${TARGET_NAME} PRIVATE Threads::Threads)
