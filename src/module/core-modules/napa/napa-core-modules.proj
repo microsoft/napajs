@@ -7,6 +7,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)\napa-binding.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\shared-ptr-wrap.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\store-wrap.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)\timer-wrap.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\transport-context-wrap-impl.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)\zone-wrap.cpp" />
   </ItemGroup>

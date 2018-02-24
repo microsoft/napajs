@@ -76,23 +76,25 @@ bool TimersScheduler::StartMainLoop() {
 
             const auto& topTimer = activeTimers.top();
             if (topTimer.expirationTime <= std::chrono::high_resolution_clock::now()) {
-                if (timers[topTimer.index].active) {
+                // to support re-arm the timer
+                auto ti = activeTimers.top();
+                // Timer expired, so it's no longer active.
+                activeTimers.pop();
+
+                if (timers[ti.index].active) {
+                    // to support interval
+                    timers[ti.index].active = false;
+
                     try {
                         // Fire the callback.
                         // The callback is assumed to be very fast as it is meant to dispatch to appropriate
                         // callback queues.
-                        timers[topTimer.index].callback();
+                        timers[ti.index].callback();
                     }
                     catch (const std::exception &ex) {
                         LOG_ERROR("Timers", "Timer callback threw an exception. %s", ex.what());
                     }
-
-                    // We only support single trigger timers.
-                    timers[topTimer.index].active = false;
                 }
-
-                // Timer expired, so it's no longer active.
-                activeTimers.pop();
             }
             else {
                 // Wait for timer expiration.

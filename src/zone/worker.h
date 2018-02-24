@@ -50,13 +50,17 @@ namespace zone {
         /// <note> Same task instance may run on multiple workers, hence the use of shared_ptr. </node>
         void Schedule(std::shared_ptr<Task> task);
 
+        /// <summary> Schedules a immediate task on this worker. </summary>
+        /// <param name="task"> Task to schedule. </param>
+        void ScheduleImmediate(std::shared_ptr<Task> task);
+
     private:
 
         /// <summary> The worker thread logic. </summary>
         void WorkerThreadFunc(const settings::ZoneSettings& settings);
 
         /// <summary> Enqueue a task. </summary>
-        void Enqueue(std::shared_ptr<Task> task);
+        void Enqueue(std::shared_ptr<Task> task, bool immediate);
 
         struct Impl;
         std::unique_ptr<Impl> _impl;

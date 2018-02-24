@@ -10,6 +10,7 @@
 #include "metric-wrap.h"
 #include "shared-ptr-wrap.h"
 #include "store-wrap.h"
+#include "timer-wrap.h"
 #include "transport-context-wrap-impl.h"
 #include "zone-wrap.h"
 
@@ -153,6 +154,18 @@ static void GetStoreCount(const v8::FunctionCallbackInfo<v8::Value>& args) {
 }
 
 /////////////////////////////////////////////////////////////////////
+/// Timer APIs
+
+static void SetImmediate(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    TimerWrap::SetImmediateCallback(args);
+}
+
+// Set Timeout or Set Interval
+static void SetTimeoutInterval(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    TimerWrap::SetTimeoutIntervalCallback(args);
+}
+
+/////////////////////////////////////////////////////////////////////
 /// Sync APIs
 
 static void CreateLock(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -284,6 +297,7 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
     StoreWrap::Init();
     TransportContextWrapImpl::Init();
     ZoneWrap::Init();
+    TimerWrap::Init();
 
     NAPA_EXPORT_OBJECTWRAP(exports, "AllocatorDebuggerWrap", AllocatorDebuggerWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "AllocatorWrap", AllocatorWrap);
@@ -311,4 +325,7 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
 
     NAPA_SET_METHOD(exports, "serializeValue", SerializeValue);
     NAPA_SET_METHOD(exports, "deserializeValue", DeserializeValue);
+
+    NAPA_SET_METHOD(exports, "setImmediate", SetImmediate);
+    NAPA_SET_METHOD(exports, "SetTimeoutInterval", SetTimeoutInterval);
 }
