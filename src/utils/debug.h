@@ -12,6 +12,6 @@
 #else
 
 // Do nothing without generating any "unreferenced variable" warnings.
-template <typename... Types> inline void LOG_DEBUG(Types&&...) {}
+template <typename... Types> inline void NAPA_DEBUG(Types&&...) {}
 
 #endif
