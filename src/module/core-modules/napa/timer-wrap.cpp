@@ -4,8 +4,6 @@
 #include <vector>
 #include <memory>
 
-#include <iostream>
-
 #include "timer-wrap.h"
 
 #include <napa/zone.h>
@@ -79,11 +77,11 @@ std::shared_ptr<napa::zone::CallbackTask> buildTimeoutTask(
                 
                 std::vector<Local<Value>> parameters;
                 parameters.reserve(args->Length());
-                for (int i = 0; i < args->Length(); ++i) {
+                for (int i = 0; i < static_cast<int>(args->Length()); ++i) {
                     Local<Value> v = args->Get(context, i).ToLocalChecked();
                     parameters.emplace_back(v);
                 }
-                cb->Call(context, context->Global(), parameters.size(), parameters.data());
+                cb->Call(context, context->Global(), static_cast<int>(parameters.size()), parameters.data());
 
                 Local<Number> interval = Local<Number>::Cast(timeout->Get(String::NewFromUtf8(isolate, "_repeat")));
                 bool isInterval = (interval->Value() >= 1);
@@ -97,7 +95,6 @@ std::shared_ptr<napa::zone::CallbackTask> buildTimeoutTask(
     );
 }
 
-
 void TimerWrap::SetImmediateCallback(const FunctionCallbackInfo<Value>& args) {
     auto isolate = Isolate::GetCurrent();
     HandleScope scope(isolate);
@@ -109,7 +106,7 @@ void TimerWrap::SetImmediateCallback(const FunctionCallbackInfo<Value>& args) {
     if (zone == nullptr) {
         throw new std::runtime_error("Null zone encountered!");
     }
-    auto scheduler = zone->GetScheduler().get();
+    auto scheduler = NapaZone::GetZoneScheduler(zone);
     if (scheduler == nullptr) {
         throw new std::runtime_error("Null scheduler encountered!");
     }
@@ -139,8 +136,8 @@ void TimerWrap::SetTimeoutIntervalCallback(const FunctionCallbackInfo<Value>& ar
     if (zone == nullptr) {
         throw new std::runtime_error("Null zone encountered!");
     }
-    auto scheduler = zone->GetScheduler();
-    if (scheduler.get() == nullptr) {
+    auto scheduler = NapaZone::GetZoneScheduler(zone);
+    if (scheduler == nullptr) {
         throw new std::runtime_error("Null scheduler encountered!");
     }
     auto workerId = static_cast<WorkerId>(

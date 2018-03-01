@@ -9,7 +9,10 @@ file(GLOB SOURCE_FILES
     "${PROJECT_SOURCE_DIR}/src/zone/call-task.cpp"
     "${PROJECT_SOURCE_DIR}/src/zone/eval-task.cpp"
     "${PROJECT_SOURCE_DIR}/src/zone/worker.cpp"
+    "${PROJECT_SOURCE_DIR}/src/zone/scheduler.cpp"
+    "${PROJECT_SOURCE_DIR}/src/zone/simple-thread-pool.cpp"
     "${PROJECT_SOURCE_DIR}/src/zone/terminable-task.cpp"
+    "${PROJECT_SOURCE_DIR}/src/zone/timer.cpp"
     "${PROJECT_SOURCE_DIR}/src/module/core-modules/napa/*.cpp")
 
 # The addon name

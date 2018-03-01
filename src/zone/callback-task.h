@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include <zone/task.h>
-
 #include <memory>
+#include <functional>
 
+#include <zone/task.h>
 
 namespace napa {
 namespace zone {
