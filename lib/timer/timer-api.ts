@@ -18,7 +18,7 @@ export function clearImmediate(immediate: Timeout): void {
 
 export function setTimeout(func: (...args: any[]) => void, after: number, ...args: any[]): Timeout {
     let timeout = new Timeout(func, after, 0, args);
-    binding.SetTimeoutInterval(timeout);
+    binding.setTimeoutInterval(timeout);
     return timeout;
 }
 
@@ -28,7 +28,7 @@ export function clearTimeout(timeout: Timeout): void {
 
 export function setInterval(func: (...args: any[]) => void, after: number, ...args: any[]): Timeout {
     let timeout = new Timeout(func, after, after, args);
-    binding.SetTimeoutInterval(timeout);
+    binding.setTimeoutInterval(timeout);
     return timeout;
 }
 

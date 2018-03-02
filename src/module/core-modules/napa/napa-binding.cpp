@@ -327,5 +327,5 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
     NAPA_SET_METHOD(exports, "deserializeValue", DeserializeValue);
 
     NAPA_SET_METHOD(exports, "setImmediate", SetImmediate);
-    NAPA_SET_METHOD(exports, "SetTimeoutInterval", SetTimeoutInterval);
+    NAPA_SET_METHOD(exports, "setTimeoutInterval", SetTimeoutInterval);
 }
