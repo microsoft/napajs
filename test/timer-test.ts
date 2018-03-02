@@ -8,8 +8,8 @@ import * as napa from "../lib/index";
 
 // To be execute in napa workers
 export function setImmediateTest(taskGroupId: number) : Promise<string> {
-    const kTaskGroupSize = 5;
-    const kAllowedScheduleDiffInMS = 20;
+    const kTaskGroupSize = 4;
+    const kAllowedScheduleDiffInMS = 100;
 
     let setImmediate = napa.timer.setImmediate;
     let clearImmediate = napa.timer.clearImmediate;
@@ -53,8 +53,8 @@ export function setImmediateTest(taskGroupId: number) : Promise<string> {
 }
 
 export function setTimeoutTest(taskGroupId: number) : Promise<string> {
-    const kTaskGroupSize = 5;
-    const kAllowedScheduleDiffInMS = 50;
+    const kTaskGroupSize = 4;
+    const kAllowedScheduleDiffInMS = 100;
 
     let setTimeout = napa.timer.setTimeout;
     let clearTimeout = napa.timer.clearTimeout;
@@ -102,7 +102,7 @@ export function setTimeoutTest(taskGroupId: number) : Promise<string> {
 }
 
 export function setIntervalTest(taskGroupId: number, duration: number, count: number) : Promise<string> {
-    const kAllowedScheduleDiffInMS = 50;
+    const kAllowedScheduleDiffInMS = 100;
 
     let setInterval = napa.timer.setInterval;
     let clearInterval = napa.timer.clearInterval;
@@ -134,7 +134,7 @@ export function setIntervalTest(taskGroupId: number, duration: number, count: nu
             else {
                 reject(`FAIL:${execResult} .vs. ${correctResult}`)
             }
-        }, duration * (count + 3.6));
+        }, duration * (count + 2.6));
     });
 
     setTimeout(()=> {
@@ -190,7 +190,7 @@ if (typeof __in_napa === 'undefined') {
     describe("setInterval/clearInterval", function() {
         it(`Interval test should return string prefixed with OK`, 
             async function() {
-                let promise = zone.execute('./timer-test', 'setIntervalTest', ["0", 500, 5]);
+                let promise = zone.execute('./timer-test', 'setIntervalTest', ["0", 500, 4]);
                 let result = (await promise).value;
                 assert(result.startsWith('OK'), `${result}`);
             }
