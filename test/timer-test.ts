@@ -6,9 +6,8 @@
 
 import * as napa from "../lib/index";
 
-
 // To be execute in napa workers
-export async function setImmediateTest(taskGroupId: number) : Promise<string> {
+export function setImmediateTest(taskGroupId: number) : Promise<string> {
     const kTaskGroupSize = 5;
     const kAllowedScheduleDiffInMS = 20;
 
@@ -55,10 +54,12 @@ export async function setImmediateTest(taskGroupId: number) : Promise<string> {
 
 export function setTimeoutTest(taskGroupId: number) : Promise<string> {
     const kTaskGroupSize = 5;
-    const kAllowedScheduleDiffInMS = 20;
+    const kAllowedScheduleDiffInMS = 50;
 
     let setTimeout = napa.timer.setTimeout;
     let clearTimeout = napa.timer.clearTimeout;
+
+    setTimeout(() => {}, 10);  // Just a warm up.
 
     let correctResult = "";
     let lastTaskId = 0;
@@ -72,7 +73,7 @@ export function setTimeoutTest(taskGroupId: number) : Promise<string> {
     let promise = new Promise<string>((resolve, reject) => {
         let execResult = "";
         for (let taskId = 0; taskId < kTaskGroupSize; taskId++) {
-            let wait = 200 * (taskGroupId * kTaskGroupSize + taskId + 1);
+            let wait = 300 * (taskGroupId * kTaskGroupSize + taskId + 1);
             let startTime = Date.now();
             let timeout = setTimeout((lastTaskId: number) => {
                 let waitToRun = Date.now() - startTime;
@@ -100,36 +101,30 @@ export function setTimeoutTest(taskGroupId: number) : Promise<string> {
     return promise;
 }
 
-
 export function setIntervalTest(taskGroupId: number, duration: number, count: number) : Promise<string> {
-    const kAllowedScheduleDiffInMS = 20;
+    const kAllowedScheduleDiffInMS = 50;
 
     let setInterval = napa.timer.setInterval;
     let clearInterval = napa.timer.clearInterval;
     let setTimeout = napa.timer.setTimeout;
-    let clearTimeout = napa.timer.clearTimeout;
 
     let correctResult = "";
     for (let i = 0; i < count; ++i) {
-        correctResult = `${correctResult}:${i}_OnTime`
+        correctResult += `:${i}_OnTime`
     }
 
     let repeatCount = 0;
     let execResult = "";
     let startTime = Date.now();
-    let interval = setInterval((taskGroupId: number, duration: number) => {
+    let interval = setInterval(() => {
         let wait = Date.now() - startTime;
-        execResult = `${execResult}:${repeatCount}_OnTime`;
-        let avgScheduleDiff = Math.abs(wait - (1 + repeatCount) * duration) / (1 + repeatCount);
+        execResult += `:${repeatCount}_OnTime`;
+        ++repeatCount;
+        let avgScheduleDiff = Math.abs(wait - repeatCount * duration) / repeatCount;
         if (avgScheduleDiff > kAllowedScheduleDiffInMS) {
-            execResult = `${execResult}(X)`;
+            execResult += `(X)`;
         }
-        repeatCount = repeatCount + 1;
-    }, duration, taskGroupId, duration)
-
-    setTimeout(()=> { 
-        clearInterval(interval);
-    }, duration * (count + 0.5));
+    }, duration);
 
     let promise = new Promise<string>((resolve, reject) => {
         setTimeout(() => {
@@ -139,26 +134,24 @@ export function setIntervalTest(taskGroupId: number, duration: number, count: nu
             else {
                 reject(`FAIL:${execResult} .vs. ${correctResult}`)
             }
-        }, duration * (count + 5));
+        }, duration * (count + 3.6));
     });
+
+    setTimeout(()=> {
+        clearInterval(interval);
+    },  Math.ceil(duration * (count + 0.8)));
+
     return promise;
 }
 
-var zone: napa.zone.Zone;
-
-async function initZone(workerCount: number) {
-    zone = napa.zone.create('zone', { workers: workerCount });
-    await zone.broadcast('');
-}
 
 declare var __in_napa: boolean;
 if (typeof __in_napa === 'undefined') {
     let assert = require('assert');
 
     const NUMBER_OF_WORKERS = 3;
-    initZone(NUMBER_OF_WORKERS);
-
     const kTaskGroupCount = 3;
+    let zone = napa.zone.create('zone', { workers: NUMBER_OF_WORKERS });
 
     describe("SetImmediate/clearImmediate", function() {
         let promises: Promise<napa.zone.Result>[] = [];
@@ -177,8 +170,7 @@ if (typeof __in_napa === 'undefined') {
         }
     });
 
-
-    describe("SetTimeout/clearTimeout", async function() {
+    describe("SetTimeout/clearTimeout", function() {
         let promises: Promise<napa.zone.Result>[] = [];
         for (let groupId = 0; groupId < kTaskGroupCount; groupId++) {
             let res = zone.execute('./timer-test', 'setTimeoutTest', [groupId]);
@@ -191,22 +183,17 @@ if (typeof __in_napa === 'undefined') {
                     let result = (await promises[groupId]).value;
                     assert(result.startsWith('OK'), `${result}`);
                 }
-            );
+            ).timeout(3000);;
         }
     });
-
 
     describe("setInterval/clearInterval", function() {
         it(`Interval test should return string prefixed with OK`, 
             async function() {
-                let promise = zone.execute('./timer-test', 'setIntervalTest', ["0", 200, 6]);
+                let promise = zone.execute('./timer-test', 'setIntervalTest', ["0", 500, 5]);
                 let result = (await promise).value;
                 assert(result.startsWith('OK'), `${result}`);
             }
-        ).timeout(3000);
+        ).timeout(6000);
     });
 }
-
-
-
-

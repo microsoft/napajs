@@ -67,29 +67,27 @@ bool TimersScheduler::StartMainLoop() {
         // Timers main loop.
         while (running) {
             cv.wait(lock, [this]() {
-                return !activeTimers.empty() || !running;
+                return !this->activeTimers.empty() || !this->running;
             });
 
             if (!running) {
                 return;
             }
 
-            const auto& topTimer = activeTimers.top();
-            if (topTimer.expirationTime <= std::chrono::high_resolution_clock::now()) {
-                // to support re-arm the timer
-                auto ti = activeTimers.top();
-                // Timer expired, so it's no longer active.
+            auto nextExpirationTime = activeTimers.top().expirationTime;
+            if (nextExpirationTime <= std::chrono::high_resolution_clock::now()) {
+                // Pop before callback）to re-arm the timer.
+                auto expiredTimer = activeTimers.top();
                 activeTimers.pop();
 
-                if (timers[ti.index].active) {
-                    // to support interval
-                    timers[ti.index].active = false;
+                if (timers[expiredTimer.index].active) {
+                    timers[expiredTimer.index].active = false;
 
                     try {
-                        // Fire the callback.
-                        // The callback is assumed to be very fast as it is meant to dispatch to appropriate
-                        // callback queues.
-                        timers[ti.index].callback();
+                        // Fire the callback. The callback is assumed to be 
+                        // VERY VERY FAST as it is meant to dispatch to appropriate 
+                        // callback queues. So do not free lock here.
+                        timers[expiredTimer.index].callback();
                     }
                     catch (const std::exception &ex) {
                         LOG_ERROR("Timers", "Timer callback threw an exception. %s", ex.what());
@@ -97,9 +95,9 @@ bool TimersScheduler::StartMainLoop() {
                 }
             }
             else {
-                // Wait for timer expiration.
-                cv.wait_until(lock, topTimer.expirationTime, [&topTimer]() {
-                    return topTimer.expirationTime <= std::chrono::high_resolution_clock::now();
+                // Wait for timer expiration. Stop waiting if new urgent active timer is arm-ed.
+                cv.wait_until(lock, nextExpirationTime, [this, nextExpirationTime]() {
+                    return this->activeTimers.top().expirationTime < nextExpirationTime;
                 });
             }
         }
