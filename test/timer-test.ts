@@ -11,8 +11,8 @@ export function setImmediateTest(taskGroupId: number) : Promise<string> {
     const kTaskGroupSize = 4;
     const kAllowedScheduleDiffInMS = 200;
 
-    let setImmediate = napa.timer.setImmediate;
-    let clearImmediate = napa.timer.clearImmediate;
+    let setImmediate = napa.timers.setImmediate;
+    let clearImmediate = napa.timers.clearImmediate;
 
     let correctResult = "";
     let lastTaskId = 0;
@@ -56,8 +56,8 @@ export function setTimeoutTest(taskGroupId: number) : Promise<string> {
     const kTaskGroupSize = 4;
     const kAllowedScheduleDiffInMS = 200;
 
-    let setTimeout = napa.timer.setTimeout;
-    let clearTimeout = napa.timer.clearTimeout;
+    let setTimeout = napa.timers.setTimeout;
+    let clearTimeout = napa.timers.clearTimeout;
 
     setTimeout(() => {}, 10);  // Just a warm up.
 
@@ -104,9 +104,9 @@ export function setTimeoutTest(taskGroupId: number) : Promise<string> {
 export function setIntervalTest(taskGroupId: number, duration: number, count: number) : Promise<string> {
     const kAllowedScheduleDiffInMS = 200;
 
-    let setInterval = napa.timer.setInterval;
-    let clearInterval = napa.timer.clearInterval;
-    let setTimeout = napa.timer.setTimeout;
+    let setInterval = napa.timers.setInterval;
+    let clearInterval = napa.timers.clearInterval;
+    let setTimeout = napa.timers.setTimeout;
 
     let correctResult = "";
     for (let i = 0; i < count; ++i) {

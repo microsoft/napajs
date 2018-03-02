@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-import { Timeout } from '../timer';
+import { Timeout } from '../timers';
 
 let binding = require('../binding');
 
@@ -14,7 +14,6 @@ export function setImmediate(func: (...args: any[]) => void, ...args: any[]): Ti
 export function clearImmediate(immediate: Timeout): void {
     immediate._active = false;
 }
-
 
 export function setTimeout(func: (...args: any[]) => void, after: number, ...args: any[]): Timeout {
     let timeout = new Timeout(func, after, 0, args);

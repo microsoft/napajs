@@ -7,12 +7,12 @@ import * as metric from './metric';
 import * as runtime from './runtime';
 import * as store from './store';
 import * as sync from './sync';
-import * as timer from './timer';
+import * as timers from './timers';
 import * as transport from './transport';
 import * as v8 from './v8';
 import * as zone from './zone';
 
-export { log, memory, metric, runtime, store, sync, timer, transport, v8, zone };
+export { log, memory, metric, runtime, store, sync, timers, transport, v8, zone };
 
 // Add execute proxy to global context.
 import { call } from './zone/function-call';
