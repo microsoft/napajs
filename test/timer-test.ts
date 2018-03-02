@@ -9,7 +9,7 @@ import * as napa from "../lib/index";
 // To be execute in napa workers
 export function setImmediateTest(taskGroupId: number) : Promise<string> {
     const kTaskGroupSize = 4;
-    const kAllowedScheduleDiffInMS = 100;
+    const kAllowedScheduleDiffInMS = 200;
 
     let setImmediate = napa.timer.setImmediate;
     let clearImmediate = napa.timer.clearImmediate;
@@ -54,7 +54,7 @@ export function setImmediateTest(taskGroupId: number) : Promise<string> {
 
 export function setTimeoutTest(taskGroupId: number) : Promise<string> {
     const kTaskGroupSize = 4;
-    const kAllowedScheduleDiffInMS = 100;
+    const kAllowedScheduleDiffInMS = 200;
 
     let setTimeout = napa.timer.setTimeout;
     let clearTimeout = napa.timer.clearTimeout;
@@ -102,7 +102,7 @@ export function setTimeoutTest(taskGroupId: number) : Promise<string> {
 }
 
 export function setIntervalTest(taskGroupId: number, duration: number, count: number) : Promise<string> {
-    const kAllowedScheduleDiffInMS = 100;
+    const kAllowedScheduleDiffInMS = 200;
 
     let setInterval = napa.timer.setInterval;
     let clearInterval = napa.timer.clearInterval;
