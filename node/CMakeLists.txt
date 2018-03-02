@@ -47,4 +47,5 @@ target_compile_definitions(${TARGET_NAME} PRIVATE BUILDING_NODE_EXTENSION NAPA_B
 # Link libraries
 target_link_libraries(${TARGET_NAME} PRIVATE
     ${PROJECT_NAME}
+    "v8-extensions"
     ${CMAKE_JS_LIB})
