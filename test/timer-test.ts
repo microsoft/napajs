@@ -5,14 +5,15 @@
 //      node test/timer-test 
 
 import * as napa from "../lib/index";
+import {setImmediate, clearImmediate, setTimeout, clearTimeout, setInterval, clearInterval } from "timers";
 
 // To be execute in napa workers
 export function setImmediateTest(taskGroupId: number) : Promise<string> {
     const kTaskGroupSize = 4;
     const kAllowedScheduleDiffInMS = 200;
 
-    let setImmediate = napa.timers.setImmediate;
-    let clearImmediate = napa.timers.clearImmediate;
+    // let setImmediate = napatimers.setImmediate;
+    // let clearImmediate = napatimers.clearImmediate;
 
     let correctResult = "";
     let lastTaskId = 0;
@@ -56,8 +57,8 @@ export function setTimeoutTest(taskGroupId: number) : Promise<string> {
     const kTaskGroupSize = 4;
     const kAllowedScheduleDiffInMS = 200;
 
-    let setTimeout = napa.timers.setTimeout;
-    let clearTimeout = napa.timers.clearTimeout;
+    // let setTimeout = napatimers.setTimeout;
+    // let clearTimeout = napatimers.clearTimeout;
 
     setTimeout(() => {}, 10);  // Just a warm up.
 
@@ -104,9 +105,9 @@ export function setTimeoutTest(taskGroupId: number) : Promise<string> {
 export function setIntervalTest(taskGroupId: number, duration: number, count: number) : Promise<string> {
     const kAllowedScheduleDiffInMS = 200;
 
-    let setInterval = napa.timers.setInterval;
-    let clearInterval = napa.timers.clearInterval;
-    let setTimeout = napa.timers.setTimeout;
+    // let setInterval = napatimers.setInterval;
+    // let clearInterval = napatimers.clearInterval;
+    // let setTimeout = napatimers.setTimeout;
 
     let correctResult = "";
     for (let i = 0; i < count; ++i) {
