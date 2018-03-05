@@ -149,9 +149,6 @@ void TimerWrap::SetTimeoutIntervalCallback(const FunctionCallbackInfo<Value>& ar
     auto context = isolate->GetCurrentContext();
     auto sharedContext = std::make_shared<Global<Context>>(isolate, context);
 
-    auto immediateCallbackTask = buildTimeoutTask(sharedTimeout, sharedContext);
-    
-
     Local<Number> after = Local<Number>::Cast(timeout->Get(String::NewFromUtf8(isolate, "_after")));
     std::chrono::milliseconds msAfter{static_cast<int>(after->Value())};
     auto sharedTimer = std::make_shared<napa::zone::Timer>(
