@@ -15,7 +15,8 @@ export class Timeout {
     _active: boolean;
     _timer: Timer;
 
-    constructor(callback: (...args: any[]) => void, after: number, repeat: number, ...args: any[])  {
+    constructor(callback: (...args: any[]) => void, 
+                after: number, repeat: number, args: any[]) {
         if (after < 1) after = 0; //0 used for immediate
         if (after > TIMEOUT_MAX) after = 1;
 
@@ -31,4 +32,3 @@ export class Timeout {
         this._active = true;
     }
 }
-
