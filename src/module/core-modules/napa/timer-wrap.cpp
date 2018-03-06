@@ -32,6 +32,7 @@ using v8::Isolate;
 using v8::Local;
 using v8::Number;
 using v8::Object;
+using v8::Persistent;
 using v8::String;
 using v8::Value;
 
@@ -58,8 +59,8 @@ napa::zone::Timer& TimerWrap::Get() {
 }
 
 std::shared_ptr<napa::zone::CallbackTask> buildTimeoutTask(
-        std::shared_ptr<Global<Object>> sharedTimeout,
-        std::shared_ptr<Global<Context>> sharedContext)
+        std::shared_ptr<Persistent<Object>> sharedTimeout,
+        std::shared_ptr<Persistent<Context>> sharedContext)
 {
     return std::make_shared<napa::zone::CallbackTask>(
         [sharedTimeout, sharedContext]() {
@@ -70,6 +71,7 @@ std::shared_ptr<napa::zone::CallbackTask> buildTimeoutTask(
 
             auto timeout = Local<Object>::New(isolate, *sharedTimeout);
 
+            bool needDestroy = true;
             Local<Boolean> active = Local<Boolean>::Cast(timeout->Get(String::NewFromUtf8(isolate, "_active")));
             if (active->Value()) {
                 Local<Function> cb = Local<Function>::Cast(timeout->Get(String::NewFromUtf8(isolate, "_callback")));
@@ -89,7 +91,13 @@ std::shared_ptr<napa::zone::CallbackTask> buildTimeoutTask(
                     auto jsTimer = NAPA_OBJECTWRAP::Unwrap<TimerWrap>(
                         Local<Object>::Cast(timeout->Get(String::NewFromUtf8(isolate, "_timer"))));
                     jsTimer->Get().Start(); //re-arm
+                    needDestroy = false;
                 }
+            }
+
+            if (needDestroy) {
+                sharedTimeout->SetWeak();
+                sharedContext->SetWeak();
             }
         }
     );
@@ -112,10 +120,10 @@ void TimerWrap::SetImmediateCallback(const FunctionCallbackInfo<Value>& args) {
     }
 
     Local<Object> timeout = Local<Object>::Cast(args[0]);
-    auto sharedTimeout = std::make_shared<Global<Object>>(isolate, timeout);
+    auto sharedTimeout = std::make_shared<Persistent<Object>>(isolate, timeout);
 
     auto context = isolate->GetCurrentContext();
-    auto sharedContext = std::make_shared<Global<Context>>(isolate, context);
+    auto sharedContext = std::make_shared<Persistent<Context>>(isolate, context);
 
     auto immediateCallbackTask = buildTimeoutTask(sharedTimeout, sharedContext);
 
@@ -144,10 +152,10 @@ void TimerWrap::SetTimeoutIntervalCallback(const FunctionCallbackInfo<Value>& ar
         reinterpret_cast<uintptr_t>(WorkerContext::Get(WorkerContextItem::WORKER_ID)));
 
     Local<Object> timeout = Local<Object>::Cast(args[0]);
-    auto sharedTimeout = std::make_shared<Global<Object>>(isolate, timeout);
+    auto sharedTimeout = std::make_shared<Persistent<Object>>(isolate, timeout);
 
     auto context = isolate->GetCurrentContext();
-    auto sharedContext = std::make_shared<Global<Context>>(isolate, context);
+    auto sharedContext = std::make_shared<Persistent<Context>>(isolate, context);
 
     Local<Number> after = Local<Number>::Cast(timeout->Get(String::NewFromUtf8(isolate, "_after")));
     std::chrono::milliseconds msAfter{static_cast<int>(after->Value())};
