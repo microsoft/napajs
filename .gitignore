@@ -16,6 +16,8 @@ test/module/test-file
 !test/module/node_modules
 !test/module/**/*.js
 
+misc/*.js
+
 !unittest/module/test-files/node_modules
 
 # ignore all js files under benchmark

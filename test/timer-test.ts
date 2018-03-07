@@ -1,9 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-// To Run this test, in napajs root directory after build, use:
-//      node test/timer-test 
-
 import * as napa from "../lib/index";
 import {setImmediate, clearImmediate, setTimeout, clearTimeout, setInterval, clearInterval } from "timers";
 
@@ -11,9 +8,6 @@ import {setImmediate, clearImmediate, setTimeout, clearTimeout, setInterval, cle
 export function setImmediateTest(taskGroupId: number) : Promise<string> {
     const kTaskGroupSize = 4;
     const kAllowedScheduleDiffInMS = 200;
-
-    // let setImmediate = napatimers.setImmediate;
-    // let clearImmediate = napatimers.clearImmediate;
 
     let correctResult = "";
     let lastTaskId = 0;
@@ -56,9 +50,6 @@ export function setImmediateTest(taskGroupId: number) : Promise<string> {
 export function setTimeoutTest(taskGroupId: number) : Promise<string> {
     const kTaskGroupSize = 4;
     const kAllowedScheduleDiffInMS = 200;
-
-    // let setTimeout = napatimers.setTimeout;
-    // let clearTimeout = napatimers.clearTimeout;
 
     setTimeout(() => {}, 10);  // Just a warm up.
 
@@ -104,10 +95,6 @@ export function setTimeoutTest(taskGroupId: number) : Promise<string> {
 
 export function setIntervalTest(taskGroupId: number, duration: number, count: number) : Promise<string> {
     const kAllowedScheduleDiffInMS = 200;
-
-    // let setInterval = napatimers.setInterval;
-    // let clearInterval = napatimers.clearInterval;
-    // let setTimeout = napatimers.setTimeout;
 
     let correctResult = "";
     for (let i = 0; i < count; ++i) {

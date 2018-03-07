@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "experimentalDecorators": true,
+        "noImplicitAny": true,
+        "declaration": false,
+        "preserveConstEnums": true,
+        "lib": [ "es2017" ]
+    }
+}

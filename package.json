@@ -31,7 +31,7 @@
   "scripts": {
     "benchmark": "node benchmark/bench.js",
     "install": "node scripts/install.js",
-    "prepare": "tsc -p lib && tsc -p test && tsc -p benchmark",
+    "prepare": "tsc -p lib && tsc -p test && tsc -p misc && tsc -p benchmark",
     "test": "mocha test --recursive",
     "rebuild": "cmake-js rebuild && tsc -p lib",
     "rebuildd": "cmake-js rebuild --debug && tsc -p lib",
