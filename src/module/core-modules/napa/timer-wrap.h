@@ -21,6 +21,8 @@ namespace module {
 
         napa::zone::Timer& Get();
 
+        void Reset();
+
         static void SetImmediateCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 
         static void SetTimeoutIntervalCallback(const v8::FunctionCallbackInfo<v8::Value>& args);

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <memory>
+#include <iostream>
 
 #include "timer-wrap.h"
 
@@ -54,8 +55,15 @@ Local<Object> TimerWrap::NewInstance(std::shared_ptr<napa::zone::Timer> timer) {
     return object;
 }
 
+void TimerWrap::Reset() {
+    _timer.reset();
+}
+
 napa::zone::Timer& TimerWrap::Get() {
     return *_timer;
+}
+
+static void dummyWeakCallback(const v8::WeakCallbackInfo<void>& data) {
 }
 
 std::shared_ptr<napa::zone::CallbackTask> buildTimeoutTask(
@@ -96,8 +104,14 @@ std::shared_ptr<napa::zone::CallbackTask> buildTimeoutTask(
             }
 
             if (needDestroy) {
-                sharedTimeout->SetWeak();
-                sharedContext->SetWeak();
+                // Free the timer object early as it is not only memory related.
+                auto jsTimer = NAPA_OBJECTWRAP::Unwrap<TimerWrap>(
+                        Local<Object>::Cast(timeout->Get(String::NewFromUtf8(isolate, "_timer"))));
+                jsTimer->Reset();
+                // jsTimer it self will be auto deleted with javascript object;
+
+                sharedTimeout->SetWeak((void*)nullptr, dummyWeakCallback, v8::WeakCallbackType::kParameter);
+                sharedContext->SetWeak((void*)nullptr, dummyWeakCallback, v8::WeakCallbackType::kParameter);
             }
         }
     );

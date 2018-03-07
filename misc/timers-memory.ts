@@ -25,14 +25,14 @@ function forceGC() {
         global.gc();
     }
     else {
-        console.warn("No GC hook, Start program as node --expose-gc");
+        console.log("No GC hook, Start program as node --expose-gc");
     }
 }
 
 let totalIterations = 0;
 export function printLastStringAndRearm(id: number, ba: string[], ms: number): void {
     ++totalIterations;
-    if (totalIterations % 100 == 0) {
+    if (totalIterations % 10 == 0) {
         forceGC();
     }
     let nba = allocateBigArray();
