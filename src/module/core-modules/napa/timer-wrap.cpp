@@ -68,11 +68,10 @@ static void dummyWeakCallback(const v8::WeakCallbackInfo<int>& data) {
 
 std::shared_ptr<napa::zone::CallbackTask> buildTimeoutTask(
         std::shared_ptr<Persistent<Object>> sharedTimeout,
-        std::shared_ptr<Persistent<Context>> sharedContext,
-        bool isImmediate)
+        std::shared_ptr<Persistent<Context>> sharedContext)
 {
     return std::make_shared<napa::zone::CallbackTask>(
-        [sharedTimeout, sharedContext, isImmediate]() {
+        [sharedTimeout, sharedContext]() {
             auto isolate = Isolate::GetCurrent();
             HandleScope handleScope(isolate);
             auto context = Local<Context>::New(isolate, *sharedContext);
@@ -94,27 +93,17 @@ std::shared_ptr<napa::zone::CallbackTask> buildTimeoutTask(
                 }
                 cb->Call(context, context->Global(), static_cast<int>(parameters.size()), parameters.data());
 
-                if (!isImmediate) {
-                    Local<Number> interval = Local<Number>::Cast(timeout->Get(String::NewFromUtf8(isolate, "_repeat")));
-                    bool isInterval = (interval->Value() >= 1);
-                    if (isInterval) {
-                        auto jsTimer = NAPA_OBJECTWRAP::Unwrap<TimerWrap>(
-                            Local<Object>::Cast(timeout->Get(String::NewFromUtf8(isolate, "_timer"))));
-                        jsTimer->Get().Start(); //re-arm
-                        needDestroy = false;
-                    }
+                Local<Number> interval = Local<Number>::Cast(timeout->Get(String::NewFromUtf8(isolate, "_repeat")));
+                bool isInterval = (interval->Value() >= 1);
+                if (isInterval) {
+                    auto jsTimer = NAPA_OBJECTWRAP::Unwrap<TimerWrap>(
+                        Local<Object>::Cast(timeout->Get(String::NewFromUtf8(isolate, "_timer"))));
+                    jsTimer->Get().Start(); //re-arm
+                    needDestroy = false;
                 }
             }
 
             if (needDestroy) {
-                if (!isImmediate) {
-                    //Free the timer object early as it is not only memory related.
-                    auto jsTimer = NAPA_OBJECTWRAP::Unwrap<TimerWrap>(
-                            Local<Object>::Cast(timeout->Get(String::NewFromUtf8(isolate, "_timer"))));
-                    jsTimer->Reset();
-                    //jsTimer it self will be auto deleted with javascript object;
-                }
-
                 sharedTimeout->SetWeak((int*)nullptr, dummyWeakCallback, v8::WeakCallbackType::kParameter);
                 sharedContext->SetWeak((int*)nullptr, dummyWeakCallback, v8::WeakCallbackType::kParameter);
             }
@@ -144,7 +133,7 @@ void TimerWrap::SetImmediateCallback(const FunctionCallbackInfo<Value>& args) {
     auto context = isolate->GetCurrentContext();
     auto sharedContext = std::make_shared<Persistent<Context>>(isolate, context);
 
-    auto immediateCallbackTask = buildTimeoutTask(sharedTimeout, sharedContext, true);
+    auto immediateCallbackTask = buildTimeoutTask(sharedTimeout, sharedContext);
 
     auto workerId = static_cast<WorkerId>(
         reinterpret_cast<uintptr_t>(WorkerContext::Get(WorkerContextItem::WORKER_ID)));
@@ -180,7 +169,7 @@ void TimerWrap::SetTimeoutIntervalCallback(const FunctionCallbackInfo<Value>& ar
     std::chrono::milliseconds msAfter{static_cast<int>(after->Value())};
     auto sharedTimer = std::make_shared<napa::zone::Timer>(
         [sharedTimeout, sharedContext, scheduler, workerId]() {
-            auto timerCallbackTask = buildTimeoutTask(sharedTimeout, sharedContext, false);
+            auto timerCallbackTask = buildTimeoutTask(sharedTimeout, sharedContext);
             scheduler->ScheduleOnWorker(workerId, timerCallbackTask);
         }, msAfter);
 
