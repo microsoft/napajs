@@ -55,29 +55,49 @@ namespace napa {
         }
 
         /// <see cref="Zone::Broadcast" />
-        void Broadcast(const std::string& source, BroadcastCallback callback) {
+        void Broadcast(const FunctionSpec& spec, BroadcastCallback callback) {
             // Will be deleted on when the callback scope ends.
             auto context = new BroadcastCallback(std::move(callback));
 
-            napa_zone_broadcast(
-                _handle,
-                STD_STRING_TO_NAPA_STRING_REF(source),
-                [](napa_result_code code, void* context) {
-                    // Ensures the context is deleted when this scope ends.
-                    std::unique_ptr<BroadcastCallback> callback(reinterpret_cast<BroadcastCallback*>(context));
+            napa_zone_function_spec req;
+            req.module = spec.module;
+            req.function = spec.function;
+            req.arguments = spec.arguments.data();
+            req.arguments_count = spec.arguments.size();
+            req.options = spec.options;
 
-                    (*callback)(code);
-                }, context);
+            // Release ownership of transport context
+            req.transport_context = reinterpret_cast<void*>(spec.transportContext.release());
+
+            napa_zone_broadcast(_handle, req, [](napa_zone_result result, void* context) {
+                // Ensures the context is deleted when this scope ends.
+                std::unique_ptr<BroadcastCallback> callback(reinterpret_cast<BroadcastCallback*>(context));
+
+                Result res;
+                res.code = result.code;
+                res.errorMessage = NAPA_STRING_REF_TO_STD_STRING(result.error_message);
+                res.returnValue = NAPA_STRING_REF_TO_STD_STRING(result.return_value);
+
+                // Assume ownership of transport context
+                res.transportContext.reset(
+                    reinterpret_cast<napa::transport::TransportContext*>(result.transport_context));
+
+                (*callback)(std::move(res));
+            }, context);
         }
 
-        /// <summary> Compiles and run the provided source code on all zone workers synchronously. </summary>
-        /// <param name="source"> The source code. </param>
-        ResultCode BroadcastSync(const std::string& source) {
-            std::promise<ResultCode> prom;
+        /// <summary> Executes a pre-loaded JS function synchronously. </summary>
+        /// <param name="spec"> A function spec to call. </param>
+        Result BroadcastSync(const FunctionSpec& spec) {
+            if (GetCurrent()->GetId() == GetId()) {
+                return {NAPA_RESULT_BROADCAST_SCRIPT_ERROR, "Cannot call `broadcastSync` on current zone.", "", nullptr};
+            }
+
+            std::promise<Result> prom;
             auto fut = prom.get_future();
 
-            Broadcast(source, [&prom](ResultCode code) {
-                prom.set_value(code);
+            Broadcast(spec, [&prom](Result result) {
+                prom.set_value(std::move(result));
             });
 
             return fut.get();

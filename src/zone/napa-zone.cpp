@@ -95,9 +95,18 @@ NapaZone::NapaZone(const settings::ZoneSettings& settings) :
     std::promise<ResultCode> promise;
     auto future = promise.get_future();
 
-    Broadcast(BOOTSTRAP_SOURCE, [&promise](ResultCode code){ 
-       promise.set_value(code);
-    });
+    // Makes sure the callback is only called once, after all workers finished running the broadcast task.
+    auto counter = std::make_shared<std::atomic<uint32_t>>(_settings.workers);
+    auto callOnce = [&promise, counter](Result result) {
+        if (--(*counter) == 0) {
+            promise.set_value(result.code);
+        }
+    };
+
+    auto bootstrapTask = std::make_shared<EvalTask>(BOOTSTRAP_SOURCE, "", std::move(callOnce));
+
+    _scheduler->ScheduleOnAllWorkers(std::move(bootstrapTask));
+    NAPA_DEBUG("Zone", "Scheduling bootstrap script \"%s\" to zone \"%s\"", BOOTSTRAP_SOURCE.c_str(), _settings.id.c_str());
 
     NAPA_ASSERT(future.get() == NAPA_RESULT_SUCCESS, "Bootstrap Napa zone failed.");
 }
@@ -106,20 +115,30 @@ const std::string& NapaZone::GetId() const {
     return _settings.id;
 }
 
-void NapaZone::Broadcast(const std::string& source, BroadcastCallback callback) {
+void NapaZone::Broadcast(const FunctionSpec& spec, BroadcastCallback callback) {
     // Makes sure the callback is only called once, after all workers finished running the broadcast task.
     auto counter = std::make_shared<std::atomic<uint32_t>>(_settings.workers);
-    auto callOnce = [this, source, callback = std::move(callback), counter](napa_result_code code) {
+    auto callOnce = [this, callback = std::move(callback), counter](Result result) {
         if (--(*counter) == 0) {
-            NAPA_DEBUG("Zone", "Finishing broadcast script \"%s\" to zone \"%s\"", source.c_str(), _settings.id.c_str());
-            callback(code);
+            callback(std::move(result));
         }
     };
 
-    auto broadcastTask = std::make_shared<EvalTask>(source, "", std::move(callOnce));
+    for (WorkerId id = 0; id < _settings.workers; id++) {
+        std::shared_ptr<Task> task;
 
-    _scheduler->ScheduleOnAllWorkers(std::move(broadcastTask));
-    NAPA_DEBUG("Zone", "Scheduling broadcast script \"%s\" to zone \"%s\"", source.c_str(), _settings.id.c_str());
+        if (spec.options.timeout > 0) {
+            task = std::make_shared<TimeoutTaskDecorator<CallTask>>(
+                std::chrono::milliseconds(spec.options.timeout),
+                std::make_shared<CallContext>(spec, callOnce));
+        } else {
+            task = std::make_shared<CallTask>(std::make_shared<CallContext>(spec, callOnce));
+        }
+
+        _scheduler->ScheduleOnWorker(id, std::move(task));
+    }
+
+    NAPA_DEBUG("Zone", "Broadcast function \"%s.%s\" on zone \"%s\"", spec.module.data, spec.function.data, _settings.id.c_str());
 }
 
 void NapaZone::Execute(const FunctionSpec& spec, ExecuteCallback callback) {

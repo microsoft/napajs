@@ -65,29 +65,35 @@ void ZoneWrap::GetId(const v8::FunctionCallbackInfo<v8::Value>& args) {
 void ZoneWrap::Broadcast(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
 
-    CHECK_ARG(isolate, args[0]->IsString(), "first argument to zone.broadcast must be the javascript source");
+    CHECK_ARG(isolate, args[0]->IsObject(), "first argument to zone.broadcast must be the function spec object");
     CHECK_ARG(isolate, args[1]->IsFunction(), "second argument to zone.broadcast must be the callback");
     
     v8::String::Utf8Value source(args[0]->ToString());
 
     napa::zone::DoAsyncWork(v8::Local<v8::Function>::Cast(args[1]),
-        [&args, &source](std::function<void(void*)> complete) {
-            auto wrap = ObjectWrap::Unwrap<ZoneWrap>(args.Holder());
+        [&args](std::function<void(void*)> complete) {
+            CreateRequestAndExecute(args[0]->ToObject(), [&args, &complete](const napa::FunctionSpec& spec) {
+                auto wrap = ObjectWrap::Unwrap<ZoneWrap>(args.Holder());
 
-            wrap->_zoneProxy->Broadcast(*source, [complete = std::move(complete)](ResultCode resultCode) {
-                complete(reinterpret_cast<void*>(static_cast<uintptr_t>(resultCode)));
+                wrap->_zoneProxy->Broadcast(spec, [complete = std::move(complete)](napa::Result result) {
+                    complete(new napa::Result(std::move(result)));
+                });
             });
         },
-        [](auto jsCallback, void* result) {
+        [](auto jsCallback, void* res) {
             auto isolate = v8::Isolate::GetCurrent();
-            v8::HandleScope scope(isolate);
             auto context = isolate->GetCurrentContext();
 
+            auto result = static_cast<napa::Result*>(res);
+
+            v8::HandleScope scope(isolate);
+
             std::vector<v8::Local<v8::Value>> argv;
-            auto resultCode = static_cast<ResultCode>(reinterpret_cast<uintptr_t>(result));
-            argv.emplace_back(v8::Uint32::NewFromUnsigned(isolate, resultCode));
+            argv.emplace_back(CreateResponseObject(*result));
 
             (void)jsCallback->Call(context, context->Global(), static_cast<int>(argv.size()), argv.data());
+
+            delete result;
         }
     );
 }
@@ -95,14 +101,14 @@ void ZoneWrap::Broadcast(const v8::FunctionCallbackInfo<v8::Value>& args) {
 void ZoneWrap::BroadcastSync(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
 
-    CHECK_ARG(isolate, args[0]->IsString(), "first argument to zone.broadcastSync must be the javascript source");
+    CHECK_ARG(isolate, args[0]->IsObject(), "first argument to zone.broadcastSync must be the function spec object");
 
-    v8::String::Utf8Value source(args[0]->ToString());
+    CreateRequestAndExecute(args[0]->ToObject(), [&args](const napa::FunctionSpec& spec) {
+        auto wrap = ObjectWrap::Unwrap<ZoneWrap>(args.Holder());
 
-    auto wrap = ObjectWrap::Unwrap<ZoneWrap>(args.Holder());
-    auto resultCode = wrap->_zoneProxy->BroadcastSync(*source);
-
-    args.GetReturnValue().Set(v8::Uint32::NewFromUnsigned(isolate, resultCode));
+        napa::Result result = wrap->_zoneProxy->BroadcastSync(spec);
+        args.GetReturnValue().Set(CreateResponseObject(result));
+    });
 }
 
 void ZoneWrap::Execute(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -174,10 +180,17 @@ static v8::Local<v8::Object> CreateResponseObject(const napa::Result& result) {
         MakeV8String(isolate, result.returnValue));
 
     // Transport context handle
+    v8::Local<v8::Value> contextHandleValue;
+    auto transportContext = result.transportContext.release();
+    if (transportContext == nullptr) {
+        contextHandleValue = v8::Null(isolate);
+    } else {
+        contextHandleValue = PtrToV8Uint32Array(isolate, transportContext);
+    }
     (void)responseObject->CreateDataProperty(
         context,
         MakeV8String(isolate, "contextHandle"),
-        PtrToV8Uint32Array(isolate, result.transportContext.release()));
+        contextHandleValue);
 
     return responseObject;
 }
@@ -243,8 +256,10 @@ static void CreateRequestAndExecute(v8::Local<v8::Object> obj, Func&& func) {
     maybe = obj->Get(context, MakeV8String(isolate, "transportContext"));
     CHECK_ARG(isolate, !maybe.IsEmpty(), "transportContext property is missing in function spec object");
 
-    auto transportContextWrap = NAPA_OBJECTWRAP::Unwrap<TransportContextWrapImpl>(maybe.ToLocalChecked()->ToObject());
-    spec.transportContext.reset(transportContextWrap->Get());
+    if (maybe.ToLocalChecked()->IsObject()) {
+        auto transportContextWrap = NAPA_OBJECTWRAP::Unwrap<TransportContextWrapImpl>(maybe.ToLocalChecked()->ToObject());
+        spec.transportContext.reset(transportContextWrap->Get());
+    }
 
     // Execute
     func(spec);

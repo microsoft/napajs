@@ -40,7 +40,7 @@ const std::string& NodeZone::GetId() const {
     return _id;
 }
 
-void NodeZone::Broadcast(const std::string& source, BroadcastCallback callback) {
+void NodeZone::Broadcast(const FunctionSpec& source, BroadcastCallback callback) {
     _broadcast(source, callback);
 }
 

@@ -111,15 +111,38 @@ napa_string_ref napa_zone_get_id(napa_zone_handle handle) {
 }
 
 void napa_zone_broadcast(napa_zone_handle handle,
-                         napa_string_ref source,
+                         napa_zone_function_spec spec,
                          napa_zone_broadcast_callback callback,
                          void* context) {
     NAPA_ASSERT(_initialized, "Napa platform wasn't initialized");
     NAPA_ASSERT(handle, "Zone handle is null");
     NAPA_ASSERT(handle->zone, "Zone handle wasn't initialized");
 
-    handle->zone->Broadcast(NAPA_STRING_REF_TO_STD_STRING(source), [callback, context](napa_result_code code) {
-        callback(code, context);
+    FunctionSpec req;
+    req.module = spec.module;
+    req.function = spec.function;
+    
+    req.arguments.reserve(spec.arguments_count);
+    for (size_t i = 0; i < spec.arguments_count; i++) {
+        req.arguments.emplace_back(spec.arguments[i]);
+    }
+
+    req.options = spec.options;
+    
+    // Assume ownership of transport context
+    req.transportContext.reset(reinterpret_cast<napa::transport::TransportContext*>(spec.transport_context));
+
+
+    handle->zone->Broadcast(req, [callback, context](Result result) {
+        napa_zone_result res;
+        res.code = result.code;
+        res.error_message = STD_STRING_TO_NAPA_STRING_REF(result.errorMessage);
+        res.return_value = STD_STRING_TO_NAPA_STRING_REF(result.returnValue);
+        
+        // Release ownership of transport context
+        res.transport_context = reinterpret_cast<void*>(result.transportContext.release());
+
+        callback(res, context);
     });
 }
 

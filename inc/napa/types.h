@@ -178,16 +178,18 @@ namespace napa {
 #endif // __cplusplus
 
 /// <summary> Callback signatures. </summary>
-typedef void(*napa_zone_broadcast_callback)(napa_result_code code, void* context);
-typedef void(*napa_zone_execute_callback)(napa_zone_result result, void* context);
+typedef void(*napa_zone_callback)(napa_zone_result result, void* context);
+typedef napa_zone_callback napa_zone_broadcast_callback;
+typedef napa_zone_callback napa_zone_execute_callback;
 
 #ifdef __cplusplus
 
 #include <functional>
 
 namespace napa {
-    typedef std::function<void(ResultCode)> BroadcastCallback;
-    typedef std::function<void(Result)> ExecuteCallback;
+    typedef std::function<void(Result)> ZoneCallback;
+    typedef ZoneCallback BroadcastCallback;
+    typedef ZoneCallback ExecuteCallback;
 }
 
 #endif // __cplusplus

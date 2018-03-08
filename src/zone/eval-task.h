@@ -22,7 +22,7 @@ namespace zone {
         /// <param name="callback"> A callback that is triggered when the task execution completed. </param>
         EvalTask(std::string source,
             std::string sourceOrigin = "",
-            BroadcastCallback callback = [](ResultCode) {});
+            BroadcastCallback callback = [](Result) {});
 
         /// <summary> Overrides Task.Execute to define loading execution logic. </summary>
         virtual void Execute() override;
