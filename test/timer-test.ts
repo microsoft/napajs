@@ -141,47 +141,50 @@ if (typeof __in_napa === 'undefined') {
     const kTaskGroupCount = 3;
     let zone = napa.zone.create('zone', { workers: NUMBER_OF_WORKERS });
 
-    describe("SetImmediate/clearImmediate", function() {
-        let promises: Promise<napa.zone.Result>[] = [];
-        for (let groupId = 0; groupId < kTaskGroupCount; groupId++) {
-            let res = zone.execute('./timer-test', 'setImmediateTest', [groupId]);
-            promises.push(res);
-        }
-
-        for (let groupId = 0; groupId < kTaskGroupCount; groupId++) {
-            it(`Immediate test group:${groupId} should return string prefixed with OK`, 
-                async function() {
-                    let result = (await promises[groupId]).value;
-                    assert(result.startsWith('OK'), `${result}`);
-                }
-            );
-        }
-    });
-
-    describe("SetTimeout/clearTimeout", function() {
-        let promises: Promise<napa.zone.Result>[] = [];
-        for (let groupId = 0; groupId < kTaskGroupCount; groupId++) {
-            let res = zone.execute('./timer-test', 'setTimeoutTest', [groupId]);
-            promises.push(res);
-        }
-
-        for (let groupId = 0; groupId < kTaskGroupCount; groupId++) {
-            it(`Timeout test group:${groupId} should return string prefixed with OK`, 
-                async function() {
-                    let result = (await promises[groupId]).value;
-                    assert(result.startsWith('OK'), `${result}`);
-                }
-            ).timeout(3000);;
-        }
-    });
-
-    describe("setInterval/clearInterval", function() {
-        it(`Interval test should return string prefixed with OK`, 
-            async function() {
-                let promise = zone.execute('./timer-test', 'setIntervalTest', ["0", 500, 4]);
-                let result = (await promise).value;
-                assert(result.startsWith('OK'), `${result}`);
+    describe("napa/timers", () => {
+    
+        describe("setImmediate/clearImmediate", function() {
+            let promises: Promise<napa.zone.Result>[] = [];
+            for (let groupId = 0; groupId < kTaskGroupCount; groupId++) {
+                let res = zone.execute('./timer-test', 'setImmediateTest', [groupId]);
+                promises.push(res);
             }
-        ).timeout(6000);
+
+            for (let groupId = 0; groupId < kTaskGroupCount; groupId++) {
+                it(`Immediate test group:${groupId} should return string prefixed with OK`, 
+                    async function() {
+                        let result = (await promises[groupId]).value;
+                        assert(result.startsWith('OK'), `${result}`);
+                    }
+                );
+            }
+        });
+
+        describe("setTimeout/clearTimeout", function() {
+            let promises: Promise<napa.zone.Result>[] = [];
+            for (let groupId = 0; groupId < kTaskGroupCount; groupId++) {
+                let res = zone.execute('./timer-test', 'setTimeoutTest', [groupId]);
+                promises.push(res);
+            }
+
+            for (let groupId = 0; groupId < kTaskGroupCount; groupId++) {
+                it(`Timeout test group:${groupId} should return string prefixed with OK`, 
+                    async function() {
+                        let result = (await promises[groupId]).value;
+                        assert(result.startsWith('OK'), `${result}`);
+                    }
+                ).timeout(3000);;
+            }
+        });
+
+        describe("setInterval/clearInterval", function() {
+            it(`Interval test should return string prefixed with OK`, 
+                async function() {
+                    let promise = zone.execute('./timer-test', 'setIntervalTest', ["0", 500, 4]);
+                    let result = (await promise).value;
+                    assert(result.startsWith('OK'), `${result}`);
+                }
+            ).timeout(6000);
+        });
     });
 }
