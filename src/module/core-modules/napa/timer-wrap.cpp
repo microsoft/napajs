@@ -104,8 +104,14 @@ std::shared_ptr<napa::zone::CallbackTask> buildTimeoutTask(
             }
 
             if (needDestroy) {
-                sharedTimeout->SetWeak((int*)nullptr, dummyWeakCallback, v8::WeakCallbackType::kParameter);
-                sharedContext->SetWeak((int*)nullptr, dummyWeakCallback, v8::WeakCallbackType::kParameter);
+                if (!sharedTimeout->IsEmpty()) {
+                    sharedTimeout->SetWeak((int*)nullptr, dummyWeakCallback, v8::WeakCallbackType::kParameter);
+                    sharedTimeout->Reset();
+                }
+                if (!sharedContext->IsEmpty()) {
+                    sharedContext->SetWeak((int*)nullptr, dummyWeakCallback, v8::WeakCallbackType::kParameter);
+                    sharedContext->Reset();
+                }
             }
         }
     );
