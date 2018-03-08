@@ -141,7 +141,7 @@ if (typeof __in_napa === 'undefined') {
     const kTaskGroupCount = 3;
     let zone = napa.zone.create('zone', { workers: NUMBER_OF_WORKERS });
 
-    describe("napa/timers", () => {
+    describe("napajs/timers", () => {
     
         describe("setImmediate/clearImmediate", function() {
             let promises: Promise<napa.zone.Result>[] = [];
