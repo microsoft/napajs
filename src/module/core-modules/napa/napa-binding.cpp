@@ -161,8 +161,8 @@ static void SetImmediate(const v8::FunctionCallbackInfo<v8::Value>& args) {
 }
 
 // Set Timeout or Set Interval
-static void SetTimeoutInterval(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    TimerWrap::SetTimeoutIntervalCallback(args);
+static void SetTimers(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    TimerWrap::SetTimersCallback(args);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -327,5 +327,5 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
     NAPA_SET_METHOD(exports, "deserializeValue", DeserializeValue);
 
     NAPA_SET_METHOD(exports, "setImmediate", SetImmediate);
-    NAPA_SET_METHOD(exports, "setTimeoutInterval", SetTimeoutInterval);
+    NAPA_SET_METHOD(exports, "setTimers", SetTimers);
 }

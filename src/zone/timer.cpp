@@ -67,7 +67,7 @@ bool TimersScheduler::StartMainLoop() {
         // Timers main loop.
         while (running) {
             cv.wait(lock, [this]() {
-                return !this->activeTimers.empty() || !this->running;
+                return !activeTimers.empty() || !running;
             });
 
             if (!running) {
@@ -97,7 +97,7 @@ bool TimersScheduler::StartMainLoop() {
             else {
                 // Wait for timer expiration. Stop waiting if new urgent active timer is arm-ed.
                 cv.wait_until(lock, nextExpirationTime, [this, nextExpirationTime]() {
-                    return this->activeTimers.top().expirationTime < nextExpirationTime;
+                    return activeTimers.top().expirationTime < nextExpirationTime;
                 });
             }
         }

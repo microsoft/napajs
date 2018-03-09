@@ -148,11 +148,11 @@ void TimerWrap::SetImmediateCallback(const FunctionCallbackInfo<Value>& args) {
 }
 
 
-void TimerWrap::SetTimeoutIntervalCallback(const FunctionCallbackInfo<Value>& args) {
+void TimerWrap::SetTimersCallback(const FunctionCallbackInfo<Value>& args) {
     auto isolate = Isolate::GetCurrent();
     HandleScope scope(isolate);
 
-    CHECK_ARG(isolate, args.Length() == 1, "1 argument is required for calling 'SetTimeoutIntervalCallback'.");
+    CHECK_ARG(isolate, args.Length() == 1, "1 argument is required for calling 'SetTimersCallback'.");
     CHECK_ARG(isolate, args[0]->IsObject(), "Argument \"timeout\" shall be 'Timeout' type.");
 
     auto zone = reinterpret_cast<NapaZone*>(WorkerContext::Get(WorkerContextItem::ZONE));

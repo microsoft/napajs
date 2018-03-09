@@ -10,10 +10,10 @@ const TIMEOUT_MAX = 2 ** 31 -1;
 export class Timeout {
     _callback: (...args: any[]) => void;
     private _after: number;
-    _repeat: number;
-    _args: any[];
+    private _repeat: number;
+    private _args: any[];
     _active: boolean;
-    _timer: Timer;
+    private _timer: Timer;
 
     constructor(callback: (...args: any[]) => void, 
                 after: number, repeat: number, args: any[]) {
@@ -32,3 +32,5 @@ export class Timeout {
         this._active = true;
     }
 }
+
+export type Immediate = Timeout;

@@ -25,7 +25,7 @@ namespace module {
 
         static void SetImmediateCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-        static void SetTimeoutIntervalCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
+        static void SetTimersCallback(const v8::FunctionCallbackInfo<v8::Value>& args);
 
     private:
         /// <summary> Default constructor. </summary>

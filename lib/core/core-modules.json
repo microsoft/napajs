@@ -21,6 +21,6 @@
     },
     {
         "name": "timers",
-        "type": "buildin"
+        "type": "builtin"
     }
 ]
