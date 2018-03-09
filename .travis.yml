@@ -30,7 +30,7 @@ matrix:
   # Node LTS (8.x)      Linux (Trusty)      G++6.3.0
   - os: linux
     dist: trusty
-    node_js: '8'
+    node_js: '8.9.4'
     compiler: g++-6
     addons:
       apt:
