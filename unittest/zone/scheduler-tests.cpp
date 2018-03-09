@@ -59,7 +59,7 @@ public:
 
     void Start() {}
 
-    void Schedule(std::shared_ptr<Task> task) {
+    void Schedule(std::shared_ptr<Task> task, SchedulePhase phase=SchedulePhase::kDefaultPhase) {
         auto testTask = std::dynamic_pointer_cast<TestTask>(task);
         testTask->SetCurrentWorkerId(_id);
 
