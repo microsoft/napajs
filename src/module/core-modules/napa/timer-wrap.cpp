@@ -20,6 +20,7 @@ using napa::zone::WorkerId;
 using napa::zone::WorkerContext;
 using napa::zone::WorkerContextItem;
 using napa::zone::NapaZone;
+using napa::zone::SchedulePhase;
 
 using v8::Array;
 using v8::Boolean;
@@ -143,7 +144,7 @@ void TimerWrap::SetImmediateCallback(const FunctionCallbackInfo<Value>& args) {
 
     auto workerId = static_cast<WorkerId>(
         reinterpret_cast<uintptr_t>(WorkerContext::Get(WorkerContextItem::WORKER_ID)));
-    scheduler->ScheduleImmediateOnWorker(workerId, immediateCallbackTask);
+    scheduler->ScheduleOnWorker(workerId, immediateCallbackTask, SchedulePhase::kImmediatePhase);
 }
 
 
@@ -176,7 +177,7 @@ void TimerWrap::SetTimeoutIntervalCallback(const FunctionCallbackInfo<Value>& ar
     auto sharedTimer = std::make_shared<napa::zone::Timer>(
         [sharedTimeout, sharedContext, scheduler, workerId]() {
             auto timerCallbackTask = buildTimeoutTask(sharedTimeout, sharedContext);
-            scheduler->ScheduleOnWorker(workerId, timerCallbackTask);
+            scheduler->ScheduleOnWorker(workerId, timerCallbackTask, SchedulePhase::kDefaultPhase);
         }, msAfter);
 
     auto jsTimer = TimerWrap::NewInstance(sharedTimer);

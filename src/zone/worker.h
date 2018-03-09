@@ -4,6 +4,7 @@
 #pragma once
 
 #include "task.h"
+#include "schedule-phase.h"
 #include "settings/settings.h"
 
 #include <functional>
@@ -48,11 +49,7 @@ namespace zone {
         /// <summary> Schedules a task on this worker. </summary>
         /// <param name="task"> Task to schedule. </param>
         /// <note> Same task instance may run on multiple workers, hence the use of shared_ptr. </node>
-        void Schedule(std::shared_ptr<Task> task);
-
-        /// <summary> Schedules a immediate task on this worker. </summary>
-        /// <param name="task"> Task to schedule. </param>
-        void ScheduleImmediate(std::shared_ptr<Task> task);
+        void Schedule(std::shared_ptr<Task> task, SchedulePhase phase=SchedulePhase::kDefaultPhase);
 
     private:
 
@@ -60,8 +57,8 @@ namespace zone {
         void WorkerThreadFunc(const settings::ZoneSettings& settings);
 
         /// <summary> Enqueue a task. </summary>
-        void Enqueue(std::shared_ptr<Task> task, bool immediate);
-
+        void Enqueue(std::shared_ptr<Task> task, SchedulePhase phase);
+        
         struct Impl;
         std::unique_ptr<Impl> _impl;
     };

@@ -74,7 +74,7 @@ Worker::Worker(WorkerId id,
 
 Worker::~Worker() {
     // Signal the thread loop that it should stop processing tasks.
-    Enqueue(nullptr, false);
+    Enqueue(nullptr, SchedulePhase::kDefaultPhase);
     NAPA_DEBUG("Worker", "(id=%u) Shutting down: Start draining task queue.", _impl->id);
     
     _impl->workerThread.join();
@@ -92,22 +92,16 @@ void Worker::Start() {
     _impl->workerThread = std::thread(&Worker::WorkerThreadFunc, this, _impl->settings);
 }
 
-void Worker::Schedule(std::shared_ptr<Task> task) {
+void Worker::Schedule(std::shared_ptr<Task> task, SchedulePhase phase) {
     NAPA_ASSERT(task != nullptr, "Task should not be null");
-    Enqueue(task, false);
+    Enqueue(task, phase);
     NAPA_DEBUG("Worker", "(id=%u) Task queued.", _impl->id);
 }
 
-void Worker::ScheduleImmediate(std::shared_ptr<Task> task) {
-    NAPA_ASSERT(task != nullptr, "Task should not be null");
-    Enqueue(task, true);
-    NAPA_DEBUG("Worker", "(id=%u) Task queued.", _impl->id);
-}
-
-void Worker::Enqueue(std::shared_ptr<Task> task, bool immediate) {
+void Worker::Enqueue(std::shared_ptr<Task> task, SchedulePhase phase) {
     {
         std::unique_lock<std::mutex> lock(_impl->queueLock);
-        if (immediate && task != nullptr) {
+        if (phase == SchedulePhase::kImmediatePhase && task != nullptr) {
             _impl->immediateTasks.emplace(std::move(task));
         }
         else {
