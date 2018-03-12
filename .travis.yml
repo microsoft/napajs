@@ -28,9 +28,23 @@ matrix:
     node_js: '6'
     osx_image: xcode6.4
   # Node LTS (8.x)      Linux (Trusty)      G++6.3.0
+  # 2018-03-12 : There is a compability issue for the following platform/environment combination:
+  #                - Ubuntu 14.04
+  #                - Node 8.10.0 or later
+  #                - Node 9.3.0 or later
+  #              This issue causes a crash on Napa.js.
+  #              Issue detail: https://github.com/nodejs/node/issues/17817
+  #
+  #              Current available workaround:
+  #                1: Use Node 8.9.1 or 9.2.1
+  #                2: Use binaries (libnapa.so and napa-binding.node) that compiled in Ubuntu 16.04
+  #
+  #              Since travis-CI does not support Ubuntu 16.04 yet, we locked Node version to 8.9.1
+  #              for now.
+  #                                                                                        - fs-eire
   - os: linux
     dist: trusty
-    node_js: '8'
+    node_js: '8.9.1'
     compiler: g++-6
     addons:
       apt:
@@ -45,10 +59,7 @@ matrix:
     node_js: '8'
     osx_image: xcode7.3
   # Node Stable (9.x)   Linux (Trusty)      G++6.3.0
-  # 2017-12-18 : There is a new compability issue for Linux+Node9.3.0, which cases a crash on Napa.js.
-  #              The Node.js version is fixed to 9.2.1 to suppress this issue.
-  #              Should revert this commit when issue resolved.
-  #                                                                                        - fs-eire
+  # 2017-12-18 : Locked node.js version to 9.2.1. See above.
   - os: linux
     dist: trusty
     node_js: '9.2.1'
