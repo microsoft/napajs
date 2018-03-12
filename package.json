@@ -33,7 +33,7 @@
     "benchmark": "node benchmark/bench.js",
     "install": "node scripts/install.js",
     "prepare": "tsc -p lib && tsc -p test && tsc -p benchmark",
-    "test": "mocha test --recursive",
+    "test": "mocha test -g '^((?!napajs/timers).)*$' --recursive && mocha test -g '^napajs/timers'",
     "rebuild": "cmake-js rebuild && tsc -p lib",
     "rebuildd": "cmake-js rebuild --debug && tsc -p lib",
     "retest": "cmake-js rebuild -d test/module/addon && tsc -p test && mocha test --recursive",
