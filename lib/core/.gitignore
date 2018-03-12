@@ -1,0 +1,9 @@
+# Ignore all .js files by default
+**/*.js
+
+# Specify all .js files to preserve explicitly
+!/assert.js
+!/events.js
+!/process.js
+!/tty.js
+!/util.js
