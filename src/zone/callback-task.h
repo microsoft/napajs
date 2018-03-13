@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <napa/exports.h>
+
 #include <memory>
 #include <functional>
 
@@ -12,7 +14,7 @@ namespace napa {
 namespace zone {
 
     /// <summary> A task to run a C++ callback task without cross isolation. </summary>
-    class CallbackTask : public Task {
+    class NAPA_API CallbackTask : public Task {
     public:
         typedef std::function<void(void)> Callback;    
 

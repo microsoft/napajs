@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 #pragma once
+#include <napa/exports.h>
 
 #include "task.h"
 #include "schedule-phase.h"
@@ -18,7 +19,7 @@ namespace zone {
     using WorkerId = uint32_t;
 
     /// <summary> Represents an execution unit (a worker) for running tasks. </summary>
-    class Worker {
+    class NAPA_API Worker {
     public:
 
         /// <summary> Constructor. </summary>
