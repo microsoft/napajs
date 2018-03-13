@@ -144,7 +144,3 @@ const settings::ZoneSettings& NapaZone::GetSettings() const {
 std::shared_ptr<Scheduler> NapaZone::GetScheduler() {
     return _scheduler;
 }
-
-Scheduler* NapaZone::GetZoneScheduler(NapaZone* zone) {
-    return (zone != nullptr)?zone->GetScheduler().get() : nullptr;
-}

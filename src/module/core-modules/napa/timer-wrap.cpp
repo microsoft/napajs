@@ -134,7 +134,7 @@ void TimerWrap::SetImmediateCallback(const FunctionCallbackInfo<Value>& args) {
     if (zone == nullptr) {
         throw new std::runtime_error("Null zone encountered!");
     }
-    auto scheduler = NapaZone::GetZoneScheduler(zone);
+    auto scheduler = zone->GetScheduler().get();
     if (scheduler == nullptr) {
         throw new std::runtime_error("Null scheduler encountered!");
     }
@@ -164,7 +164,7 @@ void TimerWrap::SetTimersCallback(const FunctionCallbackInfo<Value>& args) {
     if (zone == nullptr) {
         throw new std::runtime_error("Null zone encountered!");
     }
-    auto scheduler = NapaZone::GetZoneScheduler(zone);
+    auto scheduler = zone->GetScheduler().get();
     if (scheduler == nullptr) {
         throw new std::runtime_error("Null scheduler encountered!");
     }

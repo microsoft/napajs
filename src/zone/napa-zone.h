@@ -17,7 +17,7 @@ namespace napa {
 namespace zone {
 
     /// <summary> Concrete implementation of a Napa zone. </summary>
-    class NapaZone : public Zone {
+    class NAPA_API NapaZone : public Zone {
     public:
 
         /// <summary> Creates a new zone with the provided id and settings. </summary>
@@ -41,10 +41,6 @@ namespace zone {
         /// <summary> Retrieves the zone scheduler. </summary>
         /// <remark> Asynchronous works keep the reference on scheduler, so they can finish up safely. </remarks>
         std::shared_ptr<zone::Scheduler> GetScheduler();
-
-        // To avoid heavy dependecies on source files when build napa-binding on windows.
-        // After better build structure is used, remove this and change calls to the above.
-        NAPA_API static Scheduler* GetZoneScheduler(NapaZone* zone);
 
     private:
         explicit NapaZone(const settings::ZoneSettings& settings);
