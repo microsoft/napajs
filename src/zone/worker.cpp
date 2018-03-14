@@ -74,7 +74,7 @@ Worker::Worker(WorkerId id,
 
 Worker::~Worker() {
     // Signal the thread loop that it should stop processing tasks.
-    Enqueue(nullptr, SchedulePhase::kDefaultPhase);
+    Enqueue(nullptr, SchedulePhase::DefaultPhase);
     NAPA_DEBUG("Worker", "(id=%u) Shutting down: Start draining task queue.", _impl->id);
     
     _impl->workerThread.join();
@@ -101,7 +101,7 @@ void Worker::Schedule(std::shared_ptr<Task> task, SchedulePhase phase) {
 void Worker::Enqueue(std::shared_ptr<Task> task, SchedulePhase phase) {
     {
         std::unique_lock<std::mutex> lock(_impl->queueLock);
-        if (phase == SchedulePhase::kImmediatePhase && task != nullptr) {
+        if (phase == SchedulePhase::ImmediatePhase && task != nullptr) {
             _impl->immediateTasks.emplace(std::move(task));
         }
         else {
@@ -139,6 +139,10 @@ void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
         std::shared_ptr<Task> task;
 
         {
+            // Logically one merged task queue is the concatenation of immediate queue and
+            // the normal queue. The logically merged queue is treated as empty only when both queues
+            // are empty. And when not empty, immediate tasks will be handled prior to normal tasks.
+            // Inside each single queue (immediate or normal), tasks are first in first out.
             std::unique_lock<std::mutex> lock(_impl->queueLock);
             if (_impl->tasks.empty() && _impl->immediateTasks.empty()) {
                 _impl->idleNotificationCallback(_impl->id);

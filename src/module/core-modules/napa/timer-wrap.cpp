@@ -8,7 +8,7 @@
 
 #include <vector>
 #include <memory>
-#include <iostream>
+#include <functional>
 
 #include "timer-wrap.h"
 
@@ -17,9 +17,8 @@
 #include <zone/scheduler.h>
 #include <zone/worker-context.h>
 #include <zone/async-context.h>
-#include <zone/callback-task.h>
+#include <zone/task.h>
 
-using namespace napa::module;
 
 using napa::zone::WorkerId;
 using napa::zone::WorkerContext;
@@ -42,6 +41,37 @@ using v8::Object;
 using v8::Persistent;
 using v8::String;
 using v8::Value;
+
+
+namespace napa {
+namespace zone {
+
+    /// <summary> A task to run a C++ callback task without cross isolation. </summary>
+    class CallbackTask : public Task {
+    public:
+        typedef std::function<void(void)> Callback;    
+
+        /// <summary> Constructor. </summary>
+        /// <param name="context"> Structure containing asynchronous work's context. </param>
+        CallbackTask(Callback callback) 
+            : _callback(std::move(callback)) 
+        {
+        }
+
+        /// <summary> Overrides Task.Execute to define running execution logic. </summary>
+        virtual void Execute()
+        {
+            _callback();
+        }
+
+    private:
+        Callback _callback;
+    };
+
+}
+}
+
+using namespace napa::module;
 
 NAPA_DEFINE_PERSISTENT_CONSTRUCTOR(TimerWrap);
 
@@ -69,7 +99,8 @@ napa::zone::Timer& TimerWrap::Get() {
     return *_timer;
 }
 
-static void dummyWeakCallback(const v8::WeakCallbackInfo<int>& data) {
+// This is created as SetWeak(void) is not exists in v8 used in NodeJS 6.
+static void EmptyWeakCallback(const v8::WeakCallbackInfo<int>& data) {
 }
 
 std::shared_ptr<napa::zone::CallbackTask> buildTimeoutTask(
@@ -104,18 +135,23 @@ std::shared_ptr<napa::zone::CallbackTask> buildTimeoutTask(
                 if (isInterval) {
                     auto jsTimer = NAPA_OBJECTWRAP::Unwrap<TimerWrap>(
                         Local<Object>::Cast(timeout->Get(String::NewFromUtf8(isolate, "_timer"))));
-                    jsTimer->Get().Start(); //re-arm
+
+                    //Re-arm the interval timer in napa's timer schedule thread.
+                    jsTimer->Get().Start();
+
+                    // If not interval timer, global v8 handle for Timeout and Context will be SetWeak.
+                    // Otherwise keep holding the hanle as they will be used some time later.
                     needDestroy = false;
                 }
             }
 
             if (needDestroy) {
                 if (!sharedTimeout->IsEmpty()) {
-                    sharedTimeout->SetWeak((int*)nullptr, dummyWeakCallback, v8::WeakCallbackType::kParameter);
+                    sharedTimeout->SetWeak((int*)nullptr, EmptyWeakCallback, v8::WeakCallbackType::kParameter);
                     sharedTimeout->Reset();
                 }
                 if (!sharedContext->IsEmpty()) {
-                    sharedContext->SetWeak((int*)nullptr, dummyWeakCallback, v8::WeakCallbackType::kParameter);
+                    sharedContext->SetWeak((int*)nullptr, EmptyWeakCallback, v8::WeakCallbackType::kParameter);
                     sharedContext->Reset();
                 }
             }
@@ -149,7 +185,7 @@ void TimerWrap::SetImmediateCallback(const FunctionCallbackInfo<Value>& args) {
 
     auto workerId = static_cast<WorkerId>(
         reinterpret_cast<uintptr_t>(WorkerContext::Get(WorkerContextItem::WORKER_ID)));
-    scheduler->ScheduleOnWorker(workerId, immediateCallbackTask, SchedulePhase::kImmediatePhase);
+    scheduler->ScheduleOnWorker(workerId, immediateCallbackTask, SchedulePhase::ImmediatePhase);
 }
 
 
@@ -182,7 +218,7 @@ void TimerWrap::SetTimersCallback(const FunctionCallbackInfo<Value>& args) {
     auto sharedTimer = std::make_shared<napa::zone::Timer>(
         [sharedTimeout, sharedContext, scheduler, workerId]() {
             auto timerCallbackTask = buildTimeoutTask(sharedTimeout, sharedContext);
-            scheduler->ScheduleOnWorker(workerId, timerCallbackTask, SchedulePhase::kDefaultPhase);
+            scheduler->ScheduleOnWorker(workerId, timerCallbackTask, SchedulePhase::DefaultPhase);
         }, msAfter);
 
     auto jsTimer = TimerWrap::NewInstance(sharedTimer);

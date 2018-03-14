@@ -76,7 +76,7 @@ bool TimersScheduler::StartMainLoop() {
 
             auto nextExpirationTime = activeTimers.top().expirationTime;
             if (nextExpirationTime <= std::chrono::high_resolution_clock::now()) {
-                // Pop before callback）to re-arm the timer.
+                // Pop before callback(), so that it could be re-armed for interval task logic.
                 auto expiredTimer = activeTimers.top();
                 activeTimers.pop();
 
@@ -84,9 +84,9 @@ bool TimersScheduler::StartMainLoop() {
                     timers[expiredTimer.index].active = false;
 
                     try {
-                        // Fire the callback. The callback is assumed to be 
-                        // VERY VERY FAST as it is meant to dispatch to appropriate 
-                        // callback queues. So do not free lock here.
+                        // Fire the callback.
+                        // The callback is assumed to be very fast as it is meant to dispatch to appropriate
+                        // callback queues.
                         timers[expiredTimer.index].callback();
                     }
                     catch (const std::exception &ex) {

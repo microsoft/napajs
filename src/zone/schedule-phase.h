@@ -11,8 +11,8 @@ namespace zone {
     // Define the phase (like priority related type) of tasks. 
     // To be used mainly by schduler and worker to schedule its tasks.
     enum class SchedulePhase : uint32_t {
-        kDefaultPhase = 0,
-        kImmediatePhase = 1
+        DefaultPhase = 0,
+        ImmediatePhase = 1
     };
     
 };

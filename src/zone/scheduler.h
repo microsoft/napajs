@@ -50,7 +50,7 @@ namespace zone {
         /// </remarks>
         void ScheduleOnWorker(WorkerId workerId,
                               std::shared_ptr<Task> task,
-                              SchedulePhase phase = SchedulePhase::kDefaultPhase);
+                              SchedulePhase phase = SchedulePhase::DefaultPhase);
 
         /// <summary> Schedules the task on all workers. </summary>
         /// <param name="task"> Task to schedule. </param>

@@ -50,7 +50,7 @@ namespace zone {
         /// <summary> Schedules a task on this worker. </summary>
         /// <param name="task"> Task to schedule. </param>
         /// <note> Same task instance may run on multiple workers, hence the use of shared_ptr. </node>
-        void Schedule(std::shared_ptr<Task> task, SchedulePhase phase=SchedulePhase::kDefaultPhase);
+        void Schedule(std::shared_ptr<Task> task, SchedulePhase phase=SchedulePhase::DefaultPhase);
 
     private:
 
