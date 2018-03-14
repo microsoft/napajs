@@ -1,5 +1,6 @@
 # Files to compile
-# Do not napa core-modules that not needed in node isolation, like timer-wrap.cpp
+# Note: Do not add napa core-modules cpp files that not needed in node isolation, 
+# like timer-wrap.cpp.
 file(GLOB SOURCE_FILES 
     "addon.cpp"
     "node-zone-delegates.cpp"
