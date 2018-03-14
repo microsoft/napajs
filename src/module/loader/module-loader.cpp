@@ -384,13 +384,9 @@ void ModuleLoader::ModuleLoaderImpl::DecorateBuiltInModules(v8::Local<v8::Contex
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
-    // Add process.binding()
-    auto process = context->Global()->Get(context,
-                                          v8_helpers::MakeV8String(isolate, "process")).ToLocalChecked()->ToObject();
-    JS_ENSURE(isolate, !process.IsEmpty(), "Process built-in module doesn't exist");
-
     auto bindingFunctionTemplate = v8::FunctionTemplate::New(isolate, BindingCallback);
-    (void)process->CreateDataProperty(context,
-                                      v8_helpers::MakeV8String(isolate, "binding"),
+    //(void)process->CreateDataProperty(context,
+    (void)context->Global()->CreateDataProperty(context,
+                                      v8_helpers::MakeV8String(isolate, "napabinding"),
                                       bindingFunctionTemplate->GetFunction());
 }

@@ -17,6 +17,9 @@
 #endif
 
 #include "napa/v8-helpers.h"
+#include "napa/transport/object-factory.h"
+
+#include <iostream>
 
 #pragma warning(pop)
 
@@ -100,7 +103,11 @@
     napa::module::SetPersistentConstructor(name, function)
 #else
 #define NAPA_SET_PERSISTENT_CONSTRUCTOR(name, function) \
-    _constructor.Reset(v8::Isolate::GetCurrent(), function)
+{ \
+    napa::objectFactory::RegisterConstrutor(name, function); \
+    std::cout << "NAPA_SET_PERSISTENT_CONSTRUCTOR " << name << " to " << &_constructor << std::endl; \
+    _constructor.Reset(v8::Isolate::GetCurrent(), function); \
+}
 #endif
 
 /// <summary> It gets the given persistent constructor from the current V8 isolate. </summary>
@@ -110,7 +117,8 @@
     napa::module::GetPersistentConstructor(exportName)
 #else
 #define NAPA_GET_PERSISTENT_CONSTRUCTOR(exportName, className) \
-    v8::Local<v8::Function>::New(v8::Isolate::GetCurrent(), className::_constructor)
+ napa::objectFactory::GetConstructor(exportName)
+//    v8::Local<v8::Function>::New(v8::Isolate::GetCurrent(), className::_constructor)
 #endif
 
 /// <summary> It exports a NAPA_OBJECTWRAP subclass to addon exports object. </summary>

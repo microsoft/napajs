@@ -88,18 +88,8 @@ NapaZone::NapaZone(const settings::ZoneSettings& settings) :
         WorkerContext::Set(WorkerContextItem::WORKER_ID, reinterpret_cast<void*>(static_cast<uintptr_t>(id)));
 
         // Load module loader and built-in modules of require, console and etc.
-        CREATE_MODULE_LOADER();
+        // CREATE_MODULE_LOADER();
     });
-
-    // Bootstrap after zone is created.
-    std::promise<ResultCode> promise;
-    auto future = promise.get_future();
-
-    Broadcast(BOOTSTRAP_SOURCE, [&promise](ResultCode code){ 
-       promise.set_value(code);
-    });
-
-    NAPA_ASSERT(future.get() == NAPA_RESULT_SUCCESS, "Bootstrap Napa zone failed.");
 }
 
 const std::string& NapaZone::GetId() const {

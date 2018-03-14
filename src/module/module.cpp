@@ -7,6 +7,8 @@
 #include <utils/debug.h>
 #include <zone/worker-context.h>
 
+#include <iostream>
+
 using namespace napa;
 
 /// <summary>
@@ -23,6 +25,12 @@ struct ConstructorInfo {
 /// <param name="constructor"> V8 persistent function to constructor V8 object. </param>
 void napa::module::SetPersistentConstructor(const char* name,
                                      v8::Local<v8::Function> constructor) {
+    std::cout << "SetPersistentConstructor of " << name << std::endl;
+    std::cout << "CC display name" << *(v8::String::Utf8Value(constructor->GetDisplayName()->ToString())) << std::endl;
+    std::cout << "CC inferred name" << *(v8::String::Utf8Value(constructor->GetInferredName()->ToString())) << std::endl;
+    std::cout << "CC name" << *(v8::String::Utf8Value(constructor->GetName()->ToString())) << std::endl;
+    std::cout << "CC GetScriptLineNumber" << constructor->GetScriptLineNumber() << std::endl;
+    std::cout << "CC GetScriptColumnNumber" << constructor->GetScriptColumnNumber() << std::endl;
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
@@ -42,20 +50,24 @@ void napa::module::SetPersistentConstructor(const char* name,
 /// <param name="name"> Unique constructor name given at SetPersistentConstructor() call. </param>
 /// <returns> V8 local function object. </returns>
 v8::Local<v8::Function> napa::module::GetPersistentConstructor(const char* name) {
+    std::cout << "~~~~~~~~~~~~~~~GetPersistentConstructor of " << name << std::endl;
     auto isolate = v8::Isolate::GetCurrent();
     v8::EscapableHandleScope scope(isolate);
 
     auto constructorInfo =
         static_cast<ConstructorInfo*>(zone::WorkerContext::Get(zone::WorkerContextItem::CONSTRUCTOR));
     if (constructorInfo == nullptr) {
+    std::cout << "~~~~~~~~~~~~~~zone::WorkerContext::Get(zone::WorkerContextItem::CONSTRUCTOR) == nullptr " << name << std::endl;
         return scope.Escape(v8::Local<v8::Function>());
     }
 
     auto iter = constructorInfo->constructorMap.find(name);
     if (iter != constructorInfo->constructorMap.end()) {
+    std::cout << "~~~~~~~~~~~~~~~Found constructor of " << name << std::endl;
         auto constructor = v8::Local<v8::Function>::New(isolate, iter->second);
         return scope.Escape(constructor);
     } else {
+    std::cout << "~~~~~~~~~~~~~~NOT Found constructor of " << name << std::endl;
         return scope.Escape(v8::Local<v8::Function>());
     }
 }

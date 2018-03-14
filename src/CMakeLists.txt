@@ -37,7 +37,7 @@ target_include_directories(${TARGET_NAME}
     ${PROJECT_SOURCE_DIR}/inc)
 
 # Compiler definitions
-target_compile_definitions(${TARGET_NAME} PRIVATE NAPA_EXPORTS NAPA_BINDING_EXPORTS BUILDING_NAPA_EXTENSION)
+target_compile_definitions(${TARGET_NAME} PRIVATE NAPA_EXPORTS NAPA_BINDING_EXPORTS BUILDING_NODE_EXTENSION)
 
 # Link libraries
 target_link_libraries(${TARGET_NAME} PRIVATE "v8-extensions")
@@ -45,7 +45,7 @@ target_link_libraries(${TARGET_NAME} PRIVATE "v8-extensions")
 if(CMAKE_JS_VERSION)
     # Building Napa as an npm package for node usage (using exported v8 from node.exe)
 
-    target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_JS_INC})
+    target_include_directories(${TARGET_NAME} PRIVATE "/usr/local/include/node")
     target_link_libraries(${TARGET_NAME} PRIVATE ${CMAKE_JS_LIB})
 
     # Using the V8 functions exported from node.exe

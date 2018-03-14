@@ -73,7 +73,8 @@ void process::Init(v8::Local<v8::Object> exports) {
 
     (void)exports->CreateDataProperty(context,
                                       v8_helpers::MakeV8String(isolate, "version"),
-                                      v8_helpers::MakeV8String(isolate, std::to_string(MODULE_VERSION)));
+                                      v8_helpers::MakeV8String(isolate, std::to_string(2)));
+                                      // v8_helpers::MakeV8String(isolate, std::to_string(MODULE_VERSION)));
 
     (void)exports->CreateDataProperty(context,
                                       v8_helpers::MakeV8String(isolate, "execPath"),

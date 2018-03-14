@@ -10,6 +10,7 @@ export {
 } from './transport/transportable';
 
 export * from './transport/transport';
+export * from './transport/object-factory';
 
 import { Handle } from './memory/handle';
 import { TransportContext } from './transport/transportable';

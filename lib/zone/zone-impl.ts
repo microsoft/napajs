@@ -48,6 +48,7 @@ declare var __in_napa: boolean;
 /// See https://github.com/audreyt/node-webworker-threads/issues/123#issuecomment-254019552
 /// </summary>
 function runImmediately(func : () => void) {
+    console.log('runImmediately::__in_napa', __in_napa);
     if (typeof __in_napa === 'undefined') {
         // In node.
         setImmediate(func);

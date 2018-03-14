@@ -8,6 +8,11 @@
 #include <napa/log.h>
 
 #include <v8.h>
+#include <platform/dll.h>
+#include <platform/filesystem.h>
+#include <utils/string.h>
+#include <uv.h>
+#include <node.h>
 
 #include <condition_variable>
 #include <cstdlib>
@@ -23,26 +28,38 @@
 using namespace napa;
 using namespace napa::zone;
 
+static const std::string NAPA_WORKER_INIT_PATH = 
+    utils::string::ReplaceAllCopy(
+        filesystem::Path(dll::ThisLineLocation()).Parent().Parent().Normalize().String(), "\\", "\\\\"
+    ) + "/lib/zone/napa-worker-init.js";
 // Forward declaration
 static v8::Isolate* CreateIsolate(const settings::ZoneSettings& settings);
 static void ConfigureIsolate(v8::Isolate* isolate, const settings::ZoneSettings& settings);
 
 struct Worker::Impl {
 
+    uv_thread_t tId;
+
+    uv_loop_t loop;
+
+    node::IsolateData* isolateData;
+
+    node::Environment* enviroment;
+
     /// <summary> The worker id. </summary>
     WorkerId id;
 
     /// <summary> The thread that executes the tasks. </summary>
-    std::thread workerThread;
+    // std::thread workerThread;
 
     /// <summary> Queue for tasks scheduled on this worker. </summary>
-    std::queue<std::shared_ptr<Task>> tasks;
+    // std::queue<std::shared_ptr<Task>> tasks;
     
     /// <summary> Condition variable to indicate if there are more tasks to consume. </summary>
-    std::condition_variable hasTaskEvent;
+    // std::condition_variable hasTaskEvent;
 
     /// <summary> Lock for task queue. </summary>
-    std::mutex queueLock;
+    // std::mutex queueLock;
 
     /// <summary> V8 isolate associated with this worker. </summary>
     v8::Isolate* isolate;
@@ -70,11 +87,12 @@ Worker::Worker(WorkerId id,
 }
 
 Worker::~Worker() {
+    // TODO::Stop gracefully.
     // Signal the thread loop that it should stop processing tasks.
-    Enqueue(nullptr);
+    // Enqueue(nullptr);
     NAPA_DEBUG("Worker", "(id=%u) Shutting down: Start draining task queue.", _impl->id);
-    
-    _impl->workerThread.join();
+
+    NAPA_ASSERT(uv_thread_join(&_impl->tId) == 0, "Worker (id=%u) failed to start.", _impl->id);
 
     if (_impl->isolate != nullptr) {
         _impl->isolate->Dispose();
@@ -86,110 +104,70 @@ Worker::Worker(Worker&&) = default;
 Worker& Worker::operator=(Worker&&) = default;
 
 void Worker::Start() {
-    _impl->workerThread = std::thread(&Worker::WorkerThreadFunc, this, _impl->settings);
+    int result = uv_thread_create(&_impl->tId, [](void* arg){
+        Worker* worker = static_cast<Worker*>(arg);
+        worker->WorkerThreadFunc(worker->_impl->settings);
+    }, static_cast<void*>(this));
+    NAPA_ASSERT(result == 0, "Worker (id=%u) failed to start.", _impl->id);
+}
+
+struct AsyncContext {
+    /// <summary> libuv request. </summary>
+    uv_async_t work;
+
+    /// <summary> Callback that will be running in Node event loop. </summary>
+    std::function<void()> callback;
+};
+
+/// <summary> Run an async work item in Node. </summary>
+void RunWorker(uv_async_t* work) {
+    auto context = static_cast<AsyncContext*>(work->data);
+
+    context->callback();
+
+    uv_close(reinterpret_cast<uv_handle_t*>(work), [](auto work) {
+        auto context = static_cast<AsyncContext*>(work->data);
+        delete context;
+    });
+}
+
+/// <summary> Schedule a function in the given event loop. </summary>
+void ScheduleInLoop(uv_loop_t* loop, std::function<void()> callback) {
+    auto context = new AsyncContext();
+    context->work.data = context;
+    context->callback = std::move(callback);
+
+    uv_async_init(loop, &context->work, RunWorker);
+    uv_async_send(&context->work);
 }
 
 void Worker::Schedule(std::shared_ptr<Task> task) {
     NAPA_ASSERT(task != nullptr, "Task should not be null");
-    Enqueue(task);
+    ScheduleInLoop(&_impl->loop, [task = std::move(task)](){
+        task->Execute();
+    });
     NAPA_DEBUG("Worker", "(id=%u) Task queued.", _impl->id);
 }
 
 void Worker::Enqueue(std::shared_ptr<Task> task) {
-    {
-        std::unique_lock<std::mutex> lock(_impl->queueLock);
-        _impl->tasks.emplace(std::move(task));
-    }
-    _impl->hasTaskEvent.notify_one();
 }
 
 void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
-    
-    _impl->isolate = CreateIsolate(settings);
+    NAPA_ASSERT(uv_loop_init(&_impl->loop) == 0, "Worker (id=%u) failed to initialize its loop.", _impl->id);
 
-    // If any user of v8 library uses a locker on any isolate, all isolates must be locked before use.
-    // Since we are 1-1 with threads and isolates, a top level lock that is never released is ok.
-    v8::Locker locker(_impl->isolate);
-
-    ConfigureIsolate(_impl->isolate, settings);
-
-    v8::Isolate::Scope isolateScope(_impl->isolate);
-    v8::HandleScope handleScope(_impl->isolate);
-    v8::Local<v8::Context> context = v8::Context::New(_impl->isolate);
-
-    // We set an empty security token so callee can access caller's context.
-    context->SetSecurityToken(v8::Undefined(_impl->isolate));
-    v8::Context::Scope contextScope(context);
-
-    NAPA_DEBUG("Worker", "(id=%u) V8 Isolate created.", _impl->id);
+    int main_argc;
+    char** main_argv;
+    int main_exec_argc;
+    const char** main_exec_argv;
+    node::GetNodeMainArgments(main_argc, main_argv, main_exec_argc, main_exec_argv);
 
     // Setup worker after isolate creation.
     _impl->setupCallback(_impl->id);
+
     NAPA_DEBUG("Worker", "(id=%u) Setup completed.", _impl->id);
 
-    while (true) {
-        std::shared_ptr<Task> task;
-
-        {
-            std::unique_lock<std::mutex> lock(_impl->queueLock);
-            if (_impl->tasks.empty()) {
-                _impl->idleNotificationCallback(_impl->id);
-
-                // Wait until new tasks come.
-                _impl->hasTaskEvent.wait(lock, [this]() { return !_impl->tasks.empty(); });
-            }
-
-            task = _impl->tasks.front();
-            _impl->tasks.pop();
-        }
-
-        // A null task means that the worker needs to shutdown.
-        if (task == nullptr) {
-            NAPA_DEBUG("Worker", "(id=%u) Finish serving tasks.", _impl->id);
-            break;
-        }
-
-        // Resume execution capabilities if isolate was previously terminated.
-        _impl->isolate->CancelTerminateExecution();
-
-        task->Execute();
-    }
-}
-
-static v8::Isolate* CreateIsolate(const settings::ZoneSettings& settings) {
-    v8::Isolate::CreateParams createParams;
-
-    // The allocator is a global V8 setting.
-#if V8_VERSION_CHECK_FOR_ARRAY_BUFFER_ALLOCATOR
-    static std::unique_ptr<v8::ArrayBuffer::Allocator> defaultArrayBufferAllocator(v8::ArrayBuffer::Allocator::NewDefaultAllocator());
-    createParams.array_buffer_allocator = defaultArrayBufferAllocator.get();
-#else
-    static napa::v8_extensions::ArrayBufferAllocator commonAllocator;
-    createParams.array_buffer_allocator = &commonAllocator;
-#endif
-
-    // Set the maximum V8 heap size.
-    createParams.constraints.set_max_old_space_size(settings.maxOldSpaceSize);
-    createParams.constraints.set_max_semi_space_size(settings.maxSemiSpaceSize);
-    createParams.constraints.set_max_executable_size(settings.maxExecutableSize);
-
-    return v8::Isolate::New(createParams);
-}
-
-static void ConfigureIsolate(v8::Isolate* isolate, const settings::ZoneSettings& settings) {
-    isolate->SetFatalErrorHandler([](const char* location, const char* message) {
-        LOG_ERROR("V8", "V8 Fatal error at %s. Error: %s", location, message);
-    });
-
-    // Prevent V8 from aborting on uncaught exception.
-    isolate->SetAbortOnUncaughtExceptionCallback([](v8::Isolate*) {
-        LOG_ERROR("V8", "V8 uncaught exception was thrown.");
-        return false;
-    });
-
-    // V8 takes a pointer to the minimum (x86 stack grows down) allowed stack address
-    // so, capture the current top of the stack and calculate minimum allowed
-    uint32_t currentStackAddress;
-    auto limit = (reinterpret_cast<uintptr_t>(&currentStackAddress - settings.maxStackSize / sizeof(uint32_t*)));
-    isolate->SetStackLimit(limit);
+    const char* worker_argv[2];
+    worker_argv[0] = "node";
+    worker_argv[1] = NAPA_WORKER_INIT_PATH.c_str();
+    node::Start(static_cast<void*>(&_impl->loop), 2, worker_argv, main_exec_argc, main_exec_argv);
 }

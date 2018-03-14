@@ -1,20 +1,25 @@
 # Files to compile
 file(GLOB SOURCE_FILES 
     "addon.cpp"
-    "node-zone-delegates.cpp"
-    "${PROJECT_SOURCE_DIR}/src/platform/filesystem.cpp"
-    "${PROJECT_SOURCE_DIR}/src/platform/os.cpp"
-    "${PROJECT_SOURCE_DIR}/src/zone/call-context.cpp"
-    "${PROJECT_SOURCE_DIR}/src/zone/call-task.cpp"
-    "${PROJECT_SOURCE_DIR}/src/zone/eval-task.cpp"
-    "${PROJECT_SOURCE_DIR}/src/zone/terminable-task.cpp"
-    "${PROJECT_SOURCE_DIR}/src/module/core-modules/napa/*.cpp")
+    "node-zone-delegates.cpp")
+
+file(GLOB_RECURSE SOURCE_FILES_SRC
+    ${PROJECT_SOURCE_DIR}/src/api/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/memory/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/module/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/platform/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/providers/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/settings/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/store/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/utils/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/zone/*.cpp
+)
 
 # The addon name
 set(TARGET_NAME "${PROJECT_NAME}-binding")
 
 # The generated library
-add_library(${TARGET_NAME} SHARED ${SOURCE_FILES})
+add_library(${TARGET_NAME} SHARED ${SOURCE_FILES} ${SOURCE_FILES_SRC})
 
 set_target_properties(${TARGET_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 
@@ -32,14 +37,18 @@ set_target_properties(${TARGET_NAME} PROPERTIES
 
 # Include directories
 target_include_directories(${TARGET_NAME} PRIVATE
-    ${CMAKE_JS_INC}
+     "/usr/local/include/node"
     ${PROJECT_SOURCE_DIR}/src
-    ${PROJECT_SOURCE_DIR}/src/module/core-modules/napa)
+    ${PROJECT_SOURCE_DIR}/src/module/core-modules/napa
+    ${PROJECT_SOURCE_DIR}/third-party
+    PUBLIC
+    ${PROJECT_SOURCE_DIR}/inc)
+
+
+target_compile_definitions(${TARGET_NAME} PRIVATE USING_V8_SHARED)
 
 # Compiler definitions
 target_compile_definitions(${TARGET_NAME} PRIVATE BUILDING_NODE_EXTENSION NAPA_BINDING_EXPORTS)
 
 # Link libraries
-target_link_libraries(${TARGET_NAME} PRIVATE
-    ${PROJECT_NAME}
-    ${CMAKE_JS_LIB})
+target_link_libraries(${TARGET_NAME} PRIVATE "v8-extensions")

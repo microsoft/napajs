@@ -20,10 +20,19 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN)
 
 # Build napa shared library.
-add_subdirectory(src)
+# add_subdirectory(src)
+
+set(CMAKE_CXX_FLAGS_ORG ${CMAKE_CXX_FLAGS})
+
+# Use -fno-rtti and -fPIC to build v8-extensions as a static library for compatibility with node and v8.
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fPIC")
+add_subdirectory(src/v8-extensions)
+
+# Restore CMAKE_CXX_FLAGS from CMAKE_CXX_FLAGS_ORG.
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS_ORG})
 
 if (CMAKE_JS_VERSION)
     # Build napa addon for node.
     add_subdirectory(node)
-    add_subdirectory(test/module/addon)
+    # add_subdirectory(test/module/addon)
 endif()

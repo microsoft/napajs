@@ -4,7 +4,7 @@
 #pragma once
 
 #include "napa/log.h"
-
+#define DEBUG_NAPA 1
 #if defined(DEBUG_NAPA)
     #define NAPA_DEBUG(section, format, ...) LOG_DEBUG(section, format, ##__VA_ARGS__)
 #else
