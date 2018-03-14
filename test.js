@@ -1,5 +1,5 @@
 const napa = require('.');
-let zone = napa.zone.create("myyyyyyyyzoneeeeeeeeeee", {workers:1});
+let zone = napa.zone.create("myzone", {workers:1});
 console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
 ///console.log('--->>>1', module);
 ///console.log(require);
@@ -10,6 +10,10 @@ setTimeout(() => {
 }, 15000);
 //zone = napa.zone.node;
 //zone.execute("testm", "func");
+zone.execute('test_m', 'foo').then((r) => {
+    console.log('....................call back.................................');
+});
+/*
 zone.execute(() => {
     //xxx;
     console.log(Buffer.alloc(100));
@@ -23,6 +27,7 @@ zone.execute(() => {
 }).then((r) => {
     console.log('....................call back.................................');
 });
+*/
 /*
 console.log(Buffer.alloc(30));
 console.log(Buffer.from('./package.json'));

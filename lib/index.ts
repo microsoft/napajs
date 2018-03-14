@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+(<any>(global))["require"] = require;
 import { log } from './log';
 import * as memory from './memory';
 import * as metric from './metric';

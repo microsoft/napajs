@@ -29,22 +29,20 @@ void WorkerContext::Init() {
 
 void* WorkerContext::Get(WorkerContextItem item) {
     std::ostringstream ss;
-    ss << std::this_thread::get_id();
-    NAPA_DEBUG("WorkerContext", "Get item %d of thread %s).",
-        (uint32_t)item,
-        ss.str().c_str()
-    );
+    ss << "Get item " << (uint32_t)item;
+    ss << " from " << reinterpret_cast<std::uintptr_t>(&items);
+    ss << " of thread " << std::this_thread::get_id();
+    NAPA_DEBUG("WorkerContext", ss.str().c_str());
     NAPA_ASSERT(item < WorkerContextItem::END_OF_WORKER_CONTEXT_ITEM, "Invalid WorkerContextItem");
     return (*items)[static_cast<size_t>(item)];
 }
 
 void WorkerContext::Set(WorkerContextItem item, void* data) {
     std::ostringstream ss;
-    ss << std::this_thread::get_id();
-    NAPA_DEBUG("WorkerContext", "Set item %d of thread %s).",
-        (uint32_t)item,
-        ss.str().c_str()
-    );
+    ss << "Set item " << (uint32_t)item;
+    ss << " from " <<  reinterpret_cast<std::uintptr_t>(&items);
+    ss << " of thread " << std::this_thread::get_id();
+    NAPA_DEBUG("WorkerContext", ss.str().c_str());
     NAPA_ASSERT(item < WorkerContextItem::END_OF_WORKER_CONTEXT_ITEM, "Invalid WorkerContextItem");
     (*items)[static_cast<size_t>(item)] = data;
 }

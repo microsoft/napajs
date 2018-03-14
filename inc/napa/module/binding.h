@@ -43,14 +43,18 @@ namespace binding {
         auto isolate = v8::Isolate::GetCurrent();
         v8::EscapableHandleScope scope(isolate);
         
-        auto bindingModule = GetModule();
-        auto require = bindingModule->Get(napa::v8_helpers::MakeV8String(isolate, "require"));
+        //auto bindingModule = GetModule();
+        //auto require = bindingModule->Get(napa::v8_helpers::MakeV8String(isolate, "require"));
+        //NAPA_ASSERT(!require.IsEmpty() && require->IsFunction(), "Function \"require\" is not available from module object");
+
+        auto context = isolate->GetCurrentContext();
+        auto require = context->Global()->Get(napa::v8_helpers::MakeV8String(isolate, "require"));
         NAPA_ASSERT(!require.IsEmpty() && require->IsFunction(), "Function \"require\" is not available from module object");
 
         v8::Local<v8::Value> argv[] = { napa::v8_helpers::MakeV8String(isolate, moduleName)};
         return scope.Escape(
             napa::v8_helpers::ToLocal<v8::Object>(
-                v8::Local<v8::Function>::Cast(require)->Call(isolate->GetCurrentContext(), bindingModule, 1, argv)));
+                v8::Local<v8::Function>::Cast(require)->Call(isolate->GetCurrentContext(), v8::Null(isolate), 1, argv)));
     }
 
     /// <summary> Create a new instance of a wrap type exported from napa binding. </summary>
