@@ -154,18 +154,6 @@ static void GetStoreCount(const v8::FunctionCallbackInfo<v8::Value>& args) {
 }
 
 /////////////////////////////////////////////////////////////////////
-/// Timer APIs
-
-static void SetImmediate(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    TimerWrap::SetImmediateCallback(args);
-}
-
-// Set Timeout or Set Interval
-static void SetTimers(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    TimerWrap::SetTimersCallback(args);
-}
-
-/////////////////////////////////////////////////////////////////////
 /// Sync APIs
 
 static void CreateLock(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -284,6 +272,31 @@ void DeserializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
     #endif
 }
 
+/////////////////////////////////////////////////////////////////////
+/// Timers APIs, these APIs only valid in non-node isolation, i.e., 
+/// they are not needed when building the napa_binding.node
+
+#ifdef BUILDING_NAPA_EXTENSION
+static void SetImmediate(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    TimerWrap::SetImmediateCallback(args);
+}
+
+// Set Timeout or Set Interval
+static void SetTimers(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    TimerWrap::SetTimersCallback(args);
+}
+#endif
+
+
+static void InitNapaOnlyBindings(v8::Local<v8::Object> exports) {
+#ifdef BUILDING_NAPA_EXTENSION 
+    TimerWrap::Init();
+
+    NAPA_SET_METHOD(exports, "setImmediate", SetImmediate);
+    NAPA_SET_METHOD(exports, "setTimers", SetTimers);
+#endif
+}
+
 void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) {
     // Register napa binding in worker context.
     RegisterBinding(module);
@@ -297,7 +310,6 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
     StoreWrap::Init();
     TransportContextWrapImpl::Init();
     ZoneWrap::Init();
-    TimerWrap::Init();
 
     NAPA_EXPORT_OBJECTWRAP(exports, "AllocatorDebuggerWrap", AllocatorDebuggerWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "AllocatorWrap", AllocatorWrap);
@@ -326,6 +338,5 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
     NAPA_SET_METHOD(exports, "serializeValue", SerializeValue);
     NAPA_SET_METHOD(exports, "deserializeValue", DeserializeValue);
 
-    NAPA_SET_METHOD(exports, "setImmediate", SetImmediate);
-    NAPA_SET_METHOD(exports, "setTimers", SetTimers);
+    InitNapaOnlyBindings(exports);
 }

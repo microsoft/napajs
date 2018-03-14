@@ -17,7 +17,7 @@ namespace napa {
 namespace zone {
 
     /// <summary> Concrete implementation of a Napa zone. </summary>
-    class NAPA_API NapaZone : public Zone {
+    class NapaZone : public Zone {
     public:
 
         /// <summary> Creates a new zone with the provided id and settings. </summary>

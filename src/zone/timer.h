@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include <napa/exports.h>
-
 #include <chrono>
 #include <functional>
 #include <memory>
@@ -13,7 +11,7 @@ namespace napa {
 namespace zone {
 
     /// <summary> A timer class that will trigger a callback after elapsed time. </summary>
-    class NAPA_API Timer {
+    class Timer {
     public:
         typedef uint16_t Index;
         typedef std::function<void(void)> Callback;
