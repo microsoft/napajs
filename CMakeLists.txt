@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
 project("napa")
 
+option(DEBUG_NAPA "build with more deep bebugging macro")
+message(STATUS "    --MACRO: DEBUG_NAPA=${DEBUG_NAPA}")
+if (DEBUG_NAPA)
+    add_compile_options(-DDEBUG_NAPA)
+endif()
+
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/bin)
