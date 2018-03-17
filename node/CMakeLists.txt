@@ -6,7 +6,8 @@ file(GLOB SOURCE_FILES
 file(GLOB_RECURSE SOURCE_FILES_SRC
     ${PROJECT_SOURCE_DIR}/src/api/*.cpp
     ${PROJECT_SOURCE_DIR}/src/memory/*.cpp
-    ${PROJECT_SOURCE_DIR}/src/module/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/module/module.cpp
+    ${PROJECT_SOURCE_DIR}/src/module/core-modules/napa/*.cpp
     ${PROJECT_SOURCE_DIR}/src/platform/*.cpp
     ${PROJECT_SOURCE_DIR}/src/providers/*.cpp
     ${PROJECT_SOURCE_DIR}/src/settings/*.cpp
@@ -48,7 +49,7 @@ target_include_directories(${TARGET_NAME} PRIVATE
 target_compile_definitions(${TARGET_NAME} PRIVATE USING_V8_SHARED)
 
 # Compiler definitions
-target_compile_definitions(${TARGET_NAME} PRIVATE BUILDING_NODE_EXTENSION NAPA_BINDING_EXPORTS)
+target_compile_definitions(${TARGET_NAME} PRIVATE BUILDING_NODE_EXTENSION NAPA_EXPORTS NAPA_BINDING_EXPORTS)
 
 # Link libraries
 target_link_libraries(${TARGET_NAME} PRIVATE "v8-extensions")
