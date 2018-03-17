@@ -92,7 +92,9 @@ Worker::~Worker() {
     // Enqueue(nullptr);
     NAPA_DEBUG("Worker", "(id=%u) Shutting down: Start draining task queue.", _impl->id);
 
-    NAPA_ASSERT(uv_thread_join(&_impl->tId) == 0, "Worker (id=%u) failed to start.", _impl->id);
+    uv_stop(&_impl->loop);
+    uv_thread_join(&_impl->tId);
+    uv_loop_close(&_impl->loop);
 
     if (_impl->isolate != nullptr) {
         _impl->isolate->Dispose();
