@@ -11,7 +11,6 @@
 #include <platform/dll.h>
 #include <platform/filesystem.h>
 #include <utils/string.h>
-#include <uv.h>
 #include <node.h>
 
 #include <condition_variable>
@@ -67,7 +66,7 @@ struct Worker::Impl {
     v8::Isolate* isolate;
 
     /// <summary> A callback function to setup the isolate after worker created its isolate. </summary>
-    std::function<void(WorkerId)> setupCallback;
+    std::function<void(WorkerId, uv_loop_t*)> setupCallback;
 
     /// <summary> A callback function that is called when worker becomes idle. </summary>
     std::function<void(WorkerId)> idleNotificationCallback;
@@ -78,7 +77,7 @@ struct Worker::Impl {
 
 Worker::Worker(WorkerId id,
                const settings::ZoneSettings& settings,
-               std::function<void(WorkerId)> setupCallback,
+               std::function<void(WorkerId, uv_loop_t*)> setupCallback,
                std::function<void(WorkerId)> idleNotificationCallback)
     : _impl(std::make_unique<Worker::Impl>()) {
     
@@ -187,7 +186,7 @@ void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
     node::GetNodeMainArgments(main_argc, main_argv, main_exec_argc, main_exec_argv);
 
     // Setup worker after isolate creation.
-    _impl->setupCallback(_impl->id);
+    _impl->setupCallback(_impl->id, &_impl->loop);
 
     NAPA_DEBUG("Worker", "(id=%u) Setup completed.", _impl->id);
 

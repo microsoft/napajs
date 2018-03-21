@@ -30,6 +30,9 @@ namespace zone {
         /// <summary> Worker Id. </summary>
         WORKER_ID,
 
+        /// <summary> UV Event loop. </summary>
+        EVENT_LOOP,
+
         /// <summary> End of index. </summary>
         END_OF_WORKER_CONTEXT_ITEM
     };

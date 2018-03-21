@@ -42,22 +42,6 @@ class Result implements zone.Result{
      private _value: any;
 };
 
-declare var __in_napa: boolean;
-
-/// <summary> Helper function to workaround possible delay in Promise resolve/reject when working with Node event loop.
-/// See https://github.com/audreyt/node-webworker-threads/issues/123#issuecomment-254019552
-/// </summary>
-function runImmediately(func : () => void) {
-    console.log('runImmediately::__in_napa', __in_napa);
-    if (typeof __in_napa === 'undefined') {
-        // In node.
-        setImmediate(func);
-    } else  {
-        // In napa workers.
-        func();
-    }
-}
-
 /// <summary> Zone consists of Napa isolates. </summary>
 export class ZoneImpl implements zone.Zone {
     private _nativeZone: any;
@@ -79,7 +63,7 @@ export class ZoneImpl implements zone.Zone {
 
         return new Promise<void>((resolve, reject) => {
             this._nativeZone.broadcast(source, (resultCode: number) => {
-                runImmediately(() => {
+                setImmediate(() => {
                     if (resultCode === 0) {
                         resolve();
                     } else {
@@ -95,7 +79,7 @@ export class ZoneImpl implements zone.Zone {
         
         return new Promise<zone.Result>((resolve, reject) => {
             this._nativeZone.execute(spec, (result: any) => {
-                runImmediately(() => {
+                setImmediate(() => {
                     if (result.code === 0) {
                         resolve(new Result(
                             result.returnValue,

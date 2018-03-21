@@ -94,30 +94,22 @@ function getFunctionHash(signature: string): string {
     return (hash >>> 0).toString(16);
 }
 
-declare var __in_napa: boolean;
-
 /// <summary> Load function from definition. </summary>
 function loadFunction(def: FunctionDef): (...args: any[]) => any {
     let moduleId = def.origin;
     let script = "module.exports = " + def.body + ";";
     let func: any = null;
 
-    if (typeof __in_napa === 'undefined') {
-        // In node, we create a sandbox using Module
-        let Module: any = null;
-        if (Module == null) {
-            Module = require('module');
-        }
-        let module = new Module(moduleId);
-        module.filename = moduleId;
-        module.paths = Module._nodeModulePaths(path.dirname(def.origin));
-        module._compile(script, moduleId);
-        func = module.exports;
-
-    } else {
-        // In napa, we create a sandbox using require(path, script);
-        func = (<any>require)(moduleId, script);
+    let Module: any = null;
+    if (Module == null) {
+        Module = require('module');
     }
+    let module = new Module(moduleId);
+    module.filename = moduleId;
+    module.paths = Module._nodeModulePaths(path.dirname(def.origin));
+    module._compile(script, moduleId);
+    func = module.exports;
+
     func.origin = def.origin;
     return func;
 }

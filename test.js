@@ -1,20 +1,31 @@
 const napa = require('.');
 let zone = napa.zone.create("myzone", {workers:1});
-console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-///console.log('--->>>1', module);
-///console.log(require);
 // console.log('$$$$$$$$$$$$$$$$$$$$$', napa.transport._registry);
 // console.log('*********************', napa.transport._constructor_registry);
 setTimeout(() => {
-    console.log('xxxx', zone, '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~timeout');
-}, 15000);
+    console.log('...........node setTimeput callback...........');
+}, 1000);
 //zone = napa.zone.node;
-//zone.execute("testm", "func");
-zone.execute('test_m', 'foo').then((r) => {
-    console.log('....................call back.................................');
-});
-/*
 zone.execute(() => {
+    console.log('......zone.execute......');
+    console.log('......Buffer......', Buffer.alloc(25));
+    setTimeout(() => {
+        console.log('......setTimeout Callback......');
+    }, 100);
+    console.log('......after setTimeout......');
+
+    const napa = require('.');
+    napa.zone.get('myzone').execute(()=>{
+        console.log('<<<inner zone.execute>>>');
+    }).then ((r)=>{
+        console.log('<<<inner zone.execute callback>>>');
+    })
+
+    return 123;
+}).then((r) => {
+    console.log('......zone execute callback......', r.value);
+});
+/*exports.foo = () => {
     //xxx;
     console.log(Buffer.alloc(100));
     console.log('........zone.execute.....');
@@ -24,39 +35,8 @@ zone.execute(() => {
     //console.log(Buffer.alloc(100));
     //console.log(require);
     //Buffer.alloc(10);
-}).then((r) => {
+};
+zone.execute('test', 'foo').then((r) => {
     console.log('....................call back.................................');
 });
-*/
-/*
-console.log(Buffer.alloc(30));
-console.log(Buffer.from('./package.json'));
-const fs = require('fs');
-console.log('+++++++++++++++', napa.zone.current.id, fs, '+++++++++++++++++++');
-fs.readFile('./package.json', (err, data) => {
-    if (err) console.log(napa.zone.current.id, err);
-    else console.log('<<<<<<<<<<<<<<<<<<<<<<<<<', napa.zone.current.id, data, '>>>>>>>>>>>>>>>>>>>');
-});
-//console.log(napa);
-var zone;
-try {
-    zone = napa.zone.get('xxxxxxxxxxxxxxx');
-    console.log('&&&&&&&&&get&&&&&&&&&&', napa.zone.current.id, '&&&&&&&&&&&&&&&&&&&&&&');
-    zone.execute(() => {
-        console.log('++++++++++++get++++++++++++++');
-    }, []).then((res) => {
-        console.log('*************get************');
-    });
-}
-catch(e) {
-    zone = napa.zone.create('xxxxxxxxxxxxxxx');
-    console.log('&&&&&&&&&create&&&&&&&&&&', napa.zone.current.id, '&&&&&&&&&&&&&&&&&&&&&&');
-    zone.execute(() => {
-        console.log('+++++++++++++create+++++++++++++');
-    }, []).then((res) => {
-        console.log('************create*************');
-    });
-}
-// let zone = napa.zone.node;
-console.log('-----------------', JSON.stringify(zone), '-----------------');
 */

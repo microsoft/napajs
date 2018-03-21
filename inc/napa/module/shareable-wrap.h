@@ -71,8 +71,6 @@ namespace module {
         /// <returns> V8 object of type ShareableWrap. </summary>
         template <typename WrapType, typename T>
         static v8::Local<v8::Object> NewInstance(std::shared_ptr<T> object) {
-#include <iostream>
-std::cout << "before shareable-wrap NewInstance of " << WrapType::exportName << std::endl;
             auto instance = napa::module::NewInstance<WrapType>().ToLocalChecked();
             Set(instance, std::move(object));
             return instance;

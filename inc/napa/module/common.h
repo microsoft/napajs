@@ -35,7 +35,6 @@ namespace module {
     /// </remarks>
     template <typename WrapType>
     inline v8::MaybeLocal<v8::Object> NewInstance(int argc = 0, v8::Local<v8::Value> argv[] = nullptr) {
-        std::cout << "NAPA_GET_PERSISTENT_CONSTRUCTOR of " << WrapType::exportName << " from " << &(WrapType::_constructor) << std::endl;
         auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(WrapType::exportName, WrapType);
         auto res = constructor->NewInstance(v8::Isolate::GetCurrent()->GetCurrentContext(), argc, argv);
         return res;

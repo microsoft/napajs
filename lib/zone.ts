@@ -8,9 +8,6 @@ import * as platform from './runtime/platform';
 
 let binding = require('./binding');
 
-// This variable is either defined by napa runtime, or not defined (hence node runtime)
-declare var __in_napa: boolean;
-
 /// <summary> Creates a new zone. </summary>
 /// <summary> A unique id to identify the zone. </summary>
 /// <param name="settings"> The settings of the new zone. </param>

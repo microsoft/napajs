@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "../../../src/zone/worker-context.h"
+
 #include <node.h>
 #include <uv.h>
 
@@ -128,7 +130,8 @@ namespace zone {
         context->asyncWork = std::move(asyncWork);
         context->asyncCompleteCallback = std::move(asyncCompleteCallback);
 
-        uv_queue_work(uv_default_loop(), &context->work, RunAsyncWork, RunAsyncCompleteCallback);
+        auto event_loop = reinterpret_cast<uv_loop_t*>(WorkerContext::Get(WorkerContextItem::EVENT_LOOP));
+        uv_queue_work(event_loop, &context->work, RunAsyncWork, RunAsyncCompleteCallback);
     }
 
     /// <summary> It runs an asynchronous function and post a completion into the current V8 execution loop. </summary>
@@ -148,7 +151,8 @@ namespace zone {
         context->jsCallback.Reset(isolate, jsCallback);
         context->asyncCompleteCallback = std::move(asyncCompleteCallback);
 
-        uv_async_init(uv_default_loop(), &context->work, RunCompletionCallback);
+        auto event_loop = reinterpret_cast<uv_loop_t*>(WorkerContext::Get(WorkerContextItem::EVENT_LOOP));
+        uv_async_init(event_loop, &context->work, RunCompletionCallback);
 
         asyncWork([context](void* result) {
             context->result = result;

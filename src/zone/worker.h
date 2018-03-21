@@ -9,6 +9,8 @@
 #include <functional>
 #include <memory>
 
+#include <uv.h>
+
 
 namespace napa {
 namespace zone {
@@ -27,7 +29,7 @@ namespace zone {
         /// <param name="idleNotificationCallback"> Triggers when the worker becomes idle. </param>
         Worker(WorkerId id,
                const settings::ZoneSettings &settings,
-               std::function<void(WorkerId)> setupCallback,
+               std::function<void(WorkerId, uv_loop_t*)> setupCallback,
                std::function<void(WorkerId)> idleNotificationCallback);
 
         /// <summary> Destructor. </summary>

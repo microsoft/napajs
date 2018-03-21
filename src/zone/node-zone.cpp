@@ -7,13 +7,19 @@
 
 #include <napa/assert.h>
 
+#include <uv.h>
+
 using namespace napa;
 using namespace napa::zone;
 
 std::shared_ptr<NodeZone> NodeZone::_instance;
 
 void NodeZone::Init(BroadcastDelegate broadcast, ExecuteDelegate execute) {
-    _instance.reset(new NodeZone(broadcast, execute));
+    // No lock is needed here, because the 1st time Init is called can be triggered
+    // only by node main isolate, which should not be interupted.
+    if (_instance == nullptr) {
+        _instance.reset(new NodeZone(broadcast, execute));
+    }
 }
 
 NodeZone::NodeZone(BroadcastDelegate broadcast, ExecuteDelegate execute):
@@ -30,6 +36,9 @@ NodeZone::NodeZone(BroadcastDelegate broadcast, ExecuteDelegate execute):
 
     // Worker Id into TLS.
     WorkerContext::Set(WorkerContextItem::WORKER_ID, reinterpret_cast<void*>(static_cast<uintptr_t>(0)));
+
+    // UV event loop into TLS.
+    WorkerContext::Set(WorkerContextItem::EVENT_LOOP, reinterpret_cast<void*>(uv_default_loop()));
 }
 
 std::shared_ptr<NodeZone> NodeZone::Get() {

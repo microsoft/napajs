@@ -30,7 +30,7 @@ namespace zone {
         /// <summary> Constructor. </summary>
         /// <param name="settings"> A settings object. </param>
         /// <param name="workerSetupCallback"> Callback to setup the isolate after worker created its isolate. </param>
-        SchedulerImpl(const settings::ZoneSettings& settings, std::function<void(WorkerId)> workerSetupCallback);
+        SchedulerImpl(const settings::ZoneSettings& settings, std::function<void(WorkerId, uv_loop_t*)> workerSetupCallback);
 
         /// <summary> Destructor. Waits for all tasks to finish. </summary>
         ~SchedulerImpl();
@@ -86,7 +86,7 @@ namespace zone {
     typedef SchedulerImpl<Worker> Scheduler;
 
     template <typename WorkerType>
-    SchedulerImpl<WorkerType>::SchedulerImpl(const settings::ZoneSettings& settings, std::function<void(WorkerId)> workerSetupCallback) :
+    SchedulerImpl<WorkerType>::SchedulerImpl(const settings::ZoneSettings& settings, std::function<void(WorkerId, uv_loop_t*)> workerSetupCallback) :
         _idleWorkersFlags(settings.workers),
         _synchronizer(std::make_unique<SimpleThreadPool>(1)),
         _shouldStop(false),
