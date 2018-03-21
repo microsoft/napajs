@@ -58,6 +58,8 @@ namespace zone {
         /// <summary> Enqueue a task. </summary>
         void Enqueue(std::shared_ptr<Task> task);
 
+        void OnTaskFinish();
+
         struct Impl;
         std::unique_ptr<Impl> _impl;
     };

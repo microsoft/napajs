@@ -140,8 +140,8 @@ namespace zone {
             } else {
                 // Pop the worker id from the idle workers list.
                 auto workerId = _idleWorkers.front();
-                //_idleWorkers.pop_front();
-                //_idleWorkersFlags[workerId] = _idleWorkers.end();
+                _idleWorkers.pop_front();
+                _idleWorkersFlags[workerId] = _idleWorkers.end();
 
                 // Schedule task on worker
                 _workers[workerId].Schedule(std::move(task));
@@ -160,8 +160,8 @@ namespace zone {
         _synchronizer->Execute([workerId, this, task]() {
             // If the worker is idle, change it's status.
             if (_idleWorkersFlags[workerId] != _idleWorkers.end()) {
-                //_idleWorkers.erase(_idleWorkersFlags[workerId]);
-                //_idleWorkersFlags[workerId] = _idleWorkers.end();
+                _idleWorkers.erase(_idleWorkersFlags[workerId]);
+                _idleWorkersFlags[workerId] = _idleWorkers.end();
             }
 
             // Schedule task on worker
@@ -177,9 +177,9 @@ namespace zone {
 
         _synchronizer->Execute([this, task]() {
             // Clear all idle workers.
-            //_idleWorkers.clear();
+            _idleWorkers.clear();
             for (auto& flag : _idleWorkersFlags) {
-                // flag = _idleWorkers.end();
+                flag = _idleWorkers.end();
             }
 
             // Schedule the task on all workers.

@@ -18,7 +18,7 @@
 #include <cstdlib>
 #include <mutex>
 #include <queue>
-#include <thread>
+#include <atomic>
 
 #include <v8-extensions/v8-extensions-macros.h>
 #if !(V8_VERSION_CHECK_FOR_ARRAY_BUFFER_ALLOCATOR)
@@ -48,6 +48,8 @@ struct Worker::Impl {
 
     /// <summary> The worker id. </summary>
     WorkerId id;
+
+    std::atomic<int> numberOfTasksRunning;
 
     /// <summary> The thread that executes the tasks. </summary>
     // std::thread workerThread;
@@ -79,7 +81,8 @@ Worker::Worker(WorkerId id,
                std::function<void(WorkerId)> setupCallback,
                std::function<void(WorkerId)> idleNotificationCallback)
     : _impl(std::make_unique<Worker::Impl>()) {
-
+    
+    _impl->numberOfTasksRunning = 0;
     _impl->id = id;
     _impl->setupCallback = std::move(setupCallback);
     _impl->idleNotificationCallback = std::move(idleNotificationCallback);
@@ -143,10 +146,30 @@ void ScheduleInLoop(uv_loop_t* loop, std::function<void()> callback) {
     uv_async_send(&context->work);
 }
 
+void Worker::OnTaskFinish() {
+    NAPA_DEBUG("Worker", "Worker (id=%u) finished one task.", _impl->id);
+    _impl->numberOfTasksRunning--;
+    if (_impl->numberOfTasksRunning == 0) {
+        NAPA_DEBUG("Worker", "Worker (id=%u) has no running task, calling idle callback...", _impl->id);
+        _impl->idleNotificationCallback(_impl->id);
+    }
+    else if (_impl->numberOfTasksRunning < 0) {
+        throw std::runtime_error("numberOfTaskRunning must not be less than zero!");
+    }
+}
+
 void Worker::Schedule(std::shared_ptr<Task> task) {
     NAPA_ASSERT(task != nullptr, "Task should not be null");
-    ScheduleInLoop(&_impl->loop, [task = std::move(task)](){
-        task->Execute();
+    _impl->numberOfTasksRunning++;
+    ScheduleInLoop(&_impl->loop, [this, task = std::move(task)](){
+        try {
+            task->Execute();
+        }
+        catch(...) {
+            OnTaskFinish();
+            throw;
+        }
+        OnTaskFinish();
     });
     NAPA_DEBUG("Worker", "(id=%u) Task queued.", _impl->id);
 }
