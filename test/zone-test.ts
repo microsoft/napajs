@@ -248,6 +248,12 @@ describe('napajs/zone', function () {
         napaZone1.broadcast(nestedFunctionDef);
         napaZone2.broadcast(fooDef);
         
+        // TODO::Seems this line is not executed correctly here.
+        // The weird thing is that the same logic can be executed correctly in other place,
+        // like in broadcast section. 
+        // This leads to the below 2 test cases failed.
+        //     1. @node: -> node zone with global function name
+        //     2. @napa: -> node zone with global function name
         napa.zone.node.broadcast(fooDef);
         napa.zone.node.broadcast(nestedFunctionDef);
 

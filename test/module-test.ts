@@ -21,7 +21,7 @@ describe('napajs/module', function () {
             });
         });
 
-        it('javascript module from string', () => {
+        it.skip('javascript module from string', () => {
             return napaZone.execute(() => {
                 var assert = require("assert");
                 var path = require('path');
@@ -46,7 +46,7 @@ describe('napajs/module', function () {
             });
         });
 
-        it('napa module', () => {
+        it.skip('napa module', () => {
             return napaZone.execute(() => {
                 var assert = require("assert");
                 var napaModule = require('../bin/simple-addon.napa');
@@ -56,7 +56,8 @@ describe('napajs/module', function () {
             });
         });
 
-        it('object wrap module', () => {
+        // TODO:: change it to a normal .node module test.
+        it.skip('object wrap module', () => {
             return napaZone.execute(() => {
                 var assert = require("assert");
                 var napaModule = require('../bin/simple-addon.napa');
@@ -101,7 +102,8 @@ describe('napajs/module', function () {
 
     describe('core-modules', function () {
         describe('process', function () {
-            it.skip('argv', () => {
+            // Napa zone worker share the same argments with node.
+            it('argv', () => {
                 return napaZone.execute(() => {
                     var assert = require("assert");
                 
@@ -202,8 +204,8 @@ describe('napajs/module', function () {
                 }).then(()=> {
                     // Cleanup
                     var fs = require('fs');
-                    if (fs.existsSync('./module/test-dir')) {
-                        fs.rmdir('./module/test-dir');
+                    if (fs.existsSync(__dirname + '/module/test-dir')) {
+                        fs.rmdirSync(__dirname + '/module/test-dir');
                     }
                 })
             });
@@ -238,10 +240,10 @@ describe('napajs/module', function () {
                 }).then(()=> {
                     // Cleanup
                     var fs = require('fs');
-                    if (fs.existsSync('./module/test-dir')) {
-                        fs.unlinkSync('./module/test-dir/1');
-                        fs.unlinkSync('./module/test-dir/2');
-                        fs.rmdir('./module/test-dir');
+                    if (fs.existsSync(__dirname + '/module/test-dir')) {
+                        fs.unlinkSync(__dirname + '/module/test-dir/1');
+                        fs.unlinkSync(__dirname + '/module/test-dir/2');
+                        fs.rmdirSync(__dirname + '/module/test-dir');
                     }
                 })
             });
@@ -256,7 +258,7 @@ describe('napajs/module', function () {
                     if (process.platform == 'win32') {
                         assert.equal(path.normalize('a\\b\\..\\c/./d/././.'), "a\\c\\d");
                     } else {
-                        assert.equal(path.normalize('a\\b\\..\\c/./d/././.'), "a/c/d");
+                        assert.equal(path.normalize('a\\b\\..\\c/./d/././.'), "a\\b\\..\\c/d");
                     }
                 });
             });
@@ -293,10 +295,7 @@ describe('napajs/module', function () {
                 });
             });
 
-            // TODO: fix bugs
-            //      1. Error: the string "AssertionError: '.' == 'c:'" was thrown, throw an Error :)
-            //      2. Error: the string "AssertionError: 'c:' == 'c:\\\\'" was thrown, throw an Error :)
-            it.skip('dirname', () => {
+            it('dirname', () => {
                 return napaZone.execute(() => {
                     var assert = require("assert");
                     var path = require("path");
@@ -332,9 +331,7 @@ describe('napajs/module', function () {
                 });
             });
 
-            // TODO: fix bugs
-            //      1. Error: the string "AssertionError: '' == '.'" was thrown, throw an Error :)
-            it.skip('extname', () => {
+            it('extname', () => {
                 return napaZone.execute(() => {
                     var assert = require("assert");
                     var path = require("path");
@@ -418,7 +415,8 @@ describe('napajs/module', function () {
     });
 
     describe('async', function () {
-        it('post async work', () => {
+        // TODO::add this test back with replacing simple-addon.napa by simple-addon.node.
+        it.skip('post async work', () => {
             return napaZone.execute(() => {
                 var assert = require("assert");
                 var napaModule = require('../bin/simple-addon.napa');
@@ -441,7 +439,8 @@ describe('napajs/module', function () {
             });
         });
 
-        it('do async work', () => {
+        // TODO::add this test back with replacing simple-addon.napa by simple-addon.node.
+        it.skip('do async work', () => {
             return napaZone.execute(() => {
                 var assert = require("assert");
                 var napaModule = require('../bin/simple-addon.napa');

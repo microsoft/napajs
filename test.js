@@ -1,4 +1,5 @@
 const napa = require('.');
+
 let zone = napa.zone.create("myzone", {workers:1});
 // console.log('$$$$$$$$$$$$$$$$$$$$$', napa.transport._registry);
 // console.log('*********************', napa.transport._constructor_registry);
@@ -8,7 +9,14 @@ setTimeout(() => {
 }, nodeTimeout);
 
 // zone = napa.zone.node;
-zone.execute(() => {
+let sab = new SharedArrayBuffer(4);
+let ta = new Int8Array(sab);
+ta[0] = 100;
+zone.execute((sharable, sharedArrayBuffer) => {
+    console.log('...00 sharable...', sharable);
+    let ta = new Int8Array(sharedArrayBuffer);
+    console.log('...01 sharedArrayBuffer...', ta);
+    ta[1] = 99;
     console.log('...0...zone.execute......', global.__zone_id, global.__worker_id);
     console.log('...1...Buffer......', Buffer.alloc(25));
     setTimeout(() => {
@@ -22,23 +30,7 @@ zone.execute(() => {
     }).then ((r)=>{
         console.log('......<<<inner zone.execute callback>>>......', global.__zone_id, global.__worker_id);
     })
-
-    return 123;
-}).then((r) => {
+    return ta;
+}, [napa.memory.crtAllocator, sab]).then((r) => {
     console.log('...3...zone execute callback......', r.value, global.__zone_id, global.__worker_id);
 });
-/*exports.foo = () => {
-    //xxx;
-    console.log(Buffer.alloc(100));
-    console.log('........zone.execute.....');
-    setTimeout(() => {console.log('.......setTimeout Callback.....');}, 100);
-    console.log('........after setTimeout.....');
-    //console.log(global.require);
-    //console.log(Buffer.alloc(100));
-    //console.log(require);
-    //Buffer.alloc(10);
-};
-zone.execute('test', 'foo').then((r) => {
-    console.log('....................call back.................................');
-});
-*/
