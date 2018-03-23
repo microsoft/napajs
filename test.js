@@ -2,28 +2,30 @@ const napa = require('.');
 let zone = napa.zone.create("myzone", {workers:1});
 // console.log('$$$$$$$$$$$$$$$$$$$$$', napa.transport._registry);
 // console.log('*********************', napa.transport._constructor_registry);
+var nodeTimeout = 1000;
 setTimeout(() => {
-    console.log('...........node setTimeput callback...........');
-}, 1000);
-//zone = napa.zone.node;
+    console.log('------node setTimeput callback------', nodeTimeout);
+}, nodeTimeout);
+
+// zone = napa.zone.node;
 zone.execute(() => {
-    console.log('......zone.execute......');
-    console.log('......Buffer......', Buffer.alloc(25));
+    console.log('...0...zone.execute......', global.__zone_id, global.__worker_id);
+    console.log('...1...Buffer......', Buffer.alloc(25));
     setTimeout(() => {
-        console.log('......setTimeout Callback......');
+        console.log('...4...setTimeout Callback......', global.__zone_id, global.__worker_id);
     }, 100);
-    console.log('......after setTimeout......');
+    console.log('...2...after setTimeout......');
 
     const napa = require('.');
     napa.zone.get('myzone').execute(()=>{
-        console.log('<<<inner zone.execute>>>');
+        console.log('......<<<inner zone.execute>>>......', global.__zone_id, global.__worker_id);
     }).then ((r)=>{
-        console.log('<<<inner zone.execute callback>>>');
+        console.log('......<<<inner zone.execute callback>>>......', global.__zone_id, global.__worker_id);
     })
 
     return 123;
 }).then((r) => {
-    console.log('......zone execute callback......', r.value);
+    console.log('...3...zone execute callback......', r.value, global.__zone_id, global.__worker_id);
 });
 /*exports.foo = () => {
     //xxx;

@@ -190,8 +190,13 @@ void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
 
     NAPA_DEBUG("Worker", "(id=%u) Setup completed.", _impl->id);
 
-    const char* worker_argv[2];
+    const char* worker_argv[4];
     worker_argv[0] = "node";
     worker_argv[1] = NAPA_WORKER_INIT_PATH.c_str();
-    node::Start(static_cast<void*>(&_impl->loop), 2, worker_argv, main_exec_argc, main_exec_argv);
+    // zone id.
+    worker_argv[2] = settings.id.c_str();
+    // worker id.
+    worker_argv[3] = std::to_string(_impl->id).c_str();
+
+    node::Start(static_cast<void*>(&_impl->loop), 4, worker_argv, main_exec_argc, main_exec_argv);
 }

@@ -152,12 +152,15 @@ namespace zone {
         context->asyncCompleteCallback = std::move(asyncCompleteCallback);
 
         auto event_loop = reinterpret_cast<uv_loop_t*>(WorkerContext::Get(WorkerContextItem::EVENT_LOOP));
-        uv_async_init(event_loop, &context->work, RunCompletionCallback);
 
-        asyncWork([context](void* result) {
+        asyncWork([context, event_loop](void* result) {
             context->result = result;
 
-            uv_async_send(&context->work);
+            // TODO (helloshuangzi)::By our investigation so far, uv_async_init is not thread safe.
+            // so it should be called in the same thread running the target event loop.
+            // The same problem exists in node-zone-delegates.cpp. This must be fixed before a formal release.
+            uv_async_init(event_loop, &context->work, RunCompletionCallback);
+            auto r = uv_async_send(&context->work);
         });
     }
 
