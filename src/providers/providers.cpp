@@ -63,35 +63,43 @@ static ProviderType* LoadProvider(
     const std::string& jsonPropertyPath,
     const std::string& functionName) {
 
-    napa::module::ModuleResolver moduleResolver;
+    //
+    // Disable custom provider temporarily.
+    // We are doing this because this implementation uses napa::module::ModuleResolver::Resolve(),
+    // which is not avilable in current status
+    //
+    return nullptr;
 
-    // Resolve the provider module information
-    auto moduleInfo = moduleResolver.Resolve(providerName.c_str());
-    NAPA_ASSERT(!moduleInfo.packageJsonPath.empty(), "missing package.json in provider '%s'", providerName.c_str());
 
-    // Full path to the root of the provider module
-    auto modulePath = filesystem::Path(moduleInfo.packageJsonPath).Parent().Normalize();
+    // napa::module::ModuleResolver moduleResolver;
 
-    // Extract relative path to provider dll from package.json
-    rapidjson::Document package;
-    std::ifstream ifs(moduleInfo.packageJsonPath);
-    rapidjson::IStreamWrapper isw(ifs);
-    NAPA_ASSERT(!package.ParseStream(isw).HasParseError(), rapidjson::GetParseError_En(package.GetParseError()));
+    // // Resolve the provider module information
+    // auto moduleInfo = moduleResolver.Resolve(providerName.c_str());
+    // NAPA_ASSERT(!moduleInfo.packageJsonPath.empty(), "missing package.json in provider '%s'", providerName.c_str());
 
-    NAPA_ASSERT(package.HasMember(jsonPropertyPath.c_str()),
-                "missing property '%s' in '%s'",
-                jsonPropertyPath.c_str(),
-                moduleInfo.packageJsonPath.c_str());
+    // // Full path to the root of the provider module
+    // auto modulePath = filesystem::Path(moduleInfo.packageJsonPath).Parent().Normalize();
 
-    auto providerRelativePath = package[jsonPropertyPath.c_str()].GetString();
+    // // Extract relative path to provider dll from package.json
+    // rapidjson::Document package;
+    // std::ifstream ifs(moduleInfo.packageJsonPath);
+    // rapidjson::IStreamWrapper isw(ifs);
+    // NAPA_ASSERT(!package.ParseStream(isw).HasParseError(), rapidjson::GetParseError_En(package.GetParseError()));
 
-    // Full path to provider dll
-    auto providerPath = (modulePath / providerRelativePath).Normalize();
+    // NAPA_ASSERT(package.HasMember(jsonPropertyPath.c_str()),
+    //             "missing property '%s' in '%s'",
+    //             jsonPropertyPath.c_str(),
+    //             moduleInfo.packageJsonPath.c_str());
 
-    // Keep a static instance for each provider type (each template type will have its own static variable).
-    static dll::SharedLibrary library(providerPath.String());
-    auto createProviderFunc = library.Import<ProviderType*()>(functionName);
-    return createProviderFunc();
+    // auto providerRelativePath = package[jsonPropertyPath.c_str()].GetString();
+
+    // // Full path to provider dll
+    // auto providerPath = (modulePath / providerRelativePath).Normalize();
+
+    // // Keep a static instance for each provider type (each template type will have its own static variable).
+    // static dll::SharedLibrary library(providerPath.String());
+    // auto createProviderFunc = library.Import<ProviderType*()>(functionName);
+    // return createProviderFunc();
 }
 
 static LoggingProvider* LoadLoggingProvider(const std::string& providerName) {
