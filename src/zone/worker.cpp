@@ -125,9 +125,7 @@ void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
 
     // Setup worker after isolate creation.
     _impl->setupCallback(_impl->id);
-    
-    // Worker gets ready to accept tasks.
-    _impl->idleNotificationCallback(_impl->id);
+
     NAPA_DEBUG("Worker", "(id=%u) Setup completed.", _impl->id);
 
     while (true) {
