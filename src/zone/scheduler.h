@@ -99,10 +99,6 @@ namespace zone {
                 IdleWorkerNotificationCallback(workerId);
             });
             _workers[i].Start();
-
-            // All workers are idle initially.
-            auto iter = _idleWorkers.emplace(_idleWorkers.end(), i);
-            _idleWorkersFlags[i] = iter;
         }
     }
 
