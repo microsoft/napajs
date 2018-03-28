@@ -6,7 +6,12 @@
 #include "napa/log.h"
 
 #if defined(DEBUG_NAPA)
-    #define NAPA_DEBUG(section, format, ...) LOG_DEBUG(section, format, ##__VA_ARGS__)
+
+#define NAPA_DEBUG(section, format, ...) LOG_DEBUG(section, format, ##__VA_ARGS__)
+
 #else
-    #define NAPA_DEBUG
+
+// Do nothing without generating any "unreferenced variable" warnings.
+#define NAPA_DEBUG(section, format, ...) ((void)0)
+
 #endif
