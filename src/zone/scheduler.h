@@ -91,7 +91,7 @@ namespace zone {
     SchedulerImpl<WorkerType>::SchedulerImpl(
         const settings::ZoneSettings& settings,
         std::function<void(WorkerId, v8::TaskRunner*, v8::TaskRunner*)> workerSetupCallback) :
-        _idleWorkersFlags(settings.workers),
+        _idleWorkersFlags(settings.workers, _idleWorkers.end()),
         _synchronizer(std::make_unique<SimpleThreadPool>(1)),
         _shouldStop(false),
         _beingScheduled(0) {
