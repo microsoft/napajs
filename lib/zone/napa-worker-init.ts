@@ -4,7 +4,7 @@ console.log(`------zone(${process.argv[2]}):worker(${process.argv[3]}) is initia
 (<any>global).__worker_id = process.argv[3];
 require('../../');
 console.log(`------zone(${process.argv[2]}):worker(${process.argv[3]}) is initialized------`);
-var aliveInterval = 60000;
+var aliveInterval = 3000;
 setInterval(function () {
     console.log(`------zone(${process.argv[2]}):worker(${process.argv[3]}) keep alive interval`, aliveInterval);
 }, aliveInterval);

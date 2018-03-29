@@ -1,14 +1,12 @@
 const napa = require('.');
 
-let zone = napa.zone.create("myzone", {workers:1});
-// console.log('$$$$$$$$$$$$$$$$$$$$$', napa.transport._registry);
-// console.log('*********************', napa.transport._constructor_registry);
+let napazone = napa.zone.create("myzone", {workers:1});
 var nodeTimeout = 1000;
 setTimeout(() => {
     console.log('------node setTimeput callback------', nodeTimeout);
 }, nodeTimeout);
 
-// zone = napa.zone.node;
+let zone = napa.zone.node;
 let sab = new SharedArrayBuffer(4);
 let ta = new Int8Array(sab);
 ta[0] = 100;
@@ -25,7 +23,7 @@ zone.execute((sharable, sharedArrayBuffer) => {
     console.log('...2...after setTimeout......');
 
     const napa = require('.');
-    napa.zone.get('myzone').execute(()=>{
+    napa.zone.get('node').execute(()=>{
         console.log('......<<<inner zone.execute>>>......', global.__zone_id, global.__worker_id);
     }).then ((r)=>{
         console.log('......<<<inner zone.execute callback>>>......', global.__zone_id, global.__worker_id);
