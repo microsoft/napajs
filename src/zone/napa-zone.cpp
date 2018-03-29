@@ -77,7 +77,11 @@ NapaZone::NapaZone(const settings::ZoneSettings& settings) :
     _settings(settings) {
 
     // Create the zone's scheduler.
-    _scheduler = std::make_unique<Scheduler>(_settings, [this](WorkerId id, uv_loop_t* event_loop) {
+    _scheduler = std::make_unique<Scheduler>(
+        _settings,
+        [this](WorkerId id,
+               v8::TaskRunner* foregroundTaskRunner,
+               v8::TaskRunner* backgroundTaskRunner) {
         // Initialize the worker context TLS data
         INIT_WORKER_CONTEXT();
 
@@ -87,12 +91,14 @@ NapaZone::NapaZone(const settings::ZoneSettings& settings) :
         // Worker Id into TLS.
         WorkerContext::Set(WorkerContextItem::WORKER_ID, reinterpret_cast<void*>(static_cast<uintptr_t>(id)));
 
-        // UV event loop into TLS.
-        WorkerContext::Set(WorkerContextItem::EVENT_LOOP, reinterpret_cast<void*>(event_loop));
+        // Set foreground task runer to TLS. </summary>
+        WorkerContext::Set(WorkerContextItem::FOREGROUND_TASK_RUNNER,
+                        reinterpret_cast<void*>(foregroundTaskRunner));
 
-        // Load module loader and built-in modules of require, console and etc.
-        // CREATE_MODULE_LOADER();
-    });
+        // Set background task runer to TLS. </summary>
+        WorkerContext::Set(WorkerContextItem::BACKGROUND_TASK_RUNNER,
+                        reinterpret_cast<void*>(foregroundTaskRunner));
+        });
 }
 
 const std::string& NapaZone::GetId() const {

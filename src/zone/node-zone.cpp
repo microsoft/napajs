@@ -7,6 +7,7 @@
 
 #include <napa/assert.h>
 
+#include <node.h>
 #include <uv.h>
 
 using namespace napa;
@@ -28,6 +29,9 @@ NodeZone::NodeZone(BroadcastDelegate broadcast, ExecuteDelegate execute):
     NAPA_ASSERT(_broadcast, "Broadcast delegate must be a valid function.");
     NAPA_ASSERT(_execute, "Execute delegate must be a valid function.");
 
+    _foregroundTaskRunner = node::GetNodeIsolateForegroundTaskRunner();
+    _backgroundTaskRunner = node::GetNodeIsolateBackgroundTaskRunner();
+
     // Init worker context for Node event loop.
     INIT_WORKER_CONTEXT();
 
@@ -37,8 +41,13 @@ NodeZone::NodeZone(BroadcastDelegate broadcast, ExecuteDelegate execute):
     // Worker Id into TLS.
     WorkerContext::Set(WorkerContextItem::WORKER_ID, reinterpret_cast<void*>(static_cast<uintptr_t>(0)));
 
-    // UV event loop into TLS.
-    WorkerContext::Set(WorkerContextItem::EVENT_LOOP, reinterpret_cast<void*>(uv_default_loop()));
+    // Set foreground task runer to TLS. </summary>
+    WorkerContext::Set(WorkerContextItem::FOREGROUND_TASK_RUNNER,
+                       reinterpret_cast<void*>(_foregroundTaskRunner));
+
+    // Set background task runer to TLS. </summary>
+    WorkerContext::Set(WorkerContextItem::BACKGROUND_TASK_RUNNER,
+                       reinterpret_cast<void*>(_backgroundTaskRunner));
 }
 
 std::shared_ptr<NodeZone> NodeZone::Get() {
@@ -50,9 +59,11 @@ const std::string& NodeZone::GetId() const {
 }
 
 void NodeZone::Broadcast(const std::string& source, BroadcastCallback callback) {
-    _broadcast(source, callback);
+    NAPA_ASSERT(_instance != nullptr, "Node zone is not initialized.");
+    _broadcast(source, callback, _foregroundTaskRunner);
 }
 
 void NodeZone::Execute(const FunctionSpec& spec, ExecuteCallback callback) {
-    _execute(spec, callback);
+    NAPA_ASSERT(_instance != nullptr, "Node zone is not initialized.");
+    _execute(spec, callback, _foregroundTaskRunner);
 }

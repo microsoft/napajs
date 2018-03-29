@@ -1,6 +1,6 @@
 const napa = require('.');
 
-let zone = napa.zone.create("myzone", {workers:1});
+let zone = napa.zone.create("myzone", {workers:4});
 // console.log('$$$$$$$$$$$$$$$$$$$$$', napa.transport._registry);
 // console.log('*********************', napa.transport._constructor_registry);
 var nodeTimeout = 1000;

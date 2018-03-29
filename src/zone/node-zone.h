@@ -9,14 +9,18 @@
 
 #include <functional>
 
+namespace v8 {
+    class TaskRunner;
+}
+
 namespace napa {
 namespace zone {
 
     /// <summary> Delegate for Broadcast on Node zone. </summary>
-    using BroadcastDelegate = std::function<void(const std::string&, BroadcastCallback)>;
+    using BroadcastDelegate = std::function<void(const std::string&, BroadcastCallback, v8::TaskRunner*)>;
 
     /// <summary> Delegate for Execute on Node zone. </summary>
-    using ExecuteDelegate = std::function<void(const FunctionSpec&, ExecuteCallback)>;
+    using ExecuteDelegate = std::function<void(const FunctionSpec&, ExecuteCallback, v8::TaskRunner*)>;
 
     /// <summary> Concrete implementation of a Node zone. </summary>
     class NodeZone : public Zone {
@@ -51,6 +55,10 @@ namespace zone {
 
         /// <summary> Node zone id. </summary>
         std::string _id;
+
+        v8::TaskRunner* _foregroundTaskRunner;
+
+        v8::TaskRunner* _backgroundTaskRunner;
 
         /// <summary> Node zone instance. </summary>
         static std::shared_ptr<NodeZone> _instance;

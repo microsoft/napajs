@@ -10,6 +10,7 @@
 #include <memory>
 
 #include <uv.h>
+#include <v8-platform.h>
 
 
 namespace napa {
@@ -29,7 +30,7 @@ namespace zone {
         /// <param name="idleNotificationCallback"> Triggers when the worker becomes idle. </param>
         Worker(WorkerId id,
                const settings::ZoneSettings &settings,
-               std::function<void(WorkerId, uv_loop_t*)> setupCallback,
+               std::function<void(WorkerId, v8::TaskRunner*, v8::TaskRunner*)> setupCallback,
                std::function<void(WorkerId)> idleNotificationCallback);
 
         /// <summary> Destructor. </summary>
@@ -52,6 +53,8 @@ namespace zone {
         /// <note> Same task instance may run on multiple workers, hence the use of shared_ptr. </node>
         void Schedule(std::shared_ptr<Task> task);
 
+        void OnTaskFinish();
+
     private:
 
         /// <summary> The worker thread logic. </summary>
@@ -59,8 +62,6 @@ namespace zone {
 
         /// <summary> Enqueue a task. </summary>
         void Enqueue(std::shared_ptr<Task> task);
-
-        void OnTaskFinish();
 
         struct Impl;
         std::unique_ptr<Impl> _impl;

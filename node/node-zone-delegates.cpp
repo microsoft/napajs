@@ -7,6 +7,7 @@
 #include <zone/eval-task.h>
 
 #include <uv.h>
+#include <v8-platform.h>
 
 struct AsyncContext {
     /// <summary> libuv request. </summary>
@@ -38,18 +39,32 @@ void ScheduleInNode(std::function<void()> callback) {
     uv_async_send(&context->work);
 }
 
-void napa::node_zone::Broadcast(const std::string& source, napa::BroadcastCallback callback) {
-    std::string sourceCopy = source;
-    ScheduleInNode([sourceCopy = std::move(sourceCopy), callback = std::move(callback)]() {
-        napa::zone::EvalTask task(std::move(sourceCopy), "", std::move(callback));
-        task.Execute();
-    });
+class NodeWorkerTask : public v8::Task {
+public:
+    NodeWorkerTask(std::shared_ptr<napa::zone::Task> napaTask);
+    virtual void Run() override;
+private:
+    std::shared_ptr<napa::zone::Task> _napaTask;
+};
+
+NodeWorkerTask::NodeWorkerTask(std::shared_ptr<napa::zone::Task> napaTask) :
+    _napaTask(napaTask) {
 }
 
-void napa::node_zone::Execute(const napa::FunctionSpec& spec, napa::ExecuteCallback callback) {
+void NodeWorkerTask::Run() {
+    _napaTask->Execute();
+}
+
+void napa::node_zone::Broadcast(const std::string& source, napa::BroadcastCallback callback, v8::TaskRunner* taskRunner) {
+    std::string sourceCopy = source;
+    auto task = std::make_shared<napa::zone::EvalTask>(std::move(sourceCopy), "", std::move(callback));
+    auto wTask = std::make_unique<NodeWorkerTask>(task);
+    taskRunner->PostTask(std::move(wTask));
+}
+
+void napa::node_zone::Execute(const napa::FunctionSpec& spec, napa::ExecuteCallback callback, v8::TaskRunner* taskRunner) {
     auto requestContext = std::make_shared<napa::zone::CallContext>(spec, callback);
-    ScheduleInNode([requestContext = std::move(requestContext)]() {
-        napa::zone::CallTask task(std::move(requestContext));
-        task.Execute();
-    });
+    auto task = std::make_shared<napa::zone::CallTask>(std::move(requestContext));
+    auto wTask = std::make_unique<NodeWorkerTask>(task);
+    taskRunner->PostTask(std::move(wTask));
 }

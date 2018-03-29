@@ -30,8 +30,11 @@ namespace zone {
         /// <summary> Worker Id. </summary>
         WORKER_ID,
 
-        /// <summary> UV Event loop. </summary>
-        EVENT_LOOP,
+        /// <summary> Foreground task runer. </summary>
+        FOREGROUND_TASK_RUNNER,
+
+        /// <summary> Background task runer. </summary>
+        BACKGROUND_TASK_RUNNER,
 
         /// <summary> End of index. </summary>
         END_OF_WORKER_CONTEXT_ITEM

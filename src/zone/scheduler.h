@@ -30,7 +30,9 @@ namespace zone {
         /// <summary> Constructor. </summary>
         /// <param name="settings"> A settings object. </param>
         /// <param name="workerSetupCallback"> Callback to setup the isolate after worker created its isolate. </param>
-        SchedulerImpl(const settings::ZoneSettings& settings, std::function<void(WorkerId, uv_loop_t*)> workerSetupCallback);
+        SchedulerImpl(
+            const settings::ZoneSettings& settings,
+            std::function<void(WorkerId, v8::TaskRunner*, v8::TaskRunner*)> workerSetupCallback);
 
         /// <summary> Destructor. Waits for all tasks to finish. </summary>
         ~SchedulerImpl();
@@ -86,7 +88,9 @@ namespace zone {
     typedef SchedulerImpl<Worker> Scheduler;
 
     template <typename WorkerType>
-    SchedulerImpl<WorkerType>::SchedulerImpl(const settings::ZoneSettings& settings, std::function<void(WorkerId, uv_loop_t*)> workerSetupCallback) :
+    SchedulerImpl<WorkerType>::SchedulerImpl(
+        const settings::ZoneSettings& settings,
+        std::function<void(WorkerId, v8::TaskRunner*, v8::TaskRunner*)> workerSetupCallback) :
         _idleWorkersFlags(settings.workers),
         _synchronizer(std::make_unique<SimpleThreadPool>(1)),
         _shouldStop(false),
@@ -99,10 +103,6 @@ namespace zone {
                 IdleWorkerNotificationCallback(workerId);
             });
             _workers[i].Start();
-
-            // All workers are idle initially.
-            auto iter = _idleWorkers.emplace(_idleWorkers.end(), i);
-            _idleWorkersFlags[i] = iter;
         }
     }
 
