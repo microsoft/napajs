@@ -53,6 +53,8 @@ namespace zone {
         /// <note> Same task instance may run on multiple workers, hence the use of shared_ptr. </node>
         void Schedule(std::shared_ptr<Task> task);
 
+        WorkerId GetWorkerId() const;
+
         void OnTaskFinish();
 
     private:

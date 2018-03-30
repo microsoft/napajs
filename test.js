@@ -6,11 +6,11 @@ setTimeout(() => {
     console.log('------node setTimeput callback------', nodeTimeout);
 }, nodeTimeout);
 
-let zone = napa.zone.node;
+let nodezone = napa.zone.node;
 let sab = new SharedArrayBuffer(4);
 let ta = new Int8Array(sab);
 ta[0] = 100;
-zone.execute((sharable, sharedArrayBuffer) => {
+napazone.execute((sharable, sharedArrayBuffer) => {
     console.log('...00 sharable...', sharable);
     let ta = new Int8Array(sharedArrayBuffer);
     console.log('...01 sharedArrayBuffer...', ta);

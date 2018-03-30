@@ -116,6 +116,10 @@ void Worker::Start() {
     NAPA_ASSERT(result == 0, "Worker (id=%u) failed to start.", _impl->id);
 }
 
+WorkerId Worker::GetWorkerId() const {
+    return _impl->id;
+}
+
 void Worker::OnTaskFinish() {
     NAPA_DEBUG("Worker", "Worker (id=%u) finished one task.", _impl->id);
     _impl->numberOfTasksRunning--;
