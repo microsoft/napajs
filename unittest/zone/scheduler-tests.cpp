@@ -57,7 +57,9 @@ public:
         }
     }
 
-    void Start() {}
+    void Start() {
+        _idleNotificationCallback(_id);
+    }
 
     void Schedule(std::shared_ptr<Task> task) {
         auto testTask = std::dynamic_pointer_cast<TestTask>(task);
