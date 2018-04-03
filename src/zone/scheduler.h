@@ -91,7 +91,7 @@ namespace zone {
         /// <summary> A flag to signal that scheduler is stopping. </summary>
         std::atomic<bool> _shouldStop;
 
-        /// <summary> Tasks being scheduled but not yet dispatched to worker or put into non-scheduled queue. </summary>
+        /// <summary> Tasks being scheduled but not yet dispatched to worker or put into (per-worker) non-scheduled queue by syncronizer. </summary>
         std::atomic<size_t> _beingScheduled;
     };
 
@@ -175,6 +175,7 @@ namespace zone {
     void SchedulerImpl<WorkerType>::ScheduleOnWorker(WorkerId workerId, std::shared_ptr<Task> task) {
         NAPA_ASSERT(workerId < _workers.size(), "worker id out of range");
 
+        _beingScheduled++;
         _synchronizer->Execute([workerId, this, task]() {
             // If the worker is idle, change it's status.
             if (_idleWorkersFlags[workerId] != _idleWorkers.end()) {
@@ -190,6 +191,7 @@ namespace zone {
                 _perWorkerNonScheduledTasks[workerId].emplace(_currentTaskSequence++, task);
                 NAPA_DEBUG("Scheduler", "Given worker %u is busy, explicitly put a task to its non-scheduled queue.", workerId);
             }
+            _beingScheduled--;
         });
     }
 
@@ -197,6 +199,7 @@ namespace zone {
     void SchedulerImpl<WorkerType>::ScheduleOnAllWorkers(std::shared_ptr<Task> task) {
         NAPA_ASSERT(task, "task is null");
 
+        _beingScheduled++;
         _synchronizer->Execute([this, task]() {
             // Clear all idle workers.
             _idleWorkers.clear();
@@ -214,6 +217,7 @@ namespace zone {
                     NAPA_DEBUG("Scheduler", "Given worker %u is busy, put a broadcast task to its non-scheduled queue.", workerId);
                 }
             }
+            _beingScheduled--;
         });
     }
 
