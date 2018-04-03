@@ -69,3 +69,15 @@ template <typename... Types> inline void LOG(Types&&...) {}
 
 #define LOG_DEBUG_WITH_TRACEID(section, traceId, format, ...) \
     LOG(section, napa::providers::LoggingProvider::Verboseness::Debug, traceId, format, ##__VA_ARGS__)
+
+// Macro NAPA_DEBUG is used to help debugging Napa source code.
+#if defined(NAPA_DEBUG_ENABLED)
+
+#define NAPA_DEBUG(section, format, ...) LOG_DEBUG(section, format, ##__VA_ARGS__)
+
+#else
+
+// Do nothing without generating any "unreferenced variable" warnings.
+#define NAPA_DEBUG(section, format, ...) ((void)0)
+
+#endif

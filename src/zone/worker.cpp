@@ -3,8 +3,6 @@
 
 #include "worker.h"
 
-#include <utils/debug.h>
-
 #include <napa/log.h>
 
 #include <v8.h>

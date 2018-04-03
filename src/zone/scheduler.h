@@ -8,7 +8,6 @@
 #include "worker.h"
 
 #include <settings/settings.h>
-#include <utils/debug.h>
 
 #include <napa/log.h>
 

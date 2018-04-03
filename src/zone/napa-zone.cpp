@@ -6,7 +6,6 @@
 #include <module/loader/module-loader.h>
 #include <platform/dll.h>
 #include <platform/filesystem.h>
-#include <utils/debug.h>
 #include <utils/string.h>
 #include <zone/eval-task.h>
 #include <zone/call-task.h>
