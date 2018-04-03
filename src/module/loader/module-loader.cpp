@@ -13,7 +13,6 @@
 
 #include <module/core-modules/core-modules.h>
 #include <platform/filesystem.h>
-#include <utils/debug.h>
 
 // TODO: decouple dependencies between module-loader and zone.
 #include <zone/worker-context.h>
