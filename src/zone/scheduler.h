@@ -26,8 +26,8 @@ namespace zone {
     class SchedulerImpl {
     public:
 
-        using Priority = std::chrono::high_resolution_clock::time_point;
-        using PriorityTask = std::pair<Priority, std::shared_ptr<Task>>;
+        using SequenceType = uint64_t;
+        using SequencedTask = std::pair<SequenceType, std::shared_ptr<Task>>;
 
         /// <summary> Constructor. </summary>
         /// <param name="settings"> A settings object. </param>
@@ -69,10 +69,15 @@ namespace zone {
         std::vector<WorkerType> _workers;
 
         /// <summary> New tasks that weren't assigned to a specific worker. </summary>
-        std::queue<PriorityTask> _nonScheduledTasks;
+        std::queue<SequencedTask> _nonScheduledTasks;
 
         /// <summary> New tasks that targets a specific worker. </summary>
-        std::vector<std::queue<PriorityTask>> _perWorkerNonScheduledTasks;
+        std::vector<std::queue<SequencedTask>> _perWorkerNonScheduledTasks;
+
+        /// <summary> The sequence number assigned to a task When it is being scheduled.
+        /// It increases monotonically to indicate the order in which tasks are scheduled by the scheduler.
+        /// </summary>
+        SequenceType _currentTaskSequence;
 
         /// <summary> List of idle workers, used when assigning non scheduled tasks. </summary>
         std::list<WorkerId> _idleWorkers;
@@ -98,6 +103,7 @@ namespace zone {
         std::function<void(WorkerId, v8::TaskRunner*, v8::TaskRunner*)> workerSetupCallback) :
         _idleWorkersFlags(settings.workers, _idleWorkers.end()),
         _perWorkerNonScheduledTasks(settings.workers),
+        _currentTaskSequence(0),
         _synchronizer(std::make_unique<SimpleThreadPool>(1)),
         _shouldStop(false),
         _beingScheduled(0) {
@@ -148,7 +154,7 @@ namespace zone {
                 NAPA_DEBUG("Scheduler", "All workers are busy, putting task to non-scheduled queue.");
 
                 // If there is no idle worker, put the task into the non-scheduled queue.
-                _nonScheduledTasks.emplace(std::chrono::high_resolution_clock::now(), task);
+                _nonScheduledTasks.emplace(_currentTaskSequence++, task);
             } else {
                 // Pop the worker id from the idle workers list.
                 auto workerId = _idleWorkers.front();
@@ -181,7 +187,7 @@ namespace zone {
                 NAPA_DEBUG("Scheduler", "Explicitly scheduled a task on worker %u.", workerId);
             }
             else {
-                _perWorkerNonScheduledTasks[workerId].emplace(std::chrono::high_resolution_clock::now(), task);
+                _perWorkerNonScheduledTasks[workerId].emplace(_currentTaskSequence++, task);
                 NAPA_DEBUG("Scheduler", "Given worker %u is busy, explicitly put a task to its non-scheduled queue.", workerId);
             }
         });
@@ -204,7 +210,7 @@ namespace zone {
                     NAPA_DEBUG("Scheduler", "Scheduled a broadcast task on worker %u.", workerId);
                 } else {
                     // If the worker is not idle, put the task to its non-scheduled queuqe
-                    _perWorkerNonScheduledTasks[workerId].emplace(std::chrono::high_resolution_clock::now(), task);
+                    _perWorkerNonScheduledTasks[workerId].emplace(_currentTaskSequence++, task);
                     NAPA_DEBUG("Scheduler", "Given worker %u is busy, put a broadcast task to its non-scheduled queue.", workerId);
                 }
             }
