@@ -14,10 +14,10 @@ namespace zone {
         /// <summary> Get the zone id. </summary>
         virtual const std::string& GetId() const = 0;
 
-        /// <summary> Compiles and run the provided source code on all zone workers asynchronously. </summary>
-        /// <param name="source"> The source code. </param>
+        /// <summary> Executes a pre-loaded JS function on all zone workers asynchronously. </summary>
+        /// <param name="spec"> The function spec. </param>
         /// <param name="callback"> A callback that is triggered when broadcasting is done. </param>
-        virtual void Broadcast(const std::string& source, BroadcastCallback callback) = 0;
+        virtual void Broadcast(const FunctionSpec& spec, BroadcastCallback callback) = 0;
 
         /// <summary> Executes a pre-loaded JS function asynchronously. </summary>
         /// <param name="spec"> The function spec. </param>

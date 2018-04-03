@@ -186,7 +186,7 @@ describe('napajs/zone', function () {
             }, [napa.memory.crtAllocator]);
         });
 
-        /// TODO #4: support transportable tags in broadcast.
+        // TODO #4: support transportable args in broadcast.
         it.skip('@node: -> napa zone with transportable args', () => {
             return napaZone1.broadcast((allocator: any) => {
                 console.log(allocator);
@@ -203,7 +203,9 @@ describe('napajs/zone', function () {
             return napaZone1.execute('./napa-zone/test', "broadcastTransportable", ['node']);
         });
 
-        it('@node: -> node zone with anonymous function having closure (should fail)', () => {
+        // This will not fail any more because current implementation uses function `eval()`.
+        // Re-enable this case if we use `Function()` in future
+        it.skip('@node: -> node zone with anonymous function having closure (should fail)', () => {
             return shouldFail(() => {
                 return napa.zone.current.broadcast(() => {
                     console.log(napaZone1.id);
@@ -230,6 +232,45 @@ describe('napajs/zone', function () {
                 return napaZone1.execute('./napa-zone/test', "broadcastClosure", ['node']);
             });
         });
+    });
+
+    describe('broadcastSync', () => {
+        it('@node: -> napa zone with JavaScript code', () => {
+            napaZone1.broadcastSync("var state = 0;");
+        });
+
+        it('@napa: -> napa zone with JavaScript code in different zone', () => {
+            return napaZone1.execute('./napa-zone/test', "broadcastSync", ["napa-zone2", "var state = 0;"]);
+        });
+
+        it('@napa: -> napa zone with JavaScript code in current zone (should fail)', () => {
+            return shouldFail(() => {
+                return napaZone1.execute('./napa-zone/test', "broadcastSync", ["napa-zone1", "var state = 0;"]);
+            });
+        });
+
+        it('@node: -> napa zone with anonymous function', () => {
+            napaZone1.broadcastSync((input: string) => {
+                console.log(input);
+            }, ['hello world']);
+        });
+
+        it('@napa: -> napa zone with anonymous function', () => {
+            return napaZone1.execute('./napa-zone/test', "broadcastSyncTestFunction", ['napa-zone2']);
+        });
+
+        it('@node: -> napa zone throw runtime error', () => {
+            assert.throws(() => {
+                napaZone1.broadcastSync("throw new Error();");
+            }, Error);
+        });
+
+        it('@napa: -> napa zone throw runtime error', () => {
+            return shouldFail(() => {
+                return napaZone1.execute('./napa-zone/test', "broadcastSync", ["napa-zone2", "throw new Error();"]);
+            });
+        });
+
     });
 
     describe('execute', () => {

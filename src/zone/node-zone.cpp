@@ -58,7 +58,7 @@ const std::string& NodeZone::GetId() const {
     return _id;
 }
 
-void NodeZone::Broadcast(const std::string& source, BroadcastCallback callback) {
+void NodeZone::Broadcast(const FunctionSpec& source, BroadcastCallback callback) {
     NAPA_ASSERT(_instance != nullptr, "Node zone is not initialized.");
     _broadcast(source, callback, _foregroundTaskRunner);
 }

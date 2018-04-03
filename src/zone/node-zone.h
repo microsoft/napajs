@@ -17,7 +17,7 @@ namespace napa {
 namespace zone {
 
     /// <summary> Delegate for Broadcast on Node zone. </summary>
-    using BroadcastDelegate = std::function<void(const std::string&, BroadcastCallback, v8::TaskRunner*)>;
+    using BroadcastDelegate = std::function<void(const FunctionSpec&, BroadcastCallback, v8::TaskRunner*)>;
 
     /// <summary> Delegate for Execute on Node zone. </summary>
     using ExecuteDelegate = std::function<void(const FunctionSpec&, ExecuteCallback, v8::TaskRunner*)>;
@@ -38,7 +38,7 @@ namespace zone {
         virtual const std::string& GetId() const override;
 
         /// <see cref="Zone::Broadcast" />
-        virtual void Broadcast(const std::string& source, BroadcastCallback callback) override;
+        virtual void Broadcast(const FunctionSpec& spec, BroadcastCallback callback) override;
 
         /// <see cref="Zone::Execute" />
         virtual void Execute(const FunctionSpec& spec, ExecuteCallback callback) override;

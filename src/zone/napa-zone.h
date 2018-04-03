@@ -30,7 +30,7 @@ namespace zone {
         virtual const std::string& GetId() const override;
 
         /// <see cref="Zone::Broadcast" />
-        virtual void Broadcast(const std::string& source, BroadcastCallback callback) override;
+        virtual void Broadcast(const FunctionSpec& spec, BroadcastCallback callback) override;
 
         /// <see cref="Zone::Execute" />
         virtual void Execute(const FunctionSpec& spec, ExecuteCallback callback) override;

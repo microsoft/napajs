@@ -52,9 +52,12 @@ void EvalTask::Execute() {
             auto exception = tryCatch.Exception();
             v8::String::Utf8Value exceptionStr(exception);
 
-            NAPA_DEBUG("EvalTask", "Compilation failed: %s ", *exceptionStr);
+            std::stringstream ss;
+            ss << "Compilation failed: " << *exceptionStr;
+            std::string reason = ss.str();
+            NAPA_DEBUG("EvalTask", reason.c_str());
 
-            _callback(NAPA_RESULT_BROADCAST_SCRIPT_ERROR);
+            _callback({ NAPA_RESULT_BROADCAST_SCRIPT_ERROR, reason.c_str(), "", nullptr });
             return;
         }
     }
@@ -72,13 +75,16 @@ void EvalTask::Execute() {
             auto stackTrace = tryCatch.StackTrace();
             v8::String::Utf8Value stackTraceStr(stackTrace);
 
-            NAPA_DEBUG("EvalTask", "Eval failed: %s - %s", *exceptionStr, *stackTraceStr);
+            std::stringstream ss;
+            ss << "Eval failed: " << *exceptionStr << " - " << *stackTraceStr;
+            std::string reason = ss.str();
+            NAPA_DEBUG("EvalTask", reason.c_str());
 
-            _callback(NAPA_RESULT_BROADCAST_SCRIPT_ERROR);
+            _callback({ NAPA_RESULT_BROADCAST_SCRIPT_ERROR, reason.c_str(), "", nullptr });
             return;
         }
     }
 
     NAPA_DEBUG("EvalTask", "Eval script completed with success");
-    _callback(NAPA_RESULT_SUCCESS);
+    _callback({ NAPA_RESULT_SUCCESS, "", "", nullptr });
 }

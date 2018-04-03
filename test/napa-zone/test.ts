@@ -26,8 +26,19 @@ export function broadcast(id: string, code: string): Promise<void> {
     return zone.broadcast(code);
 }
 
+export function broadcastSync(id: string, code: string): void {
+    let zone = napa.zone.get(id);
+    zone.broadcastSync(code);
+}
+
 export function broadcastTestFunction(id: string): Promise<void> {
     return napa.zone.get(id).broadcast((input: string) => {
+            console.log(input);
+        }, ["hello world"]);
+}
+
+export function broadcastSyncTestFunction(id: string): void {
+    napa.zone.get(id).broadcastSync((input: string) => {
             console.log(input);
         }, ["hello world"]);
 }

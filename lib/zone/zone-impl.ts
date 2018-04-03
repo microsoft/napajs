@@ -59,19 +59,27 @@ export class ZoneImpl implements zone.Zone {
     }
 
     public broadcast(arg1: any, arg2?: any) : Promise<void> {
-        let source: string = this.createBroadcastSource(arg1, arg2);
+        let spec: FunctionSpec = this.createBroadcastRequest(arg1, arg2);
 
         return new Promise<void>((resolve, reject) => {
-            this._nativeZone.broadcast(source, (resultCode: number) => {
+            this._nativeZone.broadcast(spec, (result: any) => {
                 setImmediate(() => {
-                    if (resultCode === 0) {
+                    if (result.code === 0) {
                         resolve();
                     } else {
-                        reject("broadcast failed with result code: " + resultCode);
+                        reject(result.errorMessage);
                     }
                 });
             });
         });
+    }
+
+    public broadcastSync(arg1: any, arg2?: any) : void {
+        let spec: FunctionSpec = this.createBroadcastRequest(arg1, arg2);
+        let result = this._nativeZone.broadcastSync(spec);
+        if (result.code !== 0) {
+            throw new Error(result.errorMessage);
+        }
     }
 
     public execute(arg1: any, arg2?: any, arg3?: any, arg4?: any) : Promise<zone.Result> {
@@ -92,34 +100,34 @@ export class ZoneImpl implements zone.Zone {
         });
     }
 
-    private createBroadcastSource(arg1: any, arg2?: any) : string {
-        let source: string;
-        if (typeof arg1 === "string") {
-            // broadcast with source
-            source = arg1;
-        } else {
+    private createBroadcastRequest(arg1: any, arg2?: any) : FunctionSpec {
+        if (typeof arg1 === "function") {
             // broadcast with function
-            if (typeof arg1 != 'function') {
-                throw new TypeError("Expected a Function type argument");
+            if (arg1.origin == null) {
+                // We get caller stack at index 2.
+                // <caller> -> broadcast -> createBroadcastRequest
+                //   2           1               0
+                arg1.origin = v8.currentStack(3)[2].getFileName();
             }
-            
-            let functionString: string = (<Function>arg1).toString();
-            
-            // Prepare arguments as a string
-            let argumentsString: string = "";
-            if (arg2 != undefined) {
-                if (!Array.isArray(arg2)) {
-                    throw new TypeError("Expected an Array type argument");
-                }
-                argumentsString = JSON.stringify(arg2);
-                argumentsString = argumentsString.substring(1, argumentsString.length - 1);
-            }
-
-            // Create a self invoking function string
-            source = `(${ functionString })(${ argumentsString })`;
+            return {
+                module: "__function",
+                function: transport.saveFunction(arg1),
+                arguments: (arg2 == null
+                           ? []
+                           : (<Array<any>>arg2).map(arg => transport.marshall(arg, null))),
+                options: zone.DEFAULT_CALL_OPTIONS,
+                transportContext: null
+            };
+        } else {
+            // broadcast with source
+            return {
+                module: "",
+                function: "eval",
+                arguments: [JSON.stringify(arg1)],
+                options: zone.DEFAULT_CALL_OPTIONS,
+                transportContext: null
+            };
         }
-
-        return source;
     }
 
     private createExecuteRequest(arg1: any, arg2: any, arg3?: any, arg4?: any) : FunctionSpec {
@@ -167,7 +175,7 @@ export class ZoneImpl implements zone.Zone {
         return {
             module: moduleName,
             function: functionName,
-            arguments: (<Array<any>>args).map(arg => { return transport.marshall(arg, transportContext); }),
+            arguments: (<Array<any>>args).map(arg => transport.marshall(arg, transportContext)),
             options: options != null? options: zone.DEFAULT_CALL_OPTIONS,
             transportContext: transportContext
         };

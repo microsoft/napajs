@@ -13,7 +13,7 @@ namespace napa {
 namespace node_zone {
 
     /// <summary> Broadcast to Node zone. </summary>
-    void Broadcast(const std::string& source, napa::BroadcastCallback callback, v8::TaskRunner* taskRunner);
+    void Broadcast(const napa::FunctionSpec& spec, napa::BroadcastCallback callback, v8::TaskRunner* taskRunner);
 
     /// <summary> Execute in Node zone. </summary>
     void Execute(const napa::FunctionSpec& spec, napa::ExecuteCallback callback, v8::TaskRunner* taskRunner);

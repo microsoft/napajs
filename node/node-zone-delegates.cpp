@@ -55,9 +55,9 @@ void NodeWorkerTask::Run() {
     _napaTask->Execute();
 }
 
-void napa::node_zone::Broadcast(const std::string& source, napa::BroadcastCallback callback, v8::TaskRunner* taskRunner) {
-    std::string sourceCopy = source;
-    auto task = std::make_shared<napa::zone::EvalTask>(std::move(sourceCopy), "", std::move(callback));
+void napa::node_zone::Broadcast(const napa::FunctionSpec& spec, napa::BroadcastCallback callback, v8::TaskRunner* taskRunner) {
+    auto requestContext = std::make_shared<napa::zone::CallContext>(spec, callback);
+    auto task = std::make_shared<napa::zone::CallTask>(std::move(requestContext));
     auto wTask = std::make_unique<NodeWorkerTask>(task);
     taskRunner->PostTask(std::move(wTask));
 }
