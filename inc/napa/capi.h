@@ -50,14 +50,14 @@ EXTERN_C NAPA_API napa_result_code napa_zone_init(
 /// <param name="handle"> The zone handle. </param>
 EXTERN_C NAPA_API napa_string_ref napa_zone_get_id(napa_zone_handle handle);
 
-/// <summary> Compiles and run the provided source code on all zone workers. </summary>
+/// <summary> Executes a pre-loaded function asynchronously on all zone workers. </summary>
 /// <param name="handle"> The zone handle. </param>
-/// <param name="source"> The JavaScript source code. </param>
+/// <param name="spec"> The function spec to call. </param>
 /// <param name="callback"> A callback that is triggered when broadcast is done. </param>
 /// <param name="context"> An opaque pointer that is passed back in the callback. </param>
 EXTERN_C NAPA_API void napa_zone_broadcast(
     napa_zone_handle handle,
-    napa_string_ref source,
+    napa_zone_function_spec spec,
     napa_zone_broadcast_callback callback,
     void* context);
 
