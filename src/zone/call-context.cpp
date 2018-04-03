@@ -8,8 +8,6 @@
 
 #include "call-context.h"
 
-#include <utils/debug.h>
-
 #include <napa/log.h>
 #include <napa/v8-helpers.h>
 

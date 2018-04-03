@@ -3,8 +3,6 @@
 
 #include "worker.h"
 
-#include <utils/debug.h>
-
 #include <napa/log.h>
 
 #include <v8.h>
@@ -125,6 +123,7 @@ void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
 
     // Setup worker after isolate creation.
     _impl->setupCallback(_impl->id);
+
     NAPA_DEBUG("Worker", "(id=%u) Setup completed.", _impl->id);
 
     while (true) {

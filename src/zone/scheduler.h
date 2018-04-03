@@ -8,7 +8,6 @@
 #include "worker.h"
 
 #include <settings/settings.h>
-#include <utils/debug.h>
 
 #include <napa/log.h>
 
@@ -87,7 +86,7 @@ namespace zone {
 
     template <typename WorkerType>
     SchedulerImpl<WorkerType>::SchedulerImpl(const settings::ZoneSettings& settings, std::function<void(WorkerId)> workerSetupCallback) :
-        _idleWorkersFlags(settings.workers),
+        _idleWorkersFlags(settings.workers, _idleWorkers.end()),
         _synchronizer(std::make_unique<SimpleThreadPool>(1)),
         _shouldStop(false),
         _beingScheduled(0) {
@@ -99,10 +98,6 @@ namespace zone {
                 IdleWorkerNotificationCallback(workerId);
             });
             _workers[i].Start();
-
-            // All workers are idle initially.
-            auto iter = _idleWorkers.emplace(_idleWorkers.end(), i);
-            _idleWorkersFlags[i] = iter;
         }
     }
 

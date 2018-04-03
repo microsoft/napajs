@@ -5,7 +5,6 @@
 
 #include <providers/providers.h>
 #include <settings/settings-parser.h>
-#include <utils/debug.h>
 #include <v8-extensions/v8-common.h>
 #include <zone/napa-zone.h>
 #include <zone/node-zone.h>

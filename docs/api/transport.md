@@ -39,7 +39,6 @@ Transportable types are JavaScript types that can be passed or shared transparen
 Transportable types are:
 - JavaScript primitive types: undefined, null, boolean, number, string
 - Object (TypeScript class) that implement [`Transportable`](#transportable) interface
-- Array or plain JavaScript object that is composite pattern of above.
 - Function without referencing closures.
 - <a name="built-in-whitelist"></a> JavaScript standard built-In objects in this whitelist.
     * ArrayBuffer
@@ -52,6 +51,7 @@ Transportable types are:
     * Uint16Array
     * Uint32Array
     * Uint8Array
+- Array or plain JavaScript object that is composite pattern of above.
 
 ### <a name="constructor-id"></a> Constructor ID (cid)
 For user classes that implement [`Transportable`](#transportable) interface, Napa uses Constructor ID (`cid`) to lookup constructors for creating a right object from a string payload. `cid` is marshalled as a part of the payload. During unmarshalling, transport layer will extract the `cid`, create an object instance using the constructor associated with it, and then call unmarshall on the object. 

@@ -9,7 +9,8 @@
 #include "call-task.h"
 
 #include <module/core-modules/napa/call-context-wrap.h>
-#include <utils/debug.h>
+
+#include <napa/log.h>
 
 using namespace napa::zone;
 using namespace napa::v8_helpers;
