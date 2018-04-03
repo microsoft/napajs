@@ -186,7 +186,7 @@ describe('napajs/zone', function () {
             }, [napa.memory.crtAllocator]);
         });
 
-        // TODO #4: support transportable tags in broadcast.
+        // TODO #4: support transportable args in broadcast.
         it.skip('@node: -> napa zone with transportable args', () => {
             return napaZone1.broadcast((allocator: any) => {
                 console.log(allocator);

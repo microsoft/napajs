@@ -256,8 +256,12 @@ static void CreateRequestAndExecute(v8::Local<v8::Object> obj, Func&& func) {
     maybe = obj->Get(context, MakeV8String(isolate, "transportContext"));
     CHECK_ARG(isolate, !maybe.IsEmpty(), "transportContext property is missing in function spec object");
 
-    if (maybe.ToLocalChecked()->IsObject()) {
-        auto transportContextWrap = NAPA_OBJECTWRAP::Unwrap<TransportContextWrapImpl>(maybe.ToLocalChecked()->ToObject());
+    // for broadcast(), we are not creating transportContext. The value of the property is set to null
+    // otherwise it should be an object.
+    auto transportContextValue = maybe.ToLocalChecked();
+    if (!transportContextValue->IsNull()) {
+        CHECK_ARG(isolate, transportContextValue->IsObject(), "transportContext must be null or an object.");
+        auto transportContextWrap = NAPA_OBJECTWRAP::Unwrap<TransportContextWrapImpl>(transportContextValue->ToObject());
         spec.transportContext.reset(transportContextWrap->Get());
     }
 
