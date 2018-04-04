@@ -6,7 +6,6 @@
 #include <napa/log.h>
 #include <platform/process.h>
 #include <platform/thread-local.h>
-#include <utils/debug.h>
 
 #include <array>
 #include <sstream>
