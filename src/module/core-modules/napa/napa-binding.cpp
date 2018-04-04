@@ -10,6 +10,7 @@
 #include "metric-wrap.h"
 #include "shared-ptr-wrap.h"
 #include "store-wrap.h"
+#include "timer-wrap.h"
 #include "transport-context-wrap-impl.h"
 #include "zone-wrap.h"
 
@@ -271,6 +272,31 @@ void DeserializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
     #endif
 }
 
+/////////////////////////////////////////////////////////////////////
+/// Timers APIs, these APIs only valid in non-node isolation, i.e., 
+/// they are not needed when building the napa_binding.node
+
+#ifdef BUILDING_NAPA_EXTENSION
+static void SetImmediate(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    TimerWrap::SetImmediateCallback(args);
+}
+
+// Set Timeout or Set Interval
+static void SetTimers(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    TimerWrap::SetTimersCallback(args);
+}
+#endif
+
+
+static void InitNapaOnlyBindings(v8::Local<v8::Object> exports) {
+#ifdef BUILDING_NAPA_EXTENSION 
+    TimerWrap::Init();
+
+    NAPA_SET_METHOD(exports, "setImmediate", SetImmediate);
+    NAPA_SET_METHOD(exports, "setTimers", SetTimers);
+#endif
+}
+
 void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) {
     // Register napa binding in worker context.
     RegisterBinding(module);
@@ -311,4 +337,6 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
 
     NAPA_SET_METHOD(exports, "serializeValue", SerializeValue);
     NAPA_SET_METHOD(exports, "deserializeValue", DeserializeValue);
+
+    InitNapaOnlyBindings(exports);
 }

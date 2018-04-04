@@ -1,4 +1,6 @@
 # Files to compile
+# Note: Do not add napa core-modules cpp files that not needed in node isolation, 
+# like timer-wrap.cpp.
 file(GLOB SOURCE_FILES 
     "addon.cpp"
     "node-zone-delegates.cpp"
@@ -8,7 +10,17 @@ file(GLOB SOURCE_FILES
     "${PROJECT_SOURCE_DIR}/src/zone/call-task.cpp"
     "${PROJECT_SOURCE_DIR}/src/zone/eval-task.cpp"
     "${PROJECT_SOURCE_DIR}/src/zone/terminable-task.cpp"
-    "${PROJECT_SOURCE_DIR}/src/module/core-modules/napa/*.cpp")
+    "${PROJECT_SOURCE_DIR}/src/module/core-modules/napa/allocator-debugger-wrap.cpp"
+    "${PROJECT_SOURCE_DIR}/src/module/core-modules/napa/allocator-wrap.cpp"
+    "${PROJECT_SOURCE_DIR}/src/module/core-modules/napa/call-context-wrap.cpp"
+    "${PROJECT_SOURCE_DIR}/src/module/core-modules/napa/lock-wrap.cpp"
+    "${PROJECT_SOURCE_DIR}/src/module/core-modules/napa/metric-wrap.cpp"
+    "${PROJECT_SOURCE_DIR}/src/module/core-modules/napa/napa-binding.cpp"
+    "${PROJECT_SOURCE_DIR}/src/module/core-modules/napa/shared-ptr-wrap.cpp"
+    "${PROJECT_SOURCE_DIR}/src/module/core-modules/napa/store-wrap.cpp"
+    "${PROJECT_SOURCE_DIR}/src/module/core-modules/napa/transport-context-wrap-impl.cpp"
+    "${PROJECT_SOURCE_DIR}/src/module/core-modules/napa/zone-wrap.cpp"        
+    )
 
 # The addon name
 set(TARGET_NAME "${PROJECT_NAME}-binding")

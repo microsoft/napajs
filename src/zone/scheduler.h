@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "schedule-phase.h"
 #include "simple-thread-pool.h"
 #include "task.h"
 #include "worker.h"
@@ -41,11 +42,14 @@ namespace zone {
         /// <summary> Schedules the task on a specific worker. </summary>
         /// <param name="workerId"> The id of the worker. </param>
         /// <param name="task"> Task to schedule. </param>
+        /// <param name="phase"> Which phase of the task, like Immediate or Normal. </param>
         /// <remarks>
         /// By design, it enqueues a task immediately,
         /// so the task will have higher priority than ones called by Schedule().
         /// </remarks>
-        void ScheduleOnWorker(WorkerId workerId, std::shared_ptr<Task> task);
+        void ScheduleOnWorker(WorkerId workerId,
+                              std::shared_ptr<Task> task,
+                              SchedulePhase phase = SchedulePhase::DefaultPhase);
 
         /// <summary> Schedules the task on all workers. </summary>
         /// <param name="task"> Task to schedule. </param>
@@ -149,10 +153,11 @@ namespace zone {
     }
 
     template <typename WorkerType>
-    void SchedulerImpl<WorkerType>::ScheduleOnWorker(WorkerId workerId, std::shared_ptr<Task> task) {
+    void SchedulerImpl<WorkerType>::ScheduleOnWorker(
+            WorkerId workerId, std::shared_ptr<Task> task, SchedulePhase phase) {
         NAPA_ASSERT(workerId < _workers.size(), "worker id out of range");
 
-        _synchronizer->Execute([workerId, this, task]() {
+        _synchronizer->Execute([workerId, this, task, phase]() {
             // If the worker is idle, change it's status.
             if (_idleWorkersFlags[workerId] != _idleWorkers.end()) {
                 _idleWorkers.erase(_idleWorkersFlags[workerId]);
@@ -160,7 +165,7 @@ namespace zone {
             }
 
             // Schedule task on worker
-            _workers[workerId].Schedule(std::move(task));
+            _workers[workerId].Schedule(std::move(task), phase);
 
             NAPA_DEBUG("Scheduler", "Explicitly scheduled task on worker %u.", workerId);
         });
