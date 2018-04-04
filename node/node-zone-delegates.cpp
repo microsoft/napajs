@@ -38,10 +38,10 @@ void ScheduleInNode(std::function<void()> callback) {
     uv_async_send(&context->work);
 }
 
-void napa::node_zone::Broadcast(const std::string& source, napa::BroadcastCallback callback) {
-    std::string sourceCopy = source;
-    ScheduleInNode([sourceCopy = std::move(sourceCopy), callback = std::move(callback)]() {
-        napa::zone::EvalTask task(std::move(sourceCopy), "", std::move(callback));
+void napa::node_zone::Broadcast(const napa::FunctionSpec& spec, napa::BroadcastCallback callback) {
+    auto requestContext = std::make_shared<napa::zone::CallContext>(spec, callback);
+    ScheduleInNode([requestContext = std::move(requestContext)]() {
+        napa::zone::CallTask task(std::move(requestContext));
         task.Execute();
     });
 }

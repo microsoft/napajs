@@ -47,6 +47,9 @@ export function marshallTransform(jsValue: any, context: transportable.Transport
         let constructorName = Object.getPrototypeOf(jsValue).constructor.name;
         if (constructorName !== 'Object') {
             if (typeof jsValue['cid'] === 'function') {
+                if (context == null) {
+                    throw new Error(`Cannot transport type \"${constructorName}\" without a transport context.`);
+                }
                 return <transportable.Transportable>(jsValue).marshall(context);
             } else if (_builtInTypeWhitelist.has(constructorName)) {
                 let serializedData = builtinObjectTransporter.serializeValue(jsValue);
@@ -73,6 +76,9 @@ function unmarshallTransform(payload: any, context: transportable.TransportConte
         let cid = payload._cid;
         if (cid === 'function') {
             return functionTransporter.load(payload.hash);
+        }
+        if (context == null) {
+            throw new Error(`Cannot transport type with cid \"${cid}\" without a transport context.`);
         }
         let subClass = _registry.get(cid);
         if (subClass == null) {

@@ -88,16 +88,41 @@ export interface Zone {
     /// <returns> A promise which is resolved when broadcast completes, and rejected when failed. </returns>
     /// <remarks>
     ///     Broadcast is designed for the purpose of bootstrapping/changing internal state on all workers.
-    ///     It returns a promise of void, telling whether the operation succeeded or failed. 
+    ///     Function broadcast returns a promise of void, telling whether the operation succeeded or failed.
     ///     Promise will be rejected on failure from any worker, though most likely all workers will fail if one fails.
     /// </remarks>
     broadcast(source: string) : Promise<void>;
 
-    /// <summary> Compiles the function on all workers and runs it with the given arguments. </summary>
+    /// <summary> Run the function on all workers with the given arguments. </summary>
     /// <param name="func"> The JS function. </param>
     /// <param name="args"> The arguments that will pass to the function. </param>
     /// <returns> A promise which is resolved when broadcast completes and rejected when failed. </returns>
-    broadcast(func: (...args: any[]) => void, args?: any[]) : Promise<void>;
+    /// <remarks>
+    ///     Broadcast is designed for the purpose of bootstrapping/changing internal state on all workers.
+    ///     Function broadcast returns a promise of void, telling whether the operation succeeded or failed.
+    ///     Promise will be rejected on failure from any worker, though most likely all workers will fail if one fails.
+    /// </remarks>
+    broadcast(func: (...args: any[]) => void | Promise<void>, args?: any[]) : Promise<void>;
+
+    /// <summary> Compiles and run the provided source code on all zone workers synchronously. </summary>
+    /// <param name="source"> A valid javascript source code. </param>
+    /// <remarks>
+    ///     Broadcast is designed for the purpose of bootstrapping/changing internal state on all workers.
+    ///     Function broadcastSync wait for all workers to complete.
+    ///     An exception will be thrown when any worker fails.
+    /// </remarks>
+    broadcastSync(source: string) : void;
+
+    /// <summary> Run the function on all workers with the given arguments. </summary>
+    /// <param name="func"> The JS function. </param>
+    /// <param name="args"> The arguments that will pass to the function. </param>
+    /// <returns> A promise which is resolved when broadcast completes and rejected when failed. </returns>
+    /// <remarks>
+    ///     Broadcast is designed for the purpose of bootstrapping/changing internal state on all workers.
+    ///     Function broadcast returns a promise of void, telling whether the operation succeeded or failed.
+    ///     Promise will be rejected on failure from any worker, though most likely all workers will fail if one fails.
+    /// </remarks>
+    broadcastSync(func: (...args: any[]) => void | Promise<void>, args?: any[]) : void;
 
     /// <summary> Executes the function on one of the zone workers. </summary>
     /// <param name="module"> The module name that contains the function to execute. </param>

@@ -43,7 +43,7 @@ There are two types of zone:
 
 ### <a name="zone-operations"><a> Zone operations 
 There are two operations, designed to reinforce the symmetry of workers within a zone:
- 1) **Broadcast** - run code that changes worker state on all workers, returning a promise for the pending operation. Through the promise, we can only know if the operation succeed or failed. Usually we use `broadcast` to bootstrap the application, pre-cache objects, or change application settings.
+ 1) **Broadcast** - run code that changes worker state on all workers, returning a promise for the pending operation. Through the promise, we can only know if the operation succeed or failed. Usually we use `broadcast` to bootstrap the application, pre-cache objects, or change application settings. Function `broadcastSync` is also offered as a synchronized version of broadcast operations.
  2) **Execute** - run code that doesn't change worker state on an arbitrary worker, returning a promise of getting the result. Execute is designed for doing the real work.
 
  Zone operations are on a basis of first-come-first-serve, while `broadcast` takes higher priority over `execute`.
@@ -121,10 +121,36 @@ zone.broadcast('var state = 0;')
         console.log('broadcast failed.')
     });
 ```
-### <a name="broadcast-function"></a> zone.broadcast(function: (...args: any[]) => void, args?: any[]): Promise\<void\>
+
+### <a name="broadcast-code-sync"></a> zone.broadcastSync(code: string): void
+It synchronously broadcasts a snippet of JavaScript code in a string to all workers. If any of the workers failed to execute the code, an exception will be thrown with an error message.
+
+Remarks:
+
+- It's not allowed to call `broadcastSync` on current zone. It will cause a deadlock
+
+Example:
+
+```js
+var napa = require('napajs');
+var zone = napa.zone.get('zone1');
+try {
+    zone.broadcastSync('var state = 0;');
+    console.log('broadcast succeeded.');
+} catch (error) {
+    console.log('broadcast failed.')
+}
+```
+
+### <a name="broadcast-function"></a> zone.broadcast(function: (...args: any[]) => void | Promise\<void\>, args?: any[]): Promise\<void\>
 It asynchronously broadcasts an anonymous function with its arguments to all workers, which returns a Promise of void. If any of the workers failed to execute the code, the promise will be rejected with an error message.
 
-*Please note that Napa doesn't support closure in 'function' during broadcast.*
+Remarks:
+
+- If the function returns a Promise object, its state will be adopted to `broadcast`'s return value
+- The function object cannot access variables from closure
+- Unless the function object has an `origin` property, it will use the current file as `origin`, which will be used to set `__filename` and `__dirname`. (See [transporting functions](./transport.md#transporting-functions))
+- Transport context is not available in broadcast. All types that depend on [TransportContext](./transport.md#transport-context) (eg. [ShareableWrap](https://github.com/Microsoft/napajs/blob/master/inc/napa/module/shareable-wrap.h), [Transportable](./transport.md#-interface-transportable)) cannot be passed in arguments list.
 
 Example:
 
@@ -139,6 +165,31 @@ zone.broadcast((state) => {
         console.log('broadcast failed:', error)
     });
 ```
+
+### <a name="broadcast-function-sync"></a> zone.broadcastSync(function: (...args: any[]) => void | Promise\<void\>, args?: any[]): void
+It synchronously broadcasts an anonymous function with its arguments to all workers. If any of the workers failed to execute the code, an exception will be thrown with an error message.
+
+Remarks:
+
+- It's not allowed to call `broadcastSync` on current zone. It will cause a deadlock
+- If the function returns a Promise object, its state will be adopted. Function `broadcastSync` will not return until that Promise resolved or rejected.
+- The function object cannot access variables from closure
+- Unless the function object has an `origin` property, it will use the current file as `origin`, which will be used to set `__filename` and `__dirname`. (See [transporting functions](./transport.md#transporting-functions))
+- Transport context is not available in broadcast. All types that depend on [TransportContext](./transport.md#transport-context) (eg. [ShareableWrap](https://github.com/Microsoft/napajs/blob/master/inc/napa/module/shareable-wrap.h), [Transportable](./transport.md#-interface-transportable)) cannot be passed in arguments list.
+
+Example:
+
+```js
+try {
+    zone.broadcastSync((state) => {
+            require('some-module').setModuleState(state)
+        }, [{field1: 1}]);
+    console.log('broadcast succeeded.');
+} catch (error) {
+    console.log('broadcast failed:', error)
+}
+```
+
 ### <a name="execute-by-name"></a> zone.execute(moduleName: string, functionName: string, args?: any[], options?: CallOptions): Promise\<any\>
 Execute a function asynchronously on an arbitrary worker via module name and function name. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns a Promise of [`Result`](#result). If an error happens, either bad code, user exception, or timeout is reached, the promise will be rejected.
 
@@ -162,10 +213,11 @@ zone.execute(
 
 Execute a function object asynchronously on an arbitrary worker. Arguments can be of any JavaScript type that is [transportable](transport.md#transportable-types). It returns a Promise of [`Result`](#result). If an error happens, either bad code, user exception, or timeout is reached, promise will be rejected.
 
-Here are a few restricitions on executing a function object:
+Remarks:
 
+- If the function returns a Promise object, it will be adopted
 - The function object cannot access variables from closure
-- Unless the function object has an `origin` property, it will use the current file as `origin`, which will be used to set `__filename` and `__dirname`. (See [transporting functions](./transport.md#transporting-functions))
+- Unless the function object has an `origin` property, it will use the current file as `origin`, which will be used to set `__filename` and `__dirname`. (See [transporting functions](./transport.md#transporting-functions))
 
 Example:
 ```js
