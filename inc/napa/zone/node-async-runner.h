@@ -94,12 +94,29 @@ namespace zone {
         context->asyncCompleteCallback(jsCallback, context->result);
     }
 
+    /// <summary> Callback run in node event loop. </summary>
+    /// <param name="work"> libuv request holding asynchronous callbacks. </summary>
+    inline void RunCompletionCallback(uv_async_t* work) {
+        auto isolate = v8::Isolate::GetCurrent();
+        v8::HandleScope scope(isolate);
+
+        auto context = static_cast<CompletionContext*>(work->data);
+
+        auto jsCallback = v8::Local<v8::Function>::New(isolate, context->jsCallback);
+        context->asyncCompleteCallback(jsCallback, context->result);
+
+        uv_close(reinterpret_cast<uv_handle_t*>(work), [](auto work) {
+            auto context = static_cast<CompletionContext*>(work->data);
+            context->jsCallback.Reset();
+            delete context;
+        });
+    }
+
     /// <summary> It runs a synchronous function in a separate thread and posts a completion into the current V8 execution loop. </summary>
     /// <param name="jsCallback"> Javascript callback. </summary>
     /// <param name="asyncWork"> Function to run asynchronously in separate thread. </param>
     /// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous callback completes. </param>
     /// <remarks> Return value from 'asyncWork' will be the input to 'asyncCompleteCallback'. </remarks>
-    /*
     inline void PostAsyncWork(v8::Local<v8::Function> jsCallback,
                               AsyncWork asyncWork,
                               AsyncCompleteCallback asyncCompleteCallback) {
@@ -113,33 +130,10 @@ namespace zone {
         context->asyncWork = std::move(asyncWork);
         context->asyncCompleteCallback = std::move(asyncCompleteCallback);
 
-        auto event_loop = reinterpret_cast<uv_loop_t*>(WorkerContext::Get(WorkerContextItem::EVENT_LOOP));
-        uv_queue_work(event_loop, &context->work, RunAsyncWork, RunAsyncCompleteCallback);
-    }
-    */
-
-    class WorkerCallbackTask : public v8::Task {
-    public:
-        WorkerCallbackTask(CompletionContext* context);
-        virtual void Run() override;
-    private:
-        CompletionContext* _context;
-    };
-
-    WorkerCallbackTask::WorkerCallbackTask(CompletionContext* context) :
-        _context(context) {
+        auto loop = reinterpret_cast<uv_loop_t*>(WorkerContext::Get(WorkerContextItem::EVENT_LOOP));
+        uv_queue_work(loop, &context->work, RunAsyncWork, RunAsyncCompleteCallback);
     }
 
-    void WorkerCallbackTask::Run() {
-        auto isolate = v8::Isolate::GetCurrent();
-        v8::HandleScope scope(isolate);
-
-        auto jsCallback = v8::Local<v8::Function>::New(isolate, _context->jsCallback);
-        _context->asyncCompleteCallback(jsCallback, _context->result);
-
-        _context->jsCallback.Reset();
-        delete _context;
-    }
     /// <summary> It runs an asynchronous function and post a completion into the current V8 execution loop. </summary>
     /// <param name="jsCallback"> Javascript callback. </summary>
     /// <param name="asyncWork"> Function to wrap async-supporting function. </param>
@@ -157,13 +151,13 @@ namespace zone {
         context->jsCallback.Reset(isolate, jsCallback);
         context->asyncCompleteCallback = std::move(asyncCompleteCallback);
 
-        auto foregroundTaskRunner = reinterpret_cast<v8::TaskRunner*>(WorkerContext::Get(WorkerContextItem::FOREGROUND_TASK_RUNNER));
+        auto loop = reinterpret_cast<uv_loop_t*>(WorkerContext::Get(WorkerContextItem::EVENT_LOOP));
+        uv_async_init(loop, &context->work, RunCompletionCallback);
 
-        asyncWork([context, foregroundTaskRunner](void* result) {
+        asyncWork([context](void* result) {
             context->result = result;
             
-            auto task = std::make_unique<WorkerCallbackTask>(context);
-            foregroundTaskRunner->PostTask(std::move(task));
+            uv_async_send(&context->work);
         });
     }
 

@@ -34,7 +34,7 @@ namespace zone {
         /// <param name="workerSetupCallback"> Callback to setup the isolate after worker created its isolate. </param>
         SchedulerImpl(
             const settings::ZoneSettings& settings,
-            std::function<void(WorkerId, v8::TaskRunner*, v8::TaskRunner*)> workerSetupCallback);
+            std::function<void(WorkerId, uv_loop_t*)> workerSetupCallback);
 
         /// <summary> Destructor. Waits for all tasks to finish. </summary>
         ~SchedulerImpl();
@@ -100,7 +100,7 @@ namespace zone {
     template <typename WorkerType>
     SchedulerImpl<WorkerType>::SchedulerImpl(
         const settings::ZoneSettings& settings,
-        std::function<void(WorkerId, v8::TaskRunner*, v8::TaskRunner*)> workerSetupCallback) :
+        std::function<void(WorkerId, uv_loop_t*)> workerSetupCallback) :
         _idleWorkersFlags(settings.workers, _idleWorkers.end()),
         _perWorkerNonScheduledTasks(settings.workers),
         _currentTaskSequence(0),

@@ -64,7 +64,7 @@ struct Worker::Impl {
     v8::Isolate* isolate;
 
     /// <summary> A callback function to setup the isolate after worker created its isolate. </summary>
-    std::function<void(WorkerId, v8::TaskRunner*, v8::TaskRunner*)> setupCallback;
+    std::function<void(WorkerId, uv_loop_t*)> setupCallback;
 
     /// <summary> A callback function that is called when worker becomes idle. </summary>
     std::function<void(WorkerId)> idleNotificationCallback;
@@ -75,7 +75,7 @@ struct Worker::Impl {
 
 Worker::Worker(WorkerId id,
                const settings::ZoneSettings& settings,
-               std::function<void(WorkerId, v8::TaskRunner*, v8::TaskRunner*)> setupCallback,
+               std::function<void(WorkerId, uv_loop_t*)> setupCallback,
                std::function<void(WorkerId)> idleNotificationCallback)
     : _impl(std::make_unique<Worker::Impl>()) {
     NAPA_ASSERT(uv_loop_init(&_impl->loop) == 0, "Worker (id=%u) failed to initialize its loop.", id);
@@ -193,7 +193,7 @@ void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
                     // Setup worker after isolate creation.
                     _impl->foregroundTaskRunner = foregroundTaskRunner;
                     _impl->backgroundTaskRunner = backgroundTaskRunner;
-                    _impl->setupCallback(_impl->id, _impl->foregroundTaskRunner, _impl->backgroundTaskRunner);
+                    _impl->setupCallback(_impl->id, &_impl->loop);
                     _impl->idleNotificationCallback(_impl->id);
                 });
 

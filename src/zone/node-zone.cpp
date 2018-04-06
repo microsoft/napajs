@@ -41,13 +41,8 @@ NodeZone::NodeZone(BroadcastDelegate broadcast, ExecuteDelegate execute):
     // Worker Id into TLS.
     WorkerContext::Set(WorkerContextItem::WORKER_ID, reinterpret_cast<void*>(static_cast<uintptr_t>(0)));
 
-    // Set foreground task runer to TLS. </summary>
-    WorkerContext::Set(WorkerContextItem::FOREGROUND_TASK_RUNNER,
-                       reinterpret_cast<void*>(_foregroundTaskRunner));
-
-    // Set background task runer to TLS. </summary>
-    WorkerContext::Set(WorkerContextItem::BACKGROUND_TASK_RUNNER,
-                       reinterpret_cast<void*>(_backgroundTaskRunner));
+    // Set event loop into TLS. </summary>
+    WorkerContext::Set(WorkerContextItem::EVENT_LOOP, reinterpret_cast<void*>(uv_default_loop()));
 }
 
 std::shared_ptr<NodeZone> NodeZone::Get() {

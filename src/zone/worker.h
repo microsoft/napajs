@@ -30,7 +30,7 @@ namespace zone {
         /// <param name="idleNotificationCallback"> Triggers when the worker becomes idle. </param>
         Worker(WorkerId id,
                const settings::ZoneSettings &settings,
-               std::function<void(WorkerId, v8::TaskRunner*, v8::TaskRunner*)> setupCallback,
+               std::function<void(WorkerId, uv_loop_t*)> setupCallback,
                std::function<void(WorkerId)> idleNotificationCallback);
 
         /// <summary> Destructor. </summary>

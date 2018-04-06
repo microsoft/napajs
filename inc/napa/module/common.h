@@ -4,7 +4,6 @@
 #pragma once
 
 #include <napa/v8-helpers.h>
-#include <iostream>
 
 namespace napa {
 namespace module {
@@ -36,8 +35,7 @@ namespace module {
     template <typename WrapType>
     inline v8::MaybeLocal<v8::Object> NewInstance(int argc = 0, v8::Local<v8::Value> argv[] = nullptr) {
         auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(WrapType::exportName, WrapType);
-        auto res = constructor->NewInstance(v8::Isolate::GetCurrent()->GetCurrentContext(), argc, argv);
-        return res;
+        return constructor->NewInstance(v8::Isolate::GetCurrent()->GetCurrentContext(), argc, argv);
     }
 }
 }

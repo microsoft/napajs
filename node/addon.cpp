@@ -49,4 +49,4 @@ void InitAll(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) {
     NAPA_SET_METHOD(exports, "shutdown", Shutdown);
 }
 
-NAPA_MODULE(napa_binding, InitAll)
+NAPA_MODULE(napa, InitAll)

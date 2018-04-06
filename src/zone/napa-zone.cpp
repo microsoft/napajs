@@ -78,25 +78,18 @@ NapaZone::NapaZone(const settings::ZoneSettings& settings) :
     // Create the zone's scheduler.
     _scheduler = std::make_unique<Scheduler>(
         _settings,
-        [this](WorkerId id,
-               v8::TaskRunner* foregroundTaskRunner,
-               v8::TaskRunner* backgroundTaskRunner) {
-        // Initialize the worker context TLS data
-        INIT_WORKER_CONTEXT();
+        [this](WorkerId id, uv_loop_t* event_loop) {
+            // Initialize the worker context TLS data
+            INIT_WORKER_CONTEXT();
 
-        // Zone instance into TLS.
-        WorkerContext::Set(WorkerContextItem::ZONE, reinterpret_cast<void*>(this));
+            // Zone instance into TLS.
+            WorkerContext::Set(WorkerContextItem::ZONE, reinterpret_cast<void*>(this));
 
-        // Worker Id into TLS.
-        WorkerContext::Set(WorkerContextItem::WORKER_ID, reinterpret_cast<void*>(static_cast<uintptr_t>(id)));
+            // Worker Id into TLS.
+            WorkerContext::Set(WorkerContextItem::WORKER_ID, reinterpret_cast<void*>(static_cast<uintptr_t>(id)));
 
-        // Set foreground task runer to TLS. </summary>
-        WorkerContext::Set(WorkerContextItem::FOREGROUND_TASK_RUNNER,
-                        reinterpret_cast<void*>(foregroundTaskRunner));
-
-        // Set background task runer to TLS. </summary>
-        WorkerContext::Set(WorkerContextItem::BACKGROUND_TASK_RUNNER,
-                        reinterpret_cast<void*>(foregroundTaskRunner));
+            // Set event loop into TLS. </summary>
+            WorkerContext::Set(WorkerContextItem::EVENT_LOOP, reinterpret_cast<void*>(event_loop));
         });
 }
 

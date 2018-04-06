@@ -1,16 +1,12 @@
 const napa = require('.');
 
 let napazone = napa.zone.create("myzone", {workers:1});
-var nodeTimeout = 1000;
-setTimeout(() => {
-    console.log('------node setTimeput callback------', nodeTimeout);
-}, nodeTimeout);
 
 let nodezone = napa.zone.node;
 let sab = new SharedArrayBuffer(4);
 let ta = new Int8Array(sab);
 ta[0] = 100;
-napazone.execute((sharable, sharedArrayBuffer) => {
+nodezone.execute((sharable, sharedArrayBuffer) => {
     console.log('...00 sharable...', sharable);
     let ta = new Int8Array(sharedArrayBuffer);
     console.log('...01 sharedArrayBuffer...', ta);

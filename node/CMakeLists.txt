@@ -17,7 +17,7 @@ file(GLOB_RECURSE SOURCE_FILES_SRC
 )
 
 # The addon name
-set(TARGET_NAME "${PROJECT_NAME}-binding")
+set(TARGET_NAME ${PROJECT_NAME})
 
 # The generated library
 add_library(${TARGET_NAME} SHARED ${SOURCE_FILES} ${SOURCE_FILES_SRC})
