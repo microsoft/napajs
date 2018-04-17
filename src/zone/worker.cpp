@@ -35,11 +35,14 @@ struct Worker::Impl {
 
     /// <summary> Queue for tasks scheduled on this worker. </summary>
     std::queue<std::shared_ptr<Task>> tasks;
+
+    /// <summary> Queue for tasks scheduled on this worker. </summary>
+    std::queue<std::shared_ptr<Task>> immediateTasks;
     
     /// <summary> Condition variable to indicate if there are more tasks to consume. </summary>
     std::condition_variable hasTaskEvent;
 
-    /// <summary> Lock for task queue. </summary>
+    /// <summary> Lock for task queue and immediate task queue. </summary>
     std::mutex queueLock;
 
     /// <summary> V8 isolate associated with this worker. </summary>
@@ -69,7 +72,7 @@ Worker::Worker(WorkerId id,
 
 Worker::~Worker() {
     // Signal the thread loop that it should stop processing tasks.
-    Enqueue(nullptr);
+    Enqueue(nullptr, SchedulePhase::DefaultPhase);
     NAPA_DEBUG("Worker", "(id=%u) Shutting down: Start draining task queue.", _impl->id);
     
     _impl->workerThread.join();
@@ -87,16 +90,21 @@ void Worker::Start() {
     _impl->workerThread = std::thread(&Worker::WorkerThreadFunc, this, _impl->settings);
 }
 
-void Worker::Schedule(std::shared_ptr<Task> task) {
+void Worker::Schedule(std::shared_ptr<Task> task, SchedulePhase phase) {
     NAPA_ASSERT(task != nullptr, "Task should not be null");
-    Enqueue(task);
+    Enqueue(task, phase);
     NAPA_DEBUG("Worker", "(id=%u) Task queued.", _impl->id);
 }
 
-void Worker::Enqueue(std::shared_ptr<Task> task) {
+void Worker::Enqueue(std::shared_ptr<Task> task, SchedulePhase phase) {
     {
         std::unique_lock<std::mutex> lock(_impl->queueLock);
-        _impl->tasks.emplace(std::move(task));
+        if (phase == SchedulePhase::ImmediatePhase && task != nullptr) {
+            _impl->immediateTasks.emplace(std::move(task));
+        }
+        else {
+            _impl->tasks.emplace(std::move(task));
+        }
     }
     _impl->hasTaskEvent.notify_one();
 }
@@ -130,16 +138,28 @@ void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
         std::shared_ptr<Task> task;
 
         {
+            // Logically one merged task queue is the concatenation of immediate queue and
+            // the normal queue. The logically merged queue is treated as empty only when both queues
+            // are empty. And when not empty, immediate tasks will be handled prior to normal tasks.
+            // Inside each single queue (immediate or normal), tasks are first in first out.
             std::unique_lock<std::mutex> lock(_impl->queueLock);
-            if (_impl->tasks.empty()) {
+            if (_impl->tasks.empty() && _impl->immediateTasks.empty()) {
                 _impl->idleNotificationCallback(_impl->id);
 
                 // Wait until new tasks come.
-                _impl->hasTaskEvent.wait(lock, [this]() { return !_impl->tasks.empty(); });
+                _impl->hasTaskEvent.wait(
+                    lock, 
+                    [this]() { return !(_impl->tasks.empty() && _impl->immediateTasks.empty()); });
             }
 
-            task = _impl->tasks.front();
-            _impl->tasks.pop();
+            if (_impl->immediateTasks.empty()) {
+                task = _impl->tasks.front();
+                _impl->tasks.pop();
+            }
+            else {
+                task = _impl->immediateTasks.front();
+                _impl->immediateTasks.pop();
+            }
         }
 
         // A null task means that the worker needs to shutdown.

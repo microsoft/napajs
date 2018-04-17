@@ -18,5 +18,9 @@
     {
         "name": "util",
         "type": "core"
+    },
+    {
+        "name": "timers",
+        "type": "builtin"
     }
 ]
