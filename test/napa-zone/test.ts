@@ -237,6 +237,16 @@ export class CanPass extends napa.transport.TransportableObject {
     _allocator: napa.memory.Allocator;
 }
 
+@napa.transport.cid()
+export class CanAutoPass extends napa.transport.AutoTransportable {
+    constructor(data: any) {
+        super();
+        this._data = data;
+    }
+
+    _data: any;
+}
+
 function testMarshallUnmarshall(input: any) {
     let tc = napa.transport.createTransportContext();
     let payload = napa.transport.marshall(input, tc);
@@ -258,6 +268,10 @@ export function simpleTypeTransportTest() {
 
 export function jsTransportTest() {
     testMarshallUnmarshall(new CanPass(napa.memory.crtAllocator));
+}
+
+export function jsAutoTransportTest() {
+    testMarshallUnmarshall(new CanAutoPass({ a: 'foo', b: 'bar', c: 123 }));
 }
 
 export function functionTransportTest() {
