@@ -1,12 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-export { 
-    Transportable, 
-    TransportableObject, 
-    TransportContext, 
-    isTransportable, 
-    cid 
+export {
+    Transportable,
+    TransportableObject,
+    TransportContext,
+    AutoTransportable,
+    isTransportable,
+    cid
 } from './transport/transportable';
 
 export * from './transport/transport';
