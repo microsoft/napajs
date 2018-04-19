@@ -115,7 +115,10 @@ export class AutoTransportable extends TransportableObject {
     /// <param name='payload'> Payload to read from, which already have inner objects transported. </param>
     /// <param name='context'> Transport context for loading shared pointers, only usable for C++ addons that extends napa::module::ShareableWrap. </param>
     load(payload: object, context: TransportContext) {
-        // Members have already been unmarshalled. Do nothing.
+        // Members have already been unmarshalled.
+        for (let property of Object.getOwnPropertyNames(payload)) {
+            (<any>(this))[property] = (<any>(payload))[property];
+        }
     }
 }
 

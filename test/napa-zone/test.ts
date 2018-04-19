@@ -2,7 +2,8 @@
 // Licensed under the MIT license.
 
 import * as assert from 'assert';
-import * as path from "path";
+import * as path from 'path';
+import * as util from 'util';
 import * as napa from '../../lib/index';
 
 export function bar(input: any) {
@@ -229,10 +230,21 @@ export class CanPass extends napa.transport.TransportableObject {
     }
 
     load(payload: any, tc: napa.transport.TransportContext): void {
-        // Do nothing, as all members are transportable, which will be restored automatically.
+        // member '_allocator' is already unmarshalled.
+        this._allocator = payload['_allocator'];
     }
 
     _allocator: napa.memory.Allocator;
+}
+
+@napa.transport.cid()
+export class CanAutoPass extends napa.transport.AutoTransportable {
+    constructor(data: any) {
+        super();
+        this._data = data;
+    }
+
+    _data: any;
 }
 
 function testMarshallUnmarshall(input: any) {
@@ -240,6 +252,8 @@ function testMarshallUnmarshall(input: any) {
     let payload = napa.transport.marshall(input, tc);
     let expected = napa.transport.unmarshall(payload, tc);
     assert.equal(input.toString(), expected.toString());
+    assert.equal(JSON.stringify(input), JSON.stringify(expected));
+    assert.equal(util.inspect(input), util.inspect(expected));
 }
 
 export function simpleTypeTransportTest() {
@@ -254,6 +268,10 @@ export function simpleTypeTransportTest() {
 
 export function jsTransportTest() {
     testMarshallUnmarshall(new CanPass(napa.memory.crtAllocator));
+}
+
+export function jsAutoTransportTest() {
+    testMarshallUnmarshall(new CanAutoPass({ a: 'foo', b: 'bar', c: 123 }));
 }
 
 export function functionTransportTest() {
