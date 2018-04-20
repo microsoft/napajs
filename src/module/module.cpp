@@ -4,8 +4,9 @@
 #include <napa/module/module-internal.h>
 #include <napa/v8-helpers.h>
 
-#include <utils/debug.h>
 #include <zone/worker-context.h>
+
+#include <napa/log.h>
 
 using namespace napa;
 

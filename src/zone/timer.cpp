@@ -74,30 +74,30 @@ bool TimersScheduler::StartMainLoop() {
                 return;
             }
 
-            const auto& topTimer = activeTimers.top();
-            if (topTimer.expirationTime <= std::chrono::high_resolution_clock::now()) {
-                if (timers[topTimer.index].active) {
+            auto nextExpirationTime = activeTimers.top().expirationTime;
+            if (nextExpirationTime <= std::chrono::high_resolution_clock::now()) {
+                // Pop before callback(), so that it could be re-armed for interval task logic.
+                auto expiredTimer = activeTimers.top();
+                activeTimers.pop();
+
+                if (timers[expiredTimer.index].active) {
+                    timers[expiredTimer.index].active = false;
+
                     try {
                         // Fire the callback.
                         // The callback is assumed to be very fast as it is meant to dispatch to appropriate
                         // callback queues.
-                        timers[topTimer.index].callback();
+                        timers[expiredTimer.index].callback();
                     }
                     catch (const std::exception &ex) {
                         LOG_ERROR("Timers", "Timer callback threw an exception. %s", ex.what());
                     }
-
-                    // We only support single trigger timers.
-                    timers[topTimer.index].active = false;
                 }
-
-                // Timer expired, so it's no longer active.
-                activeTimers.pop();
             }
             else {
-                // Wait for timer expiration.
-                cv.wait_until(lock, topTimer.expirationTime, [&topTimer]() {
-                    return topTimer.expirationTime <= std::chrono::high_resolution_clock::now();
+                // Wait for timer expiration. Stop waiting if new urgent active timer is arm-ed.
+                cv.wait_until(lock, nextExpirationTime, [this, nextExpirationTime]() {
+                    return activeTimers.top().expirationTime < nextExpirationTime;
                 });
             }
         }
