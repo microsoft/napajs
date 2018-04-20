@@ -21,6 +21,7 @@
 
 #include <sys/stat.h>
 
+#include <functional>
 #include <memory>
 #include <sstream>
 #include <string>
