@@ -46,7 +46,7 @@ bool JavascriptModuleLoader::TryGet(const std::string& path, v8::Local<v8::Value
         _moduleCache.Upsert(path, module_loader_helpers::ExportModule(moduleContext->Global(), nullptr));
     }
 
-    v8::TryCatch tryCatch;
+    v8::TryCatch tryCatch(isolate);
     {
         auto origin = v8::ScriptOrigin(v8_helpers::MakeV8String(isolate, path));
         auto script = v8::Script::Compile(source, &origin);

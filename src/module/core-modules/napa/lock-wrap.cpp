@@ -44,7 +44,7 @@ void LockWrap::GuardSyncCallback(const v8::FunctionCallbackInfo<v8::Value>& args
     auto holder = args.Holder();
     auto thisObject = NAPA_OBJECTWRAP::Unwrap<LockWrap>(args.Holder());
 
-    v8::TryCatch tryCatch;
+    v8::TryCatch tryCatch(isolate);
     try {
         auto mutex = thisObject->Get<std::mutex>();
         std::lock_guard<std::mutex> guard(*mutex);
