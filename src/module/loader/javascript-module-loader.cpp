@@ -45,8 +45,13 @@ bool JavascriptModuleLoader::TryGet(const std::string& path, v8::Local<v8::Value
     if (!fromContent) {
         _moduleCache.Upsert(path, module_loader_helpers::ExportModule(moduleContext->Global(), nullptr));
     }
+    
+    #if (V8_MAJOR_VERSION == 6 && V8_MINOR_VERSION >= 6 || V8_MAJOR_VERSION > 6)
+        v8::TryCatch tryCatch(isolate);
+    #else
+        v8::TryCatch tryCatch;
+    #endif
 
-    v8::TryCatch tryCatch;
     {
         auto origin = v8::ScriptOrigin(v8_helpers::MakeV8String(isolate, path));
         auto script = v8::Script::Compile(source, &origin);
