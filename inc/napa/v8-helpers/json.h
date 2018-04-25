@@ -27,15 +27,15 @@ namespace v8_helpers {
         }
 
         /// <summary> JSON.parse </summary>
-        #if (V8_MAJOR_VERSION == 6 && V8_MINOR_VERSION >= 6 || V8_MAJOR_VERSION > 6)
+#if (V8_MINOR_VERSION >= 6)
         inline v8::MaybeLocal<v8::Value> Parse(v8::Local<v8::Context> context, const v8::Local<v8::String>& jsonString) {
             return v8::JSON::Parse(context, jsonString);
         }
-        #else
+#else
         inline v8::MaybeLocal<v8::Value> Parse(const v8::Local<v8::String>& jsonString) {
             return v8::JSON::Parse(jsonString);
         }
-        #endif
+#endif
     }
 }
 }
