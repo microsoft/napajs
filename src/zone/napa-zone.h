@@ -10,7 +10,6 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 
 
 namespace napa {
@@ -24,10 +23,16 @@ namespace zone {
         static std::shared_ptr<NapaZone> Create(const settings::ZoneSettings& settings);
 
         /// <summary> Retrieves an existing zone by id. </summary>
-        static std::shared_ptr<NapaZone> Get(const std::string& id);
+        static std::shared_ptr<Zone> Get(const std::string& id);
+
+        /// <summary> Retrieves the current zone. </summary>
+        static std::shared_ptr<Zone> GetCurrent();
 
         /// <see cref="Zone::GetId" />
         virtual const std::string& GetId() const override;
+
+        /// <see cref="Zone::GetState" />
+        virtual State GetState() const override;
 
         /// <see cref="Zone::Broadcast" />
         virtual void Broadcast(const FunctionSpec& spec, BroadcastCallback callback) override;
@@ -35,21 +40,17 @@ namespace zone {
         /// <see cref="Zone::Execute" />
         virtual void Execute(const FunctionSpec& spec, ExecuteCallback callback) override;
 
-        /// <summary> Retrieves the zone settings. </summary>
-        const settings::ZoneSettings& GetSettings() const;
-
-        /// <summary> Retrieves the zone scheduler. </summary>
-        /// <remark> Asynchronous works keep the reference on scheduler, so they can finish up safely. </remarks>
-        std::shared_ptr<zone::Scheduler> GetScheduler();
+        /// <see cref="Zone::Recycle" />
+        virtual void Recycle() override;
 
     private:
         explicit NapaZone(const settings::ZoneSettings& settings);
+        ~NapaZone();
 
-        settings::ZoneSettings _settings;
-        std::shared_ptr<zone::Scheduler> _scheduler;
+        class Impl;
+        std::shared_ptr<Impl> _impl;
 
-        static std::mutex _mutex;
-        static std::unordered_map<std::string, std::weak_ptr<NapaZone>> _zones;
+        std::atomic<bool> _recycling;
     };
 }
 }

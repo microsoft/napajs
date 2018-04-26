@@ -8,9 +8,9 @@ using namespace napa::zone;
 SimpleThreadPool::Worker::Worker(SimpleThreadPool& pool) : _pool(pool) {}
 
 void SimpleThreadPool::Worker::operator()() {
-    std::function<void()> task;
-
     while (true) {
+        std::function<void()> task;
+
         {
             std::unique_lock<std::mutex> lock(_pool._queueLock);
             if (!_pool._isStopped) {

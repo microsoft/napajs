@@ -36,7 +36,7 @@ NodeZone::NodeZone(BroadcastDelegate broadcast, ExecuteDelegate execute):
     INIT_WORKER_CONTEXT();
 
     // Zone instance into TLS.
-    WorkerContext::Set(WorkerContextItem::ZONE, reinterpret_cast<void*>(this));
+    WorkerContext::Set(WorkerContextItem::ZONE_ID, const_cast<void*>(reinterpret_cast<const void*>(&this->GetId())));
 
     // Worker Id into TLS.
     WorkerContext::Set(WorkerContextItem::WORKER_ID, reinterpret_cast<void*>(static_cast<uintptr_t>(0)));

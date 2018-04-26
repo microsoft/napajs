@@ -37,6 +37,7 @@ void ZoneWrap::Init() {
     NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "broadcastSync", BroadcastSync);
     NODE_SET_PROTOTYPE_METHOD(functionTemplate, "execute", Execute);
     NODE_SET_PROTOTYPE_METHOD(functionTemplate, "executeSync", ExecuteSync);
+    NODE_SET_PROTOTYPE_METHOD(functionTemplate, "recycle", Recycle);
 
     // Set persistent constructor into V8.
     NAPA_SET_PERSISTENT_CONSTRUCTOR(exportName, functionTemplate->GetFunction());
@@ -267,4 +268,12 @@ static void CreateRequestAndExecute(v8::Local<v8::Object> obj, Func&& func) {
 
     // Execute
     func(spec);
+}
+
+void ZoneWrap::Recycle(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    auto isolate = v8::Isolate::GetCurrent();
+
+    auto wrap = ObjectWrap::Unwrap<ZoneWrap>(args.Holder());
+
+    wrap->_zoneProxy->Recycle();
 }

@@ -32,9 +32,11 @@ namespace zone {
         /// <summary> Constructor. </summary>
         /// <param name="settings"> A settings object. </param>
         /// <param name="workerSetupCallback"> Callback to setup the isolate after worker created its isolate. </param>
+        /// <param name="exitCallback"> Callback to all workers exit. </param>
         SchedulerImpl(
             const settings::ZoneSettings& settings,
-            std::function<void(WorkerId, uv_loop_t*)> workerSetupCallback);
+            std::function<void(WorkerId, uv_loop_t*)> workerSetupCallback,
+            std::function<void()> zoneExitCallback);
 
         /// <summary> Destructor. Waits for all tasks to finish. </summary>
         ~SchedulerImpl();
@@ -85,34 +87,50 @@ namespace zone {
         /// <summary> Flags to indicate that a worker is in the idle list. </summary>
         std::vector<std::list<WorkerId>::iterator> _idleWorkersFlags;
 
-        /// <summary> Uses a single thread to synchronize task queuing and posting. </summary>
-        std::unique_ptr<SimpleThreadPool> _synchronizer;
-
-        /// <summary> A flag to signal that scheduler is stopping. </summary>
-        std::atomic<bool> _shouldStop;
-
         /// <summary> Tasks being scheduled but not yet dispatched to worker or put into (per-worker) non-scheduled queue by syncronizer. </summary>
         std::atomic<size_t> _beingScheduled;
+
+        /// <summary> Uses a single thread to synchronize task queuing and posting. </summary>
+        static std::unique_ptr<SimpleThreadPool> _synchronizer;
+        static std::once_flag _synchronizerCreateOnceFlag;
     };
+
+    template <typename WorkerType> std::unique_ptr<SimpleThreadPool> SchedulerImpl<WorkerType>::_synchronizer;
+    template <typename WorkerType> std::once_flag SchedulerImpl<WorkerType>::_synchronizerCreateOnceFlag;
 
     typedef SchedulerImpl<Worker> Scheduler;
 
     template <typename WorkerType>
     SchedulerImpl<WorkerType>::SchedulerImpl(
         const settings::ZoneSettings& settings,
-        std::function<void(WorkerId, uv_loop_t*)> workerSetupCallback) :
+        std::function<void(WorkerId, uv_loop_t*)> workerSetupCallback,
+        std::function<void()> zoneExitCallback) :
         _idleWorkersFlags(settings.workers, _idleWorkers.end()),
         _perWorkerNonScheduledTasks(settings.workers),
         _currentTaskSequence(0),
-        _synchronizer(std::make_unique<SimpleThreadPool>(1)),
-        _shouldStop(false),
         _beingScheduled(0) {
 
+        // Create the synchronizer if it's not ready.
+        std::call_once(_synchronizerCreateOnceFlag, [](){ _synchronizer = std::make_unique<SimpleThreadPool>(1); });
+
+        auto activeWorkers = std::make_shared<std::atomic<uint32_t>>(settings.workers);
+        auto workerExitCallback = [exitCallback = std::move(zoneExitCallback), activeWorkers]() {
+            if (--(*activeWorkers) == 0) {
+                // use synchronizer to destruct scheduler and workers
+                _synchronizer->Execute([](std::function<void()> exitCallback) {
+                    exitCallback();
+                }, std::move(exitCallback));
+            }
+        };
         _workers.reserve(settings.workers);
 
         for (WorkerId i = 0; i < settings.workers; i++) {
             _workers.emplace_back(i, settings, workerSetupCallback, [this](WorkerId workerId) {
+                // idle callback
                 IdleWorkerNotificationCallback(workerId);
+            }, [workerExitCallback](WorkerId workerId) {
+                // exit callback
+                workerExitCallback();
             });
             _workers[i].Start();
         }
@@ -122,22 +140,14 @@ namespace zone {
     SchedulerImpl<WorkerType>::~SchedulerImpl() {
         NAPA_DEBUG("Scheduler", "Shutting down: Start draining unscheduled tasks...");
 
-        // Wait for all tasks to be scheduled.
-        while (_beingScheduled > 0
-               || !_nonScheduledTasks.empty()
-               || std::find_if_not(_perWorkerNonScheduledTasks.begin(),
-                                   _perWorkerNonScheduledTasks.end(),
-                                   [](auto& pq) { return pq.empty(); }
-                                  ) != _perWorkerNonScheduledTasks.end()
-              ) {
-            std::this_thread::yield();
-        }
-
-        // Signal scheduler callbacks to not process anymore tasks.
-        _shouldStop = true;
-
-        // Wait for synchronizer to finish his book-keeping.
-        _synchronizer = nullptr;
+        // We assume Scheduler should not be destructed when there are non scheduled tasks.
+        NAPA_ASSERT(_beingScheduled == 0
+                    && _nonScheduledTasks.empty()
+                    && std::find_if_not(_perWorkerNonScheduledTasks.begin(),
+                                        _perWorkerNonScheduledTasks.end(),
+                                        [](auto& pq) { return pq.empty(); }
+                                        ) == _perWorkerNonScheduledTasks.end(),
+                        "Scheduler is destructed with non scheduled tasks");
 
         // Wait for all workers to finish processing remaining tasks.
         _workers.clear();
@@ -224,10 +234,6 @@ namespace zone {
     template <typename WorkerType>
     void SchedulerImpl<WorkerType>::IdleWorkerNotificationCallback(WorkerId workerId) {
         NAPA_ASSERT(workerId < _workers.size(), "worker id (id=%u) out of range", workerId);
-
-        if (_shouldStop) {
-            return;
-        }
 
         _synchronizer->Execute([this, workerId]() {
             // Pick the earliest task and schedule it on the worker when there are non-scedule tasks for the worker.

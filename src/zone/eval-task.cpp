@@ -57,7 +57,7 @@ void EvalTask::Execute() {
             std::string reason = ss.str();
             NAPA_DEBUG("EvalTask", reason.c_str());
 
-            _callback({ NAPA_RESULT_BROADCAST_SCRIPT_ERROR, reason.c_str(), "", nullptr });
+            _callback({ NAPA_RESULT_ZONE_BROADCAST_ERROR, reason.c_str(), "", nullptr });
             return;
         }
     }
@@ -80,7 +80,7 @@ void EvalTask::Execute() {
             std::string reason = ss.str();
             NAPA_DEBUG("EvalTask", reason.c_str());
 
-            _callback({ NAPA_RESULT_BROADCAST_SCRIPT_ERROR, reason.c_str(), "", nullptr });
+            _callback({ NAPA_RESULT_ZONE_BROADCAST_ERROR, reason.c_str(), "", nullptr });
             return;
         }
     }

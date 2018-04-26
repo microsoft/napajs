@@ -14,7 +14,7 @@ target_include_directories(${TARGET_NAME}
     ${PROJECT_SOURCE_DIR}/inc)
 
 # Compiler definitions
-target_compile_definitions(${TARGET_NAME} PRIVATE NAPA_EXPORTS NAPA_BINDING_EXPORTS BUILDING_NODE_EXTENSION)
+target_compile_definitions(${TARGET_NAME} PRIVATE NAPA_EXPORTS NAPA_BINDING_EXPORTS BUILDING_NODE_EXTENSION NOMINMAX)
 
 if(CMAKE_JS_VERSION)
     # Building Napa as an npm package for node usage (using exported v8 from node.exe)

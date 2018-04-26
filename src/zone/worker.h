@@ -31,7 +31,8 @@ namespace zone {
         Worker(WorkerId id,
                const settings::ZoneSettings &settings,
                std::function<void(WorkerId, uv_loop_t*)> setupCallback,
-               std::function<void(WorkerId)> idleNotificationCallback);
+               std::function<void(WorkerId)> idleNotificationCallback,
+               std::function<void(WorkerId)> exitCallback);
 
         /// <summary> Destructor. </summary>
         /// <note> This will block until all pending tasks are completed. </note>
@@ -55,15 +56,10 @@ namespace zone {
 
         WorkerId GetWorkerId() const;
 
-        void OnTaskFinish();
-
     private:
 
         /// <summary> The worker thread logic. </summary>
         void WorkerThreadFunc(const settings::ZoneSettings& settings);
-
-        /// <summary> Enqueue a task. </summary>
-        void Enqueue(std::shared_ptr<Task> task);
 
         struct Impl;
         std::unique_ptr<Impl> _impl;

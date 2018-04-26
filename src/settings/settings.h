@@ -23,11 +23,20 @@ namespace settings {
     /// <summary> Zone specific settings. </summary>
     struct ZoneSettings {
 
+        /// <summary> Recycle mode determines a Zone's behavior when it is collected by GC. </summary>
+        enum class RecycleMode {
+            Auto,
+            Manual
+        };
+
         /// <summary> The zone id. </summary>
         std::string id;
 
         /// <summary> The number of zone workers. </summary>
         uint32_t workers = 2;
+
+        /// <summary> Set default recycle mode to AUTO. </summary>
+        RecycleMode recycle = RecycleMode::Auto;
 
         /// <summary> Isolate memory constraint - The maximum old space size in megabytes. </summary>
         uint32_t maxOldSpaceSize = 0u;

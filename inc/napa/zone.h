@@ -90,7 +90,7 @@ namespace napa {
         /// <param name="spec"> A function spec to call. </param>
         Result BroadcastSync(const FunctionSpec& spec) {
             if (GetCurrent()->GetId() == GetId()) {
-                return {NAPA_RESULT_BROADCAST_SCRIPT_ERROR, "Cannot call `broadcastSync` on current zone.", "", nullptr};
+                return {NAPA_RESULT_ZONE_BROADCAST_ERROR, "Cannot call `broadcastSync` on current zone.", "", nullptr};
             }
 
             std::promise<Result> prom;
@@ -148,6 +148,11 @@ namespace napa {
             });
 
             return fut.get();
+        }
+
+        /// <summary> Recycle the zone </summary>
+        void Recycle() {
+            napa_zone_recycle(_handle);
         }
 
         /// <summary> Retrieves a new zone proxy for the zone id, throws if zone is not found. </summary>

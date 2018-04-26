@@ -100,6 +100,10 @@ export class ZoneImpl implements zone.Zone {
         });
     }
 
+    public recycle(): void {
+        this._nativeZone.recycle();
+    }
+
     private createBroadcastRequest(arg1: any, arg2?: any) : FunctionSpec {
         if (typeof arg1 === "function") {
             // broadcast with function

@@ -12,6 +12,13 @@
 using namespace napa;
 using namespace napa::settings;
 
+namespace {
+    std::unordered_map<std::string, ZoneSettings::RecycleMode> zoneRecycleModeMapping{
+        {"auto", ZoneSettings::RecycleMode::Auto},
+        {"manual", ZoneSettings::RecycleMode::Manual}
+    };
+}
+
 
 bool settings::Parse(const std::vector<std::string>& args, PlatformSettings& settings) {
     args::ArgumentParser parser("platform settings parser");
@@ -46,6 +53,8 @@ bool settings::Parse(const std::vector<std::string>& args, ZoneSettings& setting
     args::ValueFlag<uint32_t> maxSemiSpaceSize(parser, "maxSemiSpaceSize", "max semi space size in MB", { "maxSemiSpaceSize" });
     args::ValueFlag<uint32_t> maxExecutableSize(parser, "maxExecutableSize", "max executable size in MB", { "maxExecutableSize" });
     args::ValueFlag<uint32_t> maxStackSize(parser, "maxStackSize", "max isolate stack size in bytes", { "maxStackSize" });
+    args::MapFlag<std::string, ZoneSettings::RecycleMode> recycleMode(
+        parser, "recycleMode", "zone recycle mode", {"recycle"}, zoneRecycleModeMapping);
 
     try {
         parser.ParseArgs(args);
@@ -58,6 +67,10 @@ bool settings::Parse(const std::vector<std::string>& args, ZoneSettings& setting
     if (workers) {
         NAPA_ASSERT(workers.Get() > 0, "The number of workers must be greater than 0");
         settings.workers = workers.Get();
+    }
+
+    if (recycleMode) {
+        settings.recycle = recycleMode.Get();
     }
 
     if (maxOldSpaceSize) {

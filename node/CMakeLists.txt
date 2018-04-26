@@ -49,7 +49,8 @@ target_include_directories(${TARGET_NAME} PRIVATE
 target_compile_definitions(${TARGET_NAME} PRIVATE USING_V8_SHARED)
 
 # Compiler definitions
-target_compile_definitions(${TARGET_NAME} PRIVATE BUILDING_NODE_EXTENSION NAPA_EXPORTS NAPA_BINDING_EXPORTS)
+target_compile_definitions(${TARGET_NAME}
+    PRIVATE BUILDING_NODE_EXTENSION NAPA_EXPORTS NAPA_BINDING_EXPORTS NOMINMAX $<$<CONFIG:Debug>:NAPA_DEBUG_ENABLED>)
 
 # Link libraries
 target_link_libraries(${TARGET_NAME} PRIVATE "v8-extensions")

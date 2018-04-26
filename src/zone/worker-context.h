@@ -27,6 +27,9 @@ namespace zone {
         /// <summary> Zone instance. </summary>
         ZONE,
 
+        /// <summary> Zone Id. </summary>
+        ZONE_ID,
+
         /// <summary> Worker Id. </summary>
         WORKER_ID,
 

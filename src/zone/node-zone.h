@@ -37,11 +37,17 @@ namespace zone {
         /// <see cref="Zone::GetId" />
         virtual const std::string& GetId() const override;
 
+        /// <see cref="Zone::GetState" />
+        virtual State GetState() const override { return State::Running; }
+
         /// <see cref="Zone::Broadcast" />
         virtual void Broadcast(const FunctionSpec& spec, BroadcastCallback callback) override;
 
         /// <see cref="Zone::Execute" />
         virtual void Execute(const FunctionSpec& spec, ExecuteCallback callback) override;
+
+        /// <see cref="Zone::Recycle" />
+        virtual void Recycle() override {}
 
     private:
         /// <summary> Constructor. </summary>

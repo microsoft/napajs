@@ -3,18 +3,40 @@
 
 import * as transport from "../transport";
 
+/// <summary> Represent option when the zone is recycled by GC. </summary>
+export enum ZoneRecycleMode {
+
+    /// <summary>
+    /// When a Zone is no longer referenced and all tasks on its workers are completed,
+    /// it will be recycled automatically.
+    /// </summary>
+    AUTO = "auto",
+
+    /// <summary>
+    /// The zone will not exit automatically.
+    /// User should call zone.recycle() manually.
+    /// </summary>
+    MANUAL = "manual",
+}
+
 /// <summary> Describes the available settings for customizing a zone. </summary>
 export interface ZoneSettings {
 
     /// <summary> The number of workers that will serve zone requests. </summary>
     workers?: number;
+
+    /// <summary> The zone recycling option. </summary>
+    recycle?: ZoneRecycleMode;
 }
 
 /// <summary> Default ZoneSettings </summary>
 export let DEFAULT_SETTINGS: ZoneSettings = {
 
     /// <summary> Set default workers to 2. </summary>
-    workers: 2
+    workers: 2,
+
+    /// <summary> Set default recycling option to AUTO. </summary>
+    recycle: ZoneRecycleMode.AUTO
 };
 
 /// <summary> Represent option to transport arguments in zone.execute. </summary>
@@ -24,10 +46,10 @@ export enum TransportOption {
     /// This is the most common way, but may not be performance optimal with objects
     /// that will be shared in multiple zone.execute.
     /// </summary>
-    AUTO,
+    AUTO = "auto",
 
     /// <summary> transport.marshall/unmarshall will be done by user manually. </summary>
-    MANUAL,
+    MANUAL = "manual",
 }
 
 /// <summary> Represent the options of calling a function. </summary>
@@ -138,5 +160,12 @@ export interface Zone {
     /// <param name="options"> Call options, defaults to DEFAULT_CALL_OPTIONS. </param>
     /// <returns> A promise of result which is resolved when execute completes, and rejected when failed. </returns>
     execute(func: (...args: any[]) => any, args?: any[], options?: CallOptions) : Promise<Result>;
+
+    /// <summary> Recycle the zone so it will no longer be able to schedule new tasks. </summary>
+    /// <remarks>
+    ///     After calling this function, the zone will continue to execute all scheduled tasks. When all tasks
+    ///     completed, all its workers will exit and terminate their threads.
+    /// </remarks>
+    recycle() : void;
 }
 

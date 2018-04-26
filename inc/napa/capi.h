@@ -31,8 +31,12 @@ EXTERN_C NAPA_API napa_zone_handle napa_zone_get(napa_string_ref id);
 /// </remarks>
 EXTERN_C NAPA_API napa_zone_handle napa_zone_get_current();
 
-/// <summary> Releases the zone handle. When all handles for a zone are released the zone is destroyed. </summary>
+/// <summary> Releases the zone handle. When all handles for a zone are released the zone is recycled. </summary>
 /// <param name="handle"> The zone handle. </param>
+/// <remarks>
+///     Depending on the Zone's recycle mode (specified when initialized), release behavior may vary. See
+///     also remarks of napa_zone_recycle() for more information.
+/// </remarks>
 EXTERN_C NAPA_API napa_result_code napa_zone_release(napa_zone_handle handle);
 
 /// <summary>
@@ -71,6 +75,22 @@ EXTERN_C NAPA_API void napa_zone_execute(
     napa_zone_function_spec spec,
     napa_zone_execute_callback callback,
     void* context);
+
+/// <summary>
+///     Signal the zone to get ready for recycling. 
+/// </summary>
+/// <param name="handle"> The zone handle. </param>
+/// <remarks>
+///     After calling this function, the zone will no longer process future requests from
+///     broadcast() or execute() calls. The current processing and queued tasks will be processed.
+///     After all tasks completed, the zone will exit.
+///
+///     Zones are created with option "--recycle auto" by default. This means when a zone is being
+///     released, a call of napa_zone_recycle() to the zone will be performed automatically.
+///     A user can create a persistent zone with option "--recycle manual". It will not be recycled until
+///     user calls napa_zone_recycle() manually.
+/// </remarks>
+EXTERN_C NAPA_API void napa_zone_recycle(napa_zone_handle handle);
 
 /// <summary>
 ///     Global napa initialization. Invokes initialization steps that are cross zones.

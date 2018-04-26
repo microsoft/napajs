@@ -61,7 +61,7 @@ void CallContextWrap::RejectCallback(const v8::FunctionCallbackInfo<v8::Value>& 
 
     CHECK_ARG(isolate, args.Length() == 1 || args.Length() == 2, "at least 1 argument of 'reason' is required for \"reject\".");
 
-    napa::ResultCode code = NAPA_RESULT_EXECUTE_FUNC_ERROR;
+    napa::ResultCode code = NAPA_RESULT_ZONE_EXECUTE_ERROR;
     v8::Local<v8::Value> reason;
 
     if (args.Length() == 1) {

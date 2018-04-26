@@ -59,13 +59,24 @@ napa_zone_handle napa_zone_get(napa_string_ref id) {
 napa_zone_handle napa_zone_get_current() {
     NAPA_ASSERT(_initialized, "Napa platform wasn't initialized");
 
-    auto zone = reinterpret_cast<zone::Zone*>(zone::WorkerContext::Get(zone::WorkerContextItem::ZONE));
-    if (zone == nullptr) {
-        LOG_WARNING("Api", "Trying to get current zone from a thread that is not associated with a zone");
+    auto zoneIdPtr = reinterpret_cast<const std::string*>(zone::WorkerContext::Get(zone::WorkerContextItem::ZONE_ID));
+    if (zoneIdPtr == nullptr) {
+        LOG_WARNING("Api", "Trying to get current zone id from a thread that is not associated with a zone");
         return nullptr;
     }
 
-    return napa_zone_get(STD_STRING_TO_NAPA_STRING_REF(zone->GetId()));
+    auto zoneId = *zoneIdPtr;
+
+    std::shared_ptr<zone::Zone> zone;
+    if (zoneId == "node") {
+        zone = zone::NodeZone::Get();
+    } else {
+        zone = zone::NapaZone::GetCurrent();
+    }
+
+    NAPA_ASSERT(zone != nullptr, "Current zone should never be null in a worker thread.");
+
+    return new napa_zone { std::move(zoneId), std::move(zone) };
 }
 
 napa_result_code napa_zone_init(napa_zone_handle handle, napa_string_ref settings) {
@@ -178,6 +189,14 @@ void napa_zone_execute(napa_zone_handle handle,
 
         callback(res, context);
     });
+}
+
+void napa_zone_recycle(napa_zone_handle handle) {
+    NAPA_ASSERT(_initialized, "Napa platform wasn't initialized");
+    NAPA_ASSERT(handle, "Zone handle is null");
+    NAPA_ASSERT(handle->zone, "Zone handle wasn't initialized");
+
+    handle->zone->Recycle();
 }
 
 static napa_result_code napa_initialize_common() {

@@ -61,13 +61,15 @@ struct Worker::Impl {
     // std::mutex queueLock;
 
     /// <summary> V8 isolate associated with this worker. </summary>
-    v8::Isolate* isolate;
+    // v8::Isolate* isolate;
 
     /// <summary> A callback function to setup the isolate after worker created its isolate. </summary>
     std::function<void(WorkerId, uv_loop_t*)> setupCallback;
 
     /// <summary> A callback function that is called when worker becomes idle. </summary>
     std::function<void(WorkerId)> idleNotificationCallback;
+
+    std::function<void(WorkerId)> exitCallback;
 
     /// <summary> The zone settings for the current worker. </summary>
     settings::ZoneSettings settings;
@@ -76,7 +78,8 @@ struct Worker::Impl {
 Worker::Worker(WorkerId id,
                const settings::ZoneSettings& settings,
                std::function<void(WorkerId, uv_loop_t*)> setupCallback,
-               std::function<void(WorkerId)> idleNotificationCallback)
+               std::function<void(WorkerId)> idleNotificationCallback,
+               std::function<void(WorkerId)> exitCallback)
     : _impl(std::make_unique<Worker::Impl>()) {
     NAPA_ASSERT(uv_loop_init(&_impl->loop) == 0, "Worker (id=%u) failed to initialize its loop.", id);
 
@@ -84,6 +87,7 @@ Worker::Worker(WorkerId id,
     _impl->id = id;
     _impl->setupCallback = std::move(setupCallback);
     _impl->idleNotificationCallback = std::move(idleNotificationCallback);
+    _impl->exitCallback = std::move(exitCallback);
     _impl->settings = settings;
 }
 
@@ -97,9 +101,9 @@ Worker::~Worker() {
     uv_thread_join(&_impl->tId);
     uv_loop_close(&_impl->loop);
 
-    if (_impl->isolate != nullptr) {
-        _impl->isolate->Dispose();
-    }
+    //if (_impl->isolate != nullptr) {
+    //    _impl->isolate->Dispose();
+    //}
     NAPA_DEBUG("Worker", "(id=%u) Shutdown complete.", _impl->id);
 }
 
@@ -110,6 +114,9 @@ void Worker::Start() {
     int result = uv_thread_create(&_impl->tId, [](void* arg){
         Worker* worker = static_cast<Worker*>(arg);
         worker->WorkerThreadFunc(worker->_impl->settings);
+
+        auto exitCallback = std::move(worker->_impl->exitCallback);
+        exitCallback(worker->_impl->id);
     }, static_cast<void*>(this));
     NAPA_ASSERT(result == 0, "Worker (id=%u) failed to start.", _impl->id);
 }
@@ -118,53 +125,45 @@ WorkerId Worker::GetWorkerId() const {
     return _impl->id;
 }
 
-void Worker::OnTaskFinish() {
-    NAPA_DEBUG("Worker", "Worker (id=%u) finished one task.", _impl->id);
-    _impl->numberOfTasksRunning--;
-    if (_impl->numberOfTasksRunning == 0) {
-        NAPA_DEBUG("Worker", "Worker (id=%u) has no running task, calling idle callback...", _impl->id);
-        _impl->idleNotificationCallback(_impl->id);
-    }
-    else if (_impl->numberOfTasksRunning < 0) {
-        throw std::runtime_error("numberOfTaskRunning must not be less than zero!");
-    }
-}
-
 class WorkerTask : public v8::Task {
 public:
-    WorkerTask(std::shared_ptr<napa::zone::Task> napaTask, napa::zone::Worker& napaWorker);
-    virtual void Run() override;
+    WorkerTask(std::shared_ptr<napa::zone::Task> napaTask, std::function<void ()> onTaskFinish) :
+        _napaTask(napaTask),
+        _onTaskFinish(onTaskFinish) {}
+
+    virtual void Run() override {
+        try {
+            _napaTask->Execute();
+        }
+        catch(...) {
+            _onTaskFinish();
+            throw;  
+        }
+        _onTaskFinish();
+    }
+
 private:
     std::shared_ptr<napa::zone::Task> _napaTask;
-    napa::zone::Worker& _napaWorker;
+    std::function<void ()> _onTaskFinish;
 };
-
-WorkerTask::WorkerTask(std::shared_ptr<napa::zone::Task> napaTask, napa::zone::Worker& napaWorker) :
-    _napaTask(napaTask),
-    _napaWorker(napaWorker) {
-}
-
-void WorkerTask::Run() {
-    try {
-        _napaTask->Execute();
-    }
-    catch(...) {
-        _napaWorker.OnTaskFinish();
-        throw;  
-    }
-    _napaWorker.OnTaskFinish();
-}
 
 void Worker::Schedule(std::shared_ptr<Task> task) {
     NAPA_ASSERT(task != nullptr, "Task should not be null");
     NAPA_ASSERT(_impl->foregroundTaskRunner != nullptr, "ForegroundTaskRunner should not be null");
     _impl->numberOfTasksRunning++;
-    auto workerTask = std::make_unique<WorkerTask>(std::move(task), *this);
+    auto workerTask = std::make_unique<WorkerTask>(std::move(task), std::move([this](){
+        NAPA_DEBUG("Worker", "Worker (id=%u) finished one task.", _impl->id);
+        _impl->numberOfTasksRunning--;
+        if (_impl->numberOfTasksRunning == 0) {
+            NAPA_DEBUG("Worker", "Worker (id=%u) has no running task, calling idle callback...", _impl->id);
+            _impl->idleNotificationCallback(_impl->id);
+        }
+        else if (_impl->numberOfTasksRunning < 0) {
+            throw std::runtime_error("numberOfTaskRunning must not be less than zero!");
+        }
+    }));
     _impl->foregroundTaskRunner->PostTask(std::move(workerTask));
     NAPA_DEBUG("Worker", "(id=%u) Task queued.", _impl->id);
-}
-
-void Worker::Enqueue(std::shared_ptr<Task> task) {
 }
 
 void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
