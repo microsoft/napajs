@@ -20,18 +20,13 @@ if (NOT WIN32 AND NOT APPLE)
     set(CMAKE_CXX_VISIBILITY_PRESET hidden)
     set(CMAKE_VISIBILITY_INLINES_HIDDEN)
 
-    # Prevent symbol relocations internal to our wrapper library to be
-    # overwritten by the application.  And fail if there are missing
-    # symbols.
+    # Prevent symbol relocations internal to our wrapper library to be overwritten by the application.
     set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic -Wl,-Bsymbolic-functions")
     set (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -Wl,-Bsymbolic -Wl,-Bsymbolic-functions")
 
-    # Fail if there are missing symbols, except when using Address Sanitizer
-    # since libasan symbols are supposed to be preloaded.
-    if (NOT ENABLE_ASAN)
-        set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,defs")
-        set (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -Wl,-z,defs")
-    endif ()
+    # Mark object non-lazy runtime binding.
+    set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,now")
+    set (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -Wl,-z,now")
 endif ()
 
 # Build napa shared library.
