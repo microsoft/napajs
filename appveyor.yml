@@ -9,6 +9,9 @@ environment:
     # Windows Server 2016          Visual C++ Build Tools 2017
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       nodejs_version: 9
+    # Windows Server 2016          Visual C++ Build Tools 2017
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      nodejs_version: 10
 
 platform:
 - x64
