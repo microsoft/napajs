@@ -3,7 +3,6 @@
 
 #include "napa-zone.h"
 
-#include <module/loader/module-loader.h>
 #include <platform/dll.h>
 #include <platform/filesystem.h>
 #include <utils/string.h>

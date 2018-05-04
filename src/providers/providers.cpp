@@ -7,7 +7,7 @@
 #include "nop-logging-provider.h"
 #include "nop-metric-provider.h"
 
-#include <module/loader/module-resolver.h>
+#include <memory>
 #include <platform/dll.h>
 #include <platform/filesystem.h>
 
