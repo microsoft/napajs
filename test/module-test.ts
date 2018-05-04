@@ -179,7 +179,7 @@ describe('napajs/module', function () {
                     var fs = require('fs');
 
                     assert(fs.existsSync(__dirname + '/module/jsmodule.js'));
-                    assert.ifError(fs.existsSync(__dirname + '/non-existing-file.txt'));
+                    assert(!fs.existsSync(__dirname + '/non-existing-file.txt'));
                 });
             });
 
