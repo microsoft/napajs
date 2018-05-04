@@ -5,22 +5,14 @@
 
 #include <napa/log.h>
 
-#include <v8.h>
 #include <platform/dll.h>
 #include <platform/filesystem.h>
 #include <utils/string.h>
 #include <node.h>
+#include <v8.h>
 
-#include <condition_variable>
-#include <cstdlib>
-#include <mutex>
-#include <queue>
 #include <atomic>
-
-#include <v8-extensions/v8-extensions-macros.h>
-#if !(V8_VERSION_CHECK_FOR_ARRAY_BUFFER_ALLOCATOR)
-    #include <v8-extensions/array-buffer-allocator.h>
-#endif
+#include <mutex>
 
 using namespace napa;
 using namespace napa::zone;
@@ -62,6 +54,30 @@ struct Worker::Impl {
     settings::ZoneSettings settings;
 };
 
+
+class WorkerTask : public v8::Task {
+public:
+    WorkerTask(std::shared_ptr<napa::zone::Task> napaTask, std::function<void ()> onTaskFinish) :
+        _napaTask(napaTask),
+        _onTaskFinish(onTaskFinish) {}
+
+    virtual void Run() override {
+        try {
+            _napaTask->Execute();
+        }
+        catch(...) {
+            _onTaskFinish();
+            throw;
+        }
+        _onTaskFinish();
+    }
+
+private:
+    std::shared_ptr<napa::zone::Task> _napaTask;
+    std::function<void ()> _onTaskFinish;
+};
+
+
 Worker::Worker(WorkerId id,
                const settings::ZoneSettings& settings,
                std::function<void(WorkerId, uv_loop_t*)> setupCallback,
@@ -80,17 +96,12 @@ Worker::Worker(WorkerId id,
 
 Worker::~Worker() {
     // TODO::Stop gracefully.
-    // Signal the thread loop that it should stop processing tasks.
-    // Enqueue(nullptr);
-    NAPA_DEBUG("Worker", "(id=%u) Shutting down: Start draining task queue.", _impl->id);
+    NAPA_DEBUG("Worker", "(id=%u) is Shutting down.", _impl->id);
 
     uv_stop(&_impl->loop);
     uv_thread_join(&_impl->tId);
     uv_loop_close(&_impl->loop);
 
-    //if (_impl->isolate != nullptr) {
-    //    _impl->isolate->Dispose();
-    //}
     NAPA_DEBUG("Worker", "(id=%u) Shutdown complete.", _impl->id);
 }
 
@@ -101,9 +112,6 @@ void Worker::Start() {
     int result = uv_thread_create(&_impl->tId, [](void* arg){
         Worker* worker = static_cast<Worker*>(arg);
         worker->WorkerThreadFunc(worker->_impl->settings);
-
-        auto exitCallback = std::move(worker->_impl->exitCallback);
-        exitCallback(worker->_impl->id);
     }, static_cast<void*>(this));
     NAPA_ASSERT(result == 0, "Worker (id=%u) failed to start.", _impl->id);
 }
@@ -111,28 +119,6 @@ void Worker::Start() {
 WorkerId Worker::GetWorkerId() const {
     return _impl->id;
 }
-
-class WorkerTask : public v8::Task {
-public:
-    WorkerTask(std::shared_ptr<napa::zone::Task> napaTask, std::function<void ()> onTaskFinish) :
-        _napaTask(napaTask),
-        _onTaskFinish(onTaskFinish) {}
-
-    virtual void Run() override {
-        try {
-            _napaTask->Execute();
-        }
-        catch(...) {
-            _onTaskFinish();
-            throw;  
-        }
-        _onTaskFinish();
-    }
-
-private:
-    std::shared_ptr<napa::zone::Task> _napaTask;
-    std::function<void ()> _onTaskFinish;
-};
 
 void Worker::Schedule(std::shared_ptr<Task> task) {
     NAPA_ASSERT(task != nullptr, "Task should not be null");
@@ -231,4 +217,5 @@ void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
     }
 
     isolate->Dispose();
+    _impl->exitCallback(_impl->id);
 }

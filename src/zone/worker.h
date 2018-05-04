@@ -10,7 +10,6 @@
 #include <memory>
 
 #include <uv.h>
-#include <v8-platform.h>
 
 
 namespace napa {
