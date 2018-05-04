@@ -5,7 +5,6 @@
 
 #include <providers/providers.h>
 #include <settings/settings-parser.h>
-#include <v8-extensions/v8-common.h>
 #include <zone/napa-zone.h>
 #include <zone/node-zone.h>
 #include <zone/worker-context.h>
@@ -204,10 +203,6 @@ static napa_result_code napa_initialize_common() {
         return NAPA_RESULT_PROVIDERS_INIT_ERROR;
     }
 
-    if (!napa::v8_common::Initialize()) {
-        return NAPA_RESULT_V8_INIT_ERROR;
-    }
-
     _initialized = true;
 
     NAPA_DEBUG("Api", "Napa platform initialized successfully");
@@ -239,7 +234,6 @@ napa_result_code napa_shutdown() {
     NAPA_ASSERT(_initialized, "Napa platform wasn't initialized");
 
     napa::providers::Shutdown();
-    napa::v8_common::Shutdown();
 
     LOG_INFO("Api", "Napa platform shutdown successfully");
 
