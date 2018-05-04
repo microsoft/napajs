@@ -102,7 +102,6 @@
 #else
 #define NAPA_SET_PERSISTENT_CONSTRUCTOR(name, function) \
     napa::objectFactory::RegisterConstrutor(name, function);
-    // _constructor.Reset(v8::Isolate::GetCurrent(), function); 
 #endif
 
 /// <summary> It gets the given persistent constructor from the current V8 isolate. </summary>
@@ -112,8 +111,7 @@
     napa::module::GetPersistentConstructor(exportName)
 #else
 #define NAPA_GET_PERSISTENT_CONSTRUCTOR(exportName, className) \
- napa::objectFactory::GetConstructor(exportName)
-    // v8::Local<v8::Function>::New(v8::Isolate::GetCurrent(), className::_constructor)
+    napa::objectFactory::GetConstructor(exportName)
 #endif
 
 /// <summary> It exports a NAPA_OBJECTWRAP subclass to addon exports object. </summary>

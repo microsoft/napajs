@@ -6,9 +6,9 @@ let nodezone = napa.zone.node;
 let sab = new SharedArrayBuffer(4);
 let ta = new Int8Array(sab);
 ta[0] = 100;
-nodezone.execute((sharable, sharedArrayBuffer) => {
+napazone.execute((sharable) => {
     console.log('...00 sharable...', sharable);
-    let ta = new Int8Array(sharedArrayBuffer);
+    let ta = new Int8Array(4);
     console.log('...01 sharedArrayBuffer...', ta);
     ta[1] = 99;
     console.log('...0...zone.execute......', global.__zone_id, global.__worker_id);
@@ -25,6 +25,6 @@ nodezone.execute((sharable, sharedArrayBuffer) => {
         console.log('......<<<inner zone.execute callback>>>......', global.__zone_id, global.__worker_id);
     })
     return ta;
-}, [napa.memory.crtAllocator, sab]).then((r) => {
+}, [napa.memory.crtAllocator]).then((r) => {
     console.log('...3...zone execute callback......', r.value, global.__zone_id, global.__worker_id);
 });

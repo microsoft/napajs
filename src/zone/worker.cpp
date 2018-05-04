@@ -25,13 +25,12 @@
 using namespace napa;
 using namespace napa::zone;
 
+static std::mutex environment_loading_mutext;
+
 static const std::string NAPA_WORKER_INIT_PATH = 
     utils::string::ReplaceAllCopy(
         filesystem::Path(dll::ThisLineLocation()).Parent().Parent().Normalize().String(), "\\", "\\\\"
     ) + "/lib/zone/napa-worker-init.js";
-// Forward declaration
-static v8::Isolate* CreateIsolate(const settings::ZoneSettings& settings);
-static void ConfigureIsolate(v8::Isolate* isolate, const settings::ZoneSettings& settings);
 
 struct Worker::Impl {
 
@@ -48,20 +47,8 @@ struct Worker::Impl {
 
     std::atomic<int> numberOfTasksRunning;
 
-    /// <summary> The thread that executes the tasks. </summary>
-    // std::thread workerThread;
-
-    /// <summary> Queue for tasks scheduled on this worker. </summary>
-    // std::queue<std::shared_ptr<Task>> tasks;
-    
-    /// <summary> Condition variable to indicate if there are more tasks to consume. </summary>
-    // std::condition_variable hasTaskEvent;
-
-    /// <summary> Lock for task queue. </summary>
-    // std::mutex queueLock;
-
     /// <summary> V8 isolate associated with this worker. </summary>
-    // v8::Isolate* isolate;
+    v8::Isolate* isolate;
 
     /// <summary> A callback function to setup the isolate after worker created its isolate. </summary>
     std::function<void(WorkerId, uv_loop_t*)> setupCallback;
@@ -167,33 +154,81 @@ void Worker::Schedule(std::shared_ptr<Task> task) {
 }
 
 void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
-    int main_argc;
-    char** main_argv;
-    int main_exec_argc;
-    const char** main_exec_argv;
-    node::GetNodeMainArgments(main_argc, main_argv, main_exec_argc, main_exec_argv);
+    // Create Isolate.
+    v8::Isolate::CreateParams params;
+    params.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+    v8::Isolate* isolate = v8::Isolate::New(params);
+    NAPA_ASSERT(isolate, "Failed to create v8 isolate for worker.");
+    _impl->isolate = isolate;
 
-    NAPA_DEBUG("Worker", "(id=%u) Setup completed.", _impl->id);
+    {
+        // Get MultiIsolatePlatform.
+        node::MultiIsolatePlatform* multiIsolatePlatform = node::GetMainThreadMultiIsolatePlatform();
+        NAPA_ASSERT(multiIsolatePlatform, "Node MultiIsolatePlatform must exist.");
 
-    const char* worker_argv[4];
-    worker_argv[0] = "node";
-    worker_argv[1] = NAPA_WORKER_INIT_PATH.c_str();
-    // zone id.
-    worker_argv[2] = settings.id.c_str();
-    // worker id.
-    auto workId = std::to_string(_impl->id);
-    worker_argv[3] = workId.c_str();
+        // Create IsolateData.
+        v8::Locker locker(isolate);
+        v8::Isolate::Scope isolate_scope(isolate);
+        v8::HandleScope handle_scope(isolate);
+        node::IsolateData* isolate_data = node::CreateIsolateData(isolate, &_impl->loop, multiIsolatePlatform);
 
-    node::Start(static_cast<void*>(&_impl->loop),
-                4, worker_argv, main_exec_argc, main_exec_argv, false,
-                [this](v8::TaskRunner* foregroundTaskRunner, v8::TaskRunner* backgroundTaskRunner){
-                    NAPA_ASSERT(foregroundTaskRunner != nullptr, "Foreground task runner should not be null");
-                    NAPA_ASSERT(backgroundTaskRunner != nullptr, "Background task runner should not be null");
-                    // Setup worker after isolate creation.
-                    _impl->foregroundTaskRunner = foregroundTaskRunner;
-                    _impl->backgroundTaskRunner = backgroundTaskRunner;
-                    _impl->setupCallback(_impl->id, &_impl->loop);
-                    _impl->idleNotificationCallback(_impl->id);
-                });
+        // Napa releted setting.
+        _impl->foregroundTaskRunner = multiIsolatePlatform->GetForegroundTaskRunner(isolate).get();
+        _impl->backgroundTaskRunner = multiIsolatePlatform->GetBackgroundTaskRunner(isolate).get();
+        _impl->setupCallback(_impl->id, &_impl->loop);
+        _impl->idleNotificationCallback(_impl->id);
+        NAPA_DEBUG("Worker", "(id=%u) Setup completed.", _impl->id);
 
+        // Create Context.
+        v8::Local<v8::Context> context = v8::Context::New(isolate);
+        v8::Context::Scope context_scope(context);
+
+        // Create node::Environment.
+        const char* worker_argv[4];
+        worker_argv[0] = "node";
+        worker_argv[1] = NAPA_WORKER_INIT_PATH.c_str();
+        // zone id.`
+        worker_argv[2] = settings.id.c_str();
+        // worker id.
+        auto workId = std::to_string(_impl->id);
+        worker_argv[3] = workId.c_str();
+        node::Environment* env = node::CreateEnvironment(isolate_data, context, 4, worker_argv, 0, nullptr);
+
+        // Problem: it would impact relevant execution behavior because,
+        // 1. this logic couples with node bootstrapping logic,
+        // 2. the flag is a setting shared at process level.
+        // TODO : Re-evaluate the impact and figure out a solid solution at node.js / napa.js.
+        // node::LoadEnvironment need access to V8 intrinsics by flag '--allow_natives_syntax'.
+        // If the flag haven't been specified when launching node.js,
+        // it will be disabled again during node bootstrapping.
+        {
+            std::lock_guard<std::mutex> lock(environment_loading_mutext);
+            const char allow_natives_syntax[] = "--allow_natives_syntax";
+            v8::V8::SetFlagsFromString(allow_natives_syntax, sizeof(allow_natives_syntax) - 1);
+            node::LoadEnvironment(env);
+        }
+
+        // Run uv loop.
+        {
+            v8::SealHandleScope seal(isolate);
+            bool more;
+            do {
+              uv_run(&_impl->loop, UV_RUN_DEFAULT);
+              multiIsolatePlatform->DrainBackgroundTasks(isolate);
+              more = uv_loop_alive(&_impl->loop);
+              if (more) continue;
+              node::EmitBeforeExit(env);
+              more = uv_loop_alive(&_impl->loop);
+            } while (more);
+        }
+
+        node::RunAtExit(env);
+        multiIsolatePlatform->DrainBackgroundTasks(isolate);
+        multiIsolatePlatform->CancelPendingDelayedTasks(isolate);
+        
+        node::FreeEnvironment(env);
+        node::FreeIsolateData(isolate_data);
+    }
+
+    isolate->Dispose();
 }
