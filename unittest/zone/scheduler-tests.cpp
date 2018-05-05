@@ -4,6 +4,8 @@
 #include <catch/catch.hpp>
 #include <zone/scheduler.h>
 
+#include <uv.h>
+
 #include <cstddef>
 #include <atomic>
 #include <future>
@@ -43,12 +45,13 @@ public:
 
     TestWorker(WorkerId id,
                const ZoneSettings &settings,
-               std::function<void(WorkerId)> setupCompleteCallback,
-               std::function<void(WorkerId)> idleCallback) : _id(id) {
+               std::function<void(WorkerId, uv_loop_t*)> setupCompleteCallback,
+               std::function<void(WorkerId)> idleCallback,
+               std::function<void(WorkerId)> exitCallback) : _id(id) {
         
         numberOfWorkers++;
         _idleNotificationCallback = idleCallback;
-        setupCompleteCallback(id);
+        setupCompleteCallback(id, nullptr);
     }
 
     ~TestWorker() {
@@ -71,6 +74,10 @@ public:
         }));
     }
 
+    WorkerId GetWorkerId() const {
+        return _id;
+    }
+
     static uint32_t numberOfWorkers;
 
 private:
@@ -87,7 +94,10 @@ TEST_CASE("scheduler creates correct number of worker", "[scheduler]") {
     ZoneSettings settings;
     settings.workers = 3;
 
-    auto scheduler = std::make_unique<SchedulerImpl<TestWorker<1>>>(settings, [](WorkerId) {});
+    auto scheduler = std::make_unique<SchedulerImpl<TestWorker<1>>>(
+        settings,
+        [](WorkerId, uv_loop_t*) {},
+        []() {});
 
     REQUIRE(TestWorker<1>::numberOfWorkers == settings.workers);
 }
@@ -96,9 +106,10 @@ TEST_CASE("scheduler dispatches worker setup complete callback correctly", "[sch
     ZoneSettings settings;
     settings.workers = 3;
     WorkerId idSum = 0;
-    auto scheduler = std::make_unique<SchedulerImpl<TestWorker<1>>>(settings, [&idSum](WorkerId id) {
-        idSum += id;
-    });
+    auto scheduler = std::make_unique<SchedulerImpl<TestWorker<1>>>(
+        settings,
+        [&idSum](WorkerId id, uv_loop_t*) { idSum += id;},
+        []() {});
 
     REQUIRE(idSum == settings.workers * (settings.workers - 1) / 2);
 }
@@ -107,7 +118,10 @@ TEST_CASE("scheduler assigns tasks correctly", "[scheduler]") {
     ZoneSettings settings;
     settings.workers = 3;
 
-    auto scheduler = std::make_unique<SchedulerImpl<TestWorker<2>>>(settings, [](WorkerId) {});
+    auto scheduler = std::make_unique<SchedulerImpl<TestWorker<2>>>(
+        settings,
+        [](WorkerId, uv_loop_t*) {},
+        []() {});
     auto task = std::make_shared<TestTask>();
 
     SECTION("schedules on exactly one worker") {
@@ -137,7 +151,10 @@ TEST_CASE("scheduler distributes and schedules all tasks", "[scheduler]") {
     ZoneSettings settings;
     settings.workers = 4;
 
-    auto scheduler = std::make_unique<SchedulerImpl<TestWorker<3>>>(settings, [](WorkerId) {});
+    auto scheduler = std::make_unique<SchedulerImpl<TestWorker<3>>>(
+        settings,
+        [](WorkerId, uv_loop_t*) {},
+        []() {});
 
     std::vector<std::shared_ptr<TestTask>> tasks;
     for (size_t i = 0; i < 1000; i++) {
