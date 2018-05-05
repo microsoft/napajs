@@ -1,8 +1,0 @@
-{
-    "name": "napajs-tutorial",
-    "version": "0.1.0",
-    "author": "napajs",
-    "dependencies": {
-        "napajs": ">= 0.1.4"
-    }
-}

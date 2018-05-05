@@ -25,7 +25,6 @@ function run() {
 
     // Setup all workers with functions to be executed.
     zone.broadcast(' \
-        var napa = require("napajs"); \
         var zone = napa.zone.get("zone"); \
         var store = napa.store.get("sub-matrix-size-store"); \
     ');

@@ -101,7 +101,6 @@ function run(length) {
 }
 
 // Bootstrap zone workers.
-zone.broadcast('napa = require("napajs");');
 zone.broadcast(swap.toString());
 zone.broadcast(partition.toString());
 zone.broadcast(quickSort.toString());

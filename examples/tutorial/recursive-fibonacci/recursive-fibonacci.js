@@ -60,7 +60,6 @@ console.log('\t-----------------------------------------------------------');
 
 // Broadcast declaration of 'napa' and 'zone' to napa workers.
 zone.broadcast(' \
-    var napa = require("napajs"); \
     var zone = napa.zone.get("zone"); \
 ');
 // Broadcast function declaration of 'fibonacci' to napa workers.
