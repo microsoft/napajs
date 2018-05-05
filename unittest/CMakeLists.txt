@@ -11,7 +11,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Test Files
 file(GLOB_RECURSE TEST_FILES
     main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/module/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platform/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/settings/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utils/*.cpp
@@ -19,9 +18,6 @@ file(GLOB_RECURSE TEST_FILES
 
 # Source files under test
 file(GLOB_RECURSE SOURCE_FILES
-    ${NAPA_ROOT}/src/module/core-modules/node/file-system-helpers.cpp
-    ${NAPA_ROOT}/src/module/loader/module-resolver-cache.cpp
-    ${NAPA_ROOT}/src/module/loader/module-resolver.cpp
     ${NAPA_ROOT}/src/platform/filesystem.cpp
     ${NAPA_ROOT}/src/platform/os.cpp
     ${NAPA_ROOT}/src/platform/process.cpp
@@ -43,7 +39,8 @@ target_include_directories(${TARGET_NAME}
     PRIVATE
     ${NAPA_ROOT}/inc
     ${NAPA_ROOT}/src
-    ${NAPA_ROOT}/third-party)
+    ${NAPA_ROOT}/third-party
+    "/usr/local/include/node")
 
 # Set output directory for dll/libs
 set_target_properties(${TARGET_NAME} PROPERTIES
