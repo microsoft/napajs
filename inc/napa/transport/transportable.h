@@ -17,9 +17,9 @@ namespace transport {
         /// <summary> It initialize a wrap object constructor template with TransportableObject methods. </summary>
         /// <param name='constructorTemplate'> Constructor function template of the wrap. </param>
         static void InitConstructorTemplate(v8::Local<v8::FunctionTemplate> constructorTemplate) {
-            NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "marshall", TransportableObject::MarshallCallback);
-            NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "unmarshall", TransportableObject::UnmarshallCallback);
-            NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "cid", TransportableObject::GetCidCallback);
+            NODE_SET_PROTOTYPE_METHOD(constructorTemplate, "marshall", TransportableObject::MarshallCallback);
+            NODE_SET_PROTOTYPE_METHOD(constructorTemplate, "unmarshall", TransportableObject::UnmarshallCallback);
+            NODE_SET_PROTOTYPE_METHOD(constructorTemplate, "cid", TransportableObject::GetCidCallback);
         }
 
         /// <summary> It initialize a wrap constructor with static property _cid. </summary>

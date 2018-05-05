@@ -19,8 +19,8 @@ void CallContextWrap::Init() {
 
     InitConstructorTemplate<CallContextWrap>(constructorTemplate);
     
-    NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "resolve", ResolveCallback);
-    NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "reject", RejectCallback);
+    NODE_SET_PROTOTYPE_METHOD(constructorTemplate, "resolve", ResolveCallback);
+    NODE_SET_PROTOTYPE_METHOD(constructorTemplate, "reject", RejectCallback);
     NAPA_SET_ACCESSOR(constructorTemplate, "finished", IsFinishedCallback, nullptr);
     NAPA_SET_ACCESSOR(constructorTemplate, "elapse", GetElapseCallback, nullptr);
     NAPA_SET_ACCESSOR(constructorTemplate, "module", GetModuleCallback, nullptr);
@@ -49,7 +49,7 @@ void CallContextWrap::ResolveCallback(const v8::FunctionCallbackInfo<v8::Value>&
     CHECK_ARG(isolate, args.Length() == 1, "1 argument of 'result' is required for \"resolve\".");
     
     v8::String::Utf8Value result(args[0]);
-    auto thisObject = NAPA_OBJECTWRAP::Unwrap<CallContextWrap>(args.Holder());
+    auto thisObject = node::ObjectWrap::Unwrap<CallContextWrap>(args.Holder());
     auto success = thisObject->GetRef().Resolve(std::string(*result, result.length()));
 
     JS_ENSURE(isolate, success, "Resolve call failed: Already finished.");
@@ -75,7 +75,7 @@ void CallContextWrap::RejectCallback(const v8::FunctionCallbackInfo<v8::Value>& 
     
     v8::String::Utf8Value reasonStr(reason);
 
-    auto thisObject = NAPA_OBJECTWRAP::Unwrap<CallContextWrap>(args.Holder());
+    auto thisObject = node::ObjectWrap::Unwrap<CallContextWrap>(args.Holder());
     auto success = thisObject->GetRef().Reject(code, std::string(*reasonStr, reasonStr.length()));
     JS_ENSURE(isolate, success, "Reject call failed: Already finished.");
 }
@@ -83,28 +83,28 @@ void CallContextWrap::RejectCallback(const v8::FunctionCallbackInfo<v8::Value>& 
 void CallContextWrap::IsFinishedCallback(v8::Local<v8::String> /*propertyName*/, const v8::PropertyCallbackInfo<v8::Value>& args){
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
-    auto thisObject = NAPA_OBJECTWRAP::Unwrap<CallContextWrap>(args.Holder());
+    auto thisObject = node::ObjectWrap::Unwrap<CallContextWrap>(args.Holder());
     args.GetReturnValue().Set(thisObject->GetRef().IsFinished());
 }
 
 void CallContextWrap::GetElapseCallback(v8::Local<v8::String> /*propertyName*/, const v8::PropertyCallbackInfo<v8::Value>& args){
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
-    auto thisObject = NAPA_OBJECTWRAP::Unwrap<CallContextWrap>(args.Holder());
+    auto thisObject = node::ObjectWrap::Unwrap<CallContextWrap>(args.Holder());
     args.GetReturnValue().Set(v8_helpers::HrtimeToV8Uint32Array(isolate, thisObject->GetRef().GetElapse().count()));
 }
 
 void CallContextWrap::GetModuleCallback(v8::Local<v8::String> /*propertyName*/, const v8::PropertyCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
-    auto thisObject = NAPA_OBJECTWRAP::Unwrap<CallContextWrap>(args.Holder());
+    auto thisObject = node::ObjectWrap::Unwrap<CallContextWrap>(args.Holder());
     args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, thisObject->GetRef().GetModule()));
 }
 
 void CallContextWrap::GetFunctionCallback(v8::Local<v8::String> /*propertyName*/, const v8::PropertyCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
-    auto thisObject = NAPA_OBJECTWRAP::Unwrap<CallContextWrap>(args.Holder());
+    auto thisObject = node::ObjectWrap::Unwrap<CallContextWrap>(args.Holder());
     args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, thisObject->GetRef().GetFunction()));
 }
 
@@ -112,7 +112,7 @@ void CallContextWrap::GetArgumentsCallback(v8::Local<v8::String> /*propertyName*
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
     auto context = isolate->GetCurrentContext();
-    auto thisObject = NAPA_OBJECTWRAP::Unwrap<CallContextWrap>(args.Holder());
+    auto thisObject = node::ObjectWrap::Unwrap<CallContextWrap>(args.Holder());
 
     auto& cppArgs = thisObject->GetRef().GetArguments();
     auto jsArgs = v8::Array::New(isolate, static_cast<int>(cppArgs.size()));
@@ -127,7 +127,7 @@ void CallContextWrap::GetTransportContextCallback(v8::Local<v8::String> /*proper
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
     auto context = isolate->GetCurrentContext();
-    auto thisObject = NAPA_OBJECTWRAP::Unwrap<CallContextWrap>(args.Holder());
+    auto thisObject = node::ObjectWrap::Unwrap<CallContextWrap>(args.Holder());
 
     auto& transportContext = thisObject->GetRef().GetTransportContext();
     // Create a non-owning transport context wrap, since transport context is always owned by call context. 

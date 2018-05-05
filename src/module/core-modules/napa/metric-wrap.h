@@ -12,7 +12,7 @@ namespace napa {
 namespace module {
 
     /// <summary> An object wrap to expose metric APIs. </summary>
-    class MetricWrap : public NAPA_OBJECTWRAP {
+    class MetricWrap : public node::ObjectWrap {
     public:
 
         /// <summary> Initializes the wrap. </summary>
@@ -22,7 +22,7 @@ namespace module {
         static v8::Local<v8::Object> NewInstance(napa::providers::Metric* metric, uint32_t dimensions);
 
         /// <summary> Declare persistent constructor to create Metric Javascript wrapper instance. </summary>
-        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR();
+        static v8::Persistent<v8::Function> _constructor;
 
     private:
 

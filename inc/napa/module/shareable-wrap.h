@@ -15,7 +15,7 @@ namespace module {
 
     /// <summary> Abstract class for wraps that contains a C++ std::shared_ptr<T> and allow it be shared across isolates. </summary>
     /// <remarks> see napajs/lib/memory/shareable.ts </remarks>
-    class ShareableWrap : public NAPA_OBJECTWRAP {
+    class ShareableWrap : public node::ObjectWrap {
     public:
 
         /// <summary> It initialize constructor template of a sub-class of ShareableWrap. </summary>
@@ -26,9 +26,9 @@ namespace module {
             // Blessed with methods from napajs.transport.Transportable.
             napa::transport::TransportableObject::InitConstructorTemplate(constructorTemplate);
 
-            NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "load", WrapType::LoadCallback);
-            NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "save", WrapType::SaveCallback);
-            NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "isNull", WrapType::IsNullCallback);
+            NODE_SET_PROTOTYPE_METHOD(constructorTemplate, "load", WrapType::LoadCallback);
+            NODE_SET_PROTOTYPE_METHOD(constructorTemplate, "save", WrapType::SaveCallback);
+            NODE_SET_PROTOTYPE_METHOD(constructorTemplate, "isNull", WrapType::IsNullCallback);
             NAPA_SET_ACCESSOR(constructorTemplate, "refCount", WrapType::RefCountCallback, nullptr);
             NAPA_SET_ACCESSOR(constructorTemplate, "handle", WrapType::GetHandleCallback, nullptr);
         }
@@ -44,7 +44,7 @@ namespace module {
         /// <summary> Set an instance of ShareableWrap child-class with shared_ptr of T. </summary>
         template <typename T>
         static void Set(v8::Local<v8::Object> wrap, std::shared_ptr<T> object) {
-            auto shareable = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(wrap);
+            auto shareable = node::ObjectWrap::Unwrap<ShareableWrap>(wrap);
             shareable->_object = std::static_pointer_cast<void>(std::move(object));
         }
 
@@ -77,7 +77,7 @@ namespace module {
         }
 
     protected:
-        /// <summary> Friend default constructor callback to access protected method NAPA_OBJECTWRAP::Unwrap. </summary>
+        /// <summary> Friend default constructor callback to access protected method node::ObjectWrap::Unwrap. </summary>
         template <typename T>
         friend void napa::module::DefaultConstructorCallback(const v8::FunctionCallbackInfo<v8::Value>&);
 
@@ -94,7 +94,7 @@ namespace module {
         static void GetHandleCallback(v8::Local<v8::String> /*propertyName*/, const v8::PropertyCallbackInfo<v8::Value>& args){
             auto isolate = v8::Isolate::GetCurrent();
             v8::HandleScope scope(isolate);
-            auto thisObject = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(args.Holder());
+            auto thisObject = node::ObjectWrap::Unwrap<ShareableWrap>(args.Holder());
             args.GetReturnValue().Set(v8_helpers::PtrToV8Uint32Array(isolate, thisObject->_object.get()));
         }
 
@@ -102,7 +102,7 @@ namespace module {
         static void RefCountCallback(v8::Local<v8::String> /*propertyName*/, const v8::PropertyCallbackInfo<v8::Value>& args){
             auto isolate = v8::Isolate::GetCurrent();
             v8::HandleScope scope(isolate);
-            auto thisObject = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(args.Holder());
+            auto thisObject = node::ObjectWrap::Unwrap<ShareableWrap>(args.Holder());
             args.GetReturnValue().Set(static_cast<int32_t>(thisObject->_object.use_count()));
         }
 
@@ -110,7 +110,7 @@ namespace module {
         static void IsNullCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
             auto isolate = v8::Isolate::GetCurrent();
             v8::HandleScope scope(isolate);
-            auto thisObject = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(args.Holder());
+            auto thisObject = node::ObjectWrap::Unwrap<ShareableWrap>(args.Holder());
             args.GetReturnValue().Set(thisObject->_object.get() == nullptr);
         }
 
@@ -130,11 +130,11 @@ namespace module {
             auto result = v8_helpers::V8ValueToUintptr(isolate, numberArray);
             JS_ENSURE(isolate, result.second, "Unable to cast \"handle\" to pointer. Please check if it's in valid handle format.");
             
-            auto transportContextWrap = NAPA_OBJECTWRAP::Unwrap<TransportContextWrap>(v8::Local<v8::Object>::Cast(args[1]));
+            auto transportContextWrap = node::ObjectWrap::Unwrap<TransportContextWrap>(v8::Local<v8::Object>::Cast(args[1]));
             JS_ENSURE(isolate, transportContextWrap != nullptr, "Argument \"transportContext\" should be 'TransportContextWrap' type.");
     
             // Load object from transport context.
-            auto thisObject = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(args.Holder());
+            auto thisObject = node::ObjectWrap::Unwrap<ShareableWrap>(args.Holder());
             thisObject->_object = transportContextWrap->Get()->LoadShared<void>(result.first);
         }
 
@@ -149,10 +149,10 @@ namespace module {
             CHECK_ARG(isolate, args[1]->IsObject(), "Argument \"transportContext\" should be 'TransportContextWrap' type.");
 
             auto payload = v8::Local<v8::Object>::Cast(args[0]);
-            auto transportContextWrap = NAPA_OBJECTWRAP::Unwrap<TransportContextWrap>(v8::Local<v8::Object>::Cast(args[1]));
+            auto transportContextWrap = node::ObjectWrap::Unwrap<TransportContextWrap>(v8::Local<v8::Object>::Cast(args[1]));
             JS_ENSURE(isolate, transportContextWrap != nullptr, "Argument \"transportContext\" should be 'TransportContextWrap' type.");
 
-            auto thisObject = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(args.Holder());
+            auto thisObject = node::ObjectWrap::Unwrap<ShareableWrap>(args.Holder());
             payload->CreateDataProperty(
                 context,
                 v8_helpers::MakeV8String(isolate, "handle"),

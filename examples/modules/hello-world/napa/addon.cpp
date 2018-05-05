@@ -14,10 +14,10 @@ void Method(const FunctionCallbackInfo<Value>& args) {
 }
 
 void Init(Local<Object> exports) {
-    NAPA_SET_METHOD(exports, "hello", Method);
+    NODE_SET_METHOD(exports, "hello", Method);
 }
 
-NAPA_MODULE(addon, Init)
+NODE_MODULE(addon, Init)
 
 }  // namespace demo
 }  // namespace napa

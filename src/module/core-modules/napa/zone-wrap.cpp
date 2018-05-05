@@ -32,9 +32,9 @@ void ZoneWrap::Init() {
     functionTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 
     // Prototypes.
-    NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "getId", GetId);
-    NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "broadcast", Broadcast);
-    NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "broadcastSync", BroadcastSync);
+    NODE_SET_PROTOTYPE_METHOD(functionTemplate, "getId", GetId);
+    NODE_SET_PROTOTYPE_METHOD(functionTemplate, "broadcast", Broadcast);
+    NODE_SET_PROTOTYPE_METHOD(functionTemplate, "broadcastSync", BroadcastSync);
     NODE_SET_PROTOTYPE_METHOD(functionTemplate, "execute", Execute);
     NODE_SET_PROTOTYPE_METHOD(functionTemplate, "executeSync", ExecuteSync);
     NODE_SET_PROTOTYPE_METHOD(functionTemplate, "recycle", Recycle);
@@ -49,7 +49,7 @@ v8::Local<v8::Object> ZoneWrap::NewInstance(std::unique_ptr<napa::Zone> zoneProx
 
     auto constructor = NAPA_GET_PERSISTENT_CONSTRUCTOR(exportName, ZoneWrap);
     auto object = constructor->NewInstance(context).ToLocalChecked();
-    auto wrap = NAPA_OBJECTWRAP::Unwrap<ZoneWrap>(object);
+    auto wrap = node::ObjectWrap::Unwrap<ZoneWrap>(object);
 
     wrap->_zoneProxy = std::move(zoneProxy);
     return object;
@@ -262,7 +262,7 @@ static void CreateRequestAndExecute(v8::Local<v8::Object> obj, Func&& func) {
     auto transportContextValue = maybe.ToLocalChecked();
     if (!transportContextValue->IsNull()) {
         CHECK_ARG(isolate, transportContextValue->IsObject(), "transportContext must be null or an object.");
-        auto transportContextWrap = NAPA_OBJECTWRAP::Unwrap<TransportContextWrapImpl>(transportContextValue->ToObject());
+        auto transportContextWrap = node::ObjectWrap::Unwrap<TransportContextWrapImpl>(transportContextValue->ToObject());
         spec.transportContext.reset(transportContextWrap->Get());
     }
 

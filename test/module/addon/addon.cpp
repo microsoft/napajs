@@ -24,8 +24,8 @@ void CreateSimpleObjectWrap(const v8::FunctionCallbackInfo<v8::Value>& args) {
 void Init(v8::Local<v8::Object> exports) {
     SimpleObjectWrap::Init();
 
-    NAPA_SET_METHOD(exports, "getModuleName", GetModuleName);
-    NAPA_SET_METHOD(exports, "createSimpleObjectWrap", CreateSimpleObjectWrap);
+    NODE_SET_METHOD(exports, "getModuleName", GetModuleName);
+    NODE_SET_METHOD(exports, "createSimpleObjectWrap", CreateSimpleObjectWrap);
 }
 
-NAPA_MODULE(addon, Init);
+NODE_MODULE(addon, Init);

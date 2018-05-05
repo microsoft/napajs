@@ -45,9 +45,6 @@ target_include_directories(${TARGET_NAME} PRIVATE
     PUBLIC
     ${PROJECT_SOURCE_DIR}/inc)
 
-
-target_compile_definitions(${TARGET_NAME} PRIVATE USING_V8_SHARED)
-
 # Compiler definitions
 target_compile_definitions(${TARGET_NAME}
     PRIVATE BUILDING_NODE_EXTENSION NAPA_EXPORTS NAPA_BINDING_EXPORTS NOMINMAX $<$<CONFIG:Debug>:NAPA_DEBUG_ENABLED>)

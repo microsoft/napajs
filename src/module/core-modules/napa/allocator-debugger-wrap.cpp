@@ -21,9 +21,9 @@ void AllocatorDebuggerWrap::Init(){
 
     InitConstructorTemplate<AllocatorDebuggerWrap>(constructorTemplate);
 
-    NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "allocate", AllocatorWrap::AllocateCallback);
-    NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "deallocate", AllocatorWrap::DeallocateCallback);
-    NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "getDebugInfo", GetDebugInfoCallback);
+    NODE_SET_PROTOTYPE_METHOD(constructorTemplate, "allocate", AllocatorWrap::AllocateCallback);
+    NODE_SET_PROTOTYPE_METHOD(constructorTemplate, "deallocate", AllocatorWrap::DeallocateCallback);
+    NODE_SET_PROTOTYPE_METHOD(constructorTemplate, "getDebugInfo", GetDebugInfoCallback);
     NAPA_SET_ACCESSOR(constructorTemplate, "type", AllocatorWrap::GetTypeCallback, nullptr);
 
     auto constructor = constructorTemplate->GetFunction();
@@ -46,7 +46,7 @@ void AllocatorDebuggerWrap::ConstructorCallback(const v8::FunctionCallbackInfo<v
     } 
     else {
         CHECK_ARG(isolate, args[0]->IsObject(), "Argument \"allocator\" should be \"AllocatorWrap\" type.'");
-        auto allocatorWrap = NAPA_OBJECTWRAP::Unwrap<AllocatorWrap>(v8::Local<v8::Object>::Cast(args[0]));
+        auto allocatorWrap = node::ObjectWrap::Unwrap<AllocatorWrap>(v8::Local<v8::Object>::Cast(args[0]));
         JS_ENSURE(isolate, allocatorWrap != nullptr,  "argument \"allocator\" must be of type \"AllocatorWrap\".");
         allocator = allocatorWrap->Get();
     }
@@ -60,6 +60,6 @@ void AllocatorDebuggerWrap::ConstructorCallback(const v8::FunctionCallbackInfo<v
 void AllocatorDebuggerWrap::GetDebugInfoCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
-    auto thisObject = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(args.Holder());
+    auto thisObject = node::ObjectWrap::Unwrap<ShareableWrap>(args.Holder());
     args.GetReturnValue().Set(v8_helpers::MakeV8String(isolate, thisObject->Get<napa::memory::AllocatorDebugger>()->GetDebugInfo()));
 }

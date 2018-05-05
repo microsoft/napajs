@@ -83,12 +83,12 @@ void Now(const FunctionCallbackInfo<Value>& args) {
 }
 
 void Init(Local<Object> exports) {
-    NAPA_SET_METHOD(exports, "increase", Increase);
-    NAPA_SET_METHOD(exports, "increaseSync", IncreaseSync);
-    NAPA_SET_METHOD(exports, "now", Now);
+    NODE_SET_METHOD(exports, "increase", Increase);
+    NODE_SET_METHOD(exports, "increaseSync", IncreaseSync);
+    NODE_SET_METHOD(exports, "now", Now);
 }
 
-NAPA_MODULE(addon, Init)
+NODE_MODULE(addon, Init)
 
 }  // namespace demo
 }  // namespace napa

@@ -44,8 +44,3 @@ elseif (APPLE)
 else()
     target_link_libraries(${TARGET_NAME} PRIVATE ${NAPA_ROOT}/bin/libnapa.so)
 endif()
-
-# Compiler definitions
-target_compile_definitions(${TARGET_NAME} PRIVATE BUILDING_NAPA_EXTENSION)
-
-

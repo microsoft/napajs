@@ -23,10 +23,6 @@ target_include_directories(${NAPA_ADDON_TARGET_NAME} PRIVATE
     ${CMAKE_JS_INC}
     ${NAPAJS_INC})
 
-# Compiler definitions
-target_compile_definitions(${NAPA_ADDON_TARGET_NAME} PRIVATE
-    BUILDING_NAPA_EXTENSION)
-
 # Link libraries
 target_link_libraries(${NAPA_ADDON_TARGET_NAME} PRIVATE
     plus-number

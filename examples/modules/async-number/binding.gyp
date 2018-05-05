@@ -23,9 +23,6 @@
       "product_extension": "napa",
       "product_dir": "<(PRODUCT_DIR)/../../bin",
       "sources": [ "napa/addon.cpp" ],
-      "defines": [
-        "BUILDING_NAPA_EXTENSION"
-      ],
       "include_dirs": ["<(napajs_inc)"],
       "link_settings": {
         "libraries": ["<(napajs_lib)"]

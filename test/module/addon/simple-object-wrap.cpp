@@ -29,10 +29,10 @@ void SimpleObjectWrap::Init() {
     functionTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 
     // Prototypes.
-    NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "getValue", GetValue);
-    NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "setValue", SetValue);
-    NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "doIncrementWork", DoIncrementWork);
-    NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "postIncrementWork", PostIncrementWork);
+    NODE_SET_PROTOTYPE_METHOD(functionTemplate, "getValue", GetValue);
+    NODE_SET_PROTOTYPE_METHOD(functionTemplate, "setValue", SetValue);
+    NODE_SET_PROTOTYPE_METHOD(functionTemplate, "doIncrementWork", DoIncrementWork);
+    NODE_SET_PROTOTYPE_METHOD(functionTemplate, "postIncrementWork", PostIncrementWork);
 
     // Set persistent constructor into V8.
     NAPA_SET_PERSISTENT_CONSTRUCTOR(exportName, functionTemplate->GetFunction());

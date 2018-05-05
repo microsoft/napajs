@@ -8,7 +8,7 @@
 namespace napa {
 namespace module {
 
-    /// <summary> It defines a default constructor for a NAPA_OBJECTWRAP sub-class from Javascript world. </summary>
+    /// <summary> It defines a default constructor for a node::ObjectWrap sub-class from Javascript world. </summary>
     /// <remarks>
     ///     1. const char* WrapType::exportName must be present as a member of WrapType.
     ///     2. DefaultConstructorCallback must be declared as a friend function in WrapType.

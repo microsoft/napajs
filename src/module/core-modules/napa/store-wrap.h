@@ -12,7 +12,7 @@ namespace module {
     
     /// <summary> It wraps napa::store::Store. </summary>
     /// <remarks> Reference: napajs/lib/store.ts#Store </remarks>
-    class StoreWrap: public NAPA_OBJECTWRAP {
+    class StoreWrap: public node::ObjectWrap {
     public:
         /// <summary> Init this wrap. </summary>
         static void Init();
@@ -60,7 +60,7 @@ namespace module {
         static constexpr const char* exportName = "StoreWrap";
 
         /// <summary> Hid constructor from public access. </summary>
-        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR();
+        static v8::Persistent<v8::Function> _constructor;
 
         /// <summary> Store. </summary>
         std::shared_ptr<napa::store::Store> _store;

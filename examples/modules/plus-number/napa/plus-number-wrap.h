@@ -10,7 +10,7 @@ namespace napa {
 namespace demo {
 
     /// <summary> Napa example module wrapping PlusNumber class. </summary>
-    class PlusNumberWrap : public NAPA_OBJECTWRAP {
+    class PlusNumberWrap : public node::ObjectWrap {
     public:
 
         /// <summary> Register this class into V8. </summary>
@@ -38,7 +38,7 @@ namespace demo {
 
         /// <summary> Declare persistent constructor to create PlusNumber instance. </summary>
         /// <remarks> Napa creates persistent constructor at each isolate while node.js creates the static instance. </remarks>
-        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR();
+        static v8::Persistent<v8::Function> _constructor;
 
         PlusNumber _plusNumber;
     };

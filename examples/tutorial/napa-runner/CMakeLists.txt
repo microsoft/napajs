@@ -30,8 +30,6 @@ set(TARGET_NAME "${PROJECT_NAME}")
 
 add_executable(${TARGET_NAME} "main.cpp")
 
-target_compile_definitions(${TARGET_NAME} PRIVATE BUILDING_NAPA_EXTENSION)
-
 if("${CMAKE_SYSTEM}" MATCHES "Linux")
 
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread")

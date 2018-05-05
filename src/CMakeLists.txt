@@ -47,9 +47,6 @@ if(CMAKE_JS_VERSION)
 
     target_include_directories(${TARGET_NAME} PRIVATE "/usr/local/include/node")
     target_link_libraries(${TARGET_NAME} PRIVATE ${CMAKE_JS_LIB})
-
-    # Using the V8 functions exported from node.exe
-    target_compile_definitions(${TARGET_NAME} PRIVATE USING_V8_SHARED)
 else()
     # Building Napa for embed scenarios (static linking with v8)
     if (NOT DEFINED NODE_ROOT)

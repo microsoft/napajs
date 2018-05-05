@@ -9,7 +9,7 @@
 namespace napa {
 namespace module {
     /// <summary> Interface for TransportContextWrap. </summary>
-    class TransportContextWrap: public NAPA_OBJECTWRAP {
+    class TransportContextWrap: public node::ObjectWrap {
     public:
         /// <summary> Get transport context. </summary>
         virtual napa::transport::TransportContext* Get() = 0;

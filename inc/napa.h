@@ -3,10 +3,6 @@
 
 #pragma once
 
-#ifdef BUILDING_NAPA_EXTENSION
-#define USING_V8_SHARED 1
-#endif
-
 #include <napa/version.h>
 
 #include <napa/assert.h>

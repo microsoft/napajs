@@ -44,8 +44,8 @@ void TransportContextWrapImpl::Init() {
     constructorTemplate->SetClassName(v8_helpers::MakeV8String(isolate, exportName));
     constructorTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 
-    NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "saveShared", SaveSharedCallback);
-    NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "loadShared", LoadSharedCallback);
+    NODE_SET_PROTOTYPE_METHOD(constructorTemplate, "saveShared", SaveSharedCallback);
+    NODE_SET_PROTOTYPE_METHOD(constructorTemplate, "loadShared", LoadSharedCallback);
     NAPA_SET_ACCESSOR(constructorTemplate, "sharedCount", GetSharedCountCallback, nullptr);
 
     NAPA_SET_PERSISTENT_CONSTRUCTOR(exportName, constructorTemplate->GetFunction());
@@ -54,7 +54,7 @@ void TransportContextWrapImpl::Init() {
 void TransportContextWrapImpl::GetSharedCountCallback(v8::Local<v8::String>, const v8::PropertyCallbackInfo<v8::Value>& args){
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
-    auto thisObject = NAPA_OBJECTWRAP::Unwrap<TransportContextWrapImpl>(args.Holder());
+    auto thisObject = node::ObjectWrap::Unwrap<TransportContextWrapImpl>(args.Holder());
     JS_ENSURE(isolate, thisObject != nullptr, "Invalid object to get property \"sharedCount\".");
 
     args.GetReturnValue().Set(thisObject->_context->GetSharedCount());
@@ -97,8 +97,8 @@ void TransportContextWrapImpl::SaveSharedCallback(const v8::FunctionCallbackInfo
     CHECK_ARG(isolate, args.Length() == 1, "1 arguments are required for \"saveShared\".");
     CHECK_ARG(isolate, args[0]->IsObject(), "Argument \"object\" shall be 'ShareableWrap' type.");
 
-    auto thisObject = NAPA_OBJECTWRAP::Unwrap<TransportContextWrap>(args.Holder());
-    auto sharedWrap = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(v8::Local<v8::Object>::Cast(args[0]));
+    auto thisObject = node::ObjectWrap::Unwrap<TransportContextWrap>(args.Holder());
+    auto sharedWrap = node::ObjectWrap::Unwrap<ShareableWrap>(v8::Local<v8::Object>::Cast(args[0]));
     thisObject->Get()->SaveShared(sharedWrap->Get<void>());
 }
 
@@ -111,7 +111,7 @@ void TransportContextWrapImpl::LoadSharedCallback(const v8::FunctionCallbackInfo
     auto result = v8_helpers::V8ValueToUintptr(isolate, args[0]);
     JS_ENSURE(isolate, result.second, "Unable to cast \"handle\" to pointer. Please check if it's in valid format.");
 
-    auto thisObject = NAPA_OBJECTWRAP::Unwrap<TransportContextWrap>(args.Holder());
+    auto thisObject = node::ObjectWrap::Unwrap<TransportContextWrap>(args.Holder());
     auto object = thisObject->Get()->LoadShared<void>(result.first);
 
     args.GetReturnValue().Set(binding::CreateShareableWrap(object));

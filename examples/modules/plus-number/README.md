@@ -38,7 +38,7 @@ namespace demo {
 
 ## Wrapper class
 
-*plus-number-wrap.h* declares the wrapper class inherited from *NAPA_OBJECTWRAP* as follows,
+*plus-number-wrap.h* declares the wrapper class inherited from *node::ObjectWrap* as follows,
 
 ```h
 #include <napa/module.h>
@@ -48,7 +48,7 @@ namespace napa {
 namespace demo {
 
     /// <summary> Napa example module wrapping PlusNumber class. </summary>
-    class PlusNumberWrap : public NAPA_OBJECTWRAP {
+    class PlusNumberWrap : public node::ObjectWrap {
     public:
 
         /// <summary> Register this class into V8. </summary>
@@ -76,7 +76,7 @@ namespace demo {
 
         /// <summary> Declare persistent constructor to create PlusNumber instance. </summary>
         /// <remarks> Napa creates persistent constructor at each isolate while node.js creates the static instance. </remarks>
-        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR();
+        static v8::Persistent<v8::Function> _constructor;
 
         PlusNumber _plusNumber;
     };
@@ -111,7 +111,7 @@ void PlusNumberWrap::Init() {
     functionTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 
     // Set prototype method.
-    NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "add", Add);
+    NODE_SET_PROTOTYPE_METHOD(functionTemplate, "add", Add);
 
     // Set persistent constructor into V8.
     NAPA_SET_PERSISTENT_CONSTRUCTOR(_exportName, functionTemplate->GetFunction());
@@ -165,7 +165,7 @@ void PlusNumberWrap::Add(const FunctionCallbackInfo<Value>& args) {
         args.Length() == 1 && args[0]->IsNumber(),
         "Number must be given as argument.");
 
-    auto wrap = NAPA_OBJECTWRAP::Unwrap<PlusNumberWrap>(args.Holder());
+    auto wrap = node::ObjectWrap::Unwrap<PlusNumberWrap>(args.Holder());
     auto value = wrap->_plusNumber.Add(args[0]->NumberValue());
 
     args.GetReturnValue().Set(Number::New(isolate, value));
@@ -187,14 +187,14 @@ void CreatePlusNumber(const FunctionCallbackInfo<Value>& args) {
 void InitAll(Local<Object> exports) {
     PlusNumberWrap::Init();
 
-    NAPA_SET_METHOD(exports, "createPlusNumber", CreatePlusNumber);
+    NODE_SET_METHOD(exports, "createPlusNumber", CreatePlusNumber);
 }
 
-NAPA_MODULE(addon, InitAll);
+NODE_MODULE(addon, InitAll);
 ```
 
 ## Transition from node.js module
-* *NAPA_OBJECTWRAP* is equivalent to *node::ObjectWrap*, so object's lifetime works as Javascript object.
+* *node::ObjectWrap* is equivalent to *node::ObjectWrap*, so object's lifetime works as Javascript object.
 * One big difference is how to handle the persistent constructor. While Node.js has only one thread for Javascript and
  static constructor instance is fine, Napa should support one constructor instance per V8 isolate. These macros help
  constructor instance creation.
@@ -203,7 +203,7 @@ NAPA_MODULE(addon, InitAll);
   * *NAPA_SET_PERSISTENT_CONSTRUCTOR* makes a local constructor as persistent. Napa stores it into thread local storage
    to allow one instance per V8 isolate.
   * *NAPA_GET_PERSISTENT_CONSTRUCTOR* return stored constructor instance.
-* *NAPA_SET_PROTOTYPE_METHOD* is equivalent to *NODE_SET_PROTOTYPE_METHOD*, which add a prototype method to Javascript
+* *NODE_SET_PROTOTYPE_METHOD* is equivalent to *NODE_SET_PROTOTYPE_METHOD*, which add a prototype method to Javascript
  object.
 
 ## Typescript

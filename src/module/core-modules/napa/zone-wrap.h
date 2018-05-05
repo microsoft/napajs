@@ -16,7 +16,7 @@ namespace napa {
 namespace module {
 
     /// <summary> An object wrap to expose zone APIs. </summary>
-    class ZoneWrap : public NAPA_OBJECTWRAP {
+    class ZoneWrap : public node::ObjectWrap {
     public:
 
         /// <summary> Exported class name. </summary>
@@ -31,7 +31,7 @@ namespace module {
     private:
 
         /// <summary> Declare persistent constructor to create Zone Javascript wrapper instance. </summary>
-        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR();
+        static v8::Persistent<v8::Function> _constructor;
 
         std::unique_ptr<napa::Zone> _zoneProxy;
 

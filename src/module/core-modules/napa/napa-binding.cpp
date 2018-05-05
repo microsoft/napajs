@@ -253,7 +253,7 @@ void DeserializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
     CHECK_ARG(isolate, args.Length() == 1, "1 argument is required for \"deserializeValue\".");
     CHECK_ARG(isolate, args[0]->IsObject(), "Argument \"object\" shall be 'SharedPtrWrap' type.");
-    auto shareableWrap = NAPA_OBJECTWRAP::Unwrap<ShareableWrap>(v8::Local<v8::Object>::Cast(args[0]));
+    auto shareableWrap = node::ObjectWrap::Unwrap<ShareableWrap>(v8::Local<v8::Object>::Cast(args[0]));
     auto serializedData = shareableWrap->Get<v8_extensions::SerializedData>();
 
     v8::Local<v8::Value> value;
@@ -293,22 +293,22 @@ void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) 
     NAPA_EXPORT_OBJECTWRAP(exports, "SharedPtrWrap", SharedPtrWrap);
     NAPA_EXPORT_OBJECTWRAP(exports, "TransportContextWrap", TransportContextWrapImpl);
 
-    NAPA_SET_METHOD(exports, "createZone", CreateZone);
-    NAPA_SET_METHOD(exports, "getZone", GetZone);
-    NAPA_SET_METHOD(exports, "getCurrentZone", GetCurrentZone);
+    NODE_SET_METHOD(exports, "createZone", CreateZone);
+    NODE_SET_METHOD(exports, "getZone", GetZone);
+    NODE_SET_METHOD(exports, "getCurrentZone", GetCurrentZone);
 
-    NAPA_SET_METHOD(exports, "createStore", CreateStore);
-    NAPA_SET_METHOD(exports, "getOrCreateStore", GetOrCreateStore);
-    NAPA_SET_METHOD(exports, "getStore", GetStore);
-    NAPA_SET_METHOD(exports, "getStoreCount", GetStoreCount);
+    NODE_SET_METHOD(exports, "createStore", CreateStore);
+    NODE_SET_METHOD(exports, "getOrCreateStore", GetOrCreateStore);
+    NODE_SET_METHOD(exports, "getStore", GetStore);
+    NODE_SET_METHOD(exports, "getStoreCount", GetStoreCount);
 
-    NAPA_SET_METHOD(exports, "createLock", CreateLock);
+    NODE_SET_METHOD(exports, "createLock", CreateLock);
     
-    NAPA_SET_METHOD(exports, "getCrtAllocator", GetCrtAllocator);
-    NAPA_SET_METHOD(exports, "getDefaultAllocator", GetDefaultAllocator);
+    NODE_SET_METHOD(exports, "getCrtAllocator", GetCrtAllocator);
+    NODE_SET_METHOD(exports, "getDefaultAllocator", GetDefaultAllocator);
 
-    NAPA_SET_METHOD(exports, "log", Log);
+    NODE_SET_METHOD(exports, "log", Log);
 
-    NAPA_SET_METHOD(exports, "serializeValue", SerializeValue);
-    NAPA_SET_METHOD(exports, "deserializeValue", DeserializeValue);
+    NODE_SET_METHOD(exports, "serializeValue", SerializeValue);
+    NODE_SET_METHOD(exports, "deserializeValue", DeserializeValue);
 }

@@ -45,8 +45,8 @@ void InitAll(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) {
     napa::module::binding::Init(exports, module);
 
     // Only node addon can initialize/shutdown napa.
-    NAPA_SET_METHOD(exports, "initialize", Initialize);
-    NAPA_SET_METHOD(exports, "shutdown", Shutdown);
+    NODE_SET_METHOD(exports, "initialize", Initialize);
+    NODE_SET_METHOD(exports, "shutdown", Shutdown);
 }
 
-NAPA_MODULE(napa, InitAll)
+NODE_MODULE(napa, InitAll)

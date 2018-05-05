@@ -17,9 +17,9 @@ void MetricWrap::Init() {
     functionTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 
     // Prototypes.
-    NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "set", Set);
-    NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "increment", Increment);
-    NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "decrement", Decrement);
+    NODE_SET_PROTOTYPE_METHOD(functionTemplate, "set", Set);
+    NODE_SET_PROTOTYPE_METHOD(functionTemplate, "increment", Increment);
+    NODE_SET_PROTOTYPE_METHOD(functionTemplate, "decrement", Decrement);
 
     // Set persistent constructor into V8.
     NAPA_SET_PERSISTENT_CONSTRUCTOR(_exportName, functionTemplate->GetFunction());
@@ -96,7 +96,7 @@ void MetricWrap::InvokeWithDimensions(const v8::FunctionCallbackInfo<v8::Value>&
     auto dimensionsArg = args[index];
     CHECK_ARG(isolate, dimensionsArg->IsArray() || dimensionsArg->IsUndefined(), "'dimensions' must be an array or undefined");
 
-    auto wrap = NAPA_OBJECTWRAP::Unwrap<MetricWrap>(args.Holder());
+    auto wrap = node::ObjectWrap::Unwrap<MetricWrap>(args.Holder());
 
     // Holds the dimensions strings on the stack for so it exists during the call to func.
     std::vector<napa::v8_helpers::Utf8String> dimensionsStringsHolder;

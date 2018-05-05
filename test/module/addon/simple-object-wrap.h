@@ -11,7 +11,7 @@ namespace napa {
 namespace test {
 
     /// <summary> A simple object wrap for testing. </summary>
-    class SimpleObjectWrap : public NAPA_OBJECTWRAP {
+    class SimpleObjectWrap : public node::ObjectWrap {
     public:
 
         /// <summary> Exported class name. </summary>
@@ -28,7 +28,7 @@ namespace test {
     private:
 
         /// <summary> Declare persistent constructor to create Zone Javascript wrapper instance. </summary>
-        NAPA_DECLARE_PERSISTENT_CONSTRUCTOR();
+        static v8::Persistent<v8::Function> _constructor;
 
         // SimpleObjectWrap methods
         static void GetValue(const v8::FunctionCallbackInfo<v8::Value>& args);

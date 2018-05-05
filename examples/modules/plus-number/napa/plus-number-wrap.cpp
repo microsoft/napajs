@@ -24,7 +24,7 @@ void PlusNumberWrap::Init() {
     functionTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 
     // Set prototype method.
-    NAPA_SET_PROTOTYPE_METHOD(functionTemplate, "add", Add);
+    NODE_SET_PROTOTYPE_METHOD(functionTemplate, "add", Add);
 
     // Set persistent constructor into V8.
     NAPA_SET_PERSISTENT_CONSTRUCTOR(_exportName, functionTemplate->GetFunction());
@@ -78,7 +78,7 @@ void PlusNumberWrap::Add(const FunctionCallbackInfo<Value>& args) {
         args.Length() == 1 && args[0]->IsNumber(),
         "Number must be given as argument.");
 
-    auto wrap = NAPA_OBJECTWRAP::Unwrap<PlusNumberWrap>(args.Holder());
+    auto wrap = node::ObjectWrap::Unwrap<PlusNumberWrap>(args.Holder());
     auto value = wrap->_plusNumber.Add(args[0]->NumberValue());
 
     args.GetReturnValue().Set(Number::New(isolate, value));

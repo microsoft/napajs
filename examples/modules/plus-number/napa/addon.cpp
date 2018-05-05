@@ -13,7 +13,7 @@ void CreatePlusNumber(const FunctionCallbackInfo<Value>& args) {
 void InitAll(Local<Object> exports) {
     PlusNumberWrap::Init();
 
-    NAPA_SET_METHOD(exports, "createPlusNumber", CreatePlusNumber);
+    NODE_SET_METHOD(exports, "createPlusNumber", CreatePlusNumber);
 }
 
-NAPA_MODULE(addon, InitAll);
+NODE_MODULE(addon, InitAll);

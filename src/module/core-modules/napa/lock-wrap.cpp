@@ -21,7 +21,7 @@ void LockWrap::Init() {
 
     InitConstructorTemplate<LockWrap>(constructorTemplate);
 
-    NAPA_SET_PROTOTYPE_METHOD(constructorTemplate, "guardSync", GuardSyncCallback);
+    NODE_SET_PROTOTYPE_METHOD(constructorTemplate, "guardSync", GuardSyncCallback);
 
     auto constructor = constructorTemplate->GetFunction();
     InitConstructor("<LockWrap>", constructor);
@@ -42,7 +42,7 @@ void LockWrap::GuardSyncCallback(const v8::FunctionCallbackInfo<v8::Value>& args
 
     auto context = isolate->GetCurrentContext();
     auto holder = args.Holder();
-    auto thisObject = NAPA_OBJECTWRAP::Unwrap<LockWrap>(args.Holder());
+    auto thisObject = node::ObjectWrap::Unwrap<LockWrap>(args.Holder());
 
     v8::TryCatch tryCatch(isolate);
     try {

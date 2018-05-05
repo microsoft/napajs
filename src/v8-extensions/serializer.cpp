@@ -80,7 +80,7 @@ Serializer::MaybeExternalize(Local<SharedArrayBuffer> sharedArrayBuffer) {
         // If the SharedArrayBuffer has been externalized, just get its Contents without externalizing it again,
         // and get its ExternalizedContents which has been stored in the '_externalized' property of the SharedArrayBuffer.
         if (sharedArrayBuffer->Get(context, key).ToLocal(&value)) {
-            auto shareableWrap = NAPA_OBJECTWRAP::Unwrap<napa::module::ShareableWrap>(Local<Object>::Cast(value));
+            auto shareableWrap = node::ObjectWrap::Unwrap<napa::module::ShareableWrap>(Local<Object>::Cast(value));
             auto externalizedContents = shareableWrap->Get<ExternalizedContents>();
             return std::make_pair(sharedArrayBuffer->GetContents(), externalizedContents);
         }
