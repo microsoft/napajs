@@ -46,5 +46,5 @@ set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS_ORG})
 if (CMAKE_JS_VERSION)
     # Build napa addon for node.
     add_subdirectory(node)
-    # add_subdirectory(test/module/addon)
+    add_subdirectory(test/module/addon)
 endif()

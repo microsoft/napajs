@@ -17,7 +17,7 @@ add_library(${TARGET_NAME} SHARED
     simple-object-wrap.cpp)
 
 # Change output extension to 'napa'
-set_target_properties(${TARGET_NAME} PROPERTIES PREFIX "" SUFFIX ".napa")
+set_target_properties(${TARGET_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 
 # Set output directory for the addon
 set_target_properties(${TARGET_NAME} PROPERTIES
@@ -31,16 +31,7 @@ set_target_properties(${TARGET_NAME} PROPERTIES
 target_include_directories(${TARGET_NAME}
     PRIVATE
     ${NAPA_ROOT}/inc
-    ${CMAKE_JS_INC})
+    "/usr/local/include/node")
 
 # Link libraries
 target_link_libraries(${TARGET_NAME} PRIVATE ${CMAKE_JS_LIB})
-
-# Link with napa shared library
-if (WIN32)
-    target_link_libraries(${TARGET_NAME} PRIVATE ${NAPA_ROOT}/bin/napa.lib)
-elseif (APPLE)
-    target_link_libraries(${TARGET_NAME} PRIVATE ${NAPA_ROOT}/bin/libnapa.dylib)
-else()
-    target_link_libraries(${TARGET_NAME} PRIVATE ${NAPA_ROOT}/bin/libnapa.so)
-endif()

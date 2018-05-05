@@ -46,21 +46,20 @@ describe('napajs/module', function () {
             });
         });
 
-        it.skip('napa module', () => {
+        it('napa module', () => {
             return napaZone.execute(() => {
                 var assert = require("assert");
-                var napaModule = require('../bin/simple-addon.napa');
+                var napaModule = require('../bin/simple-addon');
 
                 assert.notEqual(napaModule, undefined);
                 assert.equal(napaModule.getModuleName(), "simple-napa-addon");
             });
         });
 
-        // TODO:: change it to a normal .node module test.
-        it.skip('object wrap module', () => {
+        it('object wrap module', () => {
             return napaZone.execute(() => {
                 var assert = require("assert");
-                var napaModule = require('../bin/simple-addon.napa');
+                var napaModule = require('../bin/simple-addon');
 
                 var obj = napaModule.createSimpleObjectWrap();
                 assert.notEqual(obj, undefined);
@@ -415,11 +414,10 @@ describe('napajs/module', function () {
     });
 
     describe('async', function () {
-        // TODO::add this test back with replacing simple-addon.napa by simple-addon.node.
         it.skip('post async work', () => {
             return napaZone.execute(() => {
                 var assert = require("assert");
-                var napaModule = require('../bin/simple-addon.napa');
+                var napaModule = require('../bin/simple-addon');
 
                 var obj = napaModule.createSimpleObjectWrap();
                 obj.setValue(3);
@@ -439,11 +437,10 @@ describe('napajs/module', function () {
             });
         });
 
-        // TODO::add this test back with replacing simple-addon.napa by simple-addon.node.
         it.skip('do async work', () => {
             return napaZone.execute(() => {
                 var assert = require("assert");
-                var napaModule = require('../bin/simple-addon.napa');
+                var napaModule = require('../bin/simple-addon');
 
                 var obj = napaModule.createSimpleObjectWrap();
                 obj.setValue(8);
