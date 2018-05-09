@@ -24,7 +24,15 @@ namespace v8_extensions {
 
         v8::MaybeLocal<v8::Value> ReadValue();
 
-        static Deserializer* NewDeserializer(v8::Isolate* isolate, std::shared_ptr<SerializedData> data);
+#if V8_VERSION_EQUALS_TO_OR_NEWER_THAN(6, 6)
+
+        v8::MaybeLocal<v8::SharedArrayBuffer> GetSharedArrayBufferFromId(
+            v8::Isolate* isolate, uint32_t cloneId) override;
+
+#endif
+
+        static Deserializer* NewDeserializer(
+            v8::Isolate* isolate, std::shared_ptr<SerializedData> data);
 
     private:
         v8::Isolate* _isolate;
