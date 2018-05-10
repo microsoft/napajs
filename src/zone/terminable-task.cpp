@@ -2,9 +2,7 @@
 // Licensed under the MIT license.
 
 // See: https://groups.google.com/forum/#!topic/nodejs/onA0S01INtw
-#ifdef BUILDING_NODE_EXTENSION
 #include <node.h>
-#endif
 
 #include "terminable-task.h"
 

@@ -44,10 +44,6 @@ target_include_directories(${NODE_ADDON_TARGET_NAME} PRIVATE
     ${CMAKE_JS_INC}
     ${NAPAJS_INC})
 
-# Compiler definitions
-target_compile_definitions(${NODE_ADDON_TARGET_NAME} PRIVATE
-    BUILDING_NODE_EXTENSION)
-
 # Link libraries
 target_link_libraries(${NODE_ADDON_TARGET_NAME} PRIVATE
     plus-number
