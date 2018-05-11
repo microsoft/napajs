@@ -625,4 +625,24 @@ describe('napajs/zone', function () {
         it.skip('@napa: -> napa zone with timed out in multiple hops', () => {
         });
     });
+
+    describe('events', () => {
+        let napaEventZone: Zone = napa.zone.create('napa-zone-event');
+        assert(napaEventZone != null);
+
+        it('@napa: -> On recycling event emitted', () => {
+            napaEventZone.on('recycling', function(){
+                assert(true);
+            });
+        });
+
+        it('@napa: -> On terminated event emitted', () => {
+            napaEventZone.on('terminated', function(exit_code){
+                assert(exit_code === 0);
+            });
+        });
+
+        napaEventZone.recycle();
+    });
+    
 });

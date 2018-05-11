@@ -167,5 +167,16 @@ export interface Zone {
     ///     completed, all its workers will exit and terminate their threads.
     /// </remarks>
     recycle() : void;
-}
 
+    /// <summary> 
+    ///     Register a listener on specific event emitted upon this zone's status change. When the specified
+    ///     emitted, the func() will be called in the caller's isolation. Current events and corresponding parameters
+    ///     are:
+    ///       'recycling'   void    : zone enter recycling status
+    ///       'recycled'    void    : zone enter recycled status
+    ///       'terminated'  int     : zone enter terminated satus. Parameter is zone's exit_code where 0 is success.
+    /// </summary>
+    /// <param name="event"> Valid event name mentioned above. </param>
+    /// <param name="func"> Callback function upon event emitted. </param>
+    on(event: string, func:(...args: any[]) => void) : void;
+}

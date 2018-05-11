@@ -18,5 +18,9 @@ export { log, memory, metric, runtime, store, sync, transport, v8, zone };
 import { call } from './zone/function-call';
 (<any>(global))["__napa_zone_call__"] = call;
 
+import {__emit_zone_event, __zone_events_listeners} from './zone/zone-impl';
+(<any>(global))["__zone_events_listeners"] = __zone_events_listeners;
+(<any>(global))["__emit_zone_event"] = __emit_zone_event;
+
 // Export 'napa' in global for all isolates that require napajs.
 (<any>(global))["napa"] = exports;
