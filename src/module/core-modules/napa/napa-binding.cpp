@@ -30,21 +30,21 @@
 using namespace napa;
 using namespace napa::module;
 
-static void RegisterBinding(v8::Local<v8::Object> module) {
+static void RegisterBinding(v8::Local<v8::Object> binding) {
     auto isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
 
-    auto persistentModule = new v8::Persistent<v8::Object>(isolate, module);
-    zone::WorkerContext::Set(zone::WorkerContextItem::NAPA_BINDING, persistentModule);
+    auto persistentBinding = new v8::Persistent<v8::Object>(isolate, binding);
+    zone::WorkerContext::Set(zone::WorkerContextItem::NAPA_BINDING, persistentBinding);
 }
 
-v8::Local<v8::Object> napa::module::binding::GetModule() {
-    auto persistentModule = 
+v8::Local<v8::Object> napa::module::binding::GetBinding() {
+    auto persistentBinding = 
         reinterpret_cast<v8::Persistent<v8::Object>*>(
             zone::WorkerContext::Get(zone::WorkerContextItem::NAPA_BINDING));
     
-    NAPA_ASSERT(persistentModule != nullptr, "\"napajs\" must be required before napa::module::binding::GetModule() can be called from C++.");
-    return v8::Local<v8::Object>::New(v8::Isolate::GetCurrent(), *persistentModule);
+    NAPA_ASSERT(persistentBinding != nullptr, "\"napajs\" must be required before napa::module::binding::GetBinding() can be called from C++.");
+    return v8::Local<v8::Object>::New(v8::Isolate::GetCurrent(), *persistentBinding);
 }
 
 static void CreateZone(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -271,9 +271,9 @@ void DeserializeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
     #endif
 }
 
-void binding::Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) {
+void binding::Init(v8::Local<v8::Object> exports) {
     // Register napa binding in worker context.
-    RegisterBinding(module);
+    RegisterBinding(exports);
 
     AllocatorDebuggerWrap::Init();
     AllocatorWrap::Init();

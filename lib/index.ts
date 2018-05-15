@@ -24,3 +24,6 @@ import {__emit_zone_event, __zone_events_listeners} from './zone/zone-impl';
 
 // Export 'napa' in global for all isolates that require napajs.
 (<any>(global))["napa"] = exports;
+
+// Override the global context
+import './override-global';

@@ -28,4 +28,19 @@ void Init(v8::Local<v8::Object> exports) {
     NODE_SET_METHOD(exports, "createSimpleObjectWrap", CreateSimpleObjectWrap);
 }
 
-NODE_MODULE(addon, Init);
+// Use well-known symbol definition
+// https://github.com/nodejs/node/pull/18934
+// https://github.com/nodejs/node/blob/master/test/addons/hello-world/binding.cc
+
+#define CONCAT(a, b) CONCAT_HELPER(a, b)
+#define CONCAT_HELPER(a, b) a##b
+#define INITIALIZER CONCAT(node_register_module_v, NODE_MODULE_VERSION)
+
+extern "C" NODE_MODULE_EXPORT void INITIALIZER(v8::Local<v8::Object> exports,
+                                               v8::Local<v8::Value> module,
+                                               v8::Local<v8::Context> context) {
+    SimpleObjectWrap::Init();
+
+    NODE_SET_METHOD(exports, "getModuleName", GetModuleName);
+    NODE_SET_METHOD(exports, "createSimpleObjectWrap", CreateSimpleObjectWrap);
+}

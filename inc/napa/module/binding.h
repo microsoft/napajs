@@ -15,22 +15,9 @@ namespace napa {
 namespace module {
 namespace binding {
 
-    /// <summary> Get 'module' object of napa binding, which is napa-binding.node in Node.JS isolate or napa-binding from core-modules in Napa isolate. </summary>
-    /// <returns> 'module' object for napa binding (napajs/bin/napa-binding.node or napa.dll) </returns>
-    NAPA_BINDING_API v8::Local<v8::Object> GetModule();
-
     /// <summary> Get 'module.exports' from napa binding. </summary>
     /// <returns> 'module.exports' object for napa binding (napajs/bin/napa-binding.node or napa.dll) </returns>
-    inline v8::Local<v8::Object> GetBinding() {
-        auto isolate = v8::Isolate::GetCurrent();
-        v8::EscapableHandleScope scope(isolate);
-
-        auto bindingModule = GetModule();        
-        auto binding = bindingModule->Get(napa::v8_helpers::MakeV8String(isolate, "exports"));
-        NAPA_ASSERT(!binding.IsEmpty() && binding->IsObject(), "\"exports\" is not available or not object type.");
-
-        return scope.Escape(v8::Local<v8::Object>::Cast(binding));
-    }
+    NAPA_BINDING_API v8::Local<v8::Object> GetBinding();
 
     /// <summary> It calls 'module.require' from context of napa binding in C++. </summary> 
     /// <param name="moduleName"> Module name in node 'require' convention. </summary>

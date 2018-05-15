@@ -37,16 +37,25 @@ void Shutdown(const v8::FunctionCallbackInfo<v8::Value>&) {
     napa::Shutdown();
 }
 
-void InitAll(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) {
+
+// Use well-known symbol definition
+// https://github.com/nodejs/node/pull/18934
+// https://github.com/nodejs/node/blob/master/test/addons/hello-world/binding.cc
+
+#define CONCAT(a, b) CONCAT_HELPER(a, b)
+#define CONCAT_HELPER(a, b) a##b
+#define INITIALIZER CONCAT(node_register_module_v, NODE_MODULE_VERSION)
+
+extern "C" NODE_MODULE_EXPORT void INITIALIZER(v8::Local<v8::Object> exports,
+                                               v8::Local<v8::Value> module,
+                                               v8::Local<v8::Context> context) {
     // Init node zone before initialize modules.
     napa::zone::NodeZone::Init(napa::node_zone::Broadcast, napa::node_zone::Execute);
 
     // Init core napa modules.
-    napa::module::binding::Init(exports, module);
+    napa::module::binding::Init(exports);
 
     // Only node addon can initialize/shutdown napa.
     NODE_SET_METHOD(exports, "initialize", Initialize);
     NODE_SET_METHOD(exports, "shutdown", Shutdown);
 }
-
-NODE_MODULE(napa, InitAll)
