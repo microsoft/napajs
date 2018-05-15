@@ -1,4 +1,5 @@
-
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
 
 /// <summary> Per-isolate cid => constructor registry. </summary>
 let _registry: Map<string, new(...args: any[]) => any> 
