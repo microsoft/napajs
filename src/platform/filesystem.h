@@ -17,10 +17,7 @@
 
 #else
 
-#pragma push_macro("NOMINMAX")
-#define NOMINMAX
 #include <windows.h>
-#pragma pop_macro("NOMINMAX")
 
 #endif
 

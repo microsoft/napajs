@@ -33,5 +33,10 @@ target_include_directories(${TARGET_NAME}
     ${NAPA_ROOT}/inc
     "/usr/local/include/node")
 
+# Link with napa shared library
+if (WIN32)
+    target_link_libraries(${TARGET_NAME} PRIVATE ${NAPA_ROOT}/bin/napa.lib)
+endif()
+
 # Link libraries
 target_link_libraries(${TARGET_NAME} PRIVATE ${CMAKE_JS_LIB})

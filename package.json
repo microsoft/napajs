@@ -11,7 +11,7 @@
     "url": "https://github.com/Microsoft/napajs.git"
   },
   "binary": {
-    "module_name": "napa-binding",
+    "module_name": "napa",
     "module_path": "./bin/",
     "host": "https://github.com/Microsoft/napajs/releases/download/",
     "remote_path": "{version}"
