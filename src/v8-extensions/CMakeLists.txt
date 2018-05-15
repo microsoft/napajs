@@ -28,7 +28,7 @@ endif()
 if(CMAKE_JS_VERSION)
     # Building Napa as an npm package for node usage (using exported v8 from node.exe)
 
-    target_include_directories(${TARGET_NAME} PRIVATE "/usr/local/include/node")
+    target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_JS_INC})
 else()
     # Building Napa for embed scenarios (static linking with v8)
     if (NOT DEFINED NODE_ROOT)
