@@ -141,9 +141,9 @@ void Worker::Schedule(std::shared_ptr<Task> task) {
 
 void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
     // Create Isolate.
-    v8::Isolate::CreateParams params;
-    params.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
-    v8::Isolate* isolate = v8::Isolate::New(params);
+    std::unique_ptr<node::ArrayBufferAllocator, decltype(&node::FreeArrayBufferAllocator)>
+        allocator(node::CreateArrayBufferAllocator(), &node::FreeArrayBufferAllocator);
+    v8::Isolate* isolate = node::NewIsolate(allocator.get());
     NAPA_ASSERT(isolate, "Failed to create v8 isolate for worker.");
     _impl->isolate = isolate;
 
@@ -156,7 +156,9 @@ void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
         v8::Locker locker(isolate);
         v8::Isolate::Scope isolate_scope(isolate);
         v8::HandleScope handle_scope(isolate);
-        node::IsolateData* isolate_data = node::CreateIsolateData(isolate, &_impl->loop, multiIsolatePlatform);
+        std::unique_ptr<node::IsolateData, decltype(&node::FreeIsolateData)> isolate_data(
+            node::CreateIsolateData(isolate, &_impl->loop, multiIsolatePlatform, allocator.get()),
+            &node::FreeIsolateData);
 
         // Napa releted setting.
         _impl->foregroundTaskRunner = multiIsolatePlatform->GetForegroundTaskRunner(isolate).get();
@@ -166,7 +168,7 @@ void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
         NAPA_DEBUG("Worker", "(id=%u) Setup completed.", _impl->id);
 
         // Create Context.
-        v8::Local<v8::Context> context = v8::Context::New(isolate);
+        v8::Local<v8::Context> context = node::NewContext(isolate);
         v8::Context::Scope context_scope(context);
 
         // Create node::Environment.
@@ -178,7 +180,7 @@ void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
         // worker id.
         auto workId = std::to_string(_impl->id);
         worker_argv[3] = workId.c_str();
-        node::Environment* env = node::CreateEnvironment(isolate_data, context, 4, worker_argv, 0, nullptr);
+        node::Environment* env = node::CreateEnvironment(isolate_data.get(), context, 4, worker_argv, 0, nullptr);
 
         // Problem: it would impact relevant execution behavior because,
         // 1. this logic couples with node bootstrapping logic,
@@ -213,7 +215,6 @@ void Worker::WorkerThreadFunc(const settings::ZoneSettings& settings) {
         multiIsolatePlatform->CancelPendingDelayedTasks(isolate);
         
         node::FreeEnvironment(env);
-        node::FreeIsolateData(isolate_data);
     }
 
     isolate->Dispose();
