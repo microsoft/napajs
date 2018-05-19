@@ -99,6 +99,10 @@ TEST_CASE("scheduler creates correct number of worker", "[scheduler]") {
         [](WorkerId, uv_loop_t*) {},
         []() {});
 
+    // TODO: enable scheduler gracefully shutdown
+    std::this_thread::sleep_for(std::chrono::seconds(1)); // wait for all tasks to be scheduled
+    scheduler = nullptr;
+
     REQUIRE(TestWorker<1>::numberOfWorkers == settings.workers);
 }
 
@@ -110,6 +114,10 @@ TEST_CASE("scheduler dispatches worker setup complete callback correctly", "[sch
         settings,
         [&idSum](WorkerId id, uv_loop_t*) { idSum += id;},
         []() {});
+
+    // TODO: enable scheduler gracefully shutdown
+    std::this_thread::sleep_for(std::chrono::seconds(1)); // wait for all tasks to be scheduled
+    scheduler = nullptr;
 
     REQUIRE(idSum == settings.workers * (settings.workers - 1) / 2);
 }
@@ -126,14 +134,18 @@ TEST_CASE("scheduler assigns tasks correctly", "[scheduler]") {
 
     SECTION("schedules on exactly one worker") {
         scheduler->Schedule(task);
-        scheduler = nullptr; // force draining all scheduled tasks
+        // TODO: enable scheduler gracefully shutdown
+        std::this_thread::sleep_for(std::chrono::seconds(1)); // wait for all tasks to be scheduled
+        scheduler = nullptr;
 
         REQUIRE(task->numberOfExecutions == 1);
     }
 
     SECTION("schedule on a specific worker") {
         scheduler->ScheduleOnWorker(2, task);
-        scheduler = nullptr; // force draining all scheduled tasks
+        // TODO: enable scheduler gracefully shutdown
+        std::this_thread::sleep_for(std::chrono::seconds(1)); // wait for all tasks to be scheduled
+        scheduler = nullptr;
 
         REQUIRE(task->numberOfExecutions == 1);
         REQUIRE(task->lastExecutedWorkerId == 2);
@@ -141,7 +153,9 @@ TEST_CASE("scheduler assigns tasks correctly", "[scheduler]") {
 
     SECTION("schedule on all workers") {
         scheduler->ScheduleOnAllWorkers(task);
-        scheduler = nullptr; // force draining all scheduled tasks
+        // TODO: enable scheduler gracefully shutdown
+        std::this_thread::sleep_for(std::chrono::seconds(1)); // wait for all tasks to be scheduled
+        scheduler = nullptr;
 
         REQUIRE(task->numberOfExecutions == settings.workers);
     }
@@ -163,7 +177,9 @@ TEST_CASE("scheduler distributes and schedules all tasks", "[scheduler]") {
         scheduler->Schedule(task);
     }
 
-    scheduler = nullptr; // force draining all scheduled tasks
+    // TODO: enable scheduler gracefully shutdown
+    std::this_thread::sleep_for(std::chrono::seconds(1)); // wait for all tasks to be scheduled
+    scheduler = nullptr;
 
     std::vector<bool> scheduledWorkersFlags = { false, false, false, false };
     size_t notRun = 0;
