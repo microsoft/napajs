@@ -4,6 +4,7 @@ matrix:
   exclude:
   # Disable the default build and use customized matrix only.
   - compiler: default
+  include:
   # Node Current (10.x)       Linux (Trusty)          G++7.3.0
   - os: linux
     dist: trusty
