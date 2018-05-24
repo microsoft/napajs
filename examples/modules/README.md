@@ -1,5 +1,7 @@
 ## Napa module source tree
 
+**NOTE: Module examples under this directory haven't been updated to support napa.js v0.4.x. We are working on this. You can also check [test/module/addon](https://github.com/Microsoft/napajs/tree/master/test/module/addon) to get a basic idea about how addons are supported by napa.js v0.4.x.**
+
 The source codes can be organized as the structure below.
 ```
 +-- napa-module-example
