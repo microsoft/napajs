@@ -36,6 +36,7 @@ set_target_properties(${TARGET_NAME} PROPERTIES
 # Include directories
 target_include_directories(${TARGET_NAME} PRIVATE
     ${CMAKE_JS_INC}
+    ${PROJECT_SOURCE_DIR}/third-party/node
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/src/module/core-modules/napa
     ${PROJECT_SOURCE_DIR}/third-party
