@@ -4,6 +4,6 @@
     "author": "napajs",
     "main": "./synchronized-loading.js",
     "dependencies": {
-        "napajs": ">= 0.1.8"
+        "napajs": "pre"
     }
 }
