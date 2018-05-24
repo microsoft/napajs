@@ -4,6 +4,6 @@
     "author": "napajs",
     "main": "./recursive-fibonacci.js",
     "dependencies": {
-        "napajs": ">= 0.1.0"
+        "napajs": "pre"
     }
 }
