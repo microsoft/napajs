@@ -2,7 +2,7 @@ environment:
   matrix:
     # Windows Server 2016          Visual C++ Build Tools 2017
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      nodejs_version: 10
+      nodejs_version: 10.2.1
 
 platform:
 - x64
