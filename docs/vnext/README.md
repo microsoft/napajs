@@ -8,7 +8,7 @@ vNext is a version with new worker implementation. In Napa.js vNext, napa worker
 See also: [Open Issues](https://github.com/Microsoft/napajs/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+project%3AMicrosoft%2Fnapajs%2F4), [Project vNext](https://github.com/Microsoft/napajs/projects/4), [Napa.js versions](./napa-versions.md)
 
 ## Install
-Napa.js vNext requires **Node.js v10.2.0 or later**.
+Napa.js vNext requires **Node.js v10.2.1 or later**.
 
 Install the latest pre release version:
 ```
