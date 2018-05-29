@@ -40,8 +40,7 @@ target_include_directories(${TARGET_NAME}
     ${NAPA_ROOT}/inc
     ${NAPA_ROOT}/src
     ${NAPA_ROOT}/third-party
-    ${CMAKE_JS_INC}
-    ${NAPA_ROOT}/third-party/node)
+    ${CMAKE_JS_INC})
 
 # Set output directory for dll/libs
 set_target_properties(${TARGET_NAME} PROPERTIES
