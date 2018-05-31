@@ -2,13 +2,14 @@ environment:
   matrix:
     # Windows Server 2016          Visual C++ Build Tools 2017
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      nodejs_version: 10
+      nodejs_version: "10.2.1"
 
 platform:
 - x64
 
 install:
-- ps: Install-Product node $env:nodejs_version $env:platform
+- ps: Install-Product node 10 $env:platform
+- ps: Update-NodeJsInstallation $env:nodejs_version $env:platform
 - npm install cmake-js -g
 - npm install --no-fetch
 

@@ -31,8 +31,7 @@ set_target_properties(${TARGET_NAME} PROPERTIES
 target_include_directories(${TARGET_NAME}
     PRIVATE
     ${NAPA_ROOT}/inc
-    ${CMAKE_JS_INC}
-    ${NAPA_ROOT}/third-party/node)
+    ${CMAKE_JS_INC})
 
 # Link with napa shared library
 if (WIN32)
