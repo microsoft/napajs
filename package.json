@@ -17,14 +17,14 @@
     "remote_path": "{version}"
   },
   "dependencies": {
-    "node-pre-gyp": "^0.6.36",
+    "node-pre-gyp": "^0.10.0",
     "npmlog": "^4.1.2",
     "semver": "^5.5.0"
   },
   "devDependencies": {
     "node-pre-gyp-github": "^1.3.1",
-    "mocha": "^3.5.0",
-    "typescript": "^2.4.2",
+    "mocha": "^5.2.0",
+    "typescript": "^2.9.1",
     "@types/node": "^8.0.22",
     "@types/mocha": "^2.2.41",
     "markdown-table": "^1.1.1"
@@ -33,10 +33,10 @@
     "benchmark": "node benchmark/bench.js",
     "install": "node scripts/install.js",
     "prepare": "tsc -p lib && tsc -p test && tsc -p benchmark",
-    "test": "mocha test --recursive",
+    "test": "mocha test --recursive --exit",
     "rebuild": "cmake-js rebuild && tsc -p lib",
     "rebuildd": "cmake-js rebuild --debug && tsc -p lib",
-    "retest": "cmake-js rebuild -d test/module/addon && tsc -p test && mocha test --recursive",
+    "retest": "cmake-js rebuild -d test/module/addon && tsc -p test && mocha test --recursive --exit",
     "reunittest": "cmake-js rebuild -d unittest && node unittest/run.js",
     "unittest": "cmake-js compile -d unittest && node unittest/run.js"
   }
