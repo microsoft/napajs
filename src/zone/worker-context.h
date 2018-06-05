@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include <napa/exports.h>
-
 #include <array>
 
 namespace napa {
@@ -41,7 +39,7 @@ namespace zone {
     };
 
     /// <summary> Napa specific data stored at TLS. </summary>
-    class NAPA_API WorkerContext {
+    class WorkerContext {
     public:
 
         /// <summary> Initialize isolate data. </summary>

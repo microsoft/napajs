@@ -26,7 +26,7 @@ namespace zone {
     class NodeZone : public Zone {
     public:
         /// <summary> Set delegate function for Broadcast and Execute on node zone. This is intended to be called from napa-binding.node. </summary>
-        static NAPA_API void Init(BroadcastDelegate broadcast, ExecuteDelegate execute);
+        static void Init(BroadcastDelegate broadcast, ExecuteDelegate execute);
 
         /// <summary> 
         ///    Retrieves an existing zone. 

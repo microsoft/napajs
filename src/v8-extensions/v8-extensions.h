@@ -11,7 +11,7 @@ namespace v8_extensions {
 
     class SerializedData;
 
-    class NAPA_API Utils {
+    class Utils {
         public:
         static std::shared_ptr<SerializedData>
         SerializeValue(v8::Isolate* isolate, v8::Local<v8::Value> value);
