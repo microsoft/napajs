@@ -7,8 +7,9 @@
 
 #include <uv.h>
 
-namespace napa {
-namespace zone {
+using namespace napa::zone;
+
+namespace {
 
     /// <summary> Class holding asynchronous callbacks and libuv request. </summary>
     struct AsyncContext {
@@ -89,55 +90,54 @@ namespace zone {
             delete context;
         });
     }
+} // namespace
 
-    /// <summary> It runs a synchronous function in a separate thread and posts a completion into the current V8 execution loop. </summary>
-    /// <param name="jsCallback"> Javascript callback. </summary>
-    /// <param name="asyncWork"> Function to run asynchronously in separate thread. </param>
-    /// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous callback completes. </param>
-    /// <remarks> Return value from 'asyncWork' will be the input to 'asyncCompleteCallback'. </remarks>
-    void PostAsyncWork(v8::Local<v8::Function> jsCallback,
-                              AsyncWork asyncWork,
-                              AsyncCompleteCallback asyncCompleteCallback) {
-        auto isolate = v8::Isolate::GetCurrent();
-        v8::HandleScope scope(isolate);
 
-        auto context = new AsyncContext();
+/// <summary> It runs a synchronous function in a separate thread and posts a completion into the current V8 execution loop. </summary>
+/// <param name="jsCallback"> Javascript callback. </summary>
+/// <param name="asyncWork"> Function to run asynchronously in separate thread. </param>
+/// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous callback completes. </param>
+/// <remarks> Return value from 'asyncWork' will be the input to 'asyncCompleteCallback'. </remarks>
+void napa::zone::PostAsyncWork(v8::Local<v8::Function> jsCallback,
+                               AsyncWork asyncWork,
+                               AsyncCompleteCallback asyncCompleteCallback) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
 
-        context->work.data = context;
-        context->jsCallback.Reset(isolate, jsCallback);
-        context->asyncWork = std::move(asyncWork);
-        context->asyncCompleteCallback = std::move(asyncCompleteCallback);
+    auto context = new AsyncContext();
 
-        auto loop = reinterpret_cast<uv_loop_t*>(WorkerContext::Get(WorkerContextItem::EVENT_LOOP));
-        uv_queue_work(loop, &context->work, RunAsyncWork, RunAsyncCompleteCallback);
-    }
+    context->work.data = context;
+    context->jsCallback.Reset(isolate, jsCallback);
+    context->asyncWork = std::move(asyncWork);
+    context->asyncCompleteCallback = std::move(asyncCompleteCallback);
 
-    /// <summary> It runs an asynchronous function and post a completion into the current V8 execution loop. </summary>
-    /// <param name="jsCallback"> Javascript callback. </summary>
-    /// <param name="asyncWork"> Function to wrap async-supporting function. </param>
-    /// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous function completes. </param>
-    /// <remarks> Argument at 'asyncWork' completion callback will be the input to 'asyncCompleteCallback'. </remarks>
-    void DoAsyncWork(v8::Local<v8::Function> jsCallback,
-                            const CompletionWork& asyncWork,
-                            AsyncCompleteCallback asyncCompleteCallback) {
-        auto isolate = v8::Isolate::GetCurrent();
-        v8::HandleScope scope(isolate);
+    auto loop = reinterpret_cast<uv_loop_t*>(WorkerContext::Get(WorkerContextItem::EVENT_LOOP));
+    uv_queue_work(loop, &context->work, RunAsyncWork, RunAsyncCompleteCallback);
+}
 
-        auto context = new CompletionContext();
+/// <summary> It runs an asynchronous function and post a completion into the current V8 execution loop. </summary>
+/// <param name="jsCallback"> Javascript callback. </summary>
+/// <param name="asyncWork"> Function to wrap async-supporting function. </param>
+/// <param name="asyncCompleteCallback"> Callback running in V8 isolate after asynchronous function completes. </param>
+/// <remarks> Argument at 'asyncWork' completion callback will be the input to 'asyncCompleteCallback'. </remarks>
+void napa::zone::DoAsyncWork(v8::Local<v8::Function> jsCallback,
+                             const CompletionWork& asyncWork,
+                             AsyncCompleteCallback asyncCompleteCallback) {
+    auto isolate = v8::Isolate::GetCurrent();
+    v8::HandleScope scope(isolate);
 
-        context->work.data = context;
-        context->jsCallback.Reset(isolate, jsCallback);
-        context->asyncCompleteCallback = std::move(asyncCompleteCallback);
+    auto context = new CompletionContext();
 
-        auto loop = reinterpret_cast<uv_loop_t*>(WorkerContext::Get(WorkerContextItem::EVENT_LOOP));
-        uv_async_init(loop, &context->work, RunCompletionCallback);
+    context->work.data = context;
+    context->jsCallback.Reset(isolate, jsCallback);
+    context->asyncCompleteCallback = std::move(asyncCompleteCallback);
 
-        asyncWork([context](void* result) {
-            context->result = result;
-            
-            uv_async_send(&context->work);
-        });
-    }
+    auto loop = reinterpret_cast<uv_loop_t*>(WorkerContext::Get(WorkerContextItem::EVENT_LOOP));
+    uv_async_init(loop, &context->work, RunCompletionCallback);
 
-}   // End of namespace module.
-}   // End of namespace napa.
+    asyncWork([context](void* result) {
+        context->result = result;
+        
+        uv_async_send(&context->work);
+    });
+}
