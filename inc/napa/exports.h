@@ -15,20 +15,12 @@
     static_assert(false, "Unknown dynamic link import/export semantics");
 #endif
 
-// API exported from napa.dll
+// API exported from napa.node
 #ifdef NAPA_EXPORTS
     #define NAPA_API DLL_EXPORT
 #else
     #define NAPA_API DLL_IMPORT
 #endif // NAPA_EXPORTS
-
-// API exported from napa-binding. (both napa.dll and napa-binding.node)
-#ifdef NAPA_BINDING_EXPORTS
-    #define NAPA_BINDING_API DLL_EXPORT
-#else
-    #define NAPA_BINDING_API DLL_IMPORT
-#endif // NAPA_BINDING_EXPORTS
-
 
 #ifdef __cplusplus
 #define EXTERN_C extern "C"

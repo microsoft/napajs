@@ -17,7 +17,7 @@ namespace binding {
 
     /// <summary> Get 'module.exports' from napa binding. </summary>
     /// <returns> 'module.exports' object for napa binding (napajs/bin/napa-binding.node or napa.dll) </returns>
-    NAPA_BINDING_API v8::Local<v8::Object> GetBinding();
+    NAPA_API v8::Local<v8::Object> GetBinding();
 
     /// <summary> It calls 'module.require' from context of napa binding in C++. </summary> 
     /// <param name="moduleName"> Module name in node 'require' convention. </summary>

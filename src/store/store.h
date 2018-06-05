@@ -58,19 +58,19 @@ namespace store {
     /// <summary> Create a store by id. </summary>
     /// <param name="id"> Case-sensitive id. </summary>
     /// <returns> Newly created store, or nullptr if store associated with id already exists. </summary>
-    NAPA_API std::shared_ptr<Store> CreateStore(const char* id);
+    std::shared_ptr<Store> CreateStore(const char* id);
 
     /// <summary> Get or create a store by id. </summary>
     /// <param name="id"> Case-sensitive id. </summary>
     /// <returns> Existing or newly created store. Should never be nullptr. </summary>
-    NAPA_API std::shared_ptr<Store> GetOrCreateStore(const char* id);
+    std::shared_ptr<Store> GetOrCreateStore(const char* id);
 
     /// <summary> Get a store by id. </summary>
     /// <param name="id"> Case-sensitive id. </summary>
     /// <returns> Existing store or nullptr if not found. </summary>
-    NAPA_API std::shared_ptr<Store> GetStore(const char* id);
+    std::shared_ptr<Store> GetStore(const char* id);
 
     /// <summary> Get store count currently in use. </summary>
-    NAPA_API size_t GetStoreCount();
+    size_t GetStoreCount();
 }
 }
