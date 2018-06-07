@@ -1,0 +1,15 @@
+{
+  "name": "zip_in_node_worker",
+  "version": "1.0.0",
+  "description": "Just run zip/unzip in napa's node worker for demostration.",
+  "main": "zip_in_node_worker.js",
+  "scripts": {
+    "start": "node zip_in_node_worker.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "uuid": "^3.2.1"
+  }
+}
