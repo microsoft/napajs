@@ -9,7 +9,7 @@ While node main runs an express server on 3000, which basically reverse proxy ht
 2. Go to directory of "examples/tutorial/three_express_servers".
 2. Run "npm install" to install dependencies other than napa.
 3. Run "npm start" or "node lib/app.js" to start the server.
-4. In browser, visit "http://localhost:3000/ to see result and just click links on it to visit content from other two servers behind the proxy.
+4. In browser, visit http://localhost:3000/ to see result and just click links on it to visit content from other two servers behind the proxy.
 
 ## Note
 1. The express server serving static content could be started by running command like "node lib/server 3001 docs/server1".
