@@ -1,0 +1,19 @@
+{
+  "name": "thress_express_servers",
+  "version": "1.0.0",
+  "description": "Reverse http server in node main with two other http serveris in napa zones running node worker.",
+  "main": "lib/app.js",
+  "scripts": {
+    "start": "node lib/app",
+    "server1": "node lib/server 3001 docs/server1",
+    "server2": "node lib/server 3002 docs/server2",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.3",
+    "http-proxy": "^1.17.0",
+    "morgan": "^1.9.0"
+  }
+}

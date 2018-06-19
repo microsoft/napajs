@@ -1,0 +1,13 @@
+bin
+build
+node_modules
+types
+
+package-lock.json
+
+# ignore all VSCode files
+.vscode
+
+# ignore npm related files
+npm-debug.log
+
