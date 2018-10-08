@@ -25,7 +25,7 @@ using namespace napa;
 static std::atomic<bool> _initialized(false);
 static settings::PlatformSettings _platformSettings;
 
-/// <summary> a simple wrapper around Zone for managing lifetime using shared_ptr. </summary>
+/// <summary> A simple wrapper around Zone for managing lifetime using shared_ptr. </summary>
 struct napa_zone {
     std::string id;
     std::shared_ptr<zone::Zone> zone;
@@ -40,7 +40,7 @@ napa_zone_handle napa_zone_create(napa_string_ref id) {
 
 napa_zone_handle napa_zone_get(napa_string_ref id) {
     NAPA_ASSERT(_initialized, "Napa wasn't initialized");
-    
+
     auto zoneId = NAPA_STRING_REF_TO_STD_STRING(id);
     std::shared_ptr<zone::Zone> zone;
     if (zoneId == "node") {
@@ -105,7 +105,7 @@ napa_result_code napa_zone_release(napa_zone_handle handle) {
 napa_string_ref napa_zone_get_id(napa_zone_handle handle) {
     NAPA_ASSERT(_initialized, "Napa platform wasn't initialized");
     NAPA_ASSERT(handle, "Zone handle is null");
-    
+
     return STD_STRING_TO_NAPA_STRING_REF(handle->id);
 }
 
@@ -120,14 +120,14 @@ void napa_zone_broadcast(napa_zone_handle handle,
     FunctionSpec req;
     req.module = spec.module;
     req.function = spec.function;
-    
+
     req.arguments.reserve(spec.arguments_count);
     for (size_t i = 0; i < spec.arguments_count; i++) {
         req.arguments.emplace_back(spec.arguments[i]);
     }
 
     req.options = spec.options;
-    
+
     // Assume ownership of transport context
     req.transportContext.reset(reinterpret_cast<napa::transport::TransportContext*>(spec.transport_context));
 
@@ -137,7 +137,7 @@ void napa_zone_broadcast(napa_zone_handle handle,
         res.code = result.code;
         res.error_message = STD_STRING_TO_NAPA_STRING_REF(result.errorMessage);
         res.return_value = STD_STRING_TO_NAPA_STRING_REF(result.returnValue);
-        
+
         // Release ownership of transport context
         res.transport_context = reinterpret_cast<void*>(result.transportContext.release());
 
@@ -156,14 +156,14 @@ void napa_zone_execute(napa_zone_handle handle,
     FunctionSpec req;
     req.module = spec.module;
     req.function = spec.function;
-    
+
     req.arguments.reserve(spec.arguments_count);
     for (size_t i = 0; i < spec.arguments_count; i++) {
         req.arguments.emplace_back(spec.arguments[i]);
     }
 
     req.options = spec.options;
-    
+
     // Assume ownership of transport context
     req.transportContext.reset(reinterpret_cast<napa::transport::TransportContext*>(spec.transport_context));
 
@@ -172,7 +172,7 @@ void napa_zone_execute(napa_zone_handle handle,
         res.code = result.code;
         res.error_message = STD_STRING_TO_NAPA_STRING_REF(result.errorMessage);
         res.return_value = STD_STRING_TO_NAPA_STRING_REF(result.returnValue);
-        
+
         // Release ownership of transport context
         res.transport_context = reinterpret_cast<void*>(result.transportContext.release());
 
@@ -264,9 +264,9 @@ namespace {
 } // namespace
 
 void napa_allocator_set(
-    napa_allocate_callback allocate_callback, 
+    napa_allocate_callback allocate_callback,
     napa_deallocate_callback deallocate_callback) {
-    
+
     NAPA_ASSERT(allocate_callback != nullptr, "'allocate_callback' should be a valid function.");
     NAPA_ASSERT(deallocate_callback != nullptr, "'deallocate_callback' should be a valid function.");
 
