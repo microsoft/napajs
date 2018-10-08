@@ -37,11 +37,11 @@ More examples:
 * [Synchronized loading](./examples/tutorial/synchronized-loading)
 
 ## Features
-- Multi-threaded JavaScript runtime
-- Node.js compatible module architecture with NPM support
-- API for object transportation, object sharing and synchronization across JavaScript threads
-- API for pluggable logging, metric and memory allocator
-- Distributed as a Node.js module, as well as supporting embed scenarios
+- Multi-threaded JavaScript runtime.
+- Node.js compatible module architecture with NPM support.
+- API for object transportation, object sharing and synchronization across JavaScript threads.
+- API for pluggable logging, metric and memory allocator.
+- Distributed as a Node.js module, as well as supporting embed scenarios.
 
 ## Documentation
 - [Napa.js Home](https://github.com/Microsoft/napajs/wiki)
