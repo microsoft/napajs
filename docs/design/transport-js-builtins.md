@@ -1,22 +1,22 @@
 # Transport JavaScript standard built-in objects
 
 ## Incentives
-The abstraction of 'Transportable' lies in the center of napa.js to efficiently share objects between JavaScript VMs (napa workers). Except JavaScript primitive types, an object needs to implement 'Transportable' interface to make it transportable. It means [Javascript standard built-in objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects) are not transportable unless wrappers or equivalent implementations for them are implemented by extending 'Transportable' interface. Developing cost for all those objects is not trivial, and new abstraction layer (wrappers or equivalent implementations) will bring barriers for users to learn and adopt these new stuffs. Moreover, developers also need to deal with the interaction between JavaScript standards objects and those wrappers or equivalent implementations.
+The abstraction of 'Transportable' lies in the center of Napa.js to efficiently share objects between JavaScript VMs (Napa workers). Except JavaScript primitive types, an object needs to implement 'Transportable' interface to make it transportable. It means [JavaScript standard built-in objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects) are not transportable unless wrappers or equivalent implementations for them are implemented by extending 'Transportable' interface. The development cost for these objects is not trivial, and new abstraction layer (wrappers or equivalent implementations) will create barriers for users to learn and adopt these new things. Moreover, developers also need to deal with the interaction between JavaScript standards objects and those wrappers or equivalent implementations.
 
 The incentive of this design is to provide a solution to make JavaScript standard built-in objects transportable with requirements listed in the Goals section.
 
-At the first stage, we will focus on an efficient solution to share data between napa workers. Basically, it is about making SharedArrayBuffer / TypedArray / DataView transportable.
+At the first stage, we will focus on an efficient solution to share data between Napa workers. Basically, it is about making SharedArrayBuffer / TypedArray / DataView transportable.
 
 ## Goals
 Make Javascript standard built-in objects transportable with
-- an efficient way to share structured data, like SharedArrayBuffer, among napa workers
-- consistent APIs with ECMA standards
-- no new abstraction layers for the simplest usage
-- the least new concepts for advanced usage
-- a scalable solution to make all Javascript standard built-in objects transportable, avoiding to make them transportable one by one.
+- An efficient way to share structured data, like SharedArrayBuffer, among Napa workers
+- Consistent APIs with ECMA standards
+- No new abstraction layers for the simplest usage
+- The least new concepts for advanced usage
+- A scalable solution to make all JavaScript standard built-in objects transportable, avoiding to make them transportable one by one.
 
 ## Example
-The below example shows how SharedArrayBuffer object is transported across multiple napa workers. It will print the TypedArray 'ta' created from a SharedArrayBuffer, with all its elements set to 100 from different napa workers. 
+The below example shows how SharedArrayBuffer object is transported across multiple Napa workers. It will print the TypedArray 'ta' created from a SharedArrayBuffer, with all its elements set to 100 from different Napa workers. 
 ```js
 var napa = require("napajs");
 var zone = napa.zone.create('zone', { workers: 4 });
@@ -45,28 +45,28 @@ run();
 ```
 
 ## Solution
-Here we just give a high level description of the solution. Its api will go to docs/api/transport.
+Here we just give a high-level description of the solution. Its API will go to [docs/api/transport](https://github.com/Microsoft/napajs/blob/master/docs/api/transport.md).
 - V8 provides its value-serialization mechanism by ValueSerializer and ValueDeserializer, which is compatible with the HTML structured clone algorithm. It is a horizontal solution to serialize / deserialize JavaScript objects. ValueSerializer::Delegate and ValueDeserializer::Delegate are their inner class. They work as base classes from which developers can deprive to customize some special handling of external / shared resources, like memory used by a SharedArrayBuffer object.
 
 - napa::v8_extensions::ExternalizedContents
-> 1. It holds the externalized contents (memory) of a SharedArrayBuffer instance once it is serialized via napa::v8_extensions::Utils::SerializeValue().
-> 2. Only 1 instance of ExternalizedContents wil be generated for each SharedArrayBuffer. If a SharedArrayBuffer had been externalized, it will reuse the ExternalizedContents instance created before in napa::v8_extensions::Utils::SerializeValue()
+  - It holds the externalized contents (memory) of a SharedArrayBuffer instance once it is serialized via napa::v8_extensions::Utils::SerializeValue().
+  - Only 1 instance of ExternalizedContents wil be generated for each SharedArrayBuffer. If a SharedArrayBuffer had been externalized, it will reuse the ExternalizedContents instance created before in napa::v8_extensions::Utils::SerializeValue()
 
 - napa::v8_extensions::SerializedData
-> 1. It is generated by napa::v8_extensions::Utils::SerializeValue(). It holds the serialized data of a JavaScript object, which is required during its deserialization.
+  - It is generated by napa::v8_extensions::Utils::SerializeValue(). It holds the serialized data of a JavaScript object, which is required during its deserialization.
 
 - BuiltInObjectTransporter
-> 1. napa::v8_extensions::Serializer, derived from v8::ValueSerializer::Delegate
-> 2. napa::v8_extensions::Deserializer, derived from v8::ValueDeserializer::Delegate
-> 3. static std::shared_ptr<SerializedData> v8_extensions::Utils::SerializeValue(Isolate* isolate, Local<Value> value);
->>> Generate the SerializedData instance given an input value.
->>> If any SharedArrayBuffer instances exist in the input value, their ExternalizedContents instances will be generated and attached to the ShareArrayBuffer instances respectively.
-> 4. static MaybeLocal<Value> v8_extensions::Utils::DeserializeValue(Isolate* isolate, std::shared_ptr<SerializedData> data);
->>> Restore a JavaScript value from its SerializedData instance generated by v8_extensions::Utils::SerializeValue() before.
+  - napa::v8_extensions::Serializer, derived from v8::ValueSerializer::Delegate
+  - napa::v8_extensions::Deserializer, derived from v8::ValueDeserializer::Delegate
+  - static std::shared_ptr<SerializedData> v8_extensions::Utils::SerializeValue(Isolate* isolate, Local<Value> value)
+    - Generate the SerializedData instance given an input value.
+    - If any SharedArrayBuffer instances exist in the input value, their ExternalizedContents instances will be generated and attached to the ShareArrayBuffer instances respectively.
+  - static MaybeLocal<Value> v8_extensions::Utils::DeserializeValue(Isolate* isolate, std::shared_ptr<SerializedData> data);
+    - Restore a JavaScript value from its SerializedData instance generated by v8_extensions::Utils::SerializeValue() before.
 
-- Currently, napa relies on Transportable API and a registered constructor to make an object transportable. In [marshallTransform](https://github.com/Microsoft/napajs/blob/master/lib/transport/transport.ts), when a JavaScript object is detected to have a registered constructor, it will go with napa way to marshall this object with the help of a TransportContext object, otherwise a non-transportable error is thrown.
+- Currently, Napa relies on Transportable API and a registered constructor to make an object transportable. In [marshallTransform](https://github.com/Microsoft/napajs/blob/master/lib/transport/transport.ts), when a JavaScript object is detected to have a registered constructor, it will go with Napa way to marshall this object with the help of a TransportContext object, otherwise a non-transportable error is thrown.
 
-- Instead of throwing an Error when no registered constructor is detected, the above mentioned BuiltInObjectTransporter can jump in to help marshall this object. We can use a whitelist of object types to restrict this solution to those verified types at first.
+- Instead of throwing an error when no registered constructor is detected, the BuiltInObjectTransporter can help handle this object. We can use a whitelist of object types to restrict this solution to those verified types at first.
 ```js
 export function marshallTransform(jsValue: any, context: transportable.TransportContext): any {
      if (jsValue != null && typeof jsValue === 'object' && !Array.isArray(jsValue)) {
@@ -111,25 +111,23 @@ function unmarshallTransform(payload: any, context: transportable.TransportConte
 }
 ```
 
-- Life cycle of SharedArrayBuffer (SAB)
-> 1. When a SAB participates transportation among napa workers, its life cycle will be extended till the last reference this SAB. The reference of a SAB could be
->>> 1) a SAB object in its original isolate.
+#### Lifecycle of SharedArrayBuffer (SAB)
+- When a SAB participates transportation among Napa workers, its life cycle will be extended till the last reference this SAB. The reference of a SAB could be:
+  - SAB object in its original isolate.
+  - Received SAB transported from another Napa workers, including node zone of Napa.
+  - TypedArray or DataView created from the original SAB or a received SAB.
 
->>> 2) a received SAB transported from another napa workers, including node zone of napa.
+- The life cycle extension during transportation is achieved through the ExternalizedContents SharedPtrWrap of the SAB.
+  - When a SAB is transported for the first time, it will be externalized and its ExternalizedContents will be stored in its SerializedData. At the same time, the SharedPtrWrap of the ExternalizedContents will be set to the '_externalized' property of the original SAB.
 
->>> 3) a TypedArray or DataView created from the original SAB or a received SAB.
+  - When a SAB is transported for the second time or later, it wil skip externalization and find its ExternalizedContents from its '_externalized' property, and store it to its SerializedData.
 
-> 2. The life cycle extension during transportation is achieved through the ExternalizedContents SharedPtrWrap of the SAB.
->>> 1) When a SAB is transported for the first time, it will be externalized and its ExternalizedContents will be stored in its SerializedData. At the same time, the SharedPtrWrap of the ExternalizedContents will be set to the '_externalized' property of the original SAB.
+  - When a Napa worker tries to restore a transported SAB, it will find the pre-stored ExternalizedContents, and create a SharedPtrWrap for it, then set it to the to-be-restored SAB.
 
->>> 2) When a SAB is transported for the second time or later, it wil skip externalization and find its ExternalizedContents from its '_externalized' property, and store it to its SerializedData.
-
->>> 3) When a napa worker try to restored a transported SAB, it will find the pre-stored ExternalizedContents, and create a SharedPtrWrap for it, then set it to the to-be-restored SAB.
-
->>> 4) The life cycle of the SharedArrayBuffer is extended by the SharedPtrWrap of its ExternalizedContents.
+  - The life cycle of the SharedArrayBuffer is extended by the SharedPtrWrap of its ExternalizedContents.
 
 
 ## Constraints
 The above solution is based on the serialization / deserialization mechanism of V8. It may have the following constraints.
 - Not all [JavaScripts standard built-in objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects) are supported by Node (as a dependency of Napa in node mode) or V8 of a given version. We only provide transporting solution for those mature object types.
-- Up to present, Node does not explicitly support multiple V8 isolates. There might be inconsistency to transport objects between node zone and napa zones. Extra effort might be required to make it consistent.
+- Presently, Node does not explicitly support multiple V8 isolates. There may be inconsistencies in transporting objects between Node zones and Napa zones. Extra effort might be required to make it consistent.
