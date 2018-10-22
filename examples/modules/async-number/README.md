@@ -1,4 +1,4 @@
-# Asynchronus numbering
+# Asynchronous numbering
 
 ## APIs
 
