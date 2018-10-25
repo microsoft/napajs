@@ -54,7 +54,7 @@ Transportable types are:
 - Array or plain JavaScript object that is composite pattern of above.
 
 ### <a name="constructor-id"></a> Constructor ID (cid)
-For user classes that implement [`Transportable`](#transportable) interface, Napa uses Constructor ID (`cid`) to lookup constructors for creating a right object from a string payload. `cid` is marshalled as a part of the payload. During unmarshalling, transport layer will extract the `cid`, create an object instance using the constructor associated with it, and then call unmarshall on the object. 
+For user classes that implement [`Transportable`](#transportable) interface, Napa uses Constructor ID (`cid`) to lookup constructors for creating a right object from a string payload. `cid` is marshalled as a part of the payload. During unmarshalling, transport layer will extract the `cid`, create an object instance using the constructor associated with it, and then call unmarshall on the object.
 
 It's class developer's responsibility to choose the right `cid` for your class. To avoid conflict, we suggest to use the combination of module.id and class name as `cid`. Developer can use class decorator [`cid`](#decorator-cid) to register a user Transportable class automatically, when using TypeScript with decorator feature enabled. Or call [`transport.register`](#register) manually during module initialization.
 
@@ -62,7 +62,7 @@ It's class developer's responsibility to choose the right `cid` for your class. 
 There are states that cannot be saved or loaded in serialized form (like std::shared_ptr), or it's very inefficient to serialize (like JavaScript function). Transport context is introduced to help in these scenarios. TransportContext objects can be passed from one JavaScript VM to another, or stored in native world, so lifecycle of shared native objects extended by using TransportContext. An example of `Transportable` implementation using TransportContext is [`ShareableWrap`](./../../inc/napa/module/shareable-wrap.h).
 
 ### <a name="transporting-functions"></a> Transporting functions
-JavaScript function is a special transportable type, through marshalling its definition into a [store](./store.md#intro), and generate a new function from its definition on target thread. 
+JavaScript function is a special transportable type, through marshalling its definition into a [store](./store.md#intro), and generate a new function from its definition on target thread.
 
 Highlights on transporting functions are:
 - For the same function, marshall/unmarshall is an one-time cost on each JavaScript thread. Once a function is transported for the first time, later transportation of the same function to previous JavaScript thread can be regarded as free.
@@ -91,8 +91,8 @@ assert(transport.isTransportable(napa.memory.crtAllocator));
 
 // Composite of transportable types.
 assert(transport.isTransportable([
-    1, 
-    "string", 
+    1,
+    "string",
     { a: napa.memory.crtAllocator }
     ]));
 
@@ -108,7 +108,7 @@ assert(!transport.isTransportable(new B()));
 Register a `Transportable` class before transport layer can marshall/unmarshall its instances.
 User can also use class decorator [`@cid`](#cid-decorator) for class registration.
 
-Example:
+Example (using TypeScript/Decorator):
 ```ts
 class A extends transport.AutoTransportable {
     field1: string,
@@ -120,14 +120,76 @@ class A extends transport.AutoTransportable {
 // Explicitly register class A in transport.
 transport.register(A);
 ```
+
+User can also register class using JavaScript without decorator syntax. For doing this, modify the code as below:-
+
+```js
+class z extends AutoTransportable{
+    method1(){
+        return "It Worked!";
+    }
+};
+z._cid = "a-unique-name-string"; // adding property _cid to the class constructor
+napa.transport.register(z); // register the class
+```
+
+**Note that you need to register class on all the workers of a zone. The code will not work if you execute it in main thread only.** To cope up with this problem, you need to modify the code like this :-
+```js
+zone1.broadcast("\
+    class z extends AutoTransportable{ \
+        method1(){ \
+            return \"It Worked!\"; \
+        } \
+    }; \
+    z._cid = \"a-unique-name-string\"; \
+    napa.transport.register(z); \
+");
+```
+This code looks ugly, we suggest using separate files for class definition. The foldre structure would look like this :-
+
+z.js
+```js
+// z.js
+var napa = require('napajs');
+var path = require("path");
+var { AutoTransportable } = require(path.join(require.resolve("napajs"), "../", "transport", "transportable"));
+
+class z extends AutoTransportable{
+    method1(){
+        return "It Worked!";
+    }
+};
+z._cid = "a-unique-name-string"; // adding property _cid to the class constructor
+napa.transport.register(z); // register the class
+
+module.exports = z;
+```
+
+After separating our class in other file, we could require it in every worker(broadcast) of the zone, hence registering it in every zone.
+
+main.js
+
+```js
+// main.js
+var z = require("./z");
+var z1 = new z();
+zone1.broadcast(() => {
+    require("./z"); // broadcast this line so that class z will be registered in every thread in this zone.
+});
+zone1.execute((z1) => {
+    console.log(z1.method1());
+}, [z1]);
+// output: It Worked!
+```
+
 ### <a name="marshall"></a> marshall(jsValue: any, context: TransportContext): string
-Marshall a [transportable](#transportable-types) JavaScript value into a JSON payload with a [`TransportContext`](#transport-context). Error will be thrown if the value is not transportable. 
+Marshall a [transportable](#transportable-types) JavaScript value into a JSON payload with a [`TransportContext`](#transport-context). Error will be thrown if the value is not transportable.
 
 Example:
 ```js
 var context = transport.createTransportContext();
 var jsonPayload = transport.marshall(
-    [1, 'string', napa.memory.crtAllocator], 
+    [1, 'string', napa.memory.crtAllocator],
     context);
 console.log(jsonPayload);
 ```
