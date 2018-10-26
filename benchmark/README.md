@@ -11,7 +11,7 @@ We got this report on environment below:
 
 | Name              | Value                                                                                 |
 |-------------------|---------------------------------------------------------------------------------------|
-|**Processor**      |Intel(R) Xeon(R) CPU L5640 @ 2.27GHz, 8 virtual procesors                              |
+|**Processor**      |Intel(R) Xeon(R) CPU L5640 @ 2.27GHz, 8 virtual processors                             |
 |**System Type**    |x64-based PC                                                                           |
 |**Physical Memory**|16.0 GB                                                                                |
 |**OS version**     |Microsoft Windows Server 2012 R2                                                       |
@@ -90,7 +90,7 @@ Average overhead is around 0.06ms to 0.12ms for `zone.execute`.
 ## Transport overhead
 
 The overhead of `transport.marshall` includes
-1. overhead of needing replacer callback during JSON.stringify. (even empty callback will slowdown JSON.stringfiy significantly)
+1. overhead of needing replacer callback during JSON.stringify. (even an empty callback will slow down JSON.stringify significantly)
 2. traverse every value during JSON.stringify, to check value type and get `cid` to put into payload.
     - a. If value doesn't need special care.
     - b. If value is a transportable object that needs special care.
