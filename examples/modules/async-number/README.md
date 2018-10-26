@@ -86,7 +86,7 @@ void Increase(const FunctionCallbackInfo<Value>& args) {
             return reinterpret_cast<void*>(static_cast<uintptr_t>(_now.load()));
         },
         [](auto jsCallback, void* result) {
-            // This runs in the same thread as one Increase() is called in.
+            // This runs in the same thread as the one Increase() is called in.
             auto isolate = Isolate::GetCurrent();
 
             int32_t argc = 1;
@@ -115,7 +115,7 @@ void IncreaseSync(const FunctionCallbackInfo<Value>& args) {
             complete(reinterpret_cast<void*>(static_cast<uintptr_t>(_now.load())));
         },
         [](auto jsCallback, void* result) {
-            // This runs in the same thread as one IncreaseSync() is called in.
+            // This runs in the same thread as the one IncreaseSync() is called in.
             auto isolate = Isolate::GetCurrent();
 
             int32_t argc = 1;
