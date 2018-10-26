@@ -81,12 +81,12 @@ void Increase(const FunctionCallbackInfo<Value>& args) {
 
     napa::module::PostAsyncWork(Local<Function>::Cast(args[1]),
         [value]() {
-            // This runs at the separate thread.
+            // This runs in a separate thread.
             _now += value;
             return reinterpret_cast<void*>(static_cast<uintptr_t>(_now.load()));
         },
         [](auto jsCallback, void* result) {
-            // This runs at the same thread as one Increase() is called.
+            // This runs in the same thread as one Increase() is called in.
             auto isolate = Isolate::GetCurrent();
 
             int32_t argc = 1;
@@ -110,12 +110,12 @@ void IncreaseSync(const FunctionCallbackInfo<Value>& args) {
 
     napa::module::DoAsyncWork(Local<Function>::Cast(args[1]),
         [value](auto complete) {
-            // This runs at the same thread.
+            // This runs in the same thread.
             _now += value;
             complete(reinterpret_cast<void*>(static_cast<uintptr_t>(_now.load())));
         },
         [](auto jsCallback, void* result) {
-            // This runs at the same thread as one IncreaseSync() is called.
+            // This runs in the same thread as one IncreaseSync() is called in.
             auto isolate = Isolate::GetCurrent();
 
             int32_t argc = 1;
