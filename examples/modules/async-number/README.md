@@ -69,7 +69,7 @@ namespace {
     std::atomic<uint32_t> _now(0);
 }
 
-/// <summary> It increases a number by a given parameter asynchronously and run a callback at the next execution loop. </summary>
+/// <summary> It increases a number by a given parameter asynchronously and runs a callback at the next execution loop. </summary>
 void Increase(const FunctionCallbackInfo<Value>& args) {
     auto isolate = args.GetIsolate();
 
@@ -98,7 +98,7 @@ void Increase(const FunctionCallbackInfo<Value>& args) {
     );
 }
 
-/// <summary> It increases a number by a given parameter synchronously and run a callback at the next execution loop. </summary>
+/// <summary> It increases a number by a given parameter synchronously and runs a callback at the next execution loop. </summary>
 void IncreaseSync(const FunctionCallbackInfo<Value>& args) {
     auto isolate = args.GetIsolate();
 
