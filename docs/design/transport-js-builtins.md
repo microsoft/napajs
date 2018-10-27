@@ -5,18 +5,18 @@ The abstraction of 'Transportable' lies in the center of Napa.js to efficiently 
 
 The incentive of this design is to provide a solution to make JavaScript standard built-in objects transportable with requirements listed in the Goals section.
 
-At the first stage, we will focus on an efficient solution to share data between Napa workers. Basically, it is about making SharedArrayBuffer / TypedArray / DataView transportable.
+At the first stage, we will focus on an efficient solution to share data between Napa workers. Basically, it is about making *SharedArrayBuffer / TypedArray / DataView* transportable.
 
 ## Goals
 Make Javascript standard built-in objects transportable with
-- An efficient way to share structured data, like SharedArrayBuffer, among Napa workers
+- An efficient way to share structured data, like *SharedArrayBuffer*, among Napa workers
 - Consistent APIs with ECMA standards
 - No new abstraction layers for the simplest usage
 - The least new concepts for advanced usage
 - A scalable solution to make all JavaScript standard built-in objects transportable, avoiding to make them transportable one by one.
 
 ## Example
-The below example shows how SharedArrayBuffer object is transported across multiple Napa workers. It will print the TypedArray 'ta' created from a SharedArrayBuffer, with all its elements set to 100 from different Napa workers. 
+The below example shows how *SharedArrayBuffer* object is transported across multiple Napa workers. It will print the TypedArray 'ta' created from a *SharedArrayBuffer*, with all its elements set to 100 from different Napa workers. 
 ```js
 var napa = require("napajs");
 var zone = napa.zone.create('zone', { workers: 4 });
