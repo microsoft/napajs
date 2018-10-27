@@ -4,9 +4,9 @@ This example implements a parallel version of quicksort by napa.js, and compares
 2. How does napa.js accelerate a computation heavy task by parallelization.
 
 ## How to run
-1. Go to directory of "examples/tutorial/parallel-quick-sort"
-2. Run "npm install" to install napajs
-3. Run "node parallel-quick-sort.js"
+1. Go to directory of `examples/tutorial/parallel-quick-sort`.
+2. Run `npm install` to install napajs.
+3. Run `node parallel-quick-sort.js`.
 
 **Note**: This example involves TypedArray and SharedArrayBuffer. It requires Node v9.0.0 or newer.
 
