@@ -36,12 +36,12 @@ Please refer to [execute-scalability.ts](./execute-scalability.ts) for test deta
 
 ## Execute overhead
 The overhead of `zone.execute` includes
-1. marshalling cost of arguments in caller thread.
-2. queuing time before a worker can execute.
-3. unmarshalling cost of arguments in target worker.
-4. marshalling cost of return value from target worker.
-5. queuing time before caller callback is notified. 
-6. unmarshalling cost of return value in caller thread.
+1. Marshalling cost of arguments in caller thread.
+2. Queuing time before a worker can execute.
+3. Unmarshalling cost of arguments in target worker.
+4. Marshalling cost of return value from target worker.
+5. Queuing time before caller callback is notified. 
+6. Unmarshalling cost of return value in caller thread.
 
 In this section we will examine #2 and #5. So we use empty function with no arguments and no return value.
 
@@ -132,12 +132,12 @@ Please refer to [transport-overhead.ts](./transport-overhead.ts) for test detail
 ## Store access overhead
 
 The overhead of `store.set` includes
-1. overhead of calling `transport.marshall` on value.
-2. overhead of put marshalled data and transport context into C++ map (with exclusive_lock).
+1. Overhead of calling `transport.marshall` on value.
+2. Overhead of put marshalled data and transport context into C++ map (with exclusive_lock).
 
 The overhead of `store.get` includes
-1. overhead of getting marshalled data and transport context from C++ map (with shared_lock).
-2. overhead of calling `transport.unmarshall` on marshalled data.
+1. Overhead of getting marshalled data and transport context from C++ map (with shared_lock).
+2. Overhead of calling `transport.unmarshall` on marshalled data.
 
 For `store.set`, numbers below indicates the cost beyond marshall is around 0.07~0.4ms varies per payload size. (10B to 18KB). `store.get` takes a bit more: 0.06~0.9ms with the same payload size variance. If the value in store is not updated frequently, it's always good to cache it in JavaScript world.
 
