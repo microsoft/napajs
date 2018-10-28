@@ -40,7 +40,7 @@ Transportable types are:
 - JavaScript primitive types: undefined, null, boolean, number, string
 - Object (TypeScript class) that implement [`Transportable`](#transportable) interface
 - Function without referencing closures.
-- <a name="built-in-whitelist"></a> JavaScript standard built-In objects in this whitelist.
+- <a name="built-in-whitelist"></a> JavaScript standard built-in objects in this whitelist.
     * ArrayBuffer
     * Float32Array
     * Float64Array
@@ -54,23 +54,23 @@ Transportable types are:
 - Array or plain JavaScript object that is composite pattern of above.
 
 ### <a name="constructor-id"></a> Constructor ID (cid)
-For user classes that implement [`Transportable`](#transportable) interface, Napa uses Constructor ID (`cid`) to lookup constructors for creating a right object from a string payload. `cid` is marshalled as a part of the payload. During unmarshalling, transport layer will extract the `cid`, create an object instance using the constructor associated with it, and then call unmarshall on the object. 
+For user classes that implement the [`Transportable`](#transportable) interface, Napa uses Constructor ID (`cid`) to lookup constructors for creating a right object from a string payload. `cid` is marshalled as a part of the payload. During unmarshalling, the transport layer will extract the `cid`, create an object instance using the constructor associated with it, and then call unmarshall on the object. 
 
-It's class developer's responsibility to choose the right `cid` for your class. To avoid conflict, we suggest to use the combination of module.id and class name as `cid`. Developer can use class decorator [`cid`](#decorator-cid) to register a user Transportable class automatically, when using TypeScript with decorator feature enabled. Or call [`transport.register`](#register) manually during module initialization.
+It's the class developer's responsibility to choose the right `cid` for your class. To avoid conflict, we suggest to use the combination of module.id and class name as `cid`. Developer can use class decorator [`cid`](#decorator-cid) to register a user Transportable class automatically, when using TypeScript with decorator feature enabled. Or call [`transport.register`](#register) manually during module initialization.
 
 ### <a name="transport-context"></a> Transport context
-There are states that cannot be saved or loaded in serialized form (like std::shared_ptr), or it's very inefficient to serialize (like JavaScript function). Transport context is introduced to help in these scenarios. TransportContext objects can be passed from one JavaScript VM to another, or stored in native world, so lifecycle of shared native objects extended by using TransportContext. An example of `Transportable` implementation using TransportContext is [`ShareableWrap`](./../../inc/napa/module/shareable-wrap.h).
+There are states that cannot be saved or loaded in serialized form (like std::shared_ptr), or it's very inefficient to serialize (like JavaScript function). Transport context is introduced to help in these scenarios. TransportContext objects can be passed from one JavaScript VM to another, or stored in the native world, so lifecycle of shared native objects extended by using TransportContext. An example of the `Transportable` implementation using TransportContext is [`ShareableWrap`](./../../inc/napa/module/shareable-wrap.h).
 
 ### <a name="transporting-functions"></a> Transporting functions
 JavaScript function is a special transportable type, through marshalling its definition into a [store](./store.md#intro), and generate a new function from its definition on target thread. 
 
 Highlights on transporting functions are:
 - For the same function, marshall/unmarshall is an one-time cost on each JavaScript thread. Once a function is transported for the first time, later transportation of the same function to previous JavaScript thread can be regarded as free.
-- Closure cannot be transported, but you won't get error when transporting a function. Instead, you will get runtime error complaining a variable (from closure) is undefined when you can the function later.
-- `__dirname` / `__filename` can be accessed in transported function, which is determined by `origin` property of function. By default `origin` property is set to current working directory.
+- Closure cannot be transported, but you won't get an error when transporting a function. Instead, you will get runtime error complaining a variable (from closure) is undefined when you can the function later.
+- `__dirname` / `__filename` can be accessed in transported function, which is determined by `origin` property of the function. By default, `origin` property is set to the current working directory.
 
 ### <a name="transporting-built-in"></a> Transporting JavaScript built-in objects
-JavaScript standard built-In objects in [the whitelist](#built-in-whitelist) can be transported among napa workers transparently. JavaScript Objects with properties in these types are also able to be transported. Please refer to [unit tests](./../../test/transport-test.ts) for detail.
+JavaScript standard built-in objects in [the whitelist](#built-in-whitelist) can be transported among napa workers transparently. JavaScript Objects with properties in these types are also able to be transported. Please refer to [unit tests](./../../test/transport-test.ts) for detail.
 
 An example [Parallel Quick Sort](./../../examples/tutorial/parallel-quick-sort) demonstrated transporting TypedArray (created from SharedArrayBuffer) among multiple Napa workers for efficient data sharing.
 
@@ -105,7 +105,7 @@ class B {
 assert(!transport.isTransportable(new B()));
 ```
 ### <a name="register"></a> register(transportableClass: new(...args: any[]) => any): void
-Register a `Transportable` class before transport layer can marshall/unmarshall its instances.
+Register a `Transportable` class before the transport layer can marshall/unmarshall its instances.
 User can also use class decorator [`@cid`](#cid-decorator) for class registration.
 
 Example:
@@ -121,7 +121,7 @@ class A extends transport.AutoTransportable {
 transport.register(A);
 ```
 ### <a name="marshall"></a> marshall(jsValue: any, context: TransportContext): string
-Marshall a [transportable](#transportable-types) JavaScript value into a JSON payload with a [`TransportContext`](#transport-context). Error will be thrown if the value is not transportable. 
+Marshall a [transportable](#transportable-types) JavaScript value into a JSON payload with a [`TransportContext`](#transport-context).An Error will be thrown if the value is not transportable. 
 
 Example:
 ```js
@@ -132,7 +132,7 @@ var jsonPayload = transport.marshall(
 console.log(jsonPayload);
 ```
 ### <a name="unmarshall"></a> unmarshall(json: string, context: TransportContext): any
-Unmarshall an [transportable](#transportable-types) JavaScript value from a JSON payload with a [`TransportContext`](#transport-context). Error will be thrown if `cid` property is found and not registered with transport layer.
+Unmarshall a [transportable](#transportable-types) JavaScript value from a JSON payload with a [`TransportContext`](#transport-context).An Error will be thrown if `cid` property is found and not registered with the transport layer.
 
 Example:
 ```js
@@ -148,18 +148,18 @@ Save a shareable object in context.
 Load a shareable object from handle.
 
 ### <a name="transportcontext-sharedcount"></a> context.sharedCount: number
-Count of shareable objects saved in current context.
+Count of shareable objects saved in the current context.
 
 ## <a name="transportable"></a> Interface `Transportable`
-Interface for Transportable object.
+Interface for the Transportable object.
 ### <a name="transportable-cid"></a> transportable.cid: string
-Get accessor for [Constructor ID](#constructor-id). It is used to lookup constructor for payload of current class.
+Get accessor for [Constructor ID](#constructor-id). It is used to lookup constructor for the payload of the current class.
 
 ### <a name="transportable-marshall"></a> transportable.marshall(context: TransportContext): object
-Marshall transform this object into a plain JavaScript object with the help of [TransportContext](#transport-context).
+Marshall transforms this object into a plain JavaScript object with the help of [TransportContext](#transport-context).
 
 ### <a name="transportable.unmarshall"></a> transportable.unmarshall(payload: object, context: TransportContext): void
-Unmarshall transform marshalled payload into current object.
+Unmarshall transforms marshalled payload into current object.
 
 ## <a name="transportableobject"></a> Abstract class `TransportableObject`
 TBD
