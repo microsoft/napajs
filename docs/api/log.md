@@ -17,7 +17,7 @@
 ## <a name="intro"></a> Introduction
 Logging is a basic requirement for building services. `napajs` logging API enables developers to integrate their own logging capabilities in both JavaScript and C++ (addon) world.
 
-A log row may contain following information:
+A log row may contain the following information:
 - (Optional) Section: Useful field to filter log rows. Treatment is defined by logging providers.
 - (Optional) Trace ID: Useful field to join logs in the same transaction or request.
 - (Required) Message: Log message.
@@ -54,7 +54,7 @@ void MyFunction() {
 ### <a name="log"></a> log(message: string): void
 It logs a message. Using info level. 
 
-*`log` is a shortcut for `log.info`.*
+* A `log` is a shortcut for `log.info`.*
 
 Example:
 ```js
@@ -78,16 +78,16 @@ Example:
 napa.log('request', 'A1B2C3D4', 'request received');
 ```
 ### <a name="log-err"></a> log.err(...)
-It logs an error message. Three variation of arguments are the same with `log`.
+It logs an error message. Three variations of arguments are the same with the `log`.
 
 ### <a name="log-warn"></a> log.warn(...)
-It logs a warning message. Three variation of arguments are the same with `log`.
+It logs a warning message. Three variations of arguments are the same with the `log`.
 
 ### <a name="log-info"></a>log.info(...)
-It logs an info message. Three variation of arguments are the same with `log`.
+It logs an info message. Three variations of arguments are the same with the `log`.
 
 ### <a name="log-debug"></a> log.debug(...)
-It logs a debug message. Three combinations of arguments are the same with `log`.
+It logs a debug message. Three combinations of arguments are the same with the `log`.
 
 ## <a name="use-custom-providers"></a> Using custom logging providers
 Developers can hook up custom logging provider by calling the following before creation of any zones:
