@@ -49,7 +49,16 @@ bool JavascriptModuleLoader::TryGet(const std::string& path, v8::Local<v8::Value
     v8::TryCatch tryCatch(isolate);
     {
         auto origin = v8::ScriptOrigin(v8_helpers::MakeV8String(isolate, path));
-        auto script = v8::Script::Compile(source, &origin);
+
+        // The wrapper set 'this' reference to module.exports in module's top level code
+        v8::Local<v8::String> wrappedSource = v8::String::Concat(
+            v8_helpers::MakeV8String(isolate, "(function(){"),
+            v8::String::Concat(
+                source,
+                v8_helpers::MakeV8String(isolate, "}).apply(module.exports);")
+            )
+        );
+        auto script = v8::Script::Compile(wrappedSource, &origin);
         if (script.IsEmpty() || tryCatch.HasCaught()) {
             tryCatch.ReThrow();
             return false;

@@ -23,7 +23,7 @@ Though very convenient, it's not recommended to use store to pass values within 
 Following APIs are exposed to create, get and operate upon stores.
 
 ### <a name="create"></a> create(id: string): Store
-It creates a store by a string identifer that can be used to get the store later. When all references to the store from all JavaScript VMs are cleared, the store will be destroyed. Thus always keep a reference at global or module scope is usually a good practice using `Store`. Error will be thrown if the id already exists.
+It creates a store by a string identifier that can be used to get the store later. When all references to the store from all JavaScript VMs are cleared, the store will be destroyed. Thus always keep a reference at global or module scope is usually a good practice using `Store`. Error will be thrown if the id already exists.
 
 Example:
 ```js

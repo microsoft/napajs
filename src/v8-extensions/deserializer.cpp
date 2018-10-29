@@ -26,6 +26,8 @@ MaybeLocal<Value> Deserializer::ReadValue() {
         return MaybeLocal<Value>();
     }
 
+#if !V8_VERSION_EQUALS_TO_OR_NEWER_THAN(6, 6)
+
     uint32_t index = 0;
     Local<String> key = v8_helpers::MakeV8String(_isolate, "_externalized");
     for (const auto& contents : _data->GetExternalizedSharedArrayBufferContents()) {
@@ -40,10 +42,38 @@ MaybeLocal<Value> Deserializer::ReadValue() {
         _deserializer.TransferSharedArrayBuffer(index++, sharedArrayBuffers);
     }
 
+#endif
+
     return _deserializer.ReadValue(context);
 }
 
-Deserializer* Deserializer::NewDeserializer(v8::Isolate* isolate, std::shared_ptr<SerializedData> data) {
+#if V8_VERSION_EQUALS_TO_OR_NEWER_THAN(6, 6)
+
+MaybeLocal<SharedArrayBuffer> Deserializer::GetSharedArrayBufferFromId(
+    Isolate* isolate, uint32_t cloneId) {
+    if (_data && cloneId < _data->GetExternalizedSharedArrayBufferContents().size()) {
+        auto externalizedSharedArrayBufferContents = _data->GetExternalizedSharedArrayBufferContents().at(cloneId);
+        SharedArrayBuffer::Contents contents = externalizedSharedArrayBufferContents.first;
+        auto sharedArrayBuffer = SharedArrayBuffer::New(isolate, contents.Data(), contents.ByteLength());
+
+        // After deserialization of a SharedArrayBuffer from its SerializedData,
+        // set its '_externalized' property to a ShareableWrap of its ExternalizedContents.
+        // This extends the lifecycle of the ExternalizedContents
+        // by the lifetime of the restored SharedArrayBuffer object.
+        Local<Context> context = _isolate->GetCurrentContext();
+        Local<String> key = v8_helpers::MakeV8String(_isolate, "_externalized");
+        auto shareableWrap = napa::module::binding::CreateShareableWrap(externalizedSharedArrayBufferContents.second);
+        sharedArrayBuffer->CreateDataProperty(context, key, shareableWrap);
+        return sharedArrayBuffer;
+    }
+    else {
+        return MaybeLocal<SharedArrayBuffer>();
+    }
+}
+
+#endif
+
+Deserializer* Deserializer::NewDeserializer(Isolate* isolate, std::shared_ptr<SerializedData> data) {
     return new Deserializer(isolate, data);
 }
 

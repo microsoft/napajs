@@ -27,7 +27,7 @@ The source codes can be organized as the structure below.
  ## How to build and test ?
  For the module examples, node-gyp or cmake-js build solution is provided for your reference.
 
-Please make sure [node-gyp](https://github.com/nodejs/node-gyp#installation) or [cmake-js](https://github.com/cmake-js/cmake-js#installation) has been set up correctly at your client, then you could follow the below steps to build and test the module examples.
+Please make sure [node-gyp](https://github.com/nodejs/node-gyp#installation) or [cmake-js](https://github.com/cmake-js/cmake-js#installation) has been set up correctly at your client, then you could follow the steps below to build and test the module examples.
  ```
  1. go to the directory of a module example
  2. run "npm install" to build the module

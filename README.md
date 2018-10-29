@@ -15,8 +15,8 @@ Other options can be found in [Build Napa.js](https://github.com/Microsoft/napaj
 
 ## Quick Start
 ```js
-var napa = require('napajs');
-var zone1 = napa.zone.create('zone1', { workers: 4 });
+const napa = require('napajs');
+const zone1 = napa.zone.create('zone1', { workers: 4 });
 
 // Broadcast code to all 4 workers in 'zone1'.
 zone1.broadcast('console.log("hello world");');
@@ -37,11 +37,11 @@ More examples:
 * [Synchronized loading](./examples/tutorial/synchronized-loading)
 
 ## Features
-- Multi-threaded JavaScript runtime
-- Node.js compatible module architecture with NPM support
-- API for object transportation, object sharing and synchronization across JavaScript threads
-- API for pluggable logging, metric and memory allocator
-- Distributed as a Node.js module, as well as supporting embed scenarios
+- Multi-threaded JavaScript runtime.
+- Node.js compatible module architecture with NPM support.
+- API for object transportation, object sharing and synchronization across JavaScript threads.
+- API for pluggable logging, metric and memory allocator.
+- Distributed as a Node.js module, as well as supporting embed scenarios.
 
 ## Documentation
 - [Napa.js Home](https://github.com/Microsoft/napajs/wiki)
@@ -56,7 +56,7 @@ You can contribute to Napa.js in following ways:
 * Contribute to core module compatibility with Node.
 * Contribute bug fixes.
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact opencode@microsoft.com with any additional questions or comments.
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).<br> For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact opencode@microsoft.com with any additional questions or comments.
 
 # License
 Copyright (c) Microsoft Corporation. All rights reserved.

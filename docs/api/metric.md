@@ -23,9 +23,9 @@ A metric has its identity containing following information:
 - **Section**: The group or category of the metric.
 - **Name**: Name of the metric. Section/Name combination should be unique in the system.
 - **Type**: Type of the metric, which can be
-    - *Number*: A absolute number, e.g: PrivateBytes.
+    - *Number*: An absolute number, e.g: PrivateBytes.
     - *Rate*: A flowing volume in number, e.g: QueryPerSecond.
-    - *Percentile*: A absolute number that needs to be sampled by percentiles, e.g: SuccessLatency.
+    - *Percentile*: An absolute number that needs to be sampled by percentiles, e.g: SuccessLatency.
 - **Dimensions**: A metric can have multiple dimensions, each dimension can bind with a string value at runtime. e.g: IncomingRequestRate can have 2 dimensions: ['client-id', 'request-type'].
 
 Metrics are process-wise objects, which can be used across [zones](./zone.md#intro).
@@ -40,7 +40,7 @@ Metrics are process-wise objects, which can be used across [zones](./zone.md#int
         Percentile,
     };
 
-    /// <summary> Interface to represents a multi-dimensional metric with a maximum dimensionality of 64. </summary>
+    /// <summary> Interface to represent a multi-dimensional metric with a maximum dimensionality of 64. </summary>
     class Metric {
     public:
 

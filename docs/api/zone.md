@@ -43,7 +43,7 @@ There are two types of zone:
 
 ### <a name="zone-operations"><a> Zone operations 
 There are two operations, designed to reinforce the symmetry of workers within a zone:
- 1) **Broadcast** - run code that changes worker state on all workers, returning a promise for the pending operation. Through the promise, we can only know if the operation succeed or failed. Usually we use `broadcast` to bootstrap the application, pre-cache objects, or change application settings. Function `broadcastSync` is also offered as a synchronized version of broadcast operations.
+ 1) **Broadcast** - run code that changes worker state on all workers, returning a promise for the pending operation. Through the promise, we can only know if the operation succeeded or failed. Usually we use `broadcast` to bootstrap the application, pre-cache objects, or change application settings. Function `broadcastSync` is also offered as a synchronized version of broadcast operations.
  2) **Execute** - run code that doesn't change worker state on an arbitrary worker, returning a promise of getting the result. Execute is designed for doing the real work.
 
  Zone operations are on a basis of first-come-first-serve, while `broadcast` takes higher priority over `execute`.
@@ -51,7 +51,7 @@ There are two operations, designed to reinforce the symmetry of workers within a
 ## <a name="api"></a>API
 ### <a name="create"></a> create(id: string, settings: ZoneSettings): Zone
 
-It creates a Napa zone with a string id. If zone with the id is already created, error will be thrown. [`ZoneSettings`](#zone-settings) can be specified for creating zones.
+It creates a Napa zone with a string id. If a zone with the id is already created, an error will be thrown. [`ZoneSettings`](#zone-settings) can be specified for creating zones.
 
 Example 1: Create a zone with id 'zone1', using default ZoneSettings. 
 ```js
