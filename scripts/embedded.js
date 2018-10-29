@@ -47,7 +47,7 @@ exports.build = function (buildType) {
     }
     else {
         // TODO (asib): support other platforms
-        console.log("\x1b[1m\x1b[32m", "Napa build solution for embeded mode is not provided for ", os.platform(),'\x1b[0m');
+        console.log("\x1b[1m\x1b[32m", "Napa build solution for embedded mode is not provided for ", os.platform(),'\x1b[0m');
 	return;
     }
 

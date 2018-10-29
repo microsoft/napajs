@@ -11,7 +11,7 @@ var obj = addon.createPlusNumber();
 
 ## Wrapped class
 
-*plus-number.h* declares ths class with one constructor and one method, *Add()*.
+*plus-number.h* declares the class with one constructor and one method, *Add()*.
 
 ```h
 namespace napa {

@@ -16,7 +16,7 @@ namespace {
     std::atomic<uint32_t> _now(0);
 }
 
-/// <summary> It increases a number by a given parameter asynchronously and run a callback at the next execution loop. </summary>
+/// <summary> It increases a number by a given parameter asynchronously and runs a callback at the next execution loop. </summary>
 void Increase(const FunctionCallbackInfo<Value>& args) {
     auto isolate = args.GetIsolate();
 
@@ -28,12 +28,12 @@ void Increase(const FunctionCallbackInfo<Value>& args) {
 
     napa::zone::PostAsyncWork(Local<Function>::Cast(args[1]),
         [value]() {
-            // This runs at the separate thread.
+            // This runs in a separate thread.
             _now += value;
             return reinterpret_cast<void*>(static_cast<uintptr_t>(_now.load()));
         },
         [](auto jsCallback, void* result) {
-            // This runs at the same thread as one Increase() is called.
+            // This runs in the same thread as the one Increase() is called in.
             auto isolate = Isolate::GetCurrent();
 
             int32_t argc = 1;
@@ -45,7 +45,7 @@ void Increase(const FunctionCallbackInfo<Value>& args) {
     );
 }
 
-/// <summary> It increases a number by a given parameter synchronously and run a callback at the next execution loop. </summary>
+/// <summary> It increases a number by a given parameter synchronously and runs a callback at the next execution loop. </summary>
 void IncreaseSync(const FunctionCallbackInfo<Value>& args) {
     auto isolate = args.GetIsolate();
 
@@ -57,12 +57,12 @@ void IncreaseSync(const FunctionCallbackInfo<Value>& args) {
 
     napa::zone::DoAsyncWork(Local<Function>::Cast(args[1]),
         [value](auto complete) {
-            // This runs at the same thread.
+            // This runs in the same thread.
             _now += value;
             complete(reinterpret_cast<void*>(static_cast<uintptr_t>(_now.load())));
         },
         [](auto jsCallback, void* result) {
-            // This runs at the same thread as one IncreaseSync() is called.
+            // This runs in the same thread as the one IncreaseSync() is called in.
             auto isolate = Isolate::GetCurrent();
 
             int32_t argc = 1;
