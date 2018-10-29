@@ -6,9 +6,9 @@ In this implementation, all units to be evaluated were divided into 2 * size of 
 Please note that this example is to demonstrate the programming paradigm, while itself is NOT performance efficient, since each worker does too little CPU operation and major overhead is on communication.
 
 ## How to run
-1. Go to directory of "examples/tutorial/max-square-sub-matrix"
-2. Run "npm install" to install napajs
-3. Run "node max-square-sub-matrix.js"
+1. Go to directory of `examples/tutorial/max-square-sub-matrix`
+2. Run `npm install` to install napajs
+3. Run `node max-square-sub-matrix.js`
 
 **Note**: This example uses 'async / await', so Node version that supports ES6 is required. (newer than v7.6.0).
 

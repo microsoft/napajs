@@ -6,9 +6,9 @@ Recursion is supported on a single thread by JavaScript language, how if we want
 Please note that this example is to demonstrate the programming paradigm, while itself is *NOT* performance efficient, since each worker does too little CPU operation (simply '+') and major overhead is on communication. 
 
 ## How to run
-1. Go to directory of "examples/tutorial/recursive-fibonacci"
-2. Run "npm install" to install napajs
-3. Run "node recursive-fibonacci.js"
+1. Go to directory of `examples/tutorial/recursive-fibonacci`
+2. Run `npm install`to install napajs
+3. Run `node recursive-fibonacci.js`
 
 ## Program output
 Table below shows statistics of calculating Nth Fibonacci number by a napa zone with 4 workers.

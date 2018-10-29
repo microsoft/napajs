@@ -4,9 +4,9 @@ This example implements a shared phone book component. The component will not lo
 The component is implemented using lazy-loading pattern with the use of [`napa.sync.Lock`](./../../../docs/api/sync.md#interface-lock).
 
 ## How to run
-1. Go to directory of "examples/tutorial/synchronized-loading"
-2. Run "npm install" to install napajs
-3. Run "node synchronized-loading.js"
+1. Go to directory of `examples/tutorial/synchronized-loading`
+2. Run `npm install` to install napajs
+3. Run `node synchronized-loading.js`
 
 ## Program output
 The output below shows one possible result. The sequence of the output may be different but the data loading will always run once only.
