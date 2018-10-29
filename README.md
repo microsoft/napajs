@@ -15,8 +15,8 @@ Other options can be found in [Build Napa.js](https://github.com/Microsoft/napaj
 
 ## Quick Start
 ```js
-var napa = require('napajs');
-var zone1 = napa.zone.create('zone1', { workers: 4 });
+const napa = require('napajs');
+const zone1 = napa.zone.create('zone1', { workers: 4 });
 
 // Broadcast code to all 4 workers in 'zone1'.
 zone1.broadcast('console.log("hello world");');
