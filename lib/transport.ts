@@ -7,7 +7,7 @@ export {
     TransportContext,
     AutoTransportable,
     isTransportable,
-    cid
+    cid,
 } from './transport/transportable';
 
 export * from './transport/transport';
@@ -18,7 +18,6 @@ import * as functionTransporter from './transport/function-transporter';
 
 let binding = require('./binding');
 
-/// <summary> Create a transport context. </summary>
 export function createTransportContext(owning: boolean = true, handle : Handle = undefined): TransportContext {
     return new binding.TransportContextWrap(owning, handle);
 }
