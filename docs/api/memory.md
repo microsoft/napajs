@@ -72,7 +72,7 @@ Memory allocation in C++ addon is tricky. A common pitfall is to allocate memory
 
 There are also advanced scenarios that user want to customize memory allocation. Napa.js provides APIs for customizing memory allocator as well.
 
-### Recommended way of allocate memory.
+### Recommended way of allocate memory
 TBD
 
 ### Customize memory allocation
