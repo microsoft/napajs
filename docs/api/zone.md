@@ -51,7 +51,7 @@ There are two operations, designed to reinforce the symmetry of workers within a
 ## <a name="api"></a>API
 ### <a name="create"></a> create(id: string, settings: ZoneSettings): Zone
 
-It creates a Napa zone with a string id. If zone with the id is already created, error will be thrown. [`ZoneSettings`](#zone-settings) can be specified for creating zones.
+It creates a Napa zone with a string id. If a zone with the id is already created, an error will be thrown. [`ZoneSettings`](#zone-settings) can be specified for creating zones.
 
 Example 1: Create a zone with id 'zone1', using default ZoneSettings. 
 ```js
