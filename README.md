@@ -14,6 +14,7 @@ npm install napajs
 Other options can be found in [Build Napa.js](https://github.com/Microsoft/napajs/wiki/build-napa.js).
 
 ## Quick Start
+### Using ES5
 ```js
 const napa = require('napajs');
 const zone1 = napa.zone.create('zone1', { workers: 4 });
@@ -28,6 +29,24 @@ zone1.execute(
     .then((result) => {
         console.log(result.value);
     });
+```
+
+### Using ES6 + async/await
+```js
+import * as napa from "napajs"
+
+const zone1 = napa.zone.create('zone1', { workers: 4 });
+
+// Broadcast code to all 4 workers in 'zone1'.
+zone1.broadcast('console.log("hello world");');
+
+// Execute an anonymous function in any worker thread in 'zone1'.
+(async () => {
+	let result = await zone1.execute(
+	    (text) => text, 
+	    ['hello napa']);
+	console.log(result.value);
+})()
 ```
 More examples:
 * [Estimate PI in parallel](./examples/tutorial/estimate-pi-in-parallel)
