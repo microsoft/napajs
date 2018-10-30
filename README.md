@@ -13,6 +13,8 @@ npm install napajs
 ```
 Other options can be found in [Build Napa.js](https://github.com/Microsoft/napajs/wiki/build-napa.js).
 
+**Note:** Napa.js requires Node versions >= v4.5.0 and < v8.5.0. We are working with the Node.js team on support in newer Node versions.
+
 ## Quick Start
 ```js
 const napa = require('napajs');
